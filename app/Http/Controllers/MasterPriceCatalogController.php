@@ -301,13 +301,14 @@ class MasterPriceCatalogController extends Controller
                 $price->source      =   $temp->source;
                 $price->price       =   $temp->price;
                 $price->save();
-                $res = [
+                
+            }
+        }
+        $res = [
                     'title' => 'Sukses',
                     'type' => 'success',
                     'message' => 'Data berhasil di Di Simpan !'
                 ]; 
-            }
-        }
         return redirect()
                 ->route('price_catalogue.index')
                 ->with($res);

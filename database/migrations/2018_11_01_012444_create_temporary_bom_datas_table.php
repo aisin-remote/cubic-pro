@@ -21,6 +21,8 @@ class CreateTemporaryBomDatasTable extends Migration
             $table->string('supplier_id');
             $table->string('source');
             $table->string('qty');
+            $table->string('supplier_code')->nullable();
+            $table->string('part_number')->nullable();
             $table->timestamps();
         });
     }

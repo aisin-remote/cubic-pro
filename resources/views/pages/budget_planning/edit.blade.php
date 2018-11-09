@@ -38,7 +38,7 @@
                                 <select name="part_id" class="select2" data-placeholder="Select Part Number" required="required">
                                     <option></option>
                                     @foreach ($parts as $part)
-                                    <option value="{{ $part->id }}">{{ $part->part_number }} - {{ $part->part_name }}</option>
+                                    <option value="{{ $part->id }}" {{ $part->id == $budgetplanning->part_id ? 'selected=selected' : '' }}>{{ $part->part_number }} - {{ $part->part_name }}</option>
                                     @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -53,11 +53,11 @@
                         <div class="col-md-6">
                          <div class="form-group">
                               <label class="control-label">Customer Code<span class="text-danger">*</span></label>
-                              <select name="supplier_id" class="select2" data-placeholder="Select Customer Code" required="required">
+                              <select name="customer_id" class="select2" data-placeholder="Select Customer Code" required="required">
                                   <option></option>
-                                  @foreach ($customers as $customer)
-                                  <option value="{{ $customer->id }}">{{ $customer->customer_code }} - {{ $customer->customer_name }}</option>
-                                  @endforeach
+                                   @foreach ($customers as $customer)
+                                    <option value="{{ $customer->id }}" {{ $customer->id == $budgetplanning->customer_id ? 'selected=selected' : '' }}>{{ $customer->customer_code }} - {{ $customer->customer_name }}</option>
+                                    @endforeach
                               </select>
                               <span class="help-block"></span>
                          </div>

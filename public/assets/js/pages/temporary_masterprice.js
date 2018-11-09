@@ -4,19 +4,13 @@ $(document).ready(function(){
     tTemporaryMasterPrice = $('#table-temporary-masterprice').DataTable({
         ajax: SITE_URL + '/masterprice/get_data_temporary',
         columns: [
-            {
-                "className":      'details-control',
-                "orderable":      false,
-                "searchable":     true,
-                "data":           null,
-                "defaultContent": ''
-            },
+            
             { data: 'parts.part_number', name: 'parts.part_number'},
             { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
             { data: 'source', name: 'source'},
             { data: 'price', name: 'price'},
 
-            { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
+           
         ],
         order: [1, 'asc'],
         drawCallback: function(){

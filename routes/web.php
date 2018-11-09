@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function(){
 	Route::get('part/get_data', 'PartController@getData');
 	Route::resource('part', 'PartController');
 	Route::post('/part/import', 'PartController@import')->name('part.import');
+	Route::get('/part/export', 'PartController@export')->name('part.export');
 	
 	// Master SYSTEM ARK. Ipan Herdiansyah
 	Route::get('system/get_data', 'SystemController@getData');
@@ -144,6 +145,7 @@ Route::middleware('auth')->group(function(){
 	Route::resource('budgetplanning', 'BudgetPlanningController');
 	
 	Route::get('output_master/get_data', 'OutputMasterController@getData');
+	Route::get('output_master/download', 'OutputMasterController@download')->name('output_master.download');
 	Route::resource('output_master', 'OutputMasterController');
 
 	Route::prefix('settings')->group(function(){

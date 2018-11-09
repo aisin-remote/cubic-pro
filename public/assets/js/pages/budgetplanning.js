@@ -3,41 +3,43 @@ $(document).ready(function(){
 
 	tBudgetPlanning = $('#table-budgetplanning').DataTable({
 		ajax: SITE_URL + '/budgetplanning/get_data',
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        scrollX: true,
         columns: [
-            {
-                "className":      'details-control',
-                "orderable":      false,
-                "searchable":     true,
-                "data":           null,
-                "defaultContent": ''
-            },
             { data: 'parts.part_number', name: 'parts.part_number'},
             { data: 'customers.customer_code', name: 'customers.customer_code'},
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'market', name: 'market'},
+            { data: 'apr_qty', name: 'apr_qty'},
+            { data: 'apr_amount', name: 'apr_amount'},
+            { data: 'may_qty', name: 'may_qty'},
+            { data: 'may_amount', name: 'may_amount'},
+            { data: 'june_qty', name: 'june_qty'},
+            { data: 'june_amount', name: 'june_amount'},
+            { data: 'july_qty', name: 'july_qty'},
+            { data: 'july_amount', name: 'july_amount'},
+            { data: 'august_qty', name: 'august_qty'},
+            { data: 'august_amount', name: 'august_amount'},
+            { data: 'sep_qty', name: 'sep_qty'},
+            { data: 'sep_amount', name: 'sep_amount'},
+            { data: 'okt_qty', name: 'okt_qty'},
+            { data: 'okt_amount', name: 'okt_amount'},
+            { data: 'nov_qty', name: 'nov_qty'},
+            { data: 'nov_amount', name: 'nov_amount'},
+            { data: 'des_qty', name: 'des_qty'},
+            { data: 'des_amount', name: 'des_amount'},
+            { data: 'jan_qty', name: 'jan_qty'},
+            { data: 'jan_amount', name: 'jan_amount'},
+            { data: 'feb_qty', name: 'feb_qty'},
+            { data: 'feb_amount', name: 'feb_amount'},
+            { data: 'mar_qty', name: 'mar_qty'},
+            { data: 'mar_amount', name: 'mar_amount'},
             { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
         ],
-        order: [1, 'asc'],
         drawCallback: function(){
         	$('[data-toggle="tooltip"]').tooltip();
         }
 	});
-
-
-    $('#table-budgetplanning tbody').on('click', 'td.details-control', function () {
-        var tr = $(this).closest('tr');
-        var row = tBudgetPlanning.row( tr );
-
-        if ( row.child.isShown() ) {
-            // This row is already open - close it
-            row.child.hide();
-            tr.removeClass('shown');
-        }
-        else {
-            // Open this row
-            row.child( format(row.data()) ).show();
-            tr.addClass('shown');
-        }
-    });
 
     
 
@@ -73,37 +75,41 @@ $(document).ready(function(){
 
     tTemporaryBudget = $('#table-temporary-budgetplanning').DataTable({
         ajax: SITE_URL + '/budgetplanning/get_data_temporary',
+        scrollX: true,
         columns: [
-            {
-                "className":      'details-control',
-                "orderable":      false,
-                "searchable":     true,
-                "data":           null,
-                "defaultContent": ''
-            },
             { data: 'parts.part_number', name: 'parts.part_number'},
             { data: 'customers.customer_code', name: 'customers.customer_code'},
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'market', name: 'market'},
+            { data: 'apr_qty', name: 'apr_qty'},
+            { data: 'apr_amount', name: 'apr_amount'},
+            { data: 'may_qty', name: 'may_qty'},
+            { data: 'may_amount', name: 'may_amount'},
+            { data: 'june_qty', name: 'june_qty'},
+            { data: 'june_amount', name: 'june_amount'},
+            { data: 'july_qty', name: 'july_qty'},
+            { data: 'july_amount', name: 'july_amount'},
+            { data: 'august_qty', name: 'august_qty'},
+            { data: 'august_amount', name: 'august_amount'},
+            { data: 'sep_qty', name: 'sep_qty'},
+            { data: 'sep_amount', name: 'sep_amount'},
+            { data: 'okt_qty', name: 'okt_qty'},
+            { data: 'okt_amount', name: 'okt_amount'},
+            { data: 'nov_qty', name: 'nov_qty'},
+            { data: 'nov_amount', name: 'nov_amount'},
+            { data: 'des_qty', name: 'des_qty'},
+            { data: 'des_amount', name: 'des_amount'},
+            { data: 'jan_qty', name: 'jan_qty'},
+            { data: 'jan_amount', name: 'jan_amount'},
+            { data: 'feb_qty', name: 'feb_qty'},
+            { data: 'feb_amount', name: 'feb_amount'},
+            { data: 'mar_qty', name: 'mar_qty'},
+            { data: 'mar_amount', name: 'mar_amount'},
             // { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
         ],
         order: [1, 'asc'],
         drawCallback: function(){
             $('[data-toggle="tooltip"]').tooltip();
-        }
-    });
-    $('#table-temporary-budgetplanning tbody').on('click', 'td.details-control', function () {
-        var tr = $(this).closest('tr');
-        var row = tTemporaryBudget.row( tr );
-
-        if ( row.child.isShown() ) {
-            // This row is already open - close it
-            row.child.hide();
-            tr.removeClass('shown');
-        }
-        else {
-            // Open this row
-            row.child( format(row.data()) ).show();
-            tr.addClass('shown');
         }
     });
 });

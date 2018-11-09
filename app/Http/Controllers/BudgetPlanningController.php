@@ -57,6 +57,7 @@ class BudgetPlanningController extends Controller
         $budgetplanning->part_id        = $request->part_id;
         $budgetplanning->customer_id    = $request->customer_id;
         $budgetplanning->market         = $request->market;
+        $budgetplanning->fiscal_year    = $request->fiscal_year;
         $budgetplanning->jan_qty        = $request->jan_qty;
         $budgetplanning->feb_qty        = $request->feb_qty;
         $budgetplanning->mar_qty        = $request->mar_qty;
@@ -104,6 +105,7 @@ class BudgetPlanningController extends Controller
                 $budgetplanning->part_id        = $temp->part_id;
                 $budgetplanning->customer_id    = $temp->customer_id;
                 $budgetplanning->market         = $temp->market;
+                $budgetplanning->fiscal_year    = $temp->fiscal_year;
                 $budgetplanning->jan_qty        = $temp->jan_qty;
                 $budgetplanning->feb_qty        = $temp->feb_qty;
                 $budgetplanning->mar_qty        = $temp->mar_qty;
@@ -129,13 +131,14 @@ class BudgetPlanningController extends Controller
                 $budgetplanning->nov_amount     = $temp->nov_amount;
                 $budgetplanning->des_amount     = $temp->des_amount;
                 $budgetplanning->save();
-                $res = [
+                 
+            }
+        }
+        $res = [
                     'title' => 'Sukses',
                     'type' => 'success',
                     'message' => 'Data berhasil di Di Simpan !'
-                ]; 
-            }
-        }
+                ];
         return redirect()
                 ->route('budgetplanning.index')
                 ->with($res);
@@ -196,6 +199,7 @@ class BudgetPlanningController extends Controller
             $budgetplanning->part_id        = $request->part_id;
             $budgetplanning->customer_id    = $request->customer_id;
             $budgetplanning->market         = $request->market;
+            $budgetplanning->fiscal_year    = $request->fiscal_year;
             $budgetplanning->jan_qty        = $request->jan_qty;
             $budgetplanning->feb_qty        = $request->feb_qty;
             $budgetplanning->mar_qty        = $request->mar_qty;
@@ -352,8 +356,9 @@ class BudgetPlanningController extends Controller
                     $budgetplanning->part_id         = !empty($part_id) ? $part_id->id : 0;
                     $budgetplanning->customer_id     = !empty($customer_id) ? $customer_id->id : 0;
                     $budgetplanning->part_number     = $data->part_number;
-                    $budgetplanning->supplier_code   = $data->supplier_code;
+                    $budgetplanning->customer_id     = $data->customer_code;
                     $budgetplanning->market          = $data->market;
+                    $budgetplanning->market          = $data->fiscal_year;
                     $budgetplanning->jan_qty         = $data->jan_qty;
                     $budgetplanning->feb_qty         = $data->feb_qty;
                     $budgetplanning->mar_qty         = $data->mar_qty;
@@ -388,14 +393,14 @@ class BudgetPlanningController extends Controller
                             'message'               => 'Data berhasil di Upload!'
                         ]; 
                 return redirect()
-                        ->route('budgetplanningbudgetplanning.temporary')
+                        ->route('budgetplanning.temporary')
                         ->with($res);
             } else {
 
                 Storage::delete('public/uploads/'.$name);
 
                 return redirect()
-                        ->route('budgetplanningbudgetplanning.temporary')
+                        ->route('budgetplanning.temporary')
                         ->with(
                             [
                                 'title' => 'Error',

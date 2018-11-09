@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Part;
 use App\System;
+use App\Exports\MasterPartExport;
 use Excel;
 use Storage;
 
@@ -284,5 +285,20 @@ class PartController extends Controller
                 }
         }
     }
+
+    public function export() 
+    {
+        $part = Part::all();
+
+        return Excel::create('master_part', function($excel) use ($masterprices){
+             $excel->sheet('mysheet', function($sheet) use ($masterprices){
+                 $sheet->fromArray($masterparts);
+             });
+
+        })->download('csv');
+
+    }
+
+
 }
     

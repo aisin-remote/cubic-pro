@@ -167,21 +167,21 @@ class BomController extends Controller
 
         DB::transaction(function() use ($request, $id, &$res){
             // Save data in Tabel Bom
-            $bom_semi                         = Bom::find($id);
-            $bom_semi->part_id                = $request->part_id;
-            $bom_semi->supplier_id            = $request->supplier_id;
-            $bom_semi->model                  = $request->model;
-            $bom_semi->save();
+            $bom                         = Bom::find($id);
+            $bom->part_id                = $request->part_id;
+            $bom->supplier_id            = $request->supplier_id;
+            $bom->model                  = $request->model;
+            $bom->save();
 
-            foreach (Cart::content() as $bom_semi_data) {
+            foreach (Cart::content() as $bom_data) {
 
-                $details              = new BomSemiData;
-                $details->part_id     = $bom_semi_data->id;
-                $details->supplier_id = $bom_semi_data->options->supplier_id;
-                $details->source      = $bom_semi_data->options->source;
-                $details->qty         = $bom_semi_data->qty;
+                $details              = new BomData;
+                $details->part_id     = $bom_data->id;
+                $details->supplier_id = $bom_data->options->supplier_id;
+                $details->source      = $bom_data->options->source;
+                $details->qty         = $bom_data->qty;
 
-                $bom_semi->details()->save($details);
+                $bom->details()->save($details);
             }
 
             $res = [

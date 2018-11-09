@@ -36,12 +36,12 @@
                 <table class="table m-0 table-colored table-inverse" id="table-temporary-masterprice">
                     <thead>
                         <tr>
-                            <!-- <th style="width: 50px"></th> -->
+                            
                             <th>Part Number</th>
                             <th>Supplier Code</th>
                             <th>Source</th>
                             <th>Price</th>
-                            <!-- <th style="width: 100px">Opsi</th> -->
+                            
                         </tr>
                     </thead>
                 </table>

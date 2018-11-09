@@ -51,7 +51,7 @@
                 <div class="col-md-6">
                  <div class="form-group">
                       <label class="control-label">Customer Code<span class="text-danger">*</span></label>
-                      <select name="supplier_id" class="select2" data-placeholder="Select Customer Code" required="required">
+                      <select name="customer_id" class="select2" data-placeholder="Select Customer Code" required="required">
                           <option></option>
                           @foreach ($customers as $customer)
                           <option value="{{ $customer->id }}">{{ $customer->customer_code }} - {{ $customer->customer_name }}</option>

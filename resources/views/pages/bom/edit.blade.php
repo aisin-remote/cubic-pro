@@ -29,8 +29,7 @@
         <form id="form-add-edit" action="{{ route('bom.update', $bom->id) }}" method="post">
             @csrf
             @method('PUT')
-            <div class="col-md-12">
-                <div class="card-box">
+            
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Part Number<span class="text-danger">*</span></label>

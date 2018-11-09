@@ -36,10 +36,34 @@
                 <table class="table m-0 table-colored table-inverse" id="table-temporary-budgetplanning">
                     <thead>
                         <tr>
-                            <th style="width: 50px"></th>
                             <th>Part Number</th>
                             <th>Customer Code</th>
+                            <th>Fiscal Year</th>
                             <th>Market</th>
+                            <th>April Qty</th>
+                            <th>April Amount</th>
+                            <th>May Qty</th>
+                            <th>May Amount</th>
+                            <th>June Qty</th>
+                            <th>June Amount</th>
+                            <th>July Qty</th>
+                            <th>July Amount</th>
+                            <th>Aug Qty</th>
+                            <th>Aug< Amount</th>
+                            <th>Sep Qty</th>
+                            <th>Sep Amount</th>
+                            <th>Oct Qty</th>
+                            <th>Oct Amount</th>
+                            <th>Nov Qty</th>
+                            <th>Nov Amount</th>
+                            <th>Dec Qty</th>
+                            <th>Dec Amount</th>
+                            <th>Jan Qty</th>
+                            <th>Jan Amount</th>
+                            <th>Feb Qty</th>
+                            <th>Feb Amount</th>
+                            <th>Mar Qty</th>
+                            <th>Mar Amount</th>
                         </tr>
                     </thead>
                 </table>

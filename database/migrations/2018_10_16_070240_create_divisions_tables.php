@@ -13,6 +13,7 @@ class CreateDivisionsTables extends Migration
      */
     public function up()
     {
+        Schema::drop('divisions');
         Schema::create('divisions', function(Blueprint $table)
         {
             $table->increments('id');

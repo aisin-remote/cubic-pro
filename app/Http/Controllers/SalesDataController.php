@@ -12,6 +12,7 @@ use App\Exports\SalesDataExport;
 use Excel;
 use DB;
 use Storage;
+use Carbon\Carbon;
 
 class SalesDataController extends Controller
 {
@@ -21,7 +22,7 @@ class SalesDataController extends Controller
 
             $SalesDatas = SalesData::all();
             return response()->json($SalesDatas);
-        }
+        }        
 
         return view('pages.sales_data.index');
     }
@@ -57,6 +58,7 @@ class SalesDataController extends Controller
         $salesdata->part_id        = $request->part_id;
         $salesdata->customer_id    = $request->customer_id;
         $salesdata->market         = $request->market;
+        $salesdata->fiscal_year    = $request->fiscal_year;
         $salesdata->jan_qty        = $request->jan_qty;
         $salesdata->feb_qty        = $request->feb_qty;
         $salesdata->mar_qty        = $request->mar_qty;
@@ -81,7 +83,7 @@ class SalesDataController extends Controller
         $salesdata->okt_amount     = $request->okt_amount;
         $salesdata->nov_amount     = $request->nov_amount;
         $salesdata->des_amount     = $request->des_amount;
-        $SalesData->save();
+        $salesdata->save();
 
         $res = [
                     'title'         => 'Sukses',
@@ -90,7 +92,7 @@ class SalesDataController extends Controller
                 ];
 
         return redirect()
-                    ->route('sales_data.index')
+                    ->route('salesdata.index')
                     ->with($res);
     }
 
@@ -104,6 +106,7 @@ class SalesDataController extends Controller
                 $salesdata->part_id        = $temp->part_id;
                 $salesdata->customer_id    = $temp->customer_id;
                 $salesdata->market         = $temp->market;
+                $salesdata->fiscal_year    = $temp->fiscal_year;
                 $salesdata->jan_qty        = $temp->jan_qty;
                 $salesdata->feb_qty        = $temp->feb_qty;
                 $salesdata->mar_qty        = $temp->mar_qty;
@@ -200,6 +203,7 @@ class SalesDataController extends Controller
             $salesdata->part_id        = $request->part_id;
             $salesdata->customer_id    = $request->customer_id;
             $salesdata->market         = $request->market;
+            $salesdata->fiscal_year    = $request->fiscal_year;
             $salesdata->jan_qty        = $request->jan_qty;
             $salesdata->feb_qty        = $request->feb_qty;
             $salesdata->mar_qty        = $request->mar_qty;
@@ -224,7 +228,7 @@ class SalesDataController extends Controller
             $salesdata->okt_amount     = $request->okt_amount;
             $salesdata->nov_amount     = $request->nov_amount;
             $salesdata->des_amount     = $request->des_amount;
-            $SalesData->save();;
+            $salesdata->save();;
         });
         $res = [
                     'title'      => 'Sukses',
@@ -360,6 +364,7 @@ class SalesDataController extends Controller
                     $salesdata->part_number     = $data->part_number;
                     $salesdata->customer_code   = $data->customer_code;
                     $salesdata->market          = $data->market;
+                    $salesdata->fiscal_year     = $data->fiscal_year;
                     $salesdata->jan_qty         = $data->jan_qty;
                     $salesdata->feb_qty         = $data->feb_qty;
                     $salesdata->mar_qty         = $data->mar_qty;

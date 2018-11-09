@@ -158,7 +158,7 @@
                                </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" id="#btn-details-save" class="btn btn-primary btn-bordered waves-effect waves-light">Simpan</button>
+                                <button type="button" id="btn-details-save" class="btn btn-primary btn-bordered waves-effect waves-light">Simpan</button>
                                 <button type="button" class="btn btn-default btn-bordered waves-effect waves-light" data-dismiss="modal">Batal</button>
                             </div>
                         </form>

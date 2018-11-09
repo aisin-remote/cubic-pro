@@ -35,15 +35,40 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12 table-responsive" >
             <div class="card-box">
-                <table class="table m-0 table-colored table-inverse" id="table-salesdata">
+                <table class="table m-0 table-colored table-inverse table-responsive" id="table-salesdata">
                     <thead>
                         <tr>
-                            <th style="width: 50px"></th>
+                            
                             <th>Part Number</th>
                             <th>Customer Code</th>
+                            <th>Fiscal Year</th>
                             <th>Market</th>
+                            <th>April Qty</th>
+                            <th>April Amount</th>
+                            <th>May Qty</th>
+                            <th>May Amount</th>
+                            <th>June Qty</th>
+                            <th>June Amount</th>
+                            <th>July Qty</th>
+                            <th>July Amount</th>
+                            <th>Aug Qty</th>
+                            <th>Aug< Amount</th>
+                            <th>Sep Qty</th>
+                            <th>Sep Amount</th>
+                            <th>Oct Qty</th>
+                            <th>Oct Amount</th>
+                            <th>Nov Qty</th>
+                            <th>Nov Amount</th>
+                            <th>Dec Qty</th>
+                            <th>Dec Amount</th>
+                            <th>Jan Qty</th>
+                            <th>Jan Amount</th>
+                            <th>feb Qty</th>
+                            <th>feb Amount</th>
+                            <th>mar Qty</th>
+                            <th>mar Amount</th>                 
                             <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>

@@ -6,7 +6,7 @@
 
 @section('content')
 
-@php($active = 'menu')
+@php($active = 'masterprice')
 
 <div class="container">
     <div class="row">
@@ -37,7 +37,7 @@
                                 <select name="part_id" class="select2" data-placeholder="Select Part Number" required="required" value="{{ $masterprice->parts->part_number}}">
                                     <option></option>
                                     @foreach ($parts as $part)
-                                    <option value="{{ $part->id }}">{{ $part->part_number }} - {{ $part->part_name }}</option>
+                                        <option value="{{ $part->id }}" {{ $part->id == $masterprice->part_id ? 'selected=selected' : '' }}>{{ $part->part_number }} - {{ $part->part_name }}</option>
                                     @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -57,7 +57,7 @@
                                 <select name="supplier_id" class="select2" data-placeholder="Select Part Number" required="required" value="{{ $masterprice->suppliers->supplier_code }}">
                                     <option></option>
                                     @foreach ($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier_code }} - {{ $supplier->supplier_name }}</option>
+                                    <option value="{{ $supplier->id }}" {{ $supplier->id == $masterprice->supplier_id ? 'selected=selected' : '' }}>{{ $supplier->supplier_code }} - {{ $supplier->supplier_name }}</option>
                                     @endforeach
                                 </select>
                                 <span class="help-block"></span>

@@ -24,797 +24,1099 @@
         </div>
     </div>
     <div class="row">
-        <form  method="post">
-            @csrf
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label class="control-label">Fiscal Year</label>
-                    <input type="text" name="fiscal_year" class="form-control datepicker" placeholder="Tahun" value="{{ Carbon\Carbon::now()->format('Y') }}">
+        <form action="{{ route('output_master.index') }}" method="get">
+            <div class="form-group">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <input name="fiscal_year" id="tanggal" class="form-control datepicker-year" required="required" placeholder="yyyy" aria-invalid="false" value="{{ !empty(request()->fiscal_year) ? request()->fiscal_year : \Carbon\Carbon::now()->format('Y') }}">
+                    </div>
+                </div>
+
+                <div class="col-md-1">
+                    <button class="btn btn-primary btn-bordered waves-effect waves-light" type="submit">Filter</button>
+                </div>
+
+                <div class="col-md-1">
+                        <a class="btn btn-primary btn-bordered waves-effect waves-light" href="{{ route('output_master.download') }}">Unduh PDF</a>
                 </div>
             </div>
-
-
-            <div class="col-md-4 m-t-30">
-                <button type="submit" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-search"></i> Cari</button>
-            </div>
         </form>
-    <!-- end row -->
-
-
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">Sales Amount</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>{{ App\SalesData::sumSales('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSales('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal1( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <td>{{ App\SalesData::sumSalesTotal('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::sumSalesTotal2( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-
-     <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">Product</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>1,200,000</td>
-                            <td>1,500,000</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <th>1,000,000</th>
-                            <th>4,000,000</th>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">Product</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>1,200,000</td>
-                            <td>1,500,000</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <th>1,000,000</th>
-                            <th>4,000,000</th>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">Total Material</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>1,200,000</td>
-                            <td>1,500,000</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <th>1,000,000</th>
-                            <th>4,000,000</th>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">Plastic Material</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterial('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal1( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumPlasticMaterialTotal2( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">Ingot Material</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterial('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal1( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumIngotMaterialTotal2( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">CKD</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>{{ App\SalesData::SumCKD('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKD('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal1( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <td>{{ App\SalesData::SumCKDTotal('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDTotal2( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
     </div>
 
     <div class="row">
         <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">CKD Import Duty</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDuty('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal1( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumCKDImportDutyTotal2( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
+            <div class="col-md-12">
+                <ul class="nav nav-tabs tabs-bordered nav-justified">
+                    <li class="active">
+                        <a href="#home-b2" data-toggle="tab" aria-expanded="true">
+                            <span class="visible-xs"><i class="fa fa-home"></i></span>
+                            <span class="hidden-xs">Output Sales Amount</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="#profile-b2" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-user"></i></span>
+                            <span class="hidden-xs">Material (IDR)</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="#messages-b2" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-envelope-o"></i></span>
+                            <span class="hidden-xs">Material (%Sales)</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="#settings-b2" data-toggle="tab" aria-expanded="false">
+                            <span class="visible-xs"><i class="fa fa-cog"></i></span>
+                            <span class="hidden-xs">Group</span>
+                        </a>
+                    </li>
+                </ul>
 
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">Import Part</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>{{ App\SalesData::SumImportPart('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPart('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal1( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <td>{{ App\SalesData::SumImportPartTotal('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportPartTotal2( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">Import Duty</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDuty('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal1( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <td>{{ App\SalesData::SumImportDutyTotal('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumImportDutyTotal2( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">Inklaring CKD</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkd('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal1( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringCkdTotal2( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">Inklaring Import Part</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPart('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal1( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumInklaringImportPartTotal2( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th><span class="text-uppercase">local Part</span></th>
-                            <th><span class="text-uppercase">Product Code</span></th>
-                            <th>April</th>
-                            <th>May</th>
-                            <th>June</th>
-                            <th>July</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                            <th>Jan</th>
-                            <th>feb</th>
-                            <th>mar</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (App\System::configMultiply('product_code') as $code)
-                        <tr>
-                            <td>{{ $code['text'] }}</td>
-                            <td>{{ $code['id'] }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPart('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal1( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-right">Total</th>
-                            <td>{{ App\SalesData::SumLocalPartTotal('apr', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('may', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('june', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('july', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('august', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('sep', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('okt', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('nov', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('dec', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('jan', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('feb', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal('march', Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                            <td>{{ App\SalesData::SumLocalPartTotal2( Carbon\Carbon::now()->format('Y'), $code['id']) }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-        </div>
-    </div>
-    
+                <div class="tab-content">
+                    <div class="tab-pane active" id="home-b2">
+                        <div class="col-md-12 table-responsive">
+                                <table class="table  table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th><span class="text-uppercase">Sales Amount</span></th>
+                                            <th><span class="text-uppercase">Product Code</span></th>
+                                            <th>April</th>
+                                            <th>May</th>
+                                            <th>June</th>
+                                            <th>July</th>
+                                            <th>Aug</th>
+                                            <th>Sep</th>
+                                            <th>Oct</th>
+                                            <th>Nov</th>
+                                            <th>Dec</th>
+                                            <th>Jan</th>
+                                            <th>Feb</th>
+                                            <th>Mar</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach (App\System::configMultiply('product_code') as $code)
+
+                                        @php($sales_amount[$code['id']]['apr'] = App\SalesData::sumSales('apr', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['may'] = App\SalesData::sumSales('may', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['june'] = App\SalesData::sumSales('june', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['july'] = App\SalesData::sumSales('july', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['august'] = App\SalesData::sumSales('august', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['sep'] = App\SalesData::sumSales('sep', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['okt'] = App\SalesData::sumSales('okt', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['nov'] = App\SalesData::sumSales('nov', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['dec'] = App\SalesData::sumSales('dec', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['jan'] = App\SalesData::sumSales('jan', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['feb'] = App\SalesData::sumSales('feb', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['march'] = App\SalesData::sumSales('march', $fiscal_year, $code['id']))
+                                        @php($sales_amount[$code['id']]['total'] = App\SalesData::sumSalesTotal1( $fiscal_year, $code['id']))
 
 
- 
+                                        <tr>
+                                            <td>{{ $code['text'] }}</td>
+                                            <td>{{ $code['id'] }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('apr', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('may', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('june', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('july', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('august',$fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('sep', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('okt', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('nov', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('dec', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('jan', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('feb', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSales('march', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal1( $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            @php($sales_total[$code['id']]['apr'] = App\SalesData::sumSalesTotal('apr', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['may'] = App\SalesData::sumSalesTotal('may', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['june'] = App\SalesData::sumSalesTotal('june', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['july'] = App\SalesData::sumSalesTotal('july', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['august'] = App\SalesData::sumSalesTotal('august', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['sep'] = App\SalesData::sumSalesTotal('sep', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['okt'] = App\SalesData::sumSalesTotal('okt', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['nov'] = App\SalesData::sumSalesTotal('nov', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['dec'] = App\SalesData::sumSalesTotal('dec', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['jan'] = App\SalesData::sumSalesTotal('jan', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['feb'] = App\SalesData::sumSalesTotal('feb', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['march'] = App\SalesData::sumSalesTotal('march', $fiscal_year, $code['id']))
+                                            @php($sales_total[$code['id']]['total'] = App\SalesData::sumSalesTotal2( $fiscal_year, $code['id']))
+                                            <th colspan="2" class="text-right">Total</th>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('apr', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('may', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('june', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('july', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('august', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('sep', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('okt', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('nov', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('dec', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('jan', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('feb', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal('march', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumSalesTotal2( $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="profile-b2">
+                        <div class="col-md-12 table-responsive">
+                                <table class="table table-bordered" style="width: 1027px;">
+                                    <thead>
+                                        <tr>
+                                            <th><span class="text-uppercase">Total Material</span></th>
+                                            <th><span class="text-uppercase">Product Code</span></th>
+                                            <th>April</th>
+                                            <th>May</th>
+                                            <th>June</th>
+                                            <th>July</th>
+                                            <th>Aug</th>
+                                            <th>Sep</th>
+                                            <th>Oct</th>
+                                            <th>Nov</th>
+                                            <th>Dec</th>
+                                            <th>Jan</th>
+                                            <th>Feb</th>
+                                            <th>Mar</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (App\System::configMultiply('product_code') as $code)
+
+                                        @php ($total[$code['id']]['apr'] = App\SalesData::sumTotalMaterial('apr', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['may'] = App\SalesData::sumTotalMaterial('may', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['june'] = App\SalesData::sumTotalMaterial('june', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['july'] = App\SalesData::sumTotalMaterial('july', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['august'] = App\SalesData::sumTotalMaterial('august', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['sep'] = App\SalesData::sumTotalMaterial('sep', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['okt'] = App\SalesData::sumTotalMaterial('okt', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['nov'] = App\SalesData::sumTotalMaterial('nov', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['dec'] = App\SalesData::sumTotalMaterial('dec', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['jan'] = App\SalesData::sumTotalMaterial('jan', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['feb'] = App\SalesData::sumTotalMaterial('feb', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['march'] = App\SalesData::sumTotalMaterial('march', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['total'] = App\SalesData::SumTotalMaterial1( $fiscal_year, $code['id']))
+
+                                        <tr>
+                                            <td>{{ $code['text'] }}</td>
+                                            <td>{{ $code['id'] }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('apr', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('may', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('june', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('july', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('august', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('sep', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('okt', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('nov', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('dec', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('jan', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('feb', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::sumTotalMaterial('march', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                            <td>{{ number_format(App\SalesData::SumTotalMaterial1( $fiscal_year, $code['id']),0, ',' , '.') }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="2" class="text-right">Total</th>
+                                            <td>{{ number_format(collect($total)->sum('apr'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('may'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('june'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('july'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('august'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('sep'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('okt'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('nov'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('dec'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('jan'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('feb'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('march'), 0,',','.') }}</td>
+                                            <td>{{ number_format(collect($total)->sum('total'), 0,',','.') }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="messages-b2">
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><span class="text-uppercase">Product</span></th>
+                                        <th><span class="text-uppercase">Product Code</span></th>
+                                        <th>April</th>
+                                        <th>May</th>
+                                        <th>June</th>
+                                        <th>July</th>
+                                        <th>Aug</th>
+                                        <th>Sep</th>
+                                        <th>Oct</th>
+                                        <th>Nov</th>
+                                        <th>Dec</th>
+                                        <th>Jan</th>
+                                        <th>Feb</th>
+                                        <th>Mar</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (App\System::configMultiply('product_code') as $code)
+                                    <tr>
+                                        <td>{{ $code['text'] }}</td>
+                                        <td>{{ $code['id'] }}</td>
+                                        <td>{{ number_format($total[$code['id']]['apr'] / max($sales_amount[$code['id']]['apr'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['may'] / max($sales_amount[$code['id']]['may'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['june'] / max($sales_amount[$code['id']]['june'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['july'] / max($sales_amount[$code['id']]['july'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['august'] / max($sales_amount[$code['id']]['august'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['sep'] / max($sales_amount[$code['id']]['sep'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['okt'] / max($sales_amount[$code['id']]['okt'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['nov'] / max($sales_amount[$code['id']]['nov'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['dec'] / max($sales_amount[$code['id']]['dec'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['jan'] / max($sales_amount[$code['id']]['jan'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['feb'] / max($sales_amount[$code['id']]['feb'], 1),2) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['march'] / max($sales_amount[$code['id']]['march'], 1),2) }}%</td>                    
+                                        <td>{{ number_format($total[$code['id']]['total'] / max($sales_amount[$code['id']]['total'], 1),2) }}%</td>                    
+                                        
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">Total</th>
+                                        <th>{{ number_format(collect($total)->sum('apr') / max($sales_total[$code['id']]['apr'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('may') / max($sales_total[$code['id']]['may'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('june') / max($sales_total[$code['id']]['june'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('july') / max($sales_total[$code['id']]['july'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('august') / max($sales_total[$code['id']]['august'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('sep') / max($sales_total[$code['id']]['sep'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('okt') / max($sales_total[$code['id']]['okt'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('nov') / max($sales_total[$code['id']]['nov'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('dec') / max($sales_total[$code['id']]['dec'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('jan') / max($sales_total[$code['id']]['jan'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('feb') / max($sales_total[$code['id']]['feb'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('march') / max($sales_total[$code['id']]['march'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('total') / max($sales_total[$code['id']]['total'],1),2) }}%</th>
+                                        
+                                        
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="settings-b2">
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><span class="text-uppercase">Plastic Material</span></th>
+                                        <th><span class="text-uppercase">Product Code</span></th>
+                                        <th>April</th>
+                                        <th>May</th>
+                                        <th>June</th>
+                                        <th>July</th>
+                                        <th>Aug</th>
+                                        <th>Sep</th>
+                                        <th>Oct</th>
+                                        <th>Nov</th>
+                                        <th>Dec</th>
+                                        <th>Jan</th>
+                                        <th>feb</th>
+                                        <th>mar</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (App\System::configMultiply('product_code') as $code)
+                                    <tr>
+                                         @php ($total[$code['id']]['apr'] = App\SalesData::SumPlasticMaterial('apr', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['may'] = App\SalesData::SumPlasticMaterial('may', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['june'] = App\SalesData::SumPlasticMaterial('june', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['july'] = App\SalesData::SumPlasticMaterial('july', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['august'] = App\SalesData::SumPlasticMaterial('august', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['sep'] = App\SalesData::SumPlasticMaterial('sep', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['okt'] = App\SalesData::SumPlasticMaterial('okt', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['nov'] = App\SalesData::SumPlasticMaterial('nov', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['dec'] = App\SalesData::SumPlasticMaterial('dec', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['jan'] = App\SalesData::SumPlasticMaterial('jan', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['feb'] = App\SalesData::SumPlasticMaterial('feb', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['march'] = App\SalesData::SumPlasticMaterial('march', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['total'] = App\SalesData::SumPlasticMaterialTotal1( $fiscal_year, $code['id']))
+                                        <td>{{ $code['text'] }}</td>
+                                        <td>{{ $code['id'] }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('apr', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('may', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('june', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('july', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('august', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('sep', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('okt', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('nov', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('dec', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('jan', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('feb', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterial('march', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumPlasticMaterialTotal1( $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">Total</th>
+                                        <td>{{ number_format(collect($total)->sum('apr'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('may'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('june'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('july'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('august'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('sep'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('okt'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('nov'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('dec'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('jan'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('feb'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('march'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('total'), 0,',','.') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><span class="text-uppercase">Ingot Material</span></th>
+                                        <th><span class="text-uppercase">Product Code</span></th>
+                                        <th>April</th>
+                                        <th>May</th>
+                                        <th>June</th>
+                                        <th>July</th>
+                                        <th>Aug</th>
+                                        <th>Sep</th>
+                                        <th>Oct</th>
+                                        <th>Nov</th>
+                                        <th>Dec</th>
+                                        <th>Jan</th>
+                                        <th>feb</th>
+                                        <th>mar</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (App\System::configMultiply('product_code') as $code)
+                                    <tr>
+                                        @php ($total[$code['id']]['apr'] = App\SalesData::SumIngotMaterial('apr', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['may'] = App\SalesData::SumIngotMaterial('may', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['june'] = App\SalesData::SumIngotMaterial('june', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['july'] = App\SalesData::SumIngotMaterial('july', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['august'] = App\SalesData::SumIngotMaterial('august', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['sep'] = App\SalesData::SumIngotMaterial('sep', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['okt'] = App\SalesData::SumIngotMaterial('okt', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['nov'] = App\SalesData::SumIngotMaterial('nov', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['dec'] = App\SalesData::SumIngotMaterial('dec', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['jan'] = App\SalesData::SumIngotMaterial('jan', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['feb'] = App\SalesData::SumIngotMaterial('feb', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['march'] = App\SalesData::SumIngotMaterial('march', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['total'] = App\SalesData::SumIngotMaterialTotal1( $fiscal_year, $code['id']))
+                                        <td>{{ $code['text'] }}</td>
+                                        <td>{{ $code['id'] }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('apr', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('may', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('june', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('july', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('august', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('sep', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('okt', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('nov', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('dec', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('jan', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('feb', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterial('march', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumIngotMaterialTotal1( $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">Total</th>
+                                        <td>{{ number_format(collect($total)->sum('apr'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('may'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('june'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('july'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('august'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('sep'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('okt'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('nov'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('dec'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('jan'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('feb'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('march'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('total'), 0,',','.') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><span class="text-uppercase">CKD</span></th>
+                                        <th><span class="text-uppercase">Product Code</span></th>
+                                        <th>April</th>
+                                        <th>May</th>
+                                        <th>June</th>
+                                        <th>July</th>
+                                        <th>Aug</th>
+                                        <th>Sep</th>
+                                        <th>Oct</th>
+                                        <th>Nov</th>
+                                        <th>Dec</th>
+                                        <th>Jan</th>
+                                        <th>feb</th>
+                                        <th>mar</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (App\System::configMultiply('product_code') as $code)
+                                    <tr>
+                                        @php ($total[$code['id']]['apr'] = App\SalesData::SumCKD('apr', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['may'] = App\SalesData::SumCKD('may', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['june'] = App\SalesData::SumCKD('june', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['july'] = App\SalesData::SumCKD('july', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['august'] = App\SalesData::SumCKD('august', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['sep'] = App\SalesData::SumCKD('sep', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['okt'] = App\SalesData::SumCKD('okt', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['nov'] = App\SalesData::SumCKD('nov', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['dec'] = App\SalesData::SumCKD('dec', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['jan'] = App\SalesData::SumCKD('jan', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['feb'] = App\SalesData::SumCKD('feb', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['march'] = App\SalesData::SumCKD('march', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['total'] = App\SalesData::SumCKDTotal1( $fiscal_year, $code['id']))
+                                        <td>{{ $code['text'] }}</td>
+                                        <td>{{ $code['id'] }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('apr', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('may', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('june', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('july', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('august', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('sep', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('okt', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('nov', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('dec', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('jan', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('feb', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKD('march', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDTotal1( $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">Total</th>
+                                        <td>{{ number_format(collect($total)->sum('apr'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('may'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('june'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('july'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('august'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('sep'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('okt'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('nov'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('dec'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('jan'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('feb'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('march'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('total'), 0,',','.') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><span class="text-uppercase">CKD Import Duty</span></th>
+                                        <th><span class="text-uppercase">Product Code</span></th>
+                                        <th>April</th>
+                                        <th>May</th>
+                                        <th>June</th>
+                                        <th>July</th>
+                                        <th>Aug</th>
+                                        <th>Sep</th>
+                                        <th>Oct</th>
+                                        <th>Nov</th>
+                                        <th>Dec</th>
+                                        <th>Jan</th>
+                                        <th>feb</th>
+                                        <th>mar</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (App\System::configMultiply('product_code') as $code)
+                                    <tr>
+                                        @php ($total[$code['id']]['apr'] = App\SalesData::SumCKDImportDuty('apr', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['may'] = App\SalesData::SumCKDImportDuty('may', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['june'] = App\SalesData::SumCKDImportDuty('june', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['july'] = App\SalesData::SumCKDImportDuty('july', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['august'] = App\SalesData::SumCKDImportDuty('august', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['sep'] = App\SalesData::SumCKDImportDuty('sep', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['okt'] = App\SalesData::SumCKDImportDuty('okt', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['nov'] = App\SalesData::SumCKDImportDuty('nov', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['dec'] = App\SalesData::SumCKDImportDuty('dec', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['jan'] = App\SalesData::SumCKDImportDuty('jan', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['feb'] = App\SalesData::SumCKDImportDuty('feb', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['march'] = App\SalesData::SumCKDImportDuty('march', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['total'] = App\SalesData::SumCKDImportDutyTotal1( $fiscal_year, $code['id']))
+                                        <td>{{ $code['text'] }}</td>
+                                        <td>{{ $code['id'] }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('apr', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('may', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('june', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('july', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('august', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('sep', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('okt', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('nov', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('dec', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('jan', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('feb', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDuty('march', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumCKDImportDutyTotal1( $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">Total</th>
+                                        <td>{{ number_format(collect($total)->sum('apr'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('may'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('june'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('july'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('august'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('sep'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('okt'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('nov'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('dec'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('jan'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('feb'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('march'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('total'), 0,',','.') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><span class="text-uppercase">Import Part</span></th>
+                                        <th><span class="text-uppercase">Product Code</span></th>
+                                        <th>April</th>
+                                        <th>May</th>
+                                        <th>June</th>
+                                        <th>July</th>
+                                        <th>Aug</th>
+                                        <th>Sep</th>
+                                        <th>Oct</th>
+                                        <th>Nov</th>
+                                        <th>Dec</th>
+                                        <th>Jan</th>
+                                        <th>feb</th>
+                                        <th>mar</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (App\System::configMultiply('product_code') as $code)
+                                    <tr>
+                                        @php ($total[$code['id']]['apr'] = App\SalesData::SumImportPart('apr', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['may'] = App\SalesData::SumImportPart('may', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['june'] = App\SalesData::SumImportPart('june', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['july'] = App\SalesData::SumImportPart('july', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['august'] = App\SalesData::SumImportPart('august', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['sep'] = App\SalesData::SumImportPart('sep', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['okt'] = App\SalesData::SumImportPart('okt', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['nov'] = App\SalesData::SumImportPart('nov', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['dec'] = App\SalesData::SumImportPart('dec', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['jan'] = App\SalesData::SumImportPart('jan', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['feb'] = App\SalesData::SumImportPart('feb', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['march'] = App\SalesData::SumImportPart('march', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['total'] = App\SalesData::SumImportPartTotal1( $fiscal_year, $code['id']))
+                                        <td>{{ $code['text'] }}</td>
+                                        <td>{{ $code['id'] }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('apr', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('may', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('june', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('july', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('august', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('sep', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('okt', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('nov', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('dec', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('jan', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('feb', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPart('march', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportPartTotal1( $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">Total</th>
+                                        <td>{{ number_format(collect($total)->sum('apr'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('may'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('june'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('july'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('august'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('sep'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('okt'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('nov'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('dec'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('jan'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('feb'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('march'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('total'), 0,',','.') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><span class="text-uppercase">Import Duty</span></th>
+                                        <th><span class="text-uppercase">Product Code</span></th>
+                                        <th>April</th>
+                                        <th>May</th>
+                                        <th>June</th>
+                                        <th>July</th>
+                                        <th>Aug</th>
+                                        <th>Sep</th>
+                                        <th>Oct</th>
+                                        <th>Nov</th>
+                                        <th>Dec</th>
+                                        <th>Jan</th>
+                                        <th>feb</th>
+                                        <th>mar</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (App\System::configMultiply('product_code') as $code)
+                                    <tr>
+                                        @php ($total[$code['id']]['apr'] = App\SalesData::SumImportDuty('apr', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['may'] = App\SalesData::SumImportDuty('may', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['june'] = App\SalesData::SumImportDuty('june', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['july'] = App\SalesData::SumImportDuty('july', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['august'] = App\SalesData::SumImportDuty('august', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['sep'] = App\SalesData::SumImportDuty('sep', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['okt'] = App\SalesData::SumImportDuty('okt', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['nov'] = App\SalesData::SumImportDuty('nov', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['dec'] = App\SalesData::SumImportDuty('dec', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['jan'] = App\SalesData::SumImportDuty('jan', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['feb'] = App\SalesData::SumImportDuty('feb', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['march'] = App\SalesData::SumImportDuty('march', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['total'] = App\SalesData::SumImportDutyTotal1( $fiscal_year, $code['id']))
+                                        <td>{{ $code['text'] }}</td>
+                                        <td>{{ $code['id'] }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('apr', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('may', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('june', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('july', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('august', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('sep', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('okt', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('nov', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('dec', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('jan', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('feb', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDuty('march', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumImportDutyTotal1( $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">Total</th>
+                                        <td>{{ number_format(collect($total)->sum('apr'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('may'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('june'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('july'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('august'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('sep'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('okt'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('nov'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('dec'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('jan'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('feb'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('march'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('total'), 0,',','.') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><span class="text-uppercase">Inklaring CKD</span></th>
+                                        <th><span class="text-uppercase">Product Code</span></th>
+                                        <th>April</th>
+                                        <th>May</th>
+                                        <th>June</th>
+                                        <th>July</th>
+                                        <th>Aug</th>
+                                        <th>Sep</th>
+                                        <th>Oct</th>
+                                        <th>Nov</th>
+                                        <th>Dec</th>
+                                        <th>Jan</th>
+                                        <th>feb</th>
+                                        <th>mar</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (App\System::configMultiply('product_code') as $code)
+                                    <tr>
+                                        @php ($total[$code['id']]['apr'] = App\SalesData::SumInklaringCkd('apr', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['may'] = App\SalesData::SumInklaringCkd('may', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['june'] = App\SalesData::SumInklaringCkd('june', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['july'] = App\SalesData::SumInklaringCkd('july', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['august'] = App\SalesData::SumInklaringCkd('august', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['sep'] = App\SalesData::SumInklaringCkd('sep', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['okt'] = App\SalesData::SumInklaringCkd('okt', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['nov'] = App\SalesData::SumInklaringCkd('nov', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['dec'] = App\SalesData::SumInklaringCkd('dec', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['jan'] = App\SalesData::SumInklaringCkd('jan', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['feb'] = App\SalesData::SumInklaringCkd('feb', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['march'] = App\SalesData::SumInklaringCkd('march', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['total'] = App\SalesData::SumInklaringCkdTotal1( $fiscal_year, $code['id']))
+                                        <td>{{ $code['text'] }}</td>
+                                        <td>{{ $code['id'] }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('apr', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('may', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('june', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('july', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('august', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('sep', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('okt', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('nov', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('dec', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('jan', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('feb', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkd('march', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringCkdTotal1( $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">Total</th>
+                                        <td>{{ number_format(collect($total)->sum('apr'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('may'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('june'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('july'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('august'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('sep'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('okt'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('nov'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('dec'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('jan'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('feb'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('march'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('total'), 0,',','.') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><span class="text-uppercase">Inklaring Import Part</span></th>
+                                        <th><span class="text-uppercase">Product Code</span></th>
+                                        <th>April</th>
+                                        <th>May</th>
+                                        <th>June</th>
+                                        <th>July</th>
+                                        <th>Aug</th>
+                                        <th>Sep</th>
+                                        <th>Oct</th>
+                                        <th>Nov</th>
+                                        <th>Dec</th>
+                                        <th>Jan</th>
+                                        <th>feb</th>
+                                        <th>mar</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (App\System::configMultiply('product_code') as $code)
+                                    <tr>
+                                        @php ($total[$code['id']]['apr'] = App\SalesData::SumInklaringImportPart('apr', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['may'] = App\SalesData::SumInklaringImportPart('may', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['june'] = App\SalesData::SumInklaringImportPart('june', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['july'] = App\SalesData::SumInklaringImportPart('july', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['august'] = App\SalesData::SumInklaringImportPart('august', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['sep'] = App\SalesData::SumInklaringImportPart('sep', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['okt'] = App\SalesData::SumInklaringImportPart('okt', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['nov'] = App\SalesData::SumInklaringImportPart('nov', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['dec'] = App\SalesData::SumInklaringImportPart('dec', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['jan'] = App\SalesData::SumInklaringImportPart('jan', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['feb'] = App\SalesData::SumInklaringImportPart('feb', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['march'] = App\SalesData::SumInklaringImportPart('march', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['total'] = App\SalesData::SumInklaringImportPartTotal1( $fiscal_year, $code['id']))
+                                        <td>{{ $code['text'] }}</td>
+                                        <td>{{ $code['id'] }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('apr', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('may', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('june', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('july', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('august', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('sep', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('okt', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('nov', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('dec', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('jan', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('feb', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPart('march', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumInklaringImportPartTotal1( $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">Total</th>
+                                        <td>{{ number_format(collect($total)->sum('apr'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('may'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('june'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('july'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('august'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('sep'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('okt'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('nov'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('dec'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('jan'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('feb'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('march'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('total'), 0,',','.') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><span class="text-uppercase">local Part</span></th>
+                                        <th><span class="text-uppercase">Product Code</span></th>
+                                        <th>April</th>
+                                        <th>May</th>
+                                        <th>June</th>
+                                        <th>July</th>
+                                        <th>Aug</th>
+                                        <th>Sep</th>
+                                        <th>Oct</th>
+                                        <th>Nov</th>
+                                        <th>Dec</th>
+                                        <th>Jan</th>
+                                        <th>feb</th>
+                                        <th>mar</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (App\System::configMultiply('product_code') as $code)
+                                    <tr>
+                                        @php ($total[$code['id']]['apr'] = App\SalesData::SumLocalPart('apr', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['may'] = App\SalesData::SumLocalPart('may', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['june'] = App\SalesData::SumLocalPart('june', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['july'] = App\SalesData::SumLocalPart('july', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['august'] = App\SalesData::SumLocalPart('august', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['sep'] = App\SalesData::SumLocalPart('sep', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['okt'] = App\SalesData::SumLocalPart('okt', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['nov'] = App\SalesData::SumLocalPart('nov', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['dec'] = App\SalesData::SumLocalPart('dec', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['jan'] = App\SalesData::SumLocalPart('jan', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['feb'] = App\SalesData::SumLocalPart('feb', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['march'] = App\SalesData::SumLocalPart('march', $fiscal_year, $code['id']))
+
+                                        @php ($total[$code['id']]['total'] = App\SalesData::SumLocalPartTotal1( $fiscal_year, $code['id']))
+                                        <td>{{ $code['text'] }}</td>
+                                        <td>{{ $code['id'] }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('apr', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('may', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('june', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('july', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('august', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('sep', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('okt', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('nov', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('dec', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('jan', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('feb', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPart('march', $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                        <td>{{ number_format(App\SalesData::SumLocalPartTotal1( $fiscal_year, $code['id']), 0,',','.') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">Total</th>
+                                        <td>{{ number_format(collect($total)->sum('apr'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('may'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('june'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('july'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('august'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('sep'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('okt'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('nov'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('dec'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('jan'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('feb'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('march'), 0,',','.') }}</td>
+                                        <td>{{ number_format(collect($total)->sum('total'), 0,',','.') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+        </div>  
+    </div>
+
 
 @endsection
 
