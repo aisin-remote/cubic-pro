@@ -329,9 +329,12 @@ class SalesDataController extends Controller
     
     public function export() 
     {
-        $SalesDatas = SalesData::all();
+        $SalesDatas = SalesData::select('parts.part_number as part_number', 'parts.part_name as part_name','customers.customer_code','customers.customer_name','apr_qty','apr_amount','may_qty','may_amount','june_qty','june_amount','july_qty','july_amount','august_qty','august_amount','sep_qty','sep_amount','okt_qty','okt_amount','nov_qty','nov_amount','des_qty','des_amount', 'jan_qty','jan_amount','feb_qty','feb_amount','mar_qty','mar_amount')
+                    ->join('parts', 'sales_datas.part_id', '=', 'parts.id')
+                    ->join('customers', 'sales_datas.customer_id', '=', 'customers.id')
+                    ->get();
 
-        return Excel::create('Data_Sales', function($excel) use ($SalesDatas){
+        return Excel::create('Data Sales', function($excel) use ($SalesDatas){
              $excel->sheet('mysheet', function($sheet) use ($SalesDatas){
                  $sheet->fromArray($SalesDatas);
              });
@@ -418,5 +421,71 @@ class SalesDataController extends Controller
             
         }
                                
+    }
+    public function templateSalesData() 
+    {
+       return Excel::create('Format Upload Sales Data', function($excel){
+             $excel->sheet('mysheet', function($sheet){
+                $sheet->cell('A1', function($cell) {$cell->setValue('fiscal_year');});
+                $sheet->cell('B1', function($cell) {$cell->setValue('part_number');});
+                $sheet->cell('C1', function($cell) {$cell->setValue('customer_code');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('market');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('apr_qty');});
+                $sheet->cell('F1', function($cell) {$cell->setValue('apr_amount');});
+                $sheet->cell('G1', function($cell) {$cell->setValue('may_qty');});
+                $sheet->cell('H1', function($cell) {$cell->setValue('may_amount');});
+                $sheet->cell('I1', function($cell) {$cell->setValue('june_qty');});
+                $sheet->cell('J1', function($cell) {$cell->setValue('june_amount');});
+                $sheet->cell('K1', function($cell) {$cell->setValue('july_qty');});
+                $sheet->cell('L1', function($cell) {$cell->setValue('july_amount');});
+                $sheet->cell('M1', function($cell) {$cell->setValue('august_qty');});
+                $sheet->cell('N1', function($cell) {$cell->setValue('august_amount');});
+                $sheet->cell('O1', function($cell) {$cell->setValue('sep_qty');});
+                $sheet->cell('P1', function($cell) {$cell->setValue('sep_amount');});
+                $sheet->cell('Q1', function($cell) {$cell->setValue('okt_qty');});
+                $sheet->cell('R1', function($cell) {$cell->setValue('okt_amount');});
+                $sheet->cell('S1', function($cell) {$cell->setValue('nov_qty');});
+                $sheet->cell('T1', function($cell) {$cell->setValue('nov_amount');});
+                $sheet->cell('U1', function($cell) {$cell->setValue('des_qty');});
+                $sheet->cell('V1', function($cell) {$cell->setValue('des_amount');});
+                $sheet->cell('W1', function($cell) {$cell->setValue('jan_qty');});
+                $sheet->cell('X1', function($cell) {$cell->setValue('jan_amount');});
+                $sheet->cell('Y1', function($cell) {$cell->setValue('feb_qty');});
+                $sheet->cell('Z1', function($cell) {$cell->setValue('feb_amount');});
+                $sheet->cell('AA1', function($cell) {$cell->setValue('mar_qty');});
+                $sheet->cell('AB1', function($cell) {$cell->setValue('mar_amount');});
+
+                $sheet->cell('A2', function($cell) {$cell->setValue('2018');});
+                $sheet->cell('B2', function($cell) {$cell->setValue('423176-10200');});
+                $sheet->cell('C2', function($cell) {$cell->setValue('CS01');});
+                $sheet->cell('D2', function($cell) {$cell->setValue('Local');});
+                $sheet->cell('E2', function($cell) {$cell->setValue('12');});
+                $sheet->cell('F2', function($cell) {$cell->setValue('12.300');});
+                $sheet->cell('G2', function($cell) {$cell->setValue('14');});
+                $sheet->cell('H2', function($cell) {$cell->setValue('40.000');});
+                $sheet->cell('I2', function($cell) {$cell->setValue('15');});
+                $sheet->cell('J2', function($cell) {$cell->setValue('70.000');});
+                $sheet->cell('K2', function($cell) {$cell->setValue('18');});
+                $sheet->cell('L2', function($cell) {$cell->setValue('70.000');});
+                $sheet->cell('M2', function($cell) {$cell->setValue('14');});
+                $sheet->cell('N2', function($cell) {$cell->setValue('40.000');});
+                $sheet->cell('O2', function($cell) {$cell->setValue('14');});
+                $sheet->cell('P2', function($cell) {$cell->setValue('40.000');});
+                $sheet->cell('Q2', function($cell) {$cell->setValue('14');});
+                $sheet->cell('R2', function($cell) {$cell->setValue('40.000');});
+                $sheet->cell('S2', function($cell) {$cell->setValue('14');});
+                $sheet->cell('T2', function($cell) {$cell->setValue('40.000');});
+                $sheet->cell('U2', function($cell) {$cell->setValue('14');});
+                $sheet->cell('V2', function($cell) {$cell->setValue('40.000');});
+                $sheet->cell('W2', function($cell) {$cell->setValue('14');});
+                $sheet->cell('X2', function($cell) {$cell->setValue('40.000');});
+                $sheet->cell('Y2', function($cell) {$cell->setValue('14');});
+                $sheet->cell('Z2', function($cell) {$cell->setValue('40.000');});
+                $sheet->cell('AA2', function($cell) {$cell->setValue('14');});
+                $sheet->cell('AB2', function($cell) {$cell->setValue('40.000');});
+
+             });
+
+        })->download('csv');
     }
 }

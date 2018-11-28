@@ -31,6 +31,19 @@
 
                 <form class="form-horizontal" action="{{ route('login') }}" method="post">
                     {{ csrf_field() }}
+                    <div class="text-center"  style="background: #fff !important">
+    
+                        <!-- Image logo -->
+                        <a href="{{ url('/') }}" class="logo">
+                            <span>
+                                <img src="{{ url('assets/images/logo.png') }}" alt="" style="width: 180px; height: 60px;">
+                            </span>
+                            <i>
+                                <img src="{{ url('assets/images/logo_sm.png') }}" alt="" height="28">
+                            </i>
+                        </a>
+                    </div><br>
+
                     <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}"">
                         <div class="col-xs-12">
                             <input class="form-control {{ $errors->has('email') ? ' has-error' : '' }}" type="email" required="required" placeholder="email" name="email">
@@ -51,13 +64,7 @@
                                 </span>
                             @endif
                         </div>
-                    </div><br>
-                    <div class="form-group account-btn text-center m-t-10">
-                        <div class="col-xs-12">
-                            <button class="btn w-md btn-bordered btn-danger waves-effect waves-light" type="submit">Log In</button>
-                        </div>
                     </div>
-
                     <div class="form-group">
                         <div class="col-xs-12">
                             <div class="checkbox checkbox-success">
@@ -69,22 +76,17 @@
 
                         </div>
                     </div>
+                    <div class="form-group account-btn text-center m-t-10">
+                        <div class="col-xs-12">
+                            <button class="btn w-md btn-bordered btn-danger waves-effect waves-light" type="submit">Log In</button>
+                        </div>
+                    </div><br>
 
                     <div class="form-group text-center m-t-30">
                         <div class="col-sm-12">
                             <a href="{{ route('password.request') }}" class="text-muted"><i class="fa fa-lock m-r-5"></i> Forgot your password?</a>
                         </div>
                     </div>
-
-                    <div class="form-group text-center m-t-30">
-                        <div class="col-xs-12">
-                            <a href="https://play.google.com/store/apps/details?id=biz.kelola.parkironline" style="display: inline-block; width: 100%; border-bottom: 1px solid #e1e1e1;" target="_blank">
-                                <img src="{{ url('assets/images/google-play.png') }}" style="width: 150px">
-                            </a>
-                        </div>
-                    </div>
-
-                    
 
                 </form>
 
@@ -93,12 +95,6 @@
             </div>
         </div>
         <!-- end card-box-->
-
-        <div class="row m-t-50">
-            <div class="col-sm-12 text-center">
-                <p class="text-muted">Don't have an account? <a href="{{ route('register') }}" class="text-primary m-l-5"><b>Sign Up</b></a></p>
-            </div>
-        </div>
 
     </div>
     <!-- end wrapper -->

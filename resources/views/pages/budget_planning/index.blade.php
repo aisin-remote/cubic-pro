@@ -40,9 +40,9 @@
                 <table class="table m-0 table-colored table-inverse" id="table-budgetplanning">
                     <thead>
                         <tr>
+                            <th>Fiscal Year</th>
                             <th>Part Number</th>
                             <th>Customer Code</th>
-                            <th>Fiscal Year</th>
                             <th>Market</th>
                             <th>April Qty</th>
                             <th>April Amount</th>
@@ -112,6 +112,7 @@
                                 <label class="control-label">Pilih File</label>
                                 <input type="file" name="file" class="form-control" accept=".csv">
                                 <label class="text-muted">*) File format .csv</label>
+                                <center><a href="{{ route('budgetplanning.template') }}" ><i class="mdi mdi-download"></i> Format Upload  Budget .csv</a></center>
                             </div>
                         </form>
                     </div>

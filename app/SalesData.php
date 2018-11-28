@@ -167,6 +167,9 @@ class SalesData extends Model
                     ->where('fiscal_year', $year);
 
          $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -228,6 +231,9 @@ class SalesData extends Model
                     ->get();
 
         $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -263,6 +269,9 @@ class SalesData extends Model
 
 
          $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -324,6 +333,9 @@ class SalesData extends Model
                     ->get();
 
         $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -358,6 +370,9 @@ class SalesData extends Model
                     ->where('fiscal_year', $year);
 
          $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -419,6 +434,9 @@ class SalesData extends Model
                     ->get();
 
         $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -453,6 +471,9 @@ class SalesData extends Model
                     ->where('fiscal_year', $year);
 
          $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -514,6 +535,9 @@ class SalesData extends Model
                     ->get();
 
         $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -547,55 +571,56 @@ class SalesData extends Model
                     })
                     ->where('fiscal_year', $year);
 
-        // return $result->sum('jan_amount');
+        $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
+                        ->first();
 
-        if ($month == 'apr') {
+        $price = !empty($part->price) ? $part->price->sum('price') : 0; 
+
+         if ($month == 'apr') {
             
-            return $result->sum('apr_amount');
+            return $result->sum('apr_qty')* $price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_amount');
+            return $result->sum('may_qty')* $price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_amount');
+            return $result->sum('june_qty')* $price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_amount');
+            return $result->sum('july_qty')* $price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_amount');
+            return $result->sum('august_qty')* $price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_amount');
+            return $result->sum('sep_qty')* $price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_amount');
+            return $result->sum('okt_qty')* $price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_amount');
+            return $result->sum('nov_qty')* $price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_amount');
+            return $result->sum('des_qty')* $price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_amount');
+            return $result->sum('jan_qty')* $price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_amount');
+            return $result->sum('feb_qty')* $price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_amount');
+            return $result->sum('mar_qty')* $price;
         }
-
-
-        // $result_sum = 0;
-
-        // return $result_sum;
     }
     
     public function scopeSumImportPartTotal1($query, $year, $product_code)
@@ -603,13 +628,15 @@ class SalesData extends Model
         
         $result = $query->whereHas('parts', function($where) use ($product_code) {
                     $where->where('product_code', $product_code)
-                    ->where('group_material', 'Import Part');
-                        
+                    ->where('group_material', 'Import Part');   
                     })
                     ->where('fiscal_year', $year)
                     ->get();
 
         $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -644,6 +671,9 @@ class SalesData extends Model
                     ->where('fiscal_year', $year);
 
          $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -705,6 +735,9 @@ class SalesData extends Model
                     ->get();
 
         $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -738,7 +771,10 @@ class SalesData extends Model
                     })
                     ->where('fiscal_year', $year);
 
-         $part = Part::where('product_code', $product_code)
+         $part = Part::where('product_code', $product_code)       
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -800,6 +836,9 @@ class SalesData extends Model
                     ->get();
 
         $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -832,6 +871,9 @@ class SalesData extends Model
                     ->where('fiscal_year', $year);
 
          $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -887,12 +929,15 @@ class SalesData extends Model
         $result = $query->whereHas('parts', function($where) use ($product_code) {
                     $where->where('product_code', $product_code)
                     ->where('group_material', 'Inklaring CKD');
-                        
+                    
                     })
                     ->where('fiscal_year', $year)
                     ->get();
 
         $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -927,6 +972,9 @@ class SalesData extends Model
                     ->where('fiscal_year', $year);
 
          $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -988,6 +1036,9 @@ class SalesData extends Model
                     ->get();
 
         $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -1015,7 +1066,6 @@ class SalesData extends Model
 
     public function scopeSumTotalMaterial($query, $month, $year, $product_code)
     {
-        
         $result = $query->whereHas('parts', function($where) use ($product_code) {
                         $where->where('product_code', $product_code);
                     })
@@ -1023,6 +1073,9 @@ class SalesData extends Model
                     ->get();
         
         $part = Part::where('product_code', $product_code)
+                        ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
@@ -1083,7 +1136,11 @@ class SalesData extends Model
                     ->get();
 
         $part = Part::where('product_code', $product_code)
+                    ->whereHas('price', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
+
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
 

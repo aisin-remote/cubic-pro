@@ -19,6 +19,7 @@ class TemporaryMasterPriceCatalog extends Migration
             $table->string('part_id');
             $table->string('supplier_id');
             $table->string('source');
+            $table->string('fiscal_year');
             $table->double('price', 25, 2);
             $table->string('supplier_code')->nullable();
             $table->string('part_number')->nullable();

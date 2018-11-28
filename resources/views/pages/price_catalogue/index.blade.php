@@ -40,7 +40,7 @@
                 <table class="table m-0 table-colored table-inverse" id="table-price_catalogue">
                     <thead>
                         <tr>
-                            <!-- <th style="width: 50px"></th> -->
+                            <th>Fiscal Year</th>
                             <th>Part Number</th>
                             <th>Supplier Code</th>
                             <th>Source</th>
@@ -89,6 +89,7 @@
                                 <label class="control-label">Pilih File</label>
                                 <input type="file" name="file" class="form-control" accept=".csv">
                                 <label class="text-muted">*) File format .csv</label>
+                                <center><a href="{{ route('price_catalogue.template') }}" ><i class="mdi mdi-download"></i>  Format Price Catalogue .csv</a></center>
                             </div>
                         </form>
                     </div>

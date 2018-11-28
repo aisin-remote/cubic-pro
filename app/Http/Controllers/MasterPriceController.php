@@ -59,6 +59,7 @@ class MasterPriceController extends Controller
         $masterprice->supplier_id   = $request->supplier_id;
         $masterprice->source        = $request->source;
         $masterprice->price         = $request->price;
+        $masterprice->fiscal_year   = $request->fiscal_year;
         $masterprice->save();
 
         if ($request->wantsJson()){
@@ -125,6 +126,8 @@ class MasterPriceController extends Controller
             $masterprice->supplier_id            = $request->supplier_id;
             $masterprice->source                 = $request->source;
             $masterprice->price                  = $request->price;
+            $masterprice->fiscal_year            = $request->fiscal_year;
+
             $masterprice->save();
          });
         $res = [
@@ -206,13 +209,7 @@ class MasterPriceController extends Controller
        
         return DataTables::of($temporarymasterprices)
 
-        ->rawColumns(['options'])
-
-        ->addColumn('options', function($temporarymasterprices){
-            return '
-                
-            ';
-        })
+        
 
         ->addColumn('suppliers.supplier_code', function($temporarymasterprices) {
             return !empty($temporarymasterprices->suppliers) ? $temporarymasterprices->suppliers->supplier_code : $temporarymasterprices->supplier_code.' Tidak Ada';
@@ -242,9 +239,11 @@ class MasterPriceController extends Controller
     
     public function export() 
     {
-        $masterprices = MasterPrice::all();
-
-        return Excel::create('data_masterprice', function($excel) use ($masterprices){
+        $masterprices = MasterPrice::select('fiscal_year','parts_masterprice.part_number as part_number', 'parts_masterprice.part_name as part_name','suppliers.supplier_code','suppliers.supplier_name', 'source','price')
+                    ->join('parts as parts_masterprice', 'master_prices.part_id', '=', 'parts_masterprice.id')
+                    ->join('suppliers', 'master_prices.supplier_id', '=', 'suppliers.id')
+                    ->get();
+        return Excel::create('Data Master Price', function($excel) use ($masterprices){
              $excel->sheet('mysheet', function($sheet) use ($masterprices){
                  $sheet->fromArray($masterprices);
              });
@@ -278,6 +277,7 @@ class MasterPriceController extends Controller
                         $price->supplier_code   = $data->supplier_code;
                         $price->source          = $data->source;
                         $price->price           = $data->price;
+                        $price->fiscal_year     = $data->fiscal_year;
                         $price->save();                  
                     }  
 
@@ -336,6 +336,7 @@ class MasterPriceController extends Controller
                 $price->supplier_id =   $temp->supplier_id;
                 $price->source      =   $temp->source;
                 $price->price       =   $temp->price;
+                $price->fiscal_year =   $temp->fiscal_year;
                 $price->save();
                 $res = [
                     'title' => 'Sukses',
@@ -347,6 +348,26 @@ class MasterPriceController extends Controller
         return redirect()
                 ->route('masterprice.index')
                 ->with($res);
+    }
+    public function templateMasterPrice() 
+    {
+       return Excel::create('Format Upload Data MasterPrice', function($excel){
+             $excel->sheet('mysheet', function($sheet){
+                 // $sheet->fromArray($boms);
+                $sheet->cell('A1', function($cell) {$cell->setValue('fiscal_year');});
+                $sheet->cell('B1', function($cell) {$cell->setValue('part_number');});
+                $sheet->cell('C1', function($cell) {$cell->setValue('supplier_code');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('source');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('price');});
+                $sheet->cell('A2', function($cell) {$cell->setValue('2018');});
+                $sheet->cell('B2', function($cell) {$cell->setValue('423176-10200');});
+                $sheet->cell('C2', function($cell) {$cell->setValue('SUP01');});
+                $sheet->cell('D2', function($cell) {$cell->setValue('Local');});
+                $sheet->cell('E2', function($cell) {$cell->setValue('12.000');});
+                 
+             });
+
+        })->download('csv');
     }
     
 }

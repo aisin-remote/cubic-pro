@@ -33,11 +33,16 @@
                         @csrf
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">Part Number</label>
-                                <select name="part_id" class="select2" data-placeholder="Select Part Number" required="required">
+                                <label class="control-label">Fiscal Year<span class="text-danger">*</span></label>
+                                <input type="text" name="fiscal_year" placeholder="Fiscal Year" class="form-control tinymce" required="required">
+                                <span class="help-block"></span>
+                           </div>
+                            <div class="form-group">
+                                <label class="control-label">Supplier Code</label>
+                                <select name="supplier_id" class="select2" data-placeholder="Select Supplier Code" required="required">
                                     <option></option>
-                                    @foreach ($parts as $part)
-                                    <option value="{{ $part->id }}">{{ $part->part_number }} - {{ $part->part_name }}</option>
+                                    @foreach ($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier_code }} - {{ $supplier->supplier_name }}</option>
                                     @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -52,16 +57,17 @@
                            
                         </div>
                         <div class="col-md-6">
-                           <div class="form-group">
-                                <label class="control-label">Supplier Code</label>
-                                <select name="supplier_id" class="select2" data-placeholder="Select Supplier Code" required="required">
+                            <div class="form-group">
+                                <label class="control-label">Part Number</label>
+                                <select name="part_id" class="select2" data-placeholder="Select Part Number" required="required">
                                     <option></option>
-                                    @foreach ($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier_code }} - {{ $supplier->supplier_name }}</option>
+                                    @foreach ($parts as $part)
+                                    <option value="{{ $part->id }}">{{ $part->part_number }} - {{ $part->part_name }}</option>
                                     @endforeach
                                 </select>
                                 <span class="help-block"></span>
                            </div>
+                           
 
                            <div class="form-group">
                                 <label class="control-label">Price<span class="text-danger">*</span></label>

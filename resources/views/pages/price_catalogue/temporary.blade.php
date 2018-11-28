@@ -36,6 +36,7 @@
                 <table class="table m-0 table-colored table-inverse" id="table-temporary-price_catalogue">
                     <thead>
                         <tr>
+                            <th>Fiscal Year</th>
                             <th>Part Number</th>
                             <th>Supplier Code</th>
                             <th>Source</th>

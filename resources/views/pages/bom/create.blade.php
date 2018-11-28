@@ -33,6 +33,11 @@
                         @csrf
                        <div class="col-md-6">
                             <div class="form-group">
+                                <label class="control-label">Fiscal Year <span class="text-danger">*</span></label>
+                                <input type="text" name="fiscal_year" placeholder="Fiscal Year" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+                            <div class="form-group">
                                 <label class="control-label">Part Number<span class="text-danger">*</span></label>
                                 <select name="part_id" class="select2" data-placeholder="Select Part Number" required="required">
                                     <option></option>
@@ -42,12 +47,7 @@
                                 </select>
                                 <span class="help-block"></span>
                            </div>
-
-                           <div class="form-group">
-                                <label class="control-label">Model<span class="text-danger">*</span></label>
-                                <input type="text" name="model" placeholder="Model" class="form-control tinymce" required="required">
-                                <span class="help-block"></span>
-                           </div>     
+                                
                         </div>
 
                          <div class="col-md-6">
@@ -61,12 +61,17 @@
                                 </select>
                                 <span class="help-block"></span>
                            </div>
-
                            <div class="form-group">
+                                <label class="control-label">Model<span class="text-danger">*</span></label>
+                                <input type="text" name="model" placeholder="Model" class="form-control tinymce" required="required">
+                                <span class="help-block"></span>
+                           </div>
+
+                           <!-- <div class="form-group">
                                 <label class="control-label">Reject Ratio <span class="text-danger">*</span></label>
                                 <input type="text" name="reject_ratio" placeholder="Reject Ratio" class="form-control tinymce" required="required" rows="5"></input>
                                 <span class="help-block"></span>
-                           </div>
+                           </div> -->
                         </div>
                         <div class="col-md-12 text-right">
                             <hr>

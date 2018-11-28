@@ -63,6 +63,7 @@ class BomSemiController extends Controller
             $bom_semi->part_id                = $request->part_id;
             $bom_semi->supplier_id            = $request->supplier_id;
             $bom_semi->model                  = $request->model;
+            $bom_semi->fiscal_year            = $request->fiscal_year;
             $bom_semi->save();
                 $res = ['title' => 'success', 'type' => 'success', 'message' => 'Data berhasil disimpan'];
                         return response()->json($res);
@@ -77,6 +78,7 @@ class BomSemiController extends Controller
             $bom_semi->part_id                = $request->part_id;
             $bom_semi->supplier_id            = $request->supplier_id;
             $bom_semi->model                  = $request->model;
+            $bom_semi->fiscal_year            = $request->fiscal_year;
             $bom_semi->save();
 
             foreach (Cart::content() as $bom_semi_data) {
@@ -128,7 +130,24 @@ class BomSemiController extends Controller
         $suppliers  = Supplier::get();
         $parts      = Part::get();
         $bom_data   = BomSemiData::get();
-        $bom_semi        = BomSemi::find($id);
+        $bom_semi   = BomSemi::find($id);
+
+        foreach ($bom_semi->details as $detail) {
+
+            Cart::add([
+                'id' => $detail->part_id,
+                'name' => $detail->parts->part_name,
+                'qty' => $detail->qty,
+                'price' => 1,
+                'options' => [
+                    'part_id' => $detail->part_id,
+                    'supplier_id' => $detail->supplier_id,
+                    'supplier_name' => $detail->suppliers->supplier_name,
+                    'source' => $detail->source,
+                ]
+            ]);
+
+        }
 
         return view('pages.bom_semi.edit', compact(['suppliers', 'parts', 'bom_semi','bom_data']));
         
@@ -143,19 +162,8 @@ class BomSemiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // if($request->ajax())
-        // {
-        //     $bom_semi                         = BomSemi::find($id);
-        //     $bom_semi->part_id                = $request->part_id;
-        //     $bom_semi->supplier_id            = $request->supplier_id;
-        //     $bom_semi->model                  = $request->model;
-        //     $bom_semi->save();
-        //         $res = ['title' => 'success', 'type' => 'success', 'message' => 'Data berhasil disimpan'];
-        //                 return response()->json($res);
-
-        // } else {
-
-            $res = '';
+        
+        $res = '';
 
         DB::transaction(function() use ($request, $id, &$res){
             // Save data in Tabel Bom
@@ -167,7 +175,7 @@ class BomSemiController extends Controller
 
             foreach (Cart::content() as $bom_semi_data) {
 
-                $details              = new BomSemiData;
+                $details              = BomSemiData::firstOrNew(['part_id' => $bom_semi_data->id]);
                 $details->part_id     = $bom_semi_data->id;
                 $details->supplier_id = $bom_semi_data->options->supplier_id;
                 $details->source      = $bom_semi_data->options->source;
@@ -353,12 +361,14 @@ class BomSemiController extends Controller
     
     public function export() 
     {
-        $boms = BomSemi::select('parts.part_number', 'parts.part_name', 'parts.model', 'parts.component_part_no','parts.component_part_name', 'parts.source', 'parts.qty','parts.unit','parts.customer_assy_part_no','suppliers.supplier_code','suppliers.supplier_name')
-                    ->join('parts', 'boms.part_id', '=', 'parts.id')
-                    ->join('suppliers', 'boms.supplier_id', '=', 'suppliers.id')
+        $boms = BomSemi::select('fiscal_year','parts_bom.part_number as part_number', 'parts_bom.part_name as part_name', 'model','parts_bom_semi_datas.part_number as part_number_details','suppliers.supplier_code','suppliers.supplier_name', 'bom_semi_datas.source','bom_semi_datas.qty')
+                    ->join('parts as parts_bom', 'bom_semis.part_id', '=', 'parts_bom.id')
+                    ->join('bom_semi_datas', 'bom_semi_datas.bom_semi_id', '=', 'bom_semis.id')
+                    ->join('parts as parts_bom_semi_datas', 'bom_semi_datas.part_id', '=', 'parts_bom_semi_datas.id')
+                    ->join('suppliers', 'bom_semis.supplier_id', '=', 'suppliers.id')
                     ->get();
 
-       return Excel::create('data_bom', function($excel) use ($boms){
+       return Excel::create('Data Bom Semi Finish Good', function($excel) use ($boms){
              $excel->sheet('mysheet', function($sheet) use ($boms){
                  $sheet->fromArray($boms);
              });
@@ -376,7 +386,8 @@ class BomSemiController extends Controller
 	                $bom_semi = new BomSemi;
 	                $bom_semi->part_id     =   $temp->part_id;
 	                $bom_semi->supplier_id =   $temp->supplier_id;
-	                $bom_semi->model       =   $temp->model;
+                    $bom_semi->model       =   $temp->model;
+	                $bom_semi->fiscal_year =   $temp->fiscal_year;
 	                $bom_semi->save();
 
 	                foreach ($temp->details_temporary as $temp_det) {
@@ -426,6 +437,7 @@ class BomSemiController extends Controller
                     $bom_semi->part_id          = !empty($part_id) ? $part_id->id : 0;
                     $bom_semi->supplier_id      = !empty($supplier_id) ? $supplier_id->id : 0;
                     $bom_semi->model            = $data->model;
+                    $bom_semi->fiscal_year      = $data->fiscal_year;
                     $bom_semi->save();
 
                     $details                    = new TemporaryBomSemiData;
@@ -448,6 +460,32 @@ class BomSemiController extends Controller
             
         }
                                
+    }
+    public function templateBomSemi() 
+    {
+       return Excel::create('Format Upload Data BOM Semi', function($excel){
+             $excel->sheet('mysheet', function($sheet){
+                 // $sheet->fromArray($boms);
+                $sheet->cell('A1', function($cell) {$cell->setValue('fiscal_year');});
+                $sheet->cell('B1', function($cell) {$cell->setValue('part_number');});
+                $sheet->cell('C1', function($cell) {$cell->setValue('supplier_code');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('model');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('part_number_details');});
+                $sheet->cell('F1', function($cell) {$cell->setValue('supplier_code_details');});
+                $sheet->cell('G1', function($cell) {$cell->setValue('source');});
+                $sheet->cell('H1', function($cell) {$cell->setValue('qty');});
+                $sheet->cell('A2', function($cell) {$cell->setValue('2018');});
+                $sheet->cell('B2', function($cell) {$cell->setValue('423176-10200');});
+                $sheet->cell('C2', function($cell) {$cell->setValue('SUP01');});
+                $sheet->cell('D2', function($cell) {$cell->setValue('Plat');});
+                $sheet->cell('E2', function($cell) {$cell->setValue('423176-20200');});
+                $sheet->cell('F2', function($cell) {$cell->setValue('SUP01');});
+                $sheet->cell('G2', function($cell) {$cell->setValue('Local');});
+                $sheet->cell('H2', function($cell) {$cell->setValue('12');});
+                 
+             });
+
+        })->download('csv');
     }
     
 }

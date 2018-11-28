@@ -36,9 +36,9 @@
                 <table class="table m-0 table-colored table-inverse" id="table-temporary-budgetplanning">
                     <thead>
                         <tr>
+                            <th>Fiscal Year</th>
                             <th>Part Number</th>
                             <th>Customer Code</th>
-                            <th>Fiscal Year</th>
                             <th>Market</th>
                             <th>April Qty</th>
                             <th>April Amount</th>

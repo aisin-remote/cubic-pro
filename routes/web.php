@@ -64,10 +64,41 @@ Route::middleware('auth')->group(function(){
 	Route::get('system/get_data', 'SystemController@getData');
 	Route::resource('system', 'SystemController');
 
+	// Menu Capex
+	Route::get('approval/{type}', 'ApprovalController@index');
+	Route::get('cip/admin/list', 'ApprovalController@getCIPAdminList');
+	Route::get('cip/settlement/list', 'ApprovalController@getCip');
+	// Route::get('approval/cx/', 'ApprovalController@approvalCapex');
+	Route::get('approval/create/cx', 'ApprovalController@createApproval');
+	Route::get('approval/create/cx/add', 'ApprovalController@create')->name('approval-capex.create');
+	Route::get('approval/cx/store', 'ApprovalController@store')->name('approval-capex.store');
+	Route::get('capex/get_data', 'CapexController@getData');
+	Route::post('capex/xedit', 'CapexController@xedit');
+	Route::resource('capex', 'CapexController');
+	
+
+	// Menu Unbudget
+	Route::resource('unbudget', 'UnbudgetController');
+	Route::get('approval/ub/', 'ApprovalController@approvalUnbudget');
+	Route::get('approval/create/ub', 'ApprovalController@createApprovalUnbudget');
+	Route::get('approval/create/ub/add', 'ApprovalController@createUnbudget')->name('approval-unbudget.create');
+	Route::get('approval/ub/store', 'ApprovalController@store')->name('approval-unbudget.store');
+	
+	// Menu Expense
+	Route::get('approval/ex/', 'ApprovalController@approvalExpense');
+	Route::get('approval/create/ex', 'ApprovalController@createApprovalExpense');
+	Route::get('approval/create/ex/add', 'ApprovalController@createExpense')->name('approval-expense.create');
+	Route::get('approval/ex/store', 'ApprovalController@store')->name('approval-expense.store');
+	Route::get('expense/get_data', 'ExpenseController@getData');
+	Route::post('expense/xedit', 'ExpenseController@xedit');
+	Route::resource('expense', 'ExpenseController');
+
 	// Upload Bom Finish Good
 	Route::get('bom/get_data', 'BomController@getData');
 	Route::get('bom/details-data/{id}', 'BomController@getDetailsData');
 	Route::get('/bom/export', 'BomController@export')->name('bom.export');
+	Route::get('/bom/export/template', 'BomController@template_bom')->name('bom.template');
+
 	Route::post('/bom/import', 'BomController@import')->name('bom.import');
 	Route::get('bom/temporary', 'BomController@temporary')->name('bom.temporary');
 	Route::get('bom/details-data/{id}', 'BomController@getDetailsData');
@@ -86,7 +117,6 @@ Route::middleware('auth')->group(function(){
 	// Get Data Bom Semi Detail
 	Route::get('bom_semi_datas/get_data', 'BomSemiDatasController@getData');
 	Route::post('bom_semi_datas/store', 'BomSemiDatasController@store')->name('bom_semi_datas.store');
-	// Route::post('bom_semi_datas/update{id}', 'BomSemiDatasController@update')->name('bom_semi_datas.update');
 	Route::post('bom_semi_datas/destroy', 'BomSemiDatasController@store')->name('bom_semi_datas.destroy');
 	Route::get('bom_semi_datas/{id}', 'BomSemiDatasController@show')->name('bom_semi_datas.show');
 	
@@ -97,6 +127,7 @@ Route::middleware('auth')->group(function(){
 	Route::get('bom_semi/details-datatemp/{id}', 'BomSemiController@getDetails_temporary');
 	Route::get('/bom_semi/export', 'BomSemiController@export')->name('bom_semi.export');
 	Route::get('bom_semi/temporary', 'BomSemiController@temporary')->name('bom_semi.temporary');
+	Route::get('/bom_semi/export/template', 'BomSemiController@templateBomSemi')->name('bom_semi.template');
 	Route::get('bom_semi/temporary/cancel', 'BomSemiController@cancel')->name('bom_semi.temporary.cancel');
 	Route::get('bom_semi/temporary/save', 'BomSemiController@save')->name('bom_semi.temporary.save');
 	Route::post('/bom_semi/import', 'BomSemiController@import')->name('bom_semi.import');
@@ -109,6 +140,7 @@ Route::middleware('auth')->group(function(){
 	Route::get('/masterprice/export', 'MasterPriceController@export')->name('masterprice.export');
 	Route::post('/masterprice/import', 'MasterPriceController@import')->name('masterprice.import');
 	Route::get('masterprice/temporary', 'MasterPriceController@temporary')->name('masterprice.temporary');
+	Route::get('/masterprice/export/template', 'MasterPriceController@templateMasterPrice')->name('masterprice.template');
 	Route::get('masterprice/temporary/cancel', 'MasterPriceController@cancel')->name('masterprice.temporary.cancel');
 	Route::get('masterprice/temporary/save', 'MasterPriceController@save')->name('masterprice.temporary.save');
 	Route::resource('masterprice', 'MasterPriceController');
@@ -119,6 +151,8 @@ Route::middleware('auth')->group(function(){
 	Route::get('/salesdata/export', 'SalesDataController@export')->name('salesdata.export');
 	Route::post('/salesdata/import', 'SalesDataController@import')->name('salesdata.import');
 	Route::get('salesdata/temporary', 'SalesDataController@temporary')->name('salesdata.temporary');
+	Route::get('/salesdata/export/template', 'SalesDataController@templateSalesData')->name('salesdata.template');
+
 	Route::get('salesdata/temporary/cancel', 'SalesDataController@cancel')->name('salesdata.temporary.cancel');
 	Route::get('salesdata/temporary/save', 'SalesDataController@save')->name('salesdata.temporary.save');
 	Route::resource('salesdata', 'SalesDataController');
@@ -129,17 +163,28 @@ Route::middleware('auth')->group(function(){
 	Route::get('/price_catalogue/export', 'MasterPriceCatalogController@export')->name('price_catalogue.export');
 	Route::post('/price_catalogue/import', 'MasterPriceCatalogController@import')->name('price_catalogue.import');
 	Route::get('price_catalogue/temporary', 'MasterPriceCatalogController@temporary')->name('price_catalogue.temporary');
+	Route::get('/price_catalogue/export/template', 'MasterPriceCatalogController@templatePriceCatalog')->name('price_catalogue.template');
 	Route::get('price_catalogue/temporary/cancel', 'MasterPriceCatalogController@cancel')->name('price_catalogue.temporary.cancel');
 	Route::get('price_catalogue/temporary/save', 'MasterPriceCatalogController@save')->name('price_catalogue.temporary.save');
 	
 	Route::resource('price_catalogue', 'MasterPriceCatalogController');
-	
+
+
+
+	// Route::get('approval/get_list/{type}/{status}', function($type, $status){
+    
+ //    return ApprovalMaster::get_list($type, $status);
+	// });
+	Route::get('statistic/{budget_type}', 'DashboardController@buildJSON_ApprovalStat');
+	Route::get('approval/get_list/{type}/{status}', 'ApprovalController@get_list');
+
 	// Upload Budget Planning
 	Route::get('budgetplanning/get_data', 'BudgetPlanningController@getData');
 	Route::get('budgetplanning/get_data_temporary', 'BudgetPlanningController@getData_temporary');
 	Route::get('/budgetplanning/export', 'BudgetPlanningController@export')->name('budgetplanning.export');
 	Route::post('/budgetplanning/import', 'BudgetPlanningController@import')->name('budgetplanning.import');
 	Route::get('budgetplanning/temporary/cancel', 'BudgetPlanningController@cancel')->name('budgetplanning.temporary.cancel');
+	Route::get('/budgetplanning/export/template', 'BudgetPlanningController@templateBudget')->name('budgetplanning.template');
 	Route::get('budgetplanning/temporary', 'BudgetPlanningController@temporary')->name('budgetplanning.temporary');
 	Route::get('budgetplanning/temporary/save', 'BudgetPlanningController@save')->name('budgetplanning.temporary.save');
 	Route::resource('budgetplanning', 'BudgetPlanningController');
@@ -156,13 +201,6 @@ Route::middleware('auth')->group(function(){
 		Route::get('permission/get_data', 'PermissionController@getData');
 		Route::resource('permission', 'PermissionController');
 	});
-
-	
-	Route::get('faq/get_data', 'FaqController@getData');
-	Route::resource('faq', 'FaqController');
-
-	Route::get('help/get_data', 'HelpController@getData');
-	Route::resource('help', 'HelpController');
 	
 	Route::get('bom/get_data', 'BomController@getData');
 	Route::get('/bom/export', 'BomController@export')->name('bom.export');

@@ -29,7 +29,11 @@ class DashboardController extends Controller
 
    //  	}
 
-        return view('pages.dashboard');
+        // if (auth()->user()->hasRole('approval')) {
+            return view('pages.dashboard');
+        // }
+
+        // abort(404);
 
     	// return view('pages.dashboard', compact([ 'types', 'group_locations']));
     }

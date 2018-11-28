@@ -8,7 +8,7 @@
 	
 @php($active = 'menu')
 
-	<div class="container">
+	<div class="container" id="menu-menu">
 
         <div class="row">
 			<div class="col-xs-12">

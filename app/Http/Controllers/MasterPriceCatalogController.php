@@ -58,6 +58,7 @@ class MasterPriceCatalogController extends Controller
         $catalog->supplier_id   = $request->supplier_id;
         $catalog->source        = $request->source;
         $catalog->price         = $request->price;
+        $catalog->fiscal_year   = $request->fiscal_year;
         $catalog->save();
 
         $res = [
@@ -113,6 +114,7 @@ class MasterPriceCatalogController extends Controller
             $catalog->supplier_id            = $request->supplier_id;
             $catalog->source                 = $request->source;
             $catalog->price                  = $request->price;
+            $catalog->fiscal_year            = $request->fiscal_year;
             $catalog->save();
          });
         $res = [
@@ -206,11 +208,13 @@ class MasterPriceCatalogController extends Controller
     
     public function export() 
     {
-        $catalogs = MasterPriceCatalog::all();
-
-        return Excel::create('data_masterprice', function($excel) use ($catalogs){
-             $excel->sheet('mysheet', function($sheet) use ($catalogs){
-                 $sheet->fromArray($catalogs);
+        $catalog = MasterPriceCatalog::select('fiscal_year','parts_catalog.part_number as part_number', 'parts_catalog.part_name as part_name','suppliers.supplier_code','suppliers.supplier_name', 'source','price')
+                    ->join('parts as parts_catalog', 'master_price_catalogs.part_id', '=', 'parts_catalog.id')
+                    ->join('suppliers', 'master_price_catalogs.supplier_id', '=', 'suppliers.id')
+                    ->get();
+        return Excel::create('Data Price Catalogue', function($excel) use ($catalog){
+             $excel->sheet('mysheet', function($sheet) use ($catalog){
+                 $sheet->fromArray($catalog);
              });
 
         })->download('csv');
@@ -242,6 +246,7 @@ class MasterPriceCatalogController extends Controller
                         $price->supplier_code   = $data->supplier_code;
                         $price->source          = $data->source;
                         $price->price           = $data->price;
+                        $price->fiscal_year     = $data->fiscal_year;
                         $price->save();                  
                     }  
 
@@ -300,6 +305,7 @@ class MasterPriceCatalogController extends Controller
                 $price->supplier_id =   $temp->supplier_id;
                 $price->source      =   $temp->source;
                 $price->price       =   $temp->price;
+                $price->fiscal_year       =   $temp->fiscal_year;
                 $price->save();
                 
             }
@@ -312,5 +318,25 @@ class MasterPriceCatalogController extends Controller
         return redirect()
                 ->route('price_catalogue.index')
                 ->with($res);
+    }
+    public function templatePriceCatalog() 
+    {
+       return Excel::create('Format Upload Data Price Catalog', function($excel){
+             $excel->sheet('mysheet', function($sheet){
+                 // $sheet->fromArray($boms);
+                $sheet->cell('A1', function($cell) {$cell->setValue('fiscal_year');});
+                $sheet->cell('B1', function($cell) {$cell->setValue('part_number');});
+                $sheet->cell('C1', function($cell) {$cell->setValue('supplier_code');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('source');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('price');});
+                $sheet->cell('A2', function($cell) {$cell->setValue('2018');});
+                $sheet->cell('B2', function($cell) {$cell->setValue('423176-10200');});
+                $sheet->cell('C2', function($cell) {$cell->setValue('SUP01');});
+                $sheet->cell('D2', function($cell) {$cell->setValue('Local');});
+                $sheet->cell('E2', function($cell) {$cell->setValue('12.000');});
+                 
+             });
+
+        })->download('csv');
     }
 }

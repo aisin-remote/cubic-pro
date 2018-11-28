@@ -19,6 +19,7 @@ class CreateMasterPricesTable extends Migration
             $table->string('part_id');
             $table->string('supplier_id');
             $table->string('source');
+            $table->string('fiscal_year');
             $table->string('price');
            
             $table->timestamps();

@@ -59,8 +59,8 @@
 
 </style>
 	<center>
-		<div class="content-wrapper">
-			<strong style="font-size: 15px;">Output Material Sales Amount</strong>
+		<div class="content-wrapper"> 
+			<strong style="font-size: 15px;">Output Material Sales Amount {{ $fiscal_year }}</strong>
 			<br>
 			
 		</div>

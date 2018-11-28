@@ -6,7 +6,7 @@ $(document).ready(function(){
         serverSide: true,
         ajax: SITE_URL + '/price_catalogue/get_data',
         columns: [
-
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
             { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
             { data: 'source', name: 'source'},
@@ -51,7 +51,7 @@ $(document).ready(function(){
         serverSide: true,
         ajax: SITE_URL + '/price_catalogue/get_data_temporary',
         columns: [
-           
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
             { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
             { data: 'source', name: 'source'},

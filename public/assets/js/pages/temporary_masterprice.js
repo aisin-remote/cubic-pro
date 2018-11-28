@@ -5,6 +5,7 @@ $(document).ready(function(){
         ajax: SITE_URL + '/masterprice/get_data_temporary',
         columns: [
             
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
             { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
             { data: 'source', name: 'source'},

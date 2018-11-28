@@ -4,6 +4,7 @@ $(document).ready(function(){
     tMasterPrice = $('#table-masterprice').DataTable({
         ajax: SITE_URL + '/masterprice/get_data',
         columns: [
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
             { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
             { data: 'source', name: 'source'},
@@ -53,12 +54,13 @@ $(document).ready(function(){
                 "data":           null,
                 "defaultContent": ''
             },
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
             { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
             { data: 'source', name: 'source'},
             { data: 'price', name: 'price'},
 
-            { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
+            
         ],
         order: [1, 'asc'],
         drawCallback: function(){

@@ -41,6 +41,7 @@
                     <thead>
                         <tr>
                             <th style="width: 50px"></th>
+                            <th>Fiscal Year</th>
                             <th>Part Number</th>
                             <th>Model</th>
                             <th style="width: 100px">Opsi</th>
@@ -88,6 +89,7 @@
                                 <input type="file" name="file" class="form-control" accept=".csv">
                                 <label class="text-muted">*) File format .csv</label>
                             </div>
+                            <center><a href="{{ route('bom.template') }}" ><i class="mdi mdi-download"></i> Format Upload  BOM Finish Good .csv</a></center>
                         </form>
                     </div>
                 </div>

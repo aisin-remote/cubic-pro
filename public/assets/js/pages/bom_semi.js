@@ -11,6 +11,7 @@ $(document).ready(function(){
                 "data":           null,
                 "defaultContent": ''
             },
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
             // { data: 'parts.part_name', name: 'parts.part_name'},
             { data: 'model', name: 'model'},
@@ -123,6 +124,8 @@ $(document).ready(function(){
                 "data":           null,
                 "defaultContent": ''
             },
+            { data: 'fiscal_year', name: 'fiscal_year'},
+
             { data: 'parts.part_number', name: 'parts.part_number'},
             // { data: 'parts.part_name', name: 'parts.part_name'},
             { data: 'model', name: 'model'},
@@ -196,8 +199,8 @@ $(document).ready(function(){
     }
 
     $('#btn-confirm').click(function(){
-        var bom_id = $(this).data('value');
-        $('#form-delete-' + bom_id).submit();
+        var bom_semi_id = $(this).data('value');
+        $('#form-delete-' + bom_semi_id).submit();
     });
 
 });

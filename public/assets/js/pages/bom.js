@@ -11,8 +11,8 @@ $(document).ready(function(){
                 "data":           null,
                 "defaultContent": ''
             },
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
-            // { data: 'parts.part_name', name: 'parts.part_name'},
             { data: 'model', name: 'model'},
             //  { data: 'reject_ratio', name: 'reject_ratio'},
             { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
@@ -122,6 +122,7 @@ $(document).ready(function(){
                 "data":           null,
                 "defaultContent": ''
             },
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
             // { data: 'parts.part_name', name: 'parts.part_name'},
             { data: 'model', name: 'model'},

@@ -40,10 +40,9 @@
                 <table class="table m-0 table-colored table-inverse table-responsive" id="table-salesdata">
                     <thead>
                         <tr>
-                            
+                            <th>Fiscal Year</th>
                             <th>Part Number</th>
                             <th>Customer Code</th>
-                            <th>Fiscal Year</th>
                             <th>Market</th>
                             <th>April Qty</th>
                             <th>April Amount</th>
@@ -113,6 +112,7 @@
                                 <label class="control-label">Pilih File</label>
                                 <input type="file" name="file" class="form-control" accept=".csv">
                                 <label class="text-muted">*) File format .csv</label>
+                                <center><a href="{{ route('salesdata.template') }}" ><i class="mdi mdi-download"></i> Format Sales Data .csv</a></center>
                             </div>
                         </form>
                     </div>

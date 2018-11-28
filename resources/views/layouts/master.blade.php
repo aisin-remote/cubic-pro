@@ -119,7 +119,7 @@
                 </div> <!-- content -->
 
                 <footer class="footer text-right">
-                    {{ date('Y') }} &copy; {{ config('app.name') }}
+                    &copy; 2018 PT. Aisin Indonesia Automotive
                 </footer>
 
             </div>
@@ -233,6 +233,9 @@
         <!-- Modal-Effect -->
         <script src="{{ url('assets/plugins/custombox/js/custombox.min.js') }}"></script>
         <script src="{{ url('assets/plugins/custombox/js/legacy.min.js') }}"></script>
+
+        <!-- bootstrap editable -->
+        <script src="{{ url('assets/js/bootstrap-editable.min.js') }}"></script>
 
         <!-- general js -->
         <script src="{{ url('assets/js/general.js') }}"></script>

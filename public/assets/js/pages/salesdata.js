@@ -7,9 +7,9 @@ $(document).ready(function(){
         scrollX: true,
         columns: [
 
+            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
             { data: 'customers.customer_code', name: 'customers.customer_code'},
-            { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'market', name: 'market'},
             { data: 'apr_qty', name: 'apr_qty'},
             { data: 'apr_amount', name: 'apr_amount'},
@@ -87,9 +87,9 @@ $(document).ready(function(){
         ajax: SITE_URL + '/salesdata/get_data_temporary',
         scrollX: true,
         columns: [
-           { data: 'parts.part_number', name: 'parts.part_number'},
-            { data: 'customers.customer_code', name: 'customers.customer_code'},
             { data: 'fiscal_year', name: 'fiscal_year'},
+            { data: 'parts.part_number', name: 'parts.part_number'},
+            { data: 'customers.customer_code', name: 'customers.customer_code'},
             { data: 'market', name: 'market'},
             { data: 'apr_qty', name: 'apr_qty'},
             { data: 'apr_amount', name: 'apr_amount'},

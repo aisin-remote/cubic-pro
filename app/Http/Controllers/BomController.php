@@ -67,6 +67,7 @@ class BomController extends Controller
             $bom->part_id                = $request->part_id;
             $bom->supplier_id            = $request->supplier_id;
             $bom->model                  = $request->model;
+            $bom->fiscal_year            = $request->fiscal_year;
             $bom->save();
                 $res = ['title' => 'success', 'type' => 'success', 'message' => 'Data berhasil disimpan'];
                         return response()->json($res);
@@ -81,6 +82,7 @@ class BomController extends Controller
             $bom->part_id                = $request->part_id;
             $bom->supplier_id            = $request->supplier_id;
             $bom->model                  = $request->model;
+            $bom->fiscal_year            = $request->fiscal_year;
             $bom->save();
 
             foreach (Cart::content() as $bom_data) {
@@ -171,11 +173,12 @@ class BomController extends Controller
             $bom->part_id                = $request->part_id;
             $bom->supplier_id            = $request->supplier_id;
             $bom->model                  = $request->model;
+            $bom->fiscal_year            = $request->fiscal_year;
             $bom->save();
 
             foreach (Cart::content() as $bom_data) {
 
-                $details              = new BomData;
+                $details              = BomData::firstOrNew(['part_id' => $bom_data->id]);
                 $details->part_id     = $bom_data->id;
                 $details->supplier_id = $bom_data->options->supplier_id;
                 $details->source      = $bom_data->options->source;
@@ -259,134 +262,24 @@ class BomController extends Controller
     
     public function export() 
     {
-        $boms = Bom::select('parts.part_number', 'parts.part_name', 'parts.model', 'parts.component_part_no','parts.component_part_name', 'parts.source', 'parts.qty','parts.unit','parts.customer_assy_part_no','suppliers.supplier_code','suppliers.supplier_name')
-                    ->join('parts', 'boms.part_id', '=', 'parts.id')
+        $boms = Bom::select('fiscal_year','parts_bom.part_number as part_number', 'parts_bom.part_name as part_name', 'model','parts_bom_datas.part_number as part_number_details','suppliers.supplier_code','suppliers.supplier_name', 'bom_datas.source','bom_datas.qty')
+                    ->join('parts as parts_bom', 'boms.part_id', '=', 'parts_bom.id')
+                    ->join('bom_datas', 'bom_datas.bom_id', '=', 'boms.id')
+                    ->join('parts as parts_bom_datas', 'bom_datas.part_id', '=', 'parts_bom_datas.id')
                     ->join('suppliers', 'boms.supplier_id', '=', 'suppliers.id')
                     ->get();
 
-       return Excel::create('data_bom', function($excel) use ($boms){
+       return Excel::create('Data Bom Finish Good', function($excel) use ($boms){
              $excel->sheet('mysheet', function($sheet) use ($boms){
                  $sheet->fromArray($boms);
+
              });
 
         })->download('csv');
 
     }
-    // public function import(Request $request)
-    // {
-    //     // $validation = $request->validate([
-    //     //     'file' => 'required|mimes:xls'
-    //     // ]);
-
-    //     $file = $request->file('file');
-    //     $name = time() . '.' . $file->getClientOriginalExtension();
-    //     $path = $file->storeAs('public/uploads', $name);
-    //     $invalid_part = [];
-    //     $invalid_supplier = [];
-    //     $invalid_part_details = [];
-    //     $invalid_supplier_details = [];
-    //     $res = '';
-
-    //     if ($request->hasFile('file')) {
-
-    //         // $file = public_path('storage/uploads/1534217112.xls');
-    //         $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
-            
-    //        if ($datas->first()->has('part_number') && $datas->first()->has('supplier_code')) {
-                
-    //             foreach ($datas as $data) {
-                    
-    //                 if (!empty($data->part_number)&&!empty($data->supplier_code)) {
-
-    //                     DB::transaction(function() use ($data, &$invalid_part,&$invalid_supplier,&$invalid_part_details,&$invalid_supplier_details, &$res, &$name){
-
-                            
-    //                         $part = Part::where('part_number', $data->part_number)->first();
-    //                         $supplier = Supplier::where('supplier_code', $data->supplier_code)->first();
-    //                         $part_details = Part::where('part_number', $data->part_number_details)->first();
-    //                         $supplier_details = Supplier::where('supplier_code', $data->supplier_code_details)->first();
-
-    //                         if (!empty($part)) {
-    //                             $part_id = $part->id;
-    //                         } else {
-    //                             $invalid_part[] = $data->part_number;
-    //                             $part_id = null;
-    //                         }
-
-    //                         if (!empty($supplier)) {
-    //                             $supplier_id = $supplier->id;
-    //                         } else {
-    //                             $invalid_supplier[] = $data->supplier_code;
-    //                             $supplier_id = null;
-    //                         }
-
-    //                         if (!empty($part_details)) {
-    //                             $part_details_id = $part_details->id;
-    //                         } else {
-    //                             $invalid_part_details[] = $data->part_number_details;
-    //                             $part_details_id = null;
-    //                         }
-
-    //                         if (!empty($supplier_details)) {
-    //                             $supplier_details_id = $supplier_details->id;
-    //                         } else {
-    //                             $invalid_supplier_details[] = $data->supplier_code_details;
-    //                             $supplier_details_id = null;
-    //                         }
-
-    //                         if (!empty($part_id) && !empty($supplier_id) && !empty($part_details_id) && !empty($supplier_details_id)) {
-
-    //                             $bom = Bom::firstOrNew(['part_id' => $part_id]);
-    //                             $bom->part_id = $part_id;
-    //                             $bom->supplier_id = $supplier_id;
-    //                             $bom->model = $data->model;
-    //                             $bom->save();
-
-    //                             $details = new BomData;
-    //                             $details->supplier_id = $supplier_details_id;
-    //                             $details->part_id = $part_details_id;
-    //                             $details->source = $data->source;
-    //                             $details->qty = $data->qty;
-                                
-    //                             $bom->details()->save($details);
-
-    //                             $res = [
-    //                                 'title' => 'Sukses',
-    //                                 'type' => 'success',
-    //                                 'message' => 'Data berhasil di import!'
-    //                             ];
-
-    //                         } else {
-
-    //                             $invalids = [$invalid_supplier, $invalid_part, $invalid_supplier_details, $invalid_part_details];
-    //                                 $check = collect($invalids)->flatten()->implode(',');
-    //                                 $res = [
-    //                                     'title' => 'Error',
-    //                                     'type' => 'error',
-    //                                     'message' => 'Format Buruk!'.$check
-    //                                 ];
-
-    //                         }
-                            
-
-    //                     });
-    //                 }
-
-    //                return redirect()
-    //                     ->route('bom.index')
-    //                     ->with($res);
-    //             }
-    //             // Storage::delete('public/uploads/'.$name);
-                
-               
-    //         }
-                
-
-    //     }
-
-        
-    // }
-     public function import(Request $request)
+   
+    public function import(Request $request)
     {
         $file = $request->file('file');
         $name = time() . '.' . $file->getClientOriginalExtension();
@@ -405,7 +298,11 @@ class BomController extends Controller
                     $bom                        = TemporaryBom::firstOrNew(['part_id' => $part_id]);
                     $bom->part_id               = !empty($part_id) ? $part_id->id : 0;
                     $bom->supplier_id           = !empty($supplier_id) ? $supplier_id->id : 0;
+                    $bom->part_number           = $data->part_number;
+                    $bom->supplier_code         = $data->supplier_code;
                     $bom->model                 = $data->model;
+                    $bom->fiscal_year           = $data->fiscal_year;
+
                     $bom->save();
 
                     $details                    = new TemporaryBomData;
@@ -442,6 +339,7 @@ class BomController extends Controller
                     $bom->part_id     =   $temp->part_id;
                     $bom->supplier_id =   $temp->supplier_id;
                     $bom->model       =   $temp->model;
+                    $bom->fiscal_year =   $temp->fiscal_year;
                     $bom->save();
 
                     foreach ($temp->details_temporary as $temp_det) {
@@ -569,5 +467,31 @@ class BomController extends Controller
         
         ->toJson();
 
+    }
+    public function template_bom() 
+    {
+       return Excel::create('Format Upload Data BOM', function($excel){
+             $excel->sheet('mysheet', function($sheet){
+                 // $sheet->fromArray($boms);
+                $sheet->cell('A1', function($cell) {$cell->setValue('fiscal_year');});
+                $sheet->cell('B1', function($cell) {$cell->setValue('part_number');});
+                $sheet->cell('C1', function($cell) {$cell->setValue('supplier_code');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('model');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('part_number_details');});
+                $sheet->cell('F1', function($cell) {$cell->setValue('supplier_code_details');});
+                $sheet->cell('G1', function($cell) {$cell->setValue('source');});
+                $sheet->cell('H1', function($cell) {$cell->setValue('qty');});
+                $sheet->cell('A2', function($cell) {$cell->setValue('2018');});
+                $sheet->cell('B2', function($cell) {$cell->setValue('423176-10200');});
+                $sheet->cell('C2', function($cell) {$cell->setValue('SUP01');});
+                $sheet->cell('D2', function($cell) {$cell->setValue('Plat');});
+                $sheet->cell('E2', function($cell) {$cell->setValue('423176-20200');});
+                $sheet->cell('F2', function($cell) {$cell->setValue('SUP01');});
+                $sheet->cell('G2', function($cell) {$cell->setValue('Local');});
+                $sheet->cell('H2', function($cell) {$cell->setValue('12');});
+                 
+             });
+
+        })->download('csv');
     }
 }

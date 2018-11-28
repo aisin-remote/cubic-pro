@@ -142,6 +142,10 @@ function on_edit(id)
     $('[name="is_showed"]').val(data.is_showed).trigger('change');
     $('[name="order_number"]').val(data.order_number);
 
+    $('html, body').animate({
+        scrollTop: $('#menu-menu').offset().top
+    }, 'fast');
+
     $('#btn-add').html('Update menu');
     $('#btn-cancel').show();
 
