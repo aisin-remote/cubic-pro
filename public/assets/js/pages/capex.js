@@ -180,6 +180,10 @@ function initDatepickerable () {
     });
 }
 
+$('#btn-import').click(function(){
+    $('#form-import').submit();
+});
+
 
 
 

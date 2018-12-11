@@ -17,6 +17,7 @@ use App\Expense;
 use App\Expense_archive;    
 use App\Approval_master;    
 use App\Approval_detail;
+use Excel;
 
 class ExpenseController extends Controller
 {
@@ -25,7 +26,7 @@ class ExpenseController extends Controller
 
       	if ($request->wantsJson()) {
       		
-      		$capex = Capex::get();
+      		$capex = Expense::get();
       		return response()->json($capex);
       	}
     	return view('pages.expense.index');
@@ -164,8 +165,8 @@ class ExpenseController extends Controller
     public function destroy($id)
     {
         DB::transaction(function() use ($id){
-            $capex      = Expense::find($id);
-            $capex->delete();
+            $expense      = Expense::find($id);
+            $expense->delete();
         });
 
         $res = [
@@ -177,5 +178,66 @@ class ExpenseController extends Controller
         return redirect()
                     ->route('expense.index')
                     ->with($res);
+    }
+    public function upload(Request $request)
+    {
+      return view('pages.expense.upload');
+    }
+
+    public function import(Request $request)
+    {
+        $file = $request->file('file');
+        $name = time() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('public/uploads', $name);
+
+        $data = [];
+        if ($request->hasFile('file')) {
+            $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
+            // dd($datas);
+            // $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader) use ($data){
+                if ($datas->first()->has('department_code')) {
+                    foreach ($datas as $data) {
+
+                        $department = Department::where('department_code', $data->department_code)->first();
+
+                        $expense                    = new Expense;
+                        $expense->department_id     = !empty($department) ? $department->id : 0;
+                        $expense->budget_no         = $data->budget_no;
+                        $expense->sap_cc_code       = $data->sap_cc_code;
+                        $expense->equipment_name    = $data->equipment_name;
+                        $expense->plan_gr           = $data->plan_gr;
+                        $expense->budget_plan       = $data->budget_plan;
+                        $expense->budget_remaining       = $data->budget_plan;
+                        $expense->save();  
+                                        
+                    }  
+
+                // });
+                    $res = [
+                                'title'             => 'Sukses',
+                                'type'              => 'success',
+                                'message'           => 'Data berhasil di Upload!'
+                            ];
+                    Storage::delete('public/uploads/'.$name); 
+                    return redirect()
+                            ->route('expense.index')
+                            ->with($res);
+
+        // }
+                } else {
+
+                    Storage::delete('public/uploads/'.$name);
+
+                    return redirect()
+                            ->route('expense.index')
+                            ->with(
+                                [
+                                    'title' => 'Error',
+                                    'type' => 'error',
+                                    'message' => 'Format Buruk!'
+                                ]
+                            );
+                }
+        }
     }
 }

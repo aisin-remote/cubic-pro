@@ -1,21 +1,21 @@
 @extends('layouts.master')
 
 @section('title')
-    List of Unbudget Approval Sheet
+    List of Capex
 @endsection
 
 @section('content')
 
-@php($active = 'unbudget')
+@php($active = 'capex')
 
 <div class="container">
     <div class="row">
         <div class="col-xs-12">
             <div class="page-title-box">
-                <h4 class="page-title"> List of Unbudget Approval Sheet</h4>
+                <h4 class="page-title"> List of Capex</h4>
                 <ol class="breadcrumb p-0 m-0">
                     <li class="active">
-                         List of Unbudget Approval Sheet
+                         List of Capex
                     </li>
                 </ol>
                 <div class="clearfix"></div>
@@ -23,18 +23,26 @@
         </div>
     </div>
     <!-- end row -->
+    <div class="row">
+        <div class="col-sm-4">
+             <a href="{{ route('capex.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Capex</a>
+        </div><!-- end col -->
+    </div>
 
     <div class="row">
         <div class="col-md-12">
             <div class="card-box">
-                <table class="table m-0 table-colored table-inverse" id="table-list-approval-unbudget">
+                <table class="table m-0 table-colored table-inverse" id="table-capex">
                     <thead>
                         <tr>
-                            <th>Department</th>
-                            <th>Approval Number</th>
-                            <th>Total</th>
+                            <th>Bdgt. Number</th>
+                            <th>Equipment Name</th>
+                            <th>Bdgt. Plan</th>
+                            <th>Bdgt. Used</th>
+                            <th>Bdgt. Remaining</th>
+                            <th>Plan GR</th>
                             <th>Status</th>
-                            <th>Overbudget Info</th>
+                            <th>Closing</th>  
                             <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>
@@ -72,6 +80,6 @@
     </script>
 @endif
 
-<script src="{{ url('assets/js/pages/approval-unbudget.js') }}"></script>
+<script src="{{ url('assets/js/pages/capex.js') }}"></script>
 
 @endpush

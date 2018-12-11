@@ -17,6 +17,7 @@ use App\Expense;
 use App\Expense_archive;    
 use App\Approval_master;    
 use App\Approval_detail;
+use Excel;
 
 class CapexController extends Controller
 {
@@ -176,5 +177,67 @@ class CapexController extends Controller
         return redirect()
                     ->route('capex.index')
                     ->with($res);
+    }
+
+    public function upload(Request $request)
+    {
+      return view('pages.capex.upload');
+    }
+
+    public function import(Request $request)
+    {
+        $file = $request->file('file');
+        $name = time() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('public/uploads', $name);
+
+        $data = [];
+        if ($request->hasFile('file')) {
+            $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
+            // dd($datas);
+            // $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader) use ($data){
+                if ($datas->first()->has('department_code')) {
+                    foreach ($datas as $data) {
+
+                        $department = Department::where('department_code', $data->department_code)->first();
+
+                        $capex                    = new Capex;
+                        $capex->department_id     = !empty($department) ? $department->id : 0;
+                        $capex->budget_no         = $data->budget_no;
+                        $capex->sap_cc_code       = $data->sap_cc_code;
+                        $capex->equipment_name    = $data->equipment_name;
+                        $capex->plan_gr           = $data->plan_gr;
+                        $capex->budget_plan       = $data->budget_plan;
+                        $capex->budget_remaining       = $data->budget_plan;
+                        $capex->save();  
+                                        
+                    }  
+
+                // });
+                    $res = [
+                                'title'             => 'Sukses',
+                                'type'              => 'success',
+                                'message'           => 'Data berhasil di Upload!'
+                            ];
+                    Storage::delete('public/uploads/'.$name); 
+                    return redirect()
+                            ->route('capex.index')
+                            ->with($res);
+
+        // }
+                } else {
+
+                    Storage::delete('public/uploads/'.$name);
+
+                    return redirect()
+                            ->route('capex.index')
+                            ->with(
+                                [
+                                    'title' => 'Error',
+                                    'type' => 'error',
+                                    'message' => 'Format Buruk!'
+                                ]
+                            );
+                }
+        }
     }
 }

@@ -15,7 +15,6 @@ Route::get('/', function () {
     return redirect('dashboard');
 });
 
-
 Route::middleware('auth')->group(function(){
 
 	Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
@@ -74,9 +73,12 @@ Route::middleware('auth')->group(function(){
 	Route::get('approval/cx/store', 'ApprovalController@store')->name('approval-capex.store');
 	Route::get('capex/get_data', 'CapexController@getData');
 	Route::post('capex/xedit', 'CapexController@xedit');
+	Route::get('capex/upload', 'CapexController@upload');
+	Route::post('/capex/import', 'CapexController@import')->name('capex.import');
+	Route::post('/capex/template', 'CapexController@template')->name('capex.template');
+
 	Route::resource('capex', 'CapexController');
 	
-
 	// Menu Unbudget
 	Route::resource('unbudget', 'UnbudgetController');
 	Route::get('approval/ub/', 'ApprovalController@approvalUnbudget');
@@ -91,6 +93,9 @@ Route::middleware('auth')->group(function(){
 	Route::get('approval/ex/store', 'ApprovalController@store')->name('approval-expense.store');
 	Route::get('expense/get_data', 'ExpenseController@getData');
 	Route::post('expense/xedit', 'ExpenseController@xedit');
+	Route::get('expense/upload', 'ExpenseController@upload');
+	Route::post('/expense/import', 'ExpenseController@import')->name('expense.import');
+	Route::post('/expense/template', 'ExpenseController@template')->name('expense.template');
 	Route::resource('expense', 'ExpenseController');
 
 	// Upload Bom Finish Good
@@ -168,9 +173,6 @@ Route::middleware('auth')->group(function(){
 	Route::get('price_catalogue/temporary/save', 'MasterPriceCatalogController@save')->name('price_catalogue.temporary.save');
 	
 	Route::resource('price_catalogue', 'MasterPriceCatalogController');
-
-
-
 	// Route::get('approval/get_list/{type}/{status}', function($type, $status){
     
  //    return ApprovalMaster::get_list($type, $status);
@@ -210,9 +212,43 @@ Route::middleware('auth')->group(function(){
 	
 	Route::resource('/settings', 'SettingController');
 
+	//Route Sap Asset 
+	Route::get('asset/get_data', 'Sap\AssetController@getData');
+	Route::resource('asset', 'Sap\AssetController');
+
+	// Route SAP Cost Center
+	Route::get('cost_center/get_data', 'Sap\CostCenterController@getData');
+	Route::resource('cost_center', 'Sap\CostCenterController');
+
+	// Route SAP GL Account
+	Route::get('gl_account/get_data', 'Sap\GlAccountController@getData');
+	Route::resource('gl_account', 'Sap\GlAccountController');
+
+	// Route SAP Number
+	Route::get('number/get_data', 'Sap\NumberController@getData');
+	Route::resource('number', 'Sap\NumberController');
+
+	// Route SAP Taxe
+	Route::get('taxe/get_data', 'Sap\TaxeController@getData');
+	Route::resource('taxe', 'Sap\TaxeController');
+
+	// Route SAP Uom
+	Route::get('uom/get_data', 'Sap\UomController@getData');
+	Route::resource('uom', 'Sap\UomController');
+
+	// Route SAP Uom
+	Route::get('uom/get_data', 'Sap\UomController@getData');
+	Route::resource('uom', 'Sap\UomController');
+
+	// Route SAP Vendor
+	Route::get('vendor/get_data', 'Sap\VendorController@getData');
+	Route::resource('vendor', 'Sap\VendorController');
+
+	// Route Manage Approval
+	Route::get('manage_approval/get_data', 'ManageApprovalController@getData');
+	Route::get('/master/approval/get_user', 'ManageApprovalController@getUser');
+	Route::resource('manage_approval', 'ManageApprovalController');
 });
 
-
-Route::get('/tes', 'MasterPriceController@tes');
 
 Auth::routes();

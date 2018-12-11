@@ -1,21 +1,21 @@
 @extends('layouts.master')
 
 @section('title')
-    List of Unbudget Approval Sheet
+    Master SAP Taxe
 @endsection
 
 @section('content')
 
-@php($active = 'unbudget')
+@php($active = 'taxe')
 
 <div class="container">
     <div class="row">
         <div class="col-xs-12">
             <div class="page-title-box">
-                <h4 class="page-title"> List of Unbudget Approval Sheet</h4>
+                <h4 class="page-title">Master SAP Taxe</h4>
                 <ol class="breadcrumb p-0 m-0">
                     <li class="active">
-                         List of Unbudget Approval Sheet
+                        SAP Taxe
                     </li>
                 </ol>
                 <div class="clearfix"></div>
@@ -25,16 +25,19 @@
     <!-- end row -->
 
     <div class="row">
+        <div class="col-sm-4">
+             <a href="{{ route('taxe.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create SAP Taxe</a>
+        </div><!-- end col -->
+    </div>
+
+    <div class="row">
         <div class="col-md-12">
             <div class="card-box">
-                <table class="table m-0 table-colored table-inverse" id="table-list-approval-unbudget">
+                <table class="table m-0 table-colored table-inverse" id="table-taxe">
                     <thead>
                         <tr>
-                            <th>Department</th>
-                            <th>Approval Number</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Overbudget Info</th>
+                            <th>Taxe Code</th>
+                            <th>Taxe Name </th>
                             <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>
@@ -51,16 +54,17 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                <h4 class="modal-title">Apakah anda yakin?</h4>
+                <h4 class="modal-title">Warning!</h4>
             </div>
-            <div class="modal-body">Data yang dipilih akan dihapus, apakah anda yakin?</div>
+            <div class="modal-body">The data you choose will be deleted, are you sure?</div>
             <div class="modal-footer">
-                <button type="submit" id="btn-confirm" class="btn btn-danger btn-bordered waves-effect waves-light">Hapus</button>
-                <button type="button" class="btn btn-default btn-bordered waves-effect waves-light" data-dismiss="modal">Batal</button>
+                <button type="submit" id="btn-confirm" class="btn btn-danger btn-bordered waves-effect waves-light">Delete</button>
+                <button type="button" class="btn btn-default btn-bordered waves-effect waves-light" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
+
 
 @endsection
 
@@ -72,6 +76,5 @@
     </script>
 @endif
 
-<script src="{{ url('assets/js/pages/approval-unbudget.js') }}"></script>
-
+<script src="{{ url('assets/js/pages/taxe.js') }}"></script>
 @endpush

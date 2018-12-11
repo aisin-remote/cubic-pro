@@ -5,12 +5,7 @@ $(document).ready(function(){
     tCapex = $('#table-cip').DataTable({
         ajax: SITE_URL + 'cip/settlement/list',
         "fnDrawCallback": function (oSettings) {
-            budgetStatusStyler();
             budgetClosingStyler();
-            budgetView();
-            xeditClasser();
-            initEditable();
-            initSelectable();
             
         },
         columns: [

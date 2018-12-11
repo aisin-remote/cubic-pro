@@ -17,6 +17,7 @@ class CreateCapexesTable extends Migration
         Schema::create('capexes', function (Blueprint $table) {
             $table->increments('id');
             $table->string('budget_no', 30)->unique();
+            $table->string('sap_cc_code');
             $table->string('dir', 4)->nullable();
             $table->string('division_id')->nullable();
             $table->string('department_id');
