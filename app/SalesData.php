@@ -170,52 +170,57 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+
 
 
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')* $price;
+            return $result->sum('apr_qty')*$qty*$price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_qty')* $price;
+            return $result->sum('may_qty')*$qty*$price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')* $price;
+            return $result->sum('june_qty')*$qty*$price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')* $price;
+            return $result->sum('july_qty')*$qty*$price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')* $price;
+            return $result->sum('august_qty')*$qty*$price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')* $price;
+            return $result->sum('sep_qty')*$qty*$price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')* $price;
+            return $result->sum('okt_qty')*$qty*$price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')* $price;
+            return $result->sum('nov_qty')*$qty*$price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')* $price;
+            return $result->sum('des_qty')*$qty*$price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')* $price;
+            return $result->sum('jan_qty')*$qty*$price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')* $price;
+            return $result->sum('feb_qty')*$qty*$price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')* $price;
+            return $result->sum('mar_qty')*$qty*$price;
         }
     }
     
@@ -234,24 +239,27 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                       ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+         
 
-        $data[] = ['total' => $result->sum('apr_qty') * $price];
-        $data[] = ['total' => $result->sum('may_qty') * $price];
-        $data[] = ['total' => $result->sum('june_qty') * $price];
-        $data[] = ['total' => $result->sum('july_qty') * $price];
-        $data[] = ['total' => $result->sum('august_qty') * $price];
-        $data[] = ['total' => $result->sum('sep_qty') * $price];
-        $data[] = ['total' => $result->sum('okt_qty') * $price];
-        $data[] = ['total' => $result->sum('nov_qty') * $price];
-        $data[] = ['total' => $result->sum('des_qty') * $price];
-        $data[] = ['total' => $result->sum('jan_qty') * $price];
-        $data[] = ['total' => $result->sum('feb_qty') * $price];
-        $data[] = ['total' => $result->sum('mar_qty') * $price];
-
-        // return $result->sum('total_amount');
+        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
 
         return collect($data)->sum('total');
 
@@ -272,52 +280,57 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+
 
 
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')* $price;
+            return $result->sum('apr_qty')*$qty*$price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_qty')* $price;
+            return $result->sum('may_qty')*$qty*$price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')* $price;
+            return $result->sum('june_qty')*$qty*$price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')* $price;
+            return $result->sum('july_qty')*$qty*$price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')* $price;
+            return $result->sum('august_qty')*$qty*$price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')* $price;
+            return $result->sum('sep_qty')*$qty*$price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')* $price;
+            return $result->sum('okt_qty')*$qty*$price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')* $price;
+            return $result->sum('nov_qty')*$qty*$price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')* $price;
+            return $result->sum('des_qty')*$qty*$price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')* $price;
+            return $result->sum('jan_qty')*$qty*$price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')* $price;
+            return $result->sum('feb_qty')*$qty*$price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')* $price;
+            return $result->sum('mar_qty')*$qty*$price;
         }
     }
     
@@ -336,24 +349,27 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+         
 
-        $data[] = ['total' => $result->sum('apr_qty') * $price];
-        $data[] = ['total' => $result->sum('may_qty') * $price];
-        $data[] = ['total' => $result->sum('june_qty') * $price];
-        $data[] = ['total' => $result->sum('july_qty') * $price];
-        $data[] = ['total' => $result->sum('august_qty') * $price];
-        $data[] = ['total' => $result->sum('sep_qty') * $price];
-        $data[] = ['total' => $result->sum('okt_qty') * $price];
-        $data[] = ['total' => $result->sum('nov_qty') * $price];
-        $data[] = ['total' => $result->sum('des_qty') * $price];
-        $data[] = ['total' => $result->sum('jan_qty') * $price];
-        $data[] = ['total' => $result->sum('feb_qty') * $price];
-        $data[] = ['total' => $result->sum('mar_qty') * $price];
-
-        // return $result->sum('total_amount');
+        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
 
         return collect($data)->sum('total');
 
@@ -373,52 +389,57 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+
 
 
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')* $price;
+            return $result->sum('apr_qty')*$qty*$price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_qty')* $price;
+            return $result->sum('may_qty')*$qty*$price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')* $price;
+            return $result->sum('june_qty')*$qty*$price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')* $price;
+            return $result->sum('july_qty')*$qty*$price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')* $price;
+            return $result->sum('august_qty')*$qty*$price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')* $price;
+            return $result->sum('sep_qty')*$qty*$price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')* $price;
+            return $result->sum('okt_qty')*$qty*$price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')* $price;
+            return $result->sum('nov_qty')*$qty*$price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')* $price;
+            return $result->sum('des_qty')*$qty*$price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')* $price;
+            return $result->sum('jan_qty')*$qty*$price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')* $price;
+            return $result->sum('feb_qty')*$qty*$price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')* $price;
+            return $result->sum('mar_qty')*$qty*$price;
         }
     }
     
@@ -437,25 +458,28 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+         
 
-        $data[] = ['total' => $result->sum('apr_qty') * $price];
-        $data[] = ['total' => $result->sum('may_qty') * $price];
-        $data[] = ['total' => $result->sum('june_qty') * $price];
-        $data[] = ['total' => $result->sum('july_qty') * $price];
-        $data[] = ['total' => $result->sum('august_qty') * $price];
-        $data[] = ['total' => $result->sum('sep_qty') * $price];
-        $data[] = ['total' => $result->sum('okt_qty') * $price];
-        $data[] = ['total' => $result->sum('nov_qty') * $price];
-        $data[] = ['total' => $result->sum('des_qty') * $price];
-        $data[] = ['total' => $result->sum('jan_qty') * $price];
-        $data[] = ['total' => $result->sum('feb_qty') * $price];
-        $data[] = ['total' => $result->sum('mar_qty') * $price];
-
-        // return $result->sum('total_amount');
-
+        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
+        
         return collect($data)->sum('total');
 
         
@@ -474,52 +498,57 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+
 
 
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')* $price;
+            return $result->sum('apr_qty')*$qty*$price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_qty')* $price;
+            return $result->sum('may_qty')*$qty*$price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')* $price;
+            return $result->sum('june_qty')*$qty*$price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')* $price;
+            return $result->sum('july_qty')*$qty*$price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')* $price;
+            return $result->sum('august_qty')*$qty*$price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')* $price;
+            return $result->sum('sep_qty')*$qty*$price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')* $price;
+            return $result->sum('okt_qty')*$qty*$price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')* $price;
+            return $result->sum('nov_qty')*$qty*$price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')* $price;
+            return $result->sum('des_qty')*$qty*$price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')* $price;
+            return $result->sum('jan_qty')*$qty*$price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')* $price;
+            return $result->sum('feb_qty')*$qty*$price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')* $price;
+            return $result->sum('mar_qty')*$qty*$price;
         }
     }
     
@@ -538,24 +567,27 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+         
 
-        $data[] = ['total' => $result->sum('apr_qty') * $price];
-        $data[] = ['total' => $result->sum('may_qty') * $price];
-        $data[] = ['total' => $result->sum('june_qty') * $price];
-        $data[] = ['total' => $result->sum('july_qty') * $price];
-        $data[] = ['total' => $result->sum('august_qty') * $price];
-        $data[] = ['total' => $result->sum('sep_qty') * $price];
-        $data[] = ['total' => $result->sum('okt_qty') * $price];
-        $data[] = ['total' => $result->sum('nov_qty') * $price];
-        $data[] = ['total' => $result->sum('des_qty') * $price];
-        $data[] = ['total' => $result->sum('jan_qty') * $price];
-        $data[] = ['total' => $result->sum('feb_qty') * $price];
-        $data[] = ['total' => $result->sum('mar_qty') * $price];
-
-        // return $result->sum('total_amount');
+        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
 
         return collect($data)->sum('total');
 
@@ -575,51 +607,57 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0; 
+        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
 
-         if ($month == 'apr') {
+
+
+        if ($month == 'apr') {
             
-            return $result->sum('apr_qty')* $price;
+            return $result->sum('apr_qty')*$qty*$price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_qty')* $price;
+            return $result->sum('may_qty')*$qty*$price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')* $price;
+            return $result->sum('june_qty')*$qty*$price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')* $price;
+            return $result->sum('july_qty')*$qty*$price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')* $price;
+            return $result->sum('august_qty')*$qty*$price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')* $price;
+            return $result->sum('sep_qty')*$qty*$price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')* $price;
+            return $result->sum('okt_qty')*$qty*$price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')* $price;
+            return $result->sum('nov_qty')*$qty*$price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')* $price;
+            return $result->sum('des_qty')*$qty*$price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')* $price;
+            return $result->sum('jan_qty')*$qty*$price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')* $price;
+            return $result->sum('feb_qty')*$qty*$price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')* $price;
+            return $result->sum('mar_qty')*$qty*$price;
         }
     }
     
@@ -637,24 +675,27 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+         
 
-        $data[] = ['total' => $result->sum('apr_qty') * $price];
-        $data[] = ['total' => $result->sum('may_qty') * $price];
-        $data[] = ['total' => $result->sum('june_qty') * $price];
-        $data[] = ['total' => $result->sum('july_qty') * $price];
-        $data[] = ['total' => $result->sum('august_qty') * $price];
-        $data[] = ['total' => $result->sum('sep_qty') * $price];
-        $data[] = ['total' => $result->sum('okt_qty') * $price];
-        $data[] = ['total' => $result->sum('nov_qty') * $price];
-        $data[] = ['total' => $result->sum('des_qty') * $price];
-        $data[] = ['total' => $result->sum('jan_qty') * $price];
-        $data[] = ['total' => $result->sum('feb_qty') * $price];
-        $data[] = ['total' => $result->sum('mar_qty') * $price];
-
-        // return $result->sum('total_amount');
+        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
 
         return collect($data)->sum('total');
 
@@ -674,52 +715,57 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+
 
 
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')* $price;
+            return $result->sum('apr_qty')*$qty*$price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_qty')* $price;
+            return $result->sum('may_qty')*$qty*$price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')* $price;
+            return $result->sum('june_qty')*$qty*$price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')* $price;
+            return $result->sum('july_qty')*$qty*$price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')* $price;
+            return $result->sum('august_qty')*$qty*$price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')* $price;
+            return $result->sum('sep_qty')*$qty*$price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')* $price;
+            return $result->sum('okt_qty')*$qty*$price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')* $price;
+            return $result->sum('nov_qty')*$qty*$price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')* $price;
+            return $result->sum('des_qty')*$qty*$price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')* $price;
+            return $result->sum('jan_qty')*$qty*$price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')* $price;
+            return $result->sum('feb_qty')*$qty*$price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')* $price;
+            return $result->sum('mar_qty')*$qty*$price;
         }
     }
     
@@ -738,22 +784,28 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+         
 
-        $data[] = ['total' => $result->sum('apr_qty') * $price];
-        $data[] = ['total' => $result->sum('may_qty') * $price];
-        $data[] = ['total' => $result->sum('june_qty') * $price];
-        $data[] = ['total' => $result->sum('july_qty') * $price];
-        $data[] = ['total' => $result->sum('august_qty') * $price];
-        $data[] = ['total' => $result->sum('sep_qty') * $price];
-        $data[] = ['total' => $result->sum('okt_qty') * $price];
-        $data[] = ['total' => $result->sum('nov_qty') * $price];
-        $data[] = ['total' => $result->sum('des_qty') * $price];
-        $data[] = ['total' => $result->sum('jan_qty') * $price];
-        $data[] = ['total' => $result->sum('feb_qty') * $price];
-        $data[] = ['total' => $result->sum('mar_qty') * $price];
+        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
 
         // return $result->sum('total_amount');
 
@@ -775,52 +827,57 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+       $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+
 
 
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')* $price;
+            return $result->sum('apr_qty')*$qty*$price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_qty')* $price;
+            return $result->sum('may_qty')*$qty*$price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')* $price;
+            return $result->sum('june_qty')*$qty*$price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')* $price;
+            return $result->sum('july_qty')*$qty*$price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')* $price;
+            return $result->sum('august_qty')*$qty*$price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')* $price;
+            return $result->sum('sep_qty')*$qty*$price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')* $price;
+            return $result->sum('okt_qty')*$qty*$price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')* $price;
+            return $result->sum('nov_qty')*$qty*$price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')* $price;
+            return $result->sum('des_qty')*$qty*$price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')* $price;
+            return $result->sum('jan_qty')*$qty*$price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')* $price;
+            return $result->sum('feb_qty')*$qty*$price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')* $price;
+            return $result->sum('mar_qty')*$qty*$price;
         }
     }
     
@@ -839,24 +896,27 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+         
 
-        $data[] = ['total' => $result->sum('apr_qty') * $price];
-        $data[] = ['total' => $result->sum('may_qty') * $price];
-        $data[] = ['total' => $result->sum('june_qty') * $price];
-        $data[] = ['total' => $result->sum('july_qty') * $price];
-        $data[] = ['total' => $result->sum('august_qty') * $price];
-        $data[] = ['total' => $result->sum('sep_qty') * $price];
-        $data[] = ['total' => $result->sum('okt_qty') * $price];
-        $data[] = ['total' => $result->sum('nov_qty') * $price];
-        $data[] = ['total' => $result->sum('des_qty') * $price];
-        $data[] = ['total' => $result->sum('jan_qty') * $price];
-        $data[] = ['total' => $result->sum('feb_qty') * $price];
-        $data[] = ['total' => $result->sum('mar_qty') * $price];
-
-        // return $result->sum('total_amount');
+        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
 
         return collect($data)->sum('total');
     }
@@ -874,52 +934,57 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+
 
 
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')* $price;
+            return $result->sum('apr_qty')*$qty*$price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_qty')* $price;
+            return $result->sum('may_qty')*$qty*$price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')* $price;
+            return $result->sum('june_qty')*$qty*$price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')* $price;
+            return $result->sum('july_qty')*$qty*$price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')* $price;
+            return $result->sum('august_qty')*$qty*$price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')* $price;
+            return $result->sum('sep_qty')*$qty*$price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')* $price;
+            return $result->sum('okt_qty')*$qty*$price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')* $price;
+            return $result->sum('nov_qty')*$qty*$price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')* $price;
+            return $result->sum('des_qty')*$qty*$price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')* $price;
+            return $result->sum('jan_qty')*$qty*$price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')* $price;
+            return $result->sum('feb_qty')*$qty*$price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')* $price;
+            return $result->sum('mar_qty')*$qty*$price;
         }
     }
      
@@ -938,24 +1003,27 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+         
 
-        $data[] = ['total' => $result->sum('apr_qty') * $price];
-        $data[] = ['total' => $result->sum('may_qty') * $price];
-        $data[] = ['total' => $result->sum('june_qty') * $price];
-        $data[] = ['total' => $result->sum('july_qty') * $price];
-        $data[] = ['total' => $result->sum('august_qty') * $price];
-        $data[] = ['total' => $result->sum('sep_qty') * $price];
-        $data[] = ['total' => $result->sum('okt_qty') * $price];
-        $data[] = ['total' => $result->sum('nov_qty') * $price];
-        $data[] = ['total' => $result->sum('des_qty') * $price];
-        $data[] = ['total' => $result->sum('jan_qty') * $price];
-        $data[] = ['total' => $result->sum('feb_qty') * $price];
-        $data[] = ['total' => $result->sum('mar_qty') * $price];
-
-        // return $result->sum('total_amount');
+        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
 
         return collect($data)->sum('total');
 
@@ -975,52 +1043,57 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+
 
 
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')* $price;
+            return $result->sum('apr_qty')*$qty*$price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_qty')* $price;
+            return $result->sum('may_qty')*$qty*$price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')* $price;
+            return $result->sum('june_qty')*$qty*$price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')* $price;
+            return $result->sum('july_qty')*$qty*$price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')* $price;
+            return $result->sum('august_qty')*$qty*$price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')* $price;
+            return $result->sum('sep_qty')*$qty*$price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')* $price;
+            return $result->sum('okt_qty')*$qty*$price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')* $price;
+            return $result->sum('nov_qty')*$qty*$price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')* $price;
+            return $result->sum('des_qty')*$qty*$price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')* $price;
+            return $result->sum('jan_qty')*$qty*$price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')* $price;
+            return $result->sum('feb_qty')*$qty*$price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')* $price;
+            return $result->sum('mar_qty')*$qty*$price;
         }
     }
     
@@ -1039,24 +1112,27 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+         
 
-        $data[] = ['total' => $result->sum('apr_qty') * $price];
-        $data[] = ['total' => $result->sum('may_qty') * $price];
-        $data[] = ['total' => $result->sum('june_qty') * $price];
-        $data[] = ['total' => $result->sum('july_qty') * $price];
-        $data[] = ['total' => $result->sum('august_qty') * $price];
-        $data[] = ['total' => $result->sum('sep_qty') * $price];
-        $data[] = ['total' => $result->sum('okt_qty') * $price];
-        $data[] = ['total' => $result->sum('nov_qty') * $price];
-        $data[] = ['total' => $result->sum('des_qty') * $price];
-        $data[] = ['total' => $result->sum('jan_qty') * $price];
-        $data[] = ['total' => $result->sum('feb_qty') * $price];
-        $data[] = ['total' => $result->sum('mar_qty') * $price];
-
-        // return $result->sum('total_amount');
+        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
 
         return collect($data)->sum('total');
 
@@ -1076,55 +1152,58 @@ class SalesData extends Model
                         ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+
 
 
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')* $price;
+            return $result->sum('apr_qty')*$qty*$price;
 
         } elseif ($month == 'may') {
 
-            return $result->sum('may_qty')* $price;
+            return $result->sum('may_qty')*$qty*$price;
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')* $price;
+            return $result->sum('june_qty')*$qty*$price;
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')* $price;
+            return $result->sum('july_qty')*$qty*$price;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')* $price;
+            return $result->sum('august_qty')*$qty*$price;
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')* $price;
+            return $result->sum('sep_qty')*$qty*$price;
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')* $price;
+            return $result->sum('okt_qty')*$qty*$price;
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')* $price;
+            return $result->sum('nov_qty')*$qty*$price;
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')* $price;
+            return $result->sum('des_qty')*$qty*$price;
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')* $price;
+            return $result->sum('jan_qty')*$qty*$price;
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')* $price;
+            return $result->sum('feb_qty')*$qty*$price;
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')* $price;
+            return $result->sum('mar_qty')*$qty*$price;
         }
-
-        
     }
     
     public function scopeSumTotalMaterial1($query, $year, $product_code)
@@ -1139,25 +1218,27 @@ class SalesData extends Model
                     ->whereHas('price', function($where) use ($year) {
                             $where->where('fiscal_year',$year);
                         })
+                        ->whereHas('bom', function($where) use ($year) {
+                            $where->where('fiscal_year',$year);
+                        })
                         ->first();
 
-
         $price = !empty($part->price) ? $part->price->sum('price') : 0;    
+        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+         
 
-        $data[] = ['total' => $result->sum('apr_qty') * $price];
-        $data[] = ['total' => $result->sum('may_qty') * $price];
-        $data[] = ['total' => $result->sum('june_qty') * $price];
-        $data[] = ['total' => $result->sum('july_qty') * $price];
-        $data[] = ['total' => $result->sum('august_qty') * $price];
-        $data[] = ['total' => $result->sum('sep_qty') * $price];
-        $data[] = ['total' => $result->sum('okt_qty') * $price];
-        $data[] = ['total' => $result->sum('nov_qty') * $price];
-        $data[] = ['total' => $result->sum('des_qty') * $price];
-        $data[] = ['total' => $result->sum('jan_qty') * $price];
-        $data[] = ['total' => $result->sum('feb_qty') * $price];
-        $data[] = ['total' => $result->sum('mar_qty') * $price];
-
-        // return $result->sum('total_amount');
+        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
+        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
 
         return collect($data)->sum('total');
 

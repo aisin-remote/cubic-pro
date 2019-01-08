@@ -25,7 +25,9 @@
     <!-- end row -->
     <div class="row">
         <div class="col-sm-4">
+            @if (\Entrust::hasRole('budget')) 
              <a href="{{ route('capex.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Capex</a>
+            @endif
         </div><!-- end col -->
     </div>
 
@@ -42,8 +44,10 @@
                             <th>Bdgt. Remaining</th>
                             <th>Plan GR</th>
                             <th>Status</th>
-                            <th>Closing</th>  
-                            <th style="width: 100px">Opsi</th>
+                            <th>Closing</th>
+                            @if (\Entrust::hasRole('budget'))  
+                                <th style="width: 100px">Opsi</th>
+                            @endif
                         </tr>
                     </thead>
                 </table>

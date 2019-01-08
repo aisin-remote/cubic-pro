@@ -152,4 +152,115 @@ class ApprovalMaster extends Model
         })           
         ->make(true);
     }
+
+    public static function getLastCapex($type, $dept)
+        {
+            $last_capex = self::query()
+            ->where('approval_number', 'like', '%-'.$dept.'-%')
+            ->where('budget_type', '=', $type)
+            ->orderBy('id', 'desc');
+
+            return $last_capex->first();
+        }
+
+        public static function extractApprovalNumber($approval_number)
+        {
+            return explode('-', $approval_number);
+        }
+
+        public static function getNewApprovalNumber($type, $dept)
+        {
+        $year = substr(config('period.fyear_open'), -2);    
+        $iteration = 0;
+
+        if (!is_null($last = self::getLastCapex($type, $dept))) {
+            list(,,$last_year,$last_iteration) = self::extractApprovalNumber($last->approval_number);
+
+            if ($last_year == $year) {
+                $iteration = $last_iteration;
+            }
+        }
+
+        $iteration++;
+        $iteration = str_pad($iteration, 6, 0, STR_PAD_LEFT);
+
+        return $type.'-'.$dept.'-'.$year.'-'.$iteration;
+    }
+    public function details()
+    {
+        return $this->hasMany(\App\ApprovalDetail::class);
+    }
+    public function isOverExist()
+    {
+        if ($this->budget_type != 'ub') {
+            foreach ($this->details as $detail) {
+                if ($detail->budgetStatus == 'Overbudget') {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function NeedDirApproval($query, $andAbove = false)
+    {
+        return !$andAbove ? $query->where('status', '=', 3) : $query->where('status', '>', 3);
+    }
+
+    public function NeedGMApproval($query, $andAbove = false)
+    {
+        return !$andAbove ? $query->where('status', '=', 2) : $query->where('status', '>', 2);
+    }
+
+    public function NeedDeptHeadApproval($query, $andAbove = false)
+    {
+        return !$andAbove ? $query->where('status', '=', 1) : $query->where('status', '>', 1);
+    }
+
+    public function NeedBudgetValidation($query, $andAbove = false)
+    {
+        return !$andAbove ? $query->where('status', '=', 0) : $query->where('status', '>', 0);
+    }
+
+    public function departments()
+    {
+        return $this->belongsTo('App\Department', 'department_id', 'id');
+    }
+
+    public function divisions()
+    {
+        return $this->belongsTo('App\Division', 'division_id', 'id');
+    }
+    public function sap_assets()
+    {
+        return $this->belongsTo('App\SapModel\SapAsset', 'sap_asset_id', 'id');
+    }
+    public function sap_costs()
+    {
+        return $this->belongsTo('App\SapModel\SapCostCenter', 'sap_cost_center_id', 'id');
+    }
+    public function sap_uoms()
+    {
+        return $this->belongsTo('App\SapModel\SapUom', 'sap_uom_id', 'id');
+    }
+    public function cancel()
+    {
+        if ($this->status < 0) {
+            throw new \Exception("This approval already canceled.", 1);
+        }
+
+        if(\Entrust::hasRole('budget')) $this->status = -1; 
+
+        // if dept head
+        if(\Entrust::hasRole('department_head')) $this->status = -2;
+
+        // if group manager
+        if(\Entrust::hasRole('gm')) $this->status = -3;
+
+        // if dept head
+        if(\Entrust::hasRole('director')) $this->status = -4;
+
+        return $this->status;
+    }
 }

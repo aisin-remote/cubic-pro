@@ -1,4 +1,4 @@
-<?php
+	<?php
 
 /*
 |--------------------------------------------------------------------------
@@ -10,6 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\ApprovalMaster;
 
 Route::get('/', function () {
     return redirect('dashboard');
@@ -40,6 +41,10 @@ Route::middleware('auth')->group(function(){
 	Route::get('department/get_data', 'DepartmentController@getData');
 	Route::resource('department', 'DepartmentController');
 
+	// Master Period ARK. Ipan Herdiansyah
+	Route::get('period/get_data', 'PeriodController@getData');
+	Route::resource('period', 'PeriodController');
+
 	// Master Department ARK. Ipan Herdiansyah
 	Route::get('section/get_data', 'SectionController@getData');
 	Route::resource('section', 'SectionController');
@@ -64,11 +69,11 @@ Route::middleware('auth')->group(function(){
 	Route::resource('system', 'SystemController');
 
 	// Menu Capex
-	Route::get('approval/{type}', 'ApprovalController@index');
+	// Route::get('approval/{type}', 'ApprovalController@index');
+
 	Route::get('cip/admin/list', 'ApprovalController@getCIPAdminList');
 	Route::get('cip/settlement/list', 'ApprovalController@getCip');
-	// Route::get('approval/cx/', 'ApprovalController@approvalCapex');
-	Route::get('approval/create/cx', 'ApprovalController@createApproval');
+	Route::get('approval/create/cx', 'ApprovalController@createApproval')->name('approval-capex.index');
 	Route::get('approval/create/cx/add', 'ApprovalController@create')->name('approval-capex.create');
 	Route::get('approval/cx/store', 'ApprovalController@store')->name('approval-capex.store');
 	Route::get('capex/get_data', 'CapexController@getData');
@@ -77,18 +82,20 @@ Route::middleware('auth')->group(function(){
 	Route::post('/capex/import', 'CapexController@import')->name('capex.import');
 	Route::post('/capex/template', 'CapexController@template')->name('capex.template');
 
+	Route::get('capex/get/{id}', 'ApprovalCapexController@getOne');
+	Route::get('capex/getAsset/{id}', 'ApprovalCapexController@getAsset');
 	Route::resource('capex', 'CapexController');
 	
 	// Menu Unbudget
 	Route::resource('unbudget', 'UnbudgetController');
-	Route::get('approval/ub/', 'ApprovalController@approvalUnbudget');
-	Route::get('approval/create/ub', 'ApprovalController@createApprovalUnbudget');
-	Route::get('approval/create/ub/add', 'ApprovalController@createUnbudget')->name('approval-unbudget.create');
+	// Route::get('approval/ub/', 'ApprovalController@approvalUnbudget');
+	// Route::get('approval/create/ub', 'ApprovalController@createApprovalUnbudget');
+	// Route::get('approval/create/ub/add', 'ApprovalController@createUnbudget')->name('approval-unbudget.create');
 	Route::get('approval/ub/store', 'ApprovalController@store')->name('approval-unbudget.store');
 	
 	// Menu Expense
-	Route::get('approval/ex/', 'ApprovalController@approvalExpense');
-	Route::get('approval/create/ex', 'ApprovalController@createApprovalExpense');
+	// Route::get('approval/ex/', 'ApprovalController@approvalExpense')->name('approval-expense.ListApproval');
+	Route::get('approval/create/ex', 'ApprovalController@createApprovalExpense')->name('approval-expense.index');
 	Route::get('approval/create/ex/add', 'ApprovalController@createExpense')->name('approval-expense.create');
 	Route::get('approval/ex/store', 'ApprovalController@store')->name('approval-expense.store');
 	Route::get('expense/get_data', 'ExpenseController@getData');
@@ -96,6 +103,9 @@ Route::middleware('auth')->group(function(){
 	Route::get('expense/upload', 'ExpenseController@upload');
 	Route::post('/expense/import', 'ExpenseController@import')->name('expense.import');
 	Route::post('/expense/template', 'ExpenseController@template')->name('expense.template');
+	Route::get('expense/get/{id}', 'ApprovalExpenseController@getOne');
+	Route::get('expense/getGlGroup/{id}', 'ApprovalExpenseController@getGlGroup');
+
 	Route::resource('expense', 'ExpenseController');
 
 	// Upload Bom Finish Good
@@ -118,12 +128,12 @@ Route::middleware('auth')->group(function(){
 	Route::get('bom_datas/get_data', 'BomDatasController@getData');
 	Route::post('bom_datas/store', 'BomDatasController@store')->name('bom_datas.store');
 	Route::delete('bom_datas/{id}', 'BomDatasController@destroy')->name('bom_datas.destroy');
-	Route::get('bom_datas/{id}', 'BomDatasController@show')->name('bom_datas.show');
+	
 	// Get Data Bom Semi Detail
 	Route::get('bom_semi_datas/get_data', 'BomSemiDatasController@getData');
 	Route::post('bom_semi_datas/store', 'BomSemiDatasController@store')->name('bom_semi_datas.store');
-	Route::post('bom_semi_datas/destroy', 'BomSemiDatasController@store')->name('bom_semi_datas.destroy');
-	Route::get('bom_semi_datas/{id}', 'BomSemiDatasController@show')->name('bom_semi_datas.show');
+	Route::delete('bom_semi_datas/{id}', 'BomSemiDatasController@destroy')->name('bom_semi_datas.destroy');
+
 	
 	// Upload Bom Semi Finish Good
 	Route::get('bom_semi/get_data', 'BomSemiController@getData');
@@ -248,7 +258,53 @@ Route::middleware('auth')->group(function(){
 	Route::get('manage_approval/get_data', 'ManageApprovalController@getData');
 	Route::get('/master/approval/get_user', 'ManageApprovalController@getUser');
 	Route::resource('manage_approval', 'ManageApprovalController');
+
+	// Route Cart Approval Capex
+	Route::post('approval-capex/store', 'ApprovalCapexController@store')->name('approval_capex.store');
+	Route::post('approval-capex/cancel', 'ApprovalCapexController@cancelAjax');
+	Route::get('approval/cx/', 'ApprovalCapexController@ListApproval')->name('approval-capex.ListApproval');
+	Route::post('approval-capex/approval', 'ApprovalCapexController@SubmitApproval')->name('approval_capex.approval');
+	Route::get('approval-capex/get_data', 'ApprovalCapexController@getData');
+	Route::get('approval-capex/approval_capex', 'ApprovalCapexController@getApprovalCapex');
+	Route::delete('approval-capex/{id}', 'ApprovalCapexController@destroy')->name('approval_capex.destroy');
+	// Route::get('approval-capex/{id}', 'ApprovalCapexController@show')->name('approval_capex.show');
+	Route::get('approval-capex/{id}', 'ApprovalCapexController@edit')->name('approval_capex.edit');
+	Route::get('approval-capex/details-data/{id}', 'ApprovalCapexController@getDetailsData');
+
+
+	//Route Delete List Approval 
+	Route::delete('approval-capex/delete/{id}', 'ApprovalCapexController@delete')->name('approval_capex.delete');
+	Route::delete('approval-expense/delete/{id}', 'ApprovalExpenseController@delete')->name('approval_expense.delete');
+
+
+	// Route Cart Approval Expense
+	Route::get('approval-expense/get_data', 'ApprovalExpenseController@getData');
+	Route::get('approval-expense/approval_expense', 'ApprovalExpenseController@getApprovalExpense');
+
+	Route::get('approval/ex/', 'ApprovalExpenseController@ListApproval')->name('approval-expense.ListApproval');
+	Route::get('approval-expense/{id}', 'ApprovalExpenseController@show')->name('approval_expense.show');
+	Route::post('approval-expense/store', 'ApprovalExpenseController@store')->name('approval_expense.store');
+	Route::post('approval-expense/approval', 'ApprovalExpenseController@SubmitApproval')->name('approval_expense.approval');
+	Route::delete('approval-expense/{id}', 'ApprovalExpenseController@destroy')->name('approval_expense.destroy');
+
+	Route::get('approval/ub/', 'ApprovalController@approvalUnbudget');
+	Route::get('approval/create/ub', 'ApprovalController@createApprovalUnbudget');
+	Route::get('approval/create/ub/add', 'ApprovalController@createUnbudget')->name('approval-unbudget.create');
+	Route::post('approval-unbudget/store', 'ApprovalUnbudgetController@store')->name('approval_unbudget.store');
+	// Route::get('approval/cx/', 'ApprovalCapexController@ListApproval')->name('approval-capex.ListApproval');
+	Route::post('approval-unbudget/approval', 'ApprovalUnbudgetController@SubmitApproval')->name('approval_unbudget.approval');
+	Route::get('approval-unbudget/get_data', 'ApprovalUnbudgetController@getData');
+	Route::get('approval-unbudget/approval_unbudget', 'ApprovalUnbudgetController@getApprovalCapex');
+	Route::delete('approval-unbudget/{id}', 'ApprovalUnbudgetController@destroy')->name('approval_unbudget.destroy');
+	Route::get('approval-unbudget/{id}', 'ApprovalUnbudgetController@show')->name('approval_unbudget.show');
+	Route::get('approval-unbudget/details-data/{id}', 'ApprovalUnbudgetController@getDetailsData');
+	Route::get('/testing', function(){
+		dd(\Cart::instance('bom')->content());
+	});
+
+
 });
+
 
 
 Auth::routes();

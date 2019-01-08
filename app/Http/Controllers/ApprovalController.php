@@ -14,19 +14,24 @@ use App\User;
 use App\Department;
 use Carbon\Carbon;          
 use App\Period;             
-use App\Expense;            
+use App\Expense; 
+use App\SapModel\SapAsset;           
+use App\SapModel\SapCostCenter;           
+use App\SapModel\SapGlAccount;           
+use App\SapModel\SapUom;           
 use App\Expense_archive;    
 use App\Approval_master;    
 use App\ApprovalDetail;
 
 class ApprovalController extends Controller
 {
-    public function index($type)
+    public function index()
     {
+        $type = '';
         switch ($type) {
             case 'cx':
                 $active = 'capex';
-                $view = 'pages.approval.capex.index-admin';
+                $view = 'pages.approval.capex.index';
                 break;
 
             case 'ex':
@@ -65,34 +70,14 @@ class ApprovalController extends Controller
     }
     public function create()
     {
-        $sap_asset      = SapAsset::get();
-        $sap_cost       = SapCost::get(); 
-        $sap_gl_group   = SapGlGroup::get();
+        $sap_assets      = SapAsset::get();
+        $sap_costs       = SapCostCenter::get(); 
+        $sap_gl_group    = SapGlAccount::get();
+        $sap_uoms        = SapUom::get();
+        $capexs          = Capex::where('department_id', auth()->user()->department_id)->get();
 
-    	return view('pages.approval.capex.create', compact(['sap_asset','sap_cost','sap_gl_group']));
+    	return view('pages.approval.capex.create', compact(['sap_assets','sap_costs','sap_gl_group', 'sap_uoms', 'capexs']));
     }
-    public function store(Request $request)
-    {
-        $approval_capex                     = new ApprovallDetail;
-        $approval_capex->budget_no          = $request->budget_no;
-        $approval_capex->project_name       = $request->project_name;
-        $approval_capex->sap_gl_group       = $request->sap_gl_group;
-        $approval_capex->sap_gl_account     = $request->sap_gl_account;
-        $approval_capex->budget_description = $request->budget_description;
-        $approval_capex->asset_categ        = $request->asset_categ;
-        $approval_capex->sap_cost_center    = $request->sap_cost_center;
-        $approval_capex->remarks            = $request->remarks;
-        $approval_capex->pr_specs           = $request->pr_specs;
-        $approval_capex->actual_qty         = $request->actual_qty;
-        $approval_capex->sap_uom            = $request->sap_uom;
-        $approval_capex->budget_remining_log = $request->budget_remining_log;
-        $approval_capex->budget_plan        = $request->budget_plan;
-        $approval_capex->currency           = $request->currency;
-        $approval_capex->plan_gr            = $request->plan_gr;
-
-
-    }
-
     public function approvalExpense()
     {
         return view('pages.approval.expense.list-approval');
@@ -103,7 +88,13 @@ class ApprovalController extends Controller
     }
     public function createExpense()
     {
-        return view('pages.approval.expense.create');
+        $sap_assets      = SapAsset::get();
+        $sap_costs       = SapCostCenter::get(); 
+        $sap_gl_account  = SapGlAccount::get();
+        $sap_uoms        = SapUom::get();
+        $expenses        = Expense::where('department_id', auth()->user()->department_id)->get();
+
+        return view('pages.approval.expense.create', compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses']));
     }
     public function storeExpense()
     {
@@ -120,7 +111,13 @@ class ApprovalController extends Controller
     }
     public function createUnbudget()
     {
-        return view('pages.approval.unbudget.create');
+        $sap_assets      = SapAsset::get();
+        $sap_costs       = SapCostCenter::get(); 
+        $sap_gl_account    = SapGlAccount::get();
+        $sap_uoms        = SapUom::get();
+        $expenses        = Expense::get();
+
+        return view('pages.approval.unbudget.create',compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses']));
     }
     public function storeUnbudget()
     {

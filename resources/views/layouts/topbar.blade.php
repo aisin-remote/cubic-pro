@@ -51,7 +51,7 @@
 
                         <!-- Right(Notification) -->
                         <ul class="nav navbar-nav navbar-right">
-                            <!-- <li>
+                            <li>
                                 <a href="#" class="right-menu-item dropdown-toggle" data-toggle="dropdown">
                                     <i class="mdi mdi-bell"></i>
                                     <span class="badge up bg-success">4</span>
@@ -150,7 +150,7 @@
                                         <p class="m-0"><a href="#">See all Messages</a></p>
                                     </li>
                                 </ul>
-                            </li> -->
+                            </li>
 
                             <!-- <li>
                                 <a href="javascript:void(0);" class="right-bar-toggle right-menu-item">

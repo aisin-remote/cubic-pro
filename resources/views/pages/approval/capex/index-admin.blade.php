@@ -36,6 +36,7 @@
                 <table class="table m-0 table-colored table-inverse" id="table-approval-capex">
                     <thead>
                         <tr>
+                            <th style="width: 50px"></th>
                             <th>Department</th>
                             <th>Approval Number</th>
                             <th>Total</th>
@@ -78,6 +79,7 @@
     </script>
 @endif
 
-<script src="{{ url('assets/js/pages/approval-capex.js') }}"></script>
+<script src="{{ url('assets/js/pages/list-approval-capex.js') }}"></script>
+ <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
 @endpush

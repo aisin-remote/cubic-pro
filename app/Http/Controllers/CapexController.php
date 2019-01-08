@@ -76,15 +76,27 @@ class CapexController extends Controller
         ->rawColumns(['options', 'is_closed'])
 
         ->addColumn('options', function($capex){
-            return '
-                
-                <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$capex->id.')"><i class="mdi mdi-close"></i></button>
-                <form action="'.route('capex.destroy', $capex->id).'" method="POST" id="form-delete-'.$capex->id .'" style="display:none">
-                    '.csrf_field().'
-                    <input type="hidden" name="_method" value="DELETE">
-                </form>
-                
-            ';
+            if(\Entrust::hasRole('user')) {
+                    return '
+                        
+                    ';
+                }elseif(\Entrust::hasRole('budget')) { //Sebenarnya ini ga bakal dieksekusi
+                    return '
+                        <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$capex->id.')"><i class="mdi mdi-close"></i></button>
+                        <form action="'.route('capex.destroy', $capex->id).'" method="POST" id="form-delete-'.$capex->id .'" style="display:none">
+                            '.csrf_field().'
+                            <input type="hidden" name="_method" value="DELETE">
+                        </form>
+                        
+                    ';
+                }else{
+                    return '
+                        
+                        
+                    ';
+                }
+            
+            
         })
         ->editColumn("status", function ($capex) {
                // $expense->is_closed="ABS";
@@ -103,14 +115,14 @@ class CapexController extends Controller
                 return "Closed";
             }
         })
-        ->editColumn("budget_plan", function ($capexes) {
-                return number_format($capexes->budget_plan);
+        ->editColumn("budget_plan", function ($capex) {
+                return number_format($capex->budget_plan);
         })
-        ->editColumn("budget_used", function ($capexes) {
-                return number_format($capexes->budget_used);
+        ->editColumn("budget_used", function ($capex) {
+                return number_format($capex->budget_used);
         })
-        ->editColumn("budget_remaining", function ($capexes) {
-                return number_format($capexes->budget_remaining);
+        ->editColumn("budget_remaining", function ($capex) {
+                return number_format($capex->budget_remaining);
         })
         ->toJson();
     }

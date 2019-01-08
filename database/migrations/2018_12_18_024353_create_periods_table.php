@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBomDatasTable extends Migration
+class CreatePeriodsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,16 @@ class CreateBomDatasTable extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('bom_datas');
-        Schema::create('bom_datas', function (Blueprint $table) {
+        Schema::dropIfExists('periods');
+        Schema::create('periods', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('bom_id');
-            $table->string('part_id');
-            $table->string('supplier_id');
-            $table->string('source');
-            $table->string('qty');
+            $table->string('name')->unique();
+            $table->string('value');
             $table->timestamps();
-
         });
+    
+       
     }
-
     /**
      * Reverse the migrations.
      *
@@ -33,6 +30,6 @@ class CreateBomDatasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bom_datas');
+        Schema::dropIfExists('periods');
     }
 }

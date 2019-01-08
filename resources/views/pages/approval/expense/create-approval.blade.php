@@ -15,35 +15,32 @@
                 <h4 class="page-title"> Create Expense Approval Sheet</h4>
                 <ol class="breadcrumb p-0 m-0">
                     <li class="active">
-                         Create Expense Approval Sheet
+                         <a href="{{ route('approval-expense.create') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Expense Approval Sheet</a>
+                    </li>
+                    <li>
+                        <form action="{{route('approval_expense.approval')}}" method="post">
+                            @csrf
+                            <button type="submit" class="btn btn-success btn-bordered waves-effect waves-light m-b-20"> Submit Approval</a>
+                        </form>
                     </li>
                 </ol>
-                <div class="clearfix"></div>
+               
             </div>
         </div>
     </div>
     <!-- end row -->
 
     <div class="row">
-        <div class="col-sm-4">
-             <a href="{{ route('approval-expense.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Expense Approval Sheet</a>
-        </div><!-- end col -->
-    </div>
-
-    <div class="row">
         <div class="col-md-12">
             <div class="card-box">
-                <table class="table m-0 table-colored table-inverse" id="table-expense">
+                <table class="table m-0 table-colored table-inverse" id="table-approval-expense">
                     <thead>
                         <tr>
                            <th>Budget No.</th>
                             <th>Project Name</th>
                             <th>Actual Qty</th>
                             <th>Actual Price</th>
-                            <th>Actual GR</th>
-                            <th>Asset Kind</th>         
-                            <th>Settlement Date</th>    
-                            <th>Action</th> 
+                            <th>Actual GR</th> 
                             <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>
@@ -81,6 +78,6 @@
     </script>
 @endif
 
-<script src="{{ url('assets/js/pages/expense.js') }}"></script>
+<script src="{{ url('assets/js/pages/approval-expense.js') }}"></script>
 
 @endpush

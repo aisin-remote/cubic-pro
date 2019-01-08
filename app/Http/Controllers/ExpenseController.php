@@ -77,15 +77,26 @@ class ExpenseController extends Controller
         ->rawColumns(['options', 'is_closed'])
 
         ->addColumn('options', function($expense){
-            return '
-                
-                <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$expense->id.')"><i class="mdi mdi-close"></i></button>
-                <form action="'.route('expense.destroy', $expense->id).'" method="POST" id="form-delete-'.$expense->id .'" style="display:none">
-                    '.csrf_field().'
-                    <input type="hidden" name="_method" value="DELETE">
-                </form>
-                
-            ';
+            if(\Entrust::hasRole('user')) {
+                    return '
+                        
+                    ';
+                }elseif(\Entrust::hasRole('budget')) {
+                    return '
+                        
+                        <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$expense->id.')"><i class="mdi mdi-close"></i></button>
+                        <form action="'.route('expense.destroy', $expense->id).'" method="POST" id="form-delete-'.$expense->id .'" style="display:none">
+                            '.csrf_field().'
+                            <input type="hidden" name="_method" value="DELETE">
+                        </form>
+                        
+                    ';
+                }else{
+                    return '
+                        
+                    ';
+                }
+
         })
         ->editColumn("status", function ($expense) {
                // $expense->is_closed="ABS";

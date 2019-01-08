@@ -81,7 +81,7 @@ class BomSemiController extends Controller
             $bom_semi->fiscal_year            = $request->fiscal_year;
             $bom_semi->save();
 
-            foreach (Cart::content() as $bom_semi_data) {
+            foreach (Cart::instance('bom_semi')->content() as $bom_semi_data) {
 
                 $details              = new BomSemiData;
                 $details->part_id     = $bom_semi_data->id;
@@ -134,7 +134,7 @@ class BomSemiController extends Controller
 
         foreach ($bom_semi->details as $detail) {
 
-            Cart::add([
+            Cart::instance('bom_semi')->add([
                 'id' => $detail->part_id,
                 'name' => $detail->parts->part_name,
                 'qty' => $detail->qty,
@@ -173,7 +173,9 @@ class BomSemiController extends Controller
             $bom_semi->model                  = $request->model;
             $bom_semi->save();
 
-            foreach (Cart::content() as $bom_semi_data) {
+            $bom_semi->details()->delete();
+
+            foreach (Cart::instance('bom_semi')->content() as $bom_semi_data) {
 
                 $details              = BomSemiData::firstOrNew(['part_id' => $bom_semi_data->id]);
                 $details->part_id     = $bom_semi_data->id;
@@ -192,7 +194,7 @@ class BomSemiController extends Controller
 
         });
 
-            Cart::destroy();
+            Cart::instance('bom_semi')->destroy();
             return redirect()
                         ->route('bom_semi.index')
                         ->with($res);

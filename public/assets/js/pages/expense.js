@@ -4,17 +4,17 @@ $(document).ready(function(){
     tExpense = $('#table-expense').DataTable({
         ajax: SITE_URL + '/expense/get_data',
         "fnDrawCallback": function (oSettings) {
-            budgetStatusStyler();
-            budgetClosingStyler();
-            budgetView();
-            xeditClasser();
-            initEditable();
-            initSelectable();
+            // budgetStatusStyler();
+            // budgetClosingStyler();
+            // budgetView();
+            // xeditClasser();
+            // initEditable();
+            // initSelectable();
             
         },
         columns: [
             { data: 'budget_no', name: 'budget_no'},
-            { data: 'equipment_name', name: 'equipment_name'},
+            { data: 'description', name: 'description'},
             { data: 'qty_plan', name: 'qty_plan'},
             { data: 'qty_used', name: 'qty_used'},
             { data: 'qty_remaining', name: 'qty_remaining'},

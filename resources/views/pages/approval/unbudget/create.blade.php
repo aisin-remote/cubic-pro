@@ -6,7 +6,7 @@
 
 @section('content')
 
-@php($active = 'expense')
+@php($active = 'unbudget')
 
 <div class="container">
     <div class="row">
@@ -14,7 +14,7 @@
             <div class="page-title-box">
                 <h4 class="page-title">Add Purchase Request Item.</h4>
                 <ol class="breadcrumb p-0 m-0">
-                    <li><a href="{{ route('approval-expense.create') }}">Create Expense Approval Sheet</a></li>
+                    <li><a href="{{ route('approval-unbudget.create') }}">Create Unbudget Approval Sheet</a></li>
                     <li class="active">
                         Add Purchase Request Item.
                     </li>
@@ -29,20 +29,34 @@
         <div class="col-md-12">
             <div class="card-box">
                 <div class="row">
-                    <form id="form-add-edit" action="{{route('approval_expense.store')}}" enctype="multipart/form-data" method="post">
+                    <form id="form-add-edit" action="{{route('approval_unbudget.store')}}" enctype="multipart/form-data" method="post">
                         @csrf
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Budget No<span class="text-danger">*</span></label>
-                                <select name="budget_no" class="select2" data-placeholder="Select Budget" required="required">
-                                    <option></option>
-                                        @foreach ($expenses as $expense)
-                                        <option value="{{ $expense->id }}">{{ $expense->budget_no }}</option>
-                                        @endforeach
-                                </select>
-                                <span class="help-block"></span>
-                           </div> 
-                           
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Type <span class="text-danger">*</span></label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="type" id="type-1" value="1" checked="">
+                                                    <label for="type-1">
+                                                        Capex
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="type" id="type-0" value="0" checked="">
+                                                    <label for="type-0">
+                                                        Expense
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                   </div>  
+                                </div>
+                            </div>
                         </div>
 
                         <div class="col-md-6">
@@ -74,52 +88,38 @@
                         </div>
                                
                         <div class="col-md-6">
-
-                            <div class="form-group">
-                                <label class="control-label">Budget Description <span class="text-danger">*</span></label>
-                                <textarea type="text" name="budget_description" placeholder="Budget Description" class="form-control tinymce" required="required" rows="5" readonly="readonly"></textarea>
-                                <span class="help-block"></span>
-                           </div>  
-
                             
-                               
-                           <div class="form-group">
-                                <label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
-                                <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5"></input>
-                                <span class="help-block"></span>
-                           </div> 
-
-                           
-                           <div class="form-group"> 
-                                <label class="control-label">Qty [Remaining | Actual] <span class="text-danger">*</span></label>    
-                                <div class="row">
-                                    <div class="form-group">
-                                        <div class="col-sm-6">
-                                            <input type="number" class="form-control tinymce"name="qty_remaining" placeholder="QTy Remaining" required="required" readonly="readonly">
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <input type="number" class="form-control tinymce"name="qty_actual" placeholder="Qty Actual" required="required">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        
                             <div class="form-group">
-                                <label class="control-label">SAP Cost Center<span class="text-danger">*</span></label>
-                                <select name="sap_cos_center_id" class="select2" data-placeholder="Select SAP Cost Center" required="required">
+                                <label class="control-label">Asset Type<span class="text-danger">*</span></label>
+                                <select name="sap_asset_id" class="select2" data-placeholder="Select Asset Type" required="required">
                                     <option></option>
-                                        @foreach ($sap_costs as $sap_cost)
-                                        <option value="{{ $sap_cost->id }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
+                                        @foreach ($sap_assets as $sap_asset)
+                                        <option value="{{ $sap_asset->id }}">{{ $sap_asset->asset_type }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
                            </div>
                            <div class="form-group">
-                                <label class="control-label">Item Specs <span class="text-danger">*</span></label>
-                                <input type="text" name="pr_specs" placeholder="Item Specs" class="form-control tinymce" required="required" rows="5"></input>
+                                <label class="control-label">G/L Group<span class="text-danger">*</span></label>
+                                <select name="sap_gl_account_id" class="select2" data-placeholder="Select G/L Group" required="required">
+                                    <option></option>
+                                        @foreach ($sap_gl_account as $sap_gl_account)
+                                        <option value="{{ $sap_gl_account->id }}">{{ $sap_gl_account->gl_gname }}</option>
+                                        @endforeach
+                                </select>
                                 <span class="help-block"></span>
                            </div>
-
+                           <div class="form-group">
+                                <label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
+                                <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>      
+                            
+                            <div class="form-group">
+                                <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
+                                <textarea type="text" name="remarks" placeholder="Purchase Request Item Detail" class="form-control tinymce" required="required" rows="5"></textarea>
+                                <span class="help-block"></span>
+                           </div>
                            <div class="form-group">
                                 <label class="control-label">Unit <span class="text-danger">*</span></label>
                                 <select name="sap_uom_id" class="select2" data-placeholder="Select Unit Of Measeure" required="required">
@@ -131,56 +131,54 @@
                                 </select>
                                 <span class="help-block"></span>
                            </div> 
-
                            <div class="form-group">
-                                <label class="control-label">Amount on Quotation (IDR) <span class="text-danger">*</span></label>
-                                <input type="number" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control tinymce" required="required" rows="5"></input>
+                                <label class="control-label">Actual GR <span class="text-danger">*</span></label>
+                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('M-D-Y') }}"></input>
                                 <span class="help-block"></span>
-                           </div>   
+                           </div>  
+                          
                         </div>
-
-
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
-                                <textarea type="text" name="remarks" placeholder="Purchase Request Item Detail" class="form-control tinymce" required="required" rows="5"></textarea>
+                                <label class="control-label">Asset Code<span class="text-danger">*</span></label>
+                                <input type="text" name="asset_code" placeholder="Asset Code" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
                                 <span class="help-block"></span>
-                           </div> 
-                            <div class="form-group">
-                                <label class="control-label">G/L Group<span class="text-danger">*</span></label>
-                                <select name="sap_gl_account_id" class="select2" data-placeholder="Select G/L Group" required="required">
-                                    <option></option>
-                                        @foreach ($sap_gl_account as $sap_gl_account)
-                                        <option value="{{ $sap_gl_account->id }}">{{ $sap_gl_account->gl_gname }}</option>
-                                        @endforeach
-                                </select>
-                                <span class="help-block"></span>
-                           </div>
+                           </div>  
+
 
                            <div class="form-group">
                                 <label class="control-label">G/L Account<span class="text-danger">*</span></label>
                                 <input type="text" name="gl_fname" placeholder="Sap GL Name" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
                                 <span class="help-block"></span>
                            </div> 
-
-                           <div class="form-group">
-                                <label class="control-label">Last Budget Remains <span class="text-danger">*</span></label>
-                                <input type="number" name="budget_remaining_log" placeholder="Last Budget Remains" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+                            <div class="form-group">
+                                <label class="control-label">SAP Cost Center<span class="text-danger">*</span></label>
+                                <select name="sap_cos_center" class="select2" data-placeholder="Select SAP Cost Center" required="required">
+                                    <option></option>
+                                        @foreach ($sap_costs as $sap_cost)
+                                        <option value="{{ $sap_cost->id }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
+                                        @endforeach
+                                </select>
                                 <span class="help-block"></span>
                            </div>
-                            
                            <div class="form-group">
-                                <label class="control-label">Max Budget Reservation <span class="text-danger">*</span></label>
-                                <input type="number" name="price_remaining" placeholder="Max Budget Reservation" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+                                <label class="control-label">Item Specs <span class="text-danger">*</span></label>
+                                <input type="number" name="pr_specs" placeholder="Item Specs" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+
+
+                           <div class="form-group">
+                                <label class="control-label">Quantity <span class="text-danger">*</span></label>
+                                <input type="number" name="actual_qty" placeholder="Quantity Actual" class="form-control tinymce" required="required" ></input>
                                 <span class="help-block"></span>
                            </div> 
-                           <div class="form-group">
-                                <label class="control-label">Actual GR <span class="text-danger">*</span></label>
-                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('M-D-Y') }}"></input>
+                            <div class="form-group">
+                                <label class="control-label">Price <span class="text-danger">*</span></label>
+                                <input type="number" name="price_actual" placeholder="Price Actual" class="form-control tinymce" required="required"  ></input>
                                 <span class="help-block"></span>
-                           </div>  
-                           
-                      
+                           </div>
+
                            <div class="form-group">
                                 
                                 <div class="checkbox">
@@ -205,16 +203,19 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>   
                         </div>
-                         
-                        <div class="col-md-12 text-right">
-                            <div class="modal-footer">
+                        
+                        <div class="col-md-12 text-right m-t-20">
+                            
+                             <div class="modal-footer">
                                     <button class="btn btn-default btn-bordered waves-effect waves-light" type="reset">Reset</button>
 
                                 <button class="btn btn-primary btn-bordered waves-effect waves-light" type="submit">Save</button>
                             </div>
+
                         </div>
+                         
                         <div class="clearfix"></div> 
                     </form>
                 </div>

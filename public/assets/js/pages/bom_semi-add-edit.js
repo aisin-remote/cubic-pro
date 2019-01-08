@@ -52,7 +52,7 @@ function save()
 {
   var formdata = $('#form-details').serializeArray();
   $.ajax({
-    url: SITE_URL + '/bom_datas/store',
+    url: SITE_URL + '/bom_semi_datas/store',
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },
@@ -79,7 +79,7 @@ function update()
 {
   var formdata = $('#form-details').serializeArray();
   $.ajax({
-    url: SITE_URL + '/bom_datas/update',
+    url: SITE_URL + '/bom_semi_datas/update',
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },
@@ -119,7 +119,7 @@ $('#btn-details').click(function(){
 function onDelete(rowid)
 {
   $.ajax({
-    url: SITE_URL + '/bom_datas/'+rowid,
+    url: SITE_URL + '/bom_semi_datas/'+rowid,
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },

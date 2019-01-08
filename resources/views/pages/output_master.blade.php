@@ -287,19 +287,19 @@
                                     <tr>
                                         <td>{{ $code['text'] }}</td>
                                         <td>{{ $code['id'] }}</td>
-                                        <td>{{ number_format($total[$code['id']]['apr'] / max($sales_amount[$code['id']]['apr'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['may'] / max($sales_amount[$code['id']]['may'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['june'] / max($sales_amount[$code['id']]['june'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['july'] / max($sales_amount[$code['id']]['july'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['august'] / max($sales_amount[$code['id']]['august'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['sep'] / max($sales_amount[$code['id']]['sep'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['okt'] / max($sales_amount[$code['id']]['okt'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['nov'] / max($sales_amount[$code['id']]['nov'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['dec'] / max($sales_amount[$code['id']]['dec'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['jan'] / max($sales_amount[$code['id']]['jan'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['feb'] / max($sales_amount[$code['id']]['feb'], 1),2) }}%</td>
-                                        <td>{{ number_format($total[$code['id']]['march'] / max($sales_amount[$code['id']]['march'], 1),2) }}%</td>                    
-                                        <td>{{ number_format($total[$code['id']]['total'] / max($sales_amount[$code['id']]['total'], 1),2) }}%</td>                    
+                                        <td>{{ number_format($total[$code['id']]['apr'] / max($sales_amount[$code['id']]['apr'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['may'] / max($sales_amount[$code['id']]['may'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['june'] / max($sales_amount[$code['id']]['june'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['july'] / max($sales_amount[$code['id']]['july'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['august'] / max($sales_amount[$code['id']]['august'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['sep'] / max($sales_amount[$code['id']]['sep'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['okt'] / max($sales_amount[$code['id']]['okt'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['nov'] / max($sales_amount[$code['id']]['nov'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['dec'] / max($sales_amount[$code['id']]['dec'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['jan'] / max($sales_amount[$code['id']]['jan'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['feb'] / max($sales_amount[$code['id']]['feb'], 1)) }}%</td>
+                                        <td>{{ number_format($total[$code['id']]['march'] / max($sales_amount[$code['id']]['march'], 1)) }}%</td>                    
+                                        <td>{{ number_format($total[$code['id']]['total'] / max($sales_amount[$code['id']]['total'], 1)) }}%</td>                    
                                         
                                     </tr>
                                     @endforeach
@@ -307,19 +307,19 @@
                                 <tfoot>
                                     <tr>
                                         <th colspan="2" class="text-right">Total</th>
-                                        <th>{{ number_format(collect($total)->sum('apr') / max($sales_total[$code['id']]['apr'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('may') / max($sales_total[$code['id']]['may'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('june') / max($sales_total[$code['id']]['june'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('july') / max($sales_total[$code['id']]['july'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('august') / max($sales_total[$code['id']]['august'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('sep') / max($sales_total[$code['id']]['sep'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('okt') / max($sales_total[$code['id']]['okt'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('nov') / max($sales_total[$code['id']]['nov'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('dec') / max($sales_total[$code['id']]['dec'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('jan') / max($sales_total[$code['id']]['jan'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('feb') / max($sales_total[$code['id']]['feb'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('march') / max($sales_total[$code['id']]['march'],1),2) }}%</th>
-                                        <th>{{ number_format(collect($total)->sum('total') / max($sales_total[$code['id']]['total'],1),2) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('apr') / max($sales_total[$code['id']]['apr'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('may') / max($sales_total[$code['id']]['may'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('june') / max($sales_total[$code['id']]['june'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('july') / max($sales_total[$code['id']]['july'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('august') / max($sales_total[$code['id']]['august'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('sep') / max($sales_total[$code['id']]['sep'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('okt') / max($sales_total[$code['id']]['okt'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('nov') / max($sales_total[$code['id']]['nov'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('dec') / max($sales_total[$code['id']]['dec'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('jan') / max($sales_total[$code['id']]['jan'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('feb') / max($sales_total[$code['id']]['feb'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('march') / max($sales_total[$code['id']]['march'],1)) }}%</th>
+                                        <th>{{ number_format(collect($total)->sum('total') / max($sales_total[$code['id']]['total'],1)) }}%</th>
                                         
                                         
                                     </tr>

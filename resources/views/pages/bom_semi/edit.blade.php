@@ -184,5 +184,5 @@
 @endsection
 
 @push('js')
-<script src="{{ url('assets/js/pages/bom-add-edit.js') }}"></script>
+<script src="{{ url('assets/js/pages/bom_semi-add-edit.js') }}"></script>
 @endpush

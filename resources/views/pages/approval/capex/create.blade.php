@@ -14,7 +14,9 @@
                 <div class="page-title-box">
                     <h4 class="page-title">Add Purchase Request Item.</h4>
                     <ol class="breadcrumb p-0 m-0">
-                        <li><a href="{{ route('approval-capex.create') }}">Create Capex Approval Sheet</a></li>
+                        <li>
+                            
+                            <a href="{{ route('approval-capex.create') }}">Create Capex Approval Sheet</a></li>
                         <li class="active">
                             Add Purchase Request Item.
                         </li>
@@ -29,77 +31,113 @@
         <div class="col-md-12">
             <div class="card-box">
                 <div class="row">
-                    <form id="form-add-edit" action="{{ route('approval-capex.store') }}" method="post">
+                    <form id="form-add-edit" action="{{route('approval_capex.store')}}" enctype="multipart/form-data" method="post">
                         @csrf
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Budget No<span class="text-danger">*</span></label>
                                 <select name="budget_no" class="select2" data-placeholder="Select Budget" required="required">
                                     <option></option>
-                                    
+                                        @foreach ($capexs as $capex)
+                                        <option value="{{ $capex->id }}">{{ $capex->budget_no }}</option>
+                                        @endforeach
                                 </select>
                                 <span class="help-block"></span>
-                           </div>
+                           </div> 
+                           
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Asset Kind <span class="text-danger">*</span></label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="asset_kind" id=asset_o" value="Immediate Use" checked="" onclick="setReadOnlyInput();">
+                                                    <label for="asset_kind-1">
+                                                        Immediate Use
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="asset_kind" id="asset_c" value="CIP" checked="" onclick="setReadOnlyInput();">
+                                                    <label for="asset_kind-0">
+                                                        CIP (Construction In Process)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                   </div>  
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Asset Category <span class="text-danger">*</span></label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="asset_category" id="asset_category-1" value="Non Chemical" checked="">
+                                                    <label for="asset_category-1">
+                                                        Non Chemical
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="asset_category" id="asset_category-0" value="Chemical" checked="">
+                                                    <label for="asset_category-0">
+                                                        Chemical
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                   </div>  
+                                </div>
+                            </div>
+                        </div>
+                               
+                        <div class="col-md-6">
                             
-                            <div class="form-group">
-                                <label class="control-label">Budget Description <span class="text-danger">*</span></label>
-                                <textarea type="text" name="budget_description" placeholder="Budget Description" class="form-control tinymce" required="required" rows="5"></textarea>
-                                <span class="help-block"></span>
-                           </div>      
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Asset Kind <span class="text-danger">*</span></label>
-                                <div class="checkbox checkbox-primary">
-                                    <label><input type="checkbox" value="">Immediate Use</label><br>
-                                    <label><input type="checkbox" value="">CIP (Construction In Process)</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label">Asset Category <span class="text-danger">*</span></label>
-                                <div class="checkbox checkbox-primary">
-                                    <label><input type="checkbox" value="">Non Chemical</label><br>
-                                    <label><input type="checkbox" value="">Chemical</label><br>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Settlement Date (for CIP) <span class="text-danger">*</span></label>
-                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker required="required" value="{{ Carbon\Carbon::now()->format('M-D-Y') }}" rows="5"></input>
-                                <span class="help-block"></span>
-                           </div>   
-                           <div class="form-group">
-                                <label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
-                                <input type="type" name="settlement_date" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5"></input>
-                                <span class="help-block"></span>
-                           </div>      
-                        </div>
-                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Asset Type<span class="text-danger">*</span></label>
-                                <select name="asset_type" class="select2" data-placeholder="Select Asset Type" required="required">
+                                <select name="sap_asset_id" class="select2" data-placeholder="Select Asset Type" required="required">
                                     <option></option>
-                                    
+                                        @foreach ($sap_assets as $sap_asset)
+                                        <option value="{{ $sap_asset->id }}">{{ $sap_asset->asset_type }}</option>
+                                        @endforeach
                                 </select>
                                 <span class="help-block"></span>
                            </div>
-                            
-                            <div class="form-group">
-                                <label class="control-label">Asset Code<span class="text-danger">*</span></label>
-                                <select name="asset_code" class="select2" data-placeholder="Select Asset Code" required="required">
-                                    <option></option>
-                                    
-                                </select>
+                               
+                           <div class="form-group">
+                                <label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
+                                <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5"></input>
                                 <span class="help-block"></span>
-                           </div>      
-                        </div>
-                        <div class="col-md-6">
+                           </div>
+
+                           <div class="form-group">
+                                <label class="control-label">Asset Code<span class="text-danger">*</span></label>
+                                <input type="text" name="asset_code" placeholder="Asset Code" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+                                <span class="help-block"></span>
+                           </div>   
+                            
+                            
+                           <div class="form-group">
+                                <label class="control-label">Settlement Date (for CIP) <span class="text-danger">*</span></label>
+                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('M-D-Y') }}" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+
                             <div class="form-group">
                                 <label class="control-label">SAP Cost Center<span class="text-danger">*</span></label>
-                                <select name="sap_cos_center" class="select2" data-placeholder="Select SAP Cost Center" required="required">
+                                <select name="sap_cost_center_id" class="select2" data-placeholder="Select SAP Cost Center" required="required">
                                     <option></option>
-                                    
+                                        @foreach ($sap_costs as $sap_cost)
+                                        <option value="{{ $sap_cost->id }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
+                                        @endforeach
                                 </select>
                                 <span class="help-block"></span>
                            </div>
@@ -108,85 +146,102 @@
                                 <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
                                 <textarea type="text" name="remarks" placeholder="Purchase Request Item Detail" class="form-control tinymce" required="required" rows="5"></textarea>
                                 <span class="help-block"></span>
-                           </div>      
-                        </div>
-                        <div class="col-md-6">
+                           </div> 
+
                             <div class="form-group">
                                 <label class="control-label">Unit <span class="text-danger">*</span></label>
-                                <select name="sap_uom" class="select2" data-placeholder="Select Unit Of Measeure" required="required">
+                                <select name="sap_uom_id" class="select2" data-placeholder="Select Unit Of Measeure" required="required">
                                     <option></option>
-                                    
+                                        <option></option>
+                                        @foreach ($sap_uoms as $sap_uom)
+                                        <option value="{{ $sap_uom->id }}">{{ $sap_uom->uom_code }} - {{ $sap_uom->uom_fname }}</option>
+                                        @endforeach
                                 </select>
                                 <span class="help-block"></span>
                            </div>
+                        
+                        </div>
+
+                       
+                        <div class="col-md-6">
+                           
+
+                           <div class="form-group">
+                                <label class="control-label">Budget Description <span class="text-danger">*</span></label>
+                                <textarea type="text" name="budget_description" placeholder="Budget Description" class="form-control tinymce" required="required" rows="5" readonly="readonly"></textarea>
+                                <span class="help-block"></span>
+                           </div>  
                             
+                                
+                        
                             <div class="form-group">
                                 <label class="control-label">Item Specs <span class="text-danger">*</span></label>
                                 <input type="text" name="pr_specs" placeholder="Item Specs" class="form-control tinymce" required="required" rows="5"></input>
                                 <span class="help-block"></span>
-                           </div>      
-                        </div>
-                        <div class="col-md-6">
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Max Budget Reservation <span class="text-danger">*</span></label>
+                                <input type="number" name="price_remaining" placeholder="Max Budget Reservation" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+                                <span class="help-block"></span>
+                           </div>    
+                        
                             <div class="form-group">
                                 <label class="control-label">Last Budget Remains <span class="text-danger">*</span></label>
                                 <input type="number" name="budget_remaining_log" placeholder="Last Budget Remains" class="form-control tinymce" required="required" rows="5"></input>
                                 <span class="help-block"></span>
-                           </div>   
+                           </div>
                            <div class="form-group">
-                                <label class="control-label">Max Budget Reservation <span class="text-danger">*</span></label>
-                                <input type="number" name="price_remaining" placeholder="Max Budget Reservation" class="form-control tinymce" required="required" rows="5"></input>
+                                <label class="control-label">Actual GR <span class="text-danger">*</span></label>
+                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('M-D-Y') }}"></input>
                                 <span class="help-block"></span>
-                           </div>      
-                        </div>
-                        <div class="col-md-6">
+                           </div>
+
+                               
+                       
                             <div class="form-group">
                                 <label class="control-label">Amount on Quotation (IDR) <span class="text-danger">*</span></label>
                                 <input type="number" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control tinymce" required="required" rows="5"></input>
                                 <span class="help-block"></span>
                            </div>
+                           
                            <div class="form-group">
-                                <div class="col-sm-4">
+                                
+                                <div class="checkbox">
+                                    <input id="checkbox0" type="checkbox" name="foreign_currency" onclick="foreignCurrency(this)">
+                                    <label for="checkbox0">
+                                        Foreign Currency
+                                    </label>
                                 </div>
-                                <div class="col-sm-8">
-                                    <div class="checkbox">
-                                      <label><input type="checkbox" value id="foreign_currency" name="foreign_currency" onclick="foreignCurrency(this)">Foreign Currency</label>
+                                <div class="row">
+                                    <div class="form-group" id="hide12" style="display: none">
+                                        
+                                        <div class="col-sm-6">
+                                            <select class="select2" name="currency" id="currency" data-placeholder="Select currency">
+                                                  <option value=""></option>
+                                                  <option value="USD">USD</option>
+                                                  <option value="JPY">JPY</option>
+                                                  <option value="THB">THB</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <input type="number" class="form-control tinymce"name="price_to_download" placeholder="Amount Foreign Currency" required="required">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>   
-                           <div class="form-group">
-                                <label class="control-label">Actual GR <span class="text-danger">*</span></label>
-                                <input type="number" name="plan_gr" placeholder="Actual GR" class="form-control tinymce" required="required" rows="5"></input>
-                                <span class="help-block"></span>
-                           </div>      
-                        </div>
-                        <div class="form-group" id="hide12">
+                            </div> 
 
-                            <label for="budget_plan" class="col-sm-4 control-label">Amount Foreign Currency
-                            </label>
-                      
-                            <div class="col-sm-3">
-                                <select class="form-control" name="currency" id="currency">
-                                      <option value="">-Currency-</option>
-                                      <option value="USD">USD</option>
-                                      <option value="JPY">JPY</option>
-                                      <option value="THB">THB</option>
-                                </select>
-                            </div>
-
-                            <div class="col-sm-5">
-                                <input type="number" class="form-control" id="price_to_download" name="price_to_download" placeholder="Amount Foreign Currency">
-                            </div>
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20" id="btn-save"> Simpan</a>
-                            <button type="button" class="btn btn-default btn-bordered waves-effect waves-light m-b-20" id="btn-reset"> Reset</a>
                         </div>
                          
-                        <div class="col-md-12 text-right">
-                            <hr>
+                        <div class="col-md-12 text-right m-t-20">
+                            
+                             <div class="modal-footer">
+                                    <button class="btn btn-default btn-bordered waves-effect waves-light" type="reset">Reset</button>
+
+                                <button class="btn btn-primary btn-bordered waves-effect waves-light" type="submit">Save</button>
+                            </div>
+
                         </div>
-                        <div class="clearfix"></div>
+                        <div class="clearfix"></div> 
                     </form>
                 </div>
             </div>
@@ -201,6 +256,6 @@
 @endsection
 
 @push('js')
-<script src="{{ url('assets/js/pages/bom_semi-add-edit.js') }}"></script>
+<script src="{{ url('assets/js/pages/approval-capex-add-edit.js') }}"></script>
 
 @endpush

@@ -85,7 +85,9 @@ class BomController extends Controller
             $bom->fiscal_year            = $request->fiscal_year;
             $bom->save();
 
-            foreach (Cart::content() as $bom_data) {
+
+
+            foreach (Cart::instance('bom')->content() as $bom_data) {
 
                 $details              = new BomData;
                 $details->part_id     = $bom_data->id;
@@ -137,7 +139,7 @@ class BomController extends Controller
 
         foreach ($bom->details as $detail) {
 
-            Cart::add([
+            Cart::instance('bom')->add([
                 'id' => $detail->part_id,
                 'name' => $detail->parts->part_name,
                 'qty' => $detail->qty,
@@ -176,7 +178,9 @@ class BomController extends Controller
             $bom->fiscal_year            = $request->fiscal_year;
             $bom->save();
 
-            foreach (Cart::content() as $bom_data) {
+            $bom->details()->delete();
+
+            foreach (Cart::instance('bom')->content() as $bom_data) {
 
                 $details              = BomData::firstOrNew(['part_id' => $bom_data->id]);
                 $details->part_id     = $bom_data->id;
@@ -195,7 +199,7 @@ class BomController extends Controller
 
         });
 
-            Cart::destroy();
+            Cart::instance('bom')->destroy();
             return redirect()
                         ->route('bom.index')
                         ->with($res);

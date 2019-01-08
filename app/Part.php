@@ -13,4 +13,10 @@ class Part extends Model
     {
     	return $this->hasOne('App\MasterPrice', 'part_id');
     }
+
+     public function bom()
+    {
+    	return $this->hasOne('App\Bom', 'part_id');
+    	
+    }
 }

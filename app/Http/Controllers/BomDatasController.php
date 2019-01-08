@@ -16,7 +16,7 @@ class BomDatasController extends Controller
 {
     public function getData()
     {
-        $details = Cart::content();
+        $details = Cart::instance('bom')->content();
 
         if (Cart::count() > 0) {
 
@@ -54,7 +54,7 @@ class BomDatasController extends Controller
         $part = Part::find($request->part_id);
         $supplier = Supplier::find($request->supplier_id);
 
-        Cart::add([
+        Cart::instance('bom')->add([
                     'id' => $request->part_id,
                     'name' => $part->part_name,
                     'qty' => $request->qty,
@@ -84,7 +84,7 @@ class BomDatasController extends Controller
         $part = Part::find($request->part_id);
         $supplier = Supplier::find($request->supplier_id);
 
-        Cart::add([
+        Cart::instance('bom')->add([
                     'id' => $request->part_id,
                     'name' => $part->part_name,
                     'qty' => $request->qty,
@@ -115,7 +115,7 @@ class BomDatasController extends Controller
 
     function destroy($id)
     {
-        Cart::remove($id);
+        Cart::instance('bom')->remove($id);
 
         $res = [
                     'type' => 'success',
