@@ -309,9 +309,11 @@ class BomController extends Controller
 
                     $bom->save();
 
-                    $details                    = new TemporaryBomData;
+                    $details                    = TemporaryBomData::firstOrNew(['part_id' => $part_id]);
                     $details->supplier_id       = !empty($supplier_details) ? $supplier_details->id : 0;
-                    $details->part_id           = !empty($part_details) ? $part_details->id : 0;;
+                    $details->part_id           = !empty($part_details) ? $part_details->id : 0;
+                    $details->part_number       = $data->part_number_details;
+                    $details->supplier_code     = $data->supplier_code_details;
                     $details->source            = $data->source;
                     $details->qty               = $data->qty;
                     $bom->details_temporary()->save($details);
@@ -339,7 +341,7 @@ class BomController extends Controller
 
                 if (!empty($temp->parts) && !empty($temp->suppliers))  {
 
-                    $bom = new Bom;
+                    $bom              = Bom::firstOrNew(['part_id'=> $temp->part_id]);
                     $bom->part_id     =   $temp->part_id;
                     $bom->supplier_id =   $temp->supplier_id;
                     $bom->model       =   $temp->model;
@@ -497,5 +499,5 @@ class BomController extends Controller
              });
 
         })->download('csv');
-    }
+    } 
 }

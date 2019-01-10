@@ -281,7 +281,35 @@ class BomSemiController extends Controller
 
     public function getData_temporary(Request $request)
     {
-        $bom_semi = TemporaryBomSemi::with(['parts', 'suppliers'])->get();
+
+        // $bom_semis = TemporaryBomSemi::getDataTable($request->search, $request->start, $request->length);
+        // $recordsTotal = TemporaryBomSemi::getDataTable($request->search, $request->start, '-1');
+
+        // $result = [];
+        // $result['draw'] = $request->draw;
+        // $result['recordsTotal'] = count($recordsTotal);
+        // $result['recordsFiltered'] = count($recordsTotal);
+
+        // foreach ($bom_semis as $bom_semi) {
+
+        //      $result['data'][] = [
+        //                         'fiscal_year' => $bom_semi->fiscal_year,
+        //                         'part_number' => !empty($bom_semi->parts) ? $bom_semi->parts->part_number : $bom_semi->part_number.' Tidak Ada',
+        //                         'supplier_code' => !empty($bom_semi->suppliers) ? $bom_semi->suppliers->supplier_code : $bom_semi->supplier_code.' Tidak Ada',
+        //                         'model' => $bom_semi->model,
+                                
+        //                         'option' => ' 
+        //                             <button class="btn btn-danger btn-xs btn-bordered" onclick="onDelete(\''.$bom_semi->rowId.'\')" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-close"></i></button>'
+        //                     ];
+
+
+        // }
+
+
+
+
+        // return $result;
+
 
         return DataTables::of($bom_semi)
         ->addColumn('details_url_temporary', function($bom_semi) {
@@ -385,7 +413,7 @@ class BomSemiController extends Controller
 
 	            if (!empty($temp->parts) && !empty($temp->suppliers))  {
 
-	                $bom_semi = new BomSemi;
+	                $bom_semi              =   BomSemi::firstOrNew(['part_id'=>$temp->part_id]);
 	                $bom_semi->part_id     =   $temp->part_id;
 	                $bom_semi->supplier_id =   $temp->supplier_id;
                     $bom_semi->model       =   $temp->model;

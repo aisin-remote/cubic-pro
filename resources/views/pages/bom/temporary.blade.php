@@ -33,8 +33,8 @@
                             <th style="width: 50px"></th>
                             <th>Fiscal Year</th>
                             <th>Part Number</th>
+                            <th>Supplier Code</th>
                             <th>Model</th>
-                            <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>
                 </table>

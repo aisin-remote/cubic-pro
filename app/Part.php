@@ -11,12 +11,18 @@ class Part extends Model
 
     public function price()
     {
-    	return $this->hasOne('App\MasterPrice', 'part_id');
+    	return $this->hasMany('App\MasterPrice', 'part_id');
     }
 
-     public function bom()
+    public function bom()
     {
     	return $this->hasOne('App\Bom', 'part_id');
     	
+    }
+
+    public function bom_data()
+    {
+        return $this->hasOne('App\BomData', 'part_id');
+        
     }
 }

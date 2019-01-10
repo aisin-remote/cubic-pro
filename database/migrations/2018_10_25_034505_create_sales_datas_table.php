@@ -44,8 +44,8 @@ class CreateSalesDatasTable extends Migration
             $table->double('okt_amount', 25,2)->default(0);
             $table->integer('nov_qty')->default(0);
             $table->double('nov_amount', 25,2)->default(0);
-            $table->string('des_qty')->default(0);
-            $table->string('des_amount', 25,2)->default(0);
+            $table->integer('des_qty')->default(0);
+            $table->double('des_amount', 25,2)->default(0);
             $table->timestamps();
         });
     }

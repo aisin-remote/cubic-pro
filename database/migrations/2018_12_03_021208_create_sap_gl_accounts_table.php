@@ -20,7 +20,7 @@ class CreateSapGlAccountsTable extends Migration
             $table->string('gl_gname');
             $table->string('gl_acode');
             $table->string('gl_aname');
-            $table->string('dep_key')->nullable();
+            $table->integer('department_id');
             $table->timestamps();
         });
     }

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use App\MasterPrice;
 use App\Part;
+use App\Bom;
+use App\BomData;
 
 class SalesData extends Model
 {
@@ -19,8 +21,6 @@ class SalesData extends Model
     {
         return $this->belongsTo('App\Customer','customer_id', 'id');
     }
-
-
 
     public function scopeSumSales($query, $month, $year, $product_code)
     {
@@ -160,106 +160,97 @@ class SalesData extends Model
      public function scopeSumPlasticMaterial($query, $month, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code)
-                        ->where('group_material', 'Plastic Material');
-                    })
-                    ->where('fiscal_year', $year);
-
-         $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
-
-
-
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Plastic Material');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
+                    ->where('fiscal_year', $year)
+                    ->first();
+    
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')*$qty*$price;
+            return $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
 
-        } elseif ($month == 'may') {
+        } 
+        elseif ($month == 'may') {
 
-            return $result->sum('may_qty')*$qty*$price;
+            return $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')*$qty*$price;
+            return $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')*$qty*$price;
+            return $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')*$qty*$price;
+            return $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')*$qty*$price;
+            return $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')*$qty*$price;
+            return $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')*$qty*$price;
+            return $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')*$qty*$price;
+            return $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')*$qty*$price;
+            return $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')*$qty*$price;
+            return $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')*$qty*$price;
-        }
+            return $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
+        } 
     }
     
     public function scopeSumPlasticMaterialTotal1($query, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                    $where->where('product_code', $product_code)
-                    ->where('group_material', 'Plastic Material');
-                        
-                    })
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Plastic Material');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
                     ->where('fiscal_year', $year)
-                    ->get();
-
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                       ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+                    ->first(); 
          
 
-        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
+        $data[] = ['total' => $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
 
         return collect($data)->sum('total');
 
@@ -269,107 +260,97 @@ class SalesData extends Model
     public function scopeSumIngotMaterial($query, $month, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code)
-                        ->where('group_material', 'Ingot Material');
-                    })
-                    ->where('fiscal_year', $year);
-
-
-         $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
-
-
-
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Ingot Material');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
+                    ->where('fiscal_year', $year)
+                    ->first();
+    
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')*$qty*$price;
+            return $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
 
-        } elseif ($month == 'may') {
+        } 
+        elseif ($month == 'may') {
 
-            return $result->sum('may_qty')*$qty*$price;
+            return $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')*$qty*$price;
+            return $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')*$qty*$price;
+            return $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')*$qty*$price;
+            return $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')*$qty*$price;
+            return $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')*$qty*$price;
+            return $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')*$qty*$price;
+            return $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')*$qty*$price;
+            return $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')*$qty*$price;
+            return $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')*$qty*$price;
+            return $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')*$qty*$price;
-        }
+            return $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
+        } 
     }
     
     public function scopeSumIngotMaterialTotal1($query, $year, $product_code)
     {
         
-       $result = $query->whereHas('parts', function($where) use ($product_code) {
-                    $where->where('product_code', $product_code)
-                    ->where('group_material', 'Ingot Material');
-                        
-                    })
+       $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Ingot Material');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
                     ->where('fiscal_year', $year)
-                    ->get();
-
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+                    ->first(); 
          
 
-        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
+        $data[] = ['total' => $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
 
         return collect($data)->sum('total');
 
@@ -379,107 +360,98 @@ class SalesData extends Model
     public function scopeSumCKD($query, $month, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code)
-                        ->where('group_material', 'CKD');
-                    })
-                    ->where('fiscal_year', $year);
-
-         $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
-
-
-
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'CKD');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
+                    ->where('fiscal_year', $year)
+                    ->first();
+    
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')*$qty*$price;
+            return $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
 
-        } elseif ($month == 'may') {
+        } 
+        elseif ($month == 'may') {
 
-            return $result->sum('may_qty')*$qty*$price;
+            return $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')*$qty*$price;
+            return $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')*$qty*$price;
+            return $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')*$qty*$price;
+            return $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')*$qty*$price;
+            return $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')*$qty*$price;
+            return $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')*$qty*$price;
+            return $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')*$qty*$price;
+            return $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')*$qty*$price;
+            return $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')*$qty*$price;
+            return $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')*$qty*$price;
+            return $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
     }
     
     public function scopeSumCKDTotal1($query, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                    $where->where('product_code', $product_code)
-                    ->where('group_material', 'CKD');
-                        
-                    })
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'CKD');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
                     ->where('fiscal_year', $year)
-                    ->get();
-
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+                    ->first(); 
          
 
-        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
-        
+        $data[] = ['total' => $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+
         return collect($data)->sum('total');
 
         
@@ -488,106 +460,97 @@ class SalesData extends Model
      public function scopeSumCKDImportDuty($query, $month, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code)
-                        ->where('group_material', 'CKD Import Duty');
-                    })
-                    ->where('fiscal_year', $year);
-
-         $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
-
-
-
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'CKD Import Duty');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
+                    ->where('fiscal_year', $year)
+                    ->first();
+    
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')*$qty*$price;
+            return $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
 
-        } elseif ($month == 'may') {
+        } 
+        elseif ($month == 'may') {
 
-            return $result->sum('may_qty')*$qty*$price;
+            return $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')*$qty*$price;
+            return $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')*$qty*$price;
+            return $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')*$qty*$price;
+            return $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')*$qty*$price;
+            return $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')*$qty*$price;
+            return $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')*$qty*$price;
+            return $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')*$qty*$price;
+            return $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')*$qty*$price;
+            return $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')*$qty*$price;
+            return $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')*$qty*$price;
+            return $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
     }
     
     public function scopeSumCKDImportDutyTotal1($query, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                    $where->where('product_code', $product_code)
-                    ->where('group_material', 'CKD Import Duty');
-                        
-                    })
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'CKD Import Duty');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
                     ->where('fiscal_year', $year)
-                    ->get();
-
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+                    ->first(); 
          
 
-        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
+        $data[] = ['total' => $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
 
         return collect($data)->sum('total');
 
@@ -597,105 +560,97 @@ class SalesData extends Model
     public function scopeSumImportPart($query, $month, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code)
-                        ->where('group_material', 'Import Part');
-                    })
-                    ->where('fiscal_year', $year);
-
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
-
-
-
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Import Part');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
+                    ->where('fiscal_year', $year)
+                    ->first();
+    
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')*$qty*$price;
+            return $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
 
-        } elseif ($month == 'may') {
+        } 
+        elseif ($month == 'may') {
 
-            return $result->sum('may_qty')*$qty*$price;
+            return $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')*$qty*$price;
+            return $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')*$qty*$price;
+            return $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')*$qty*$price;
+            return $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')*$qty*$price;
+            return $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')*$qty*$price;
+            return $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')*$qty*$price;
+            return $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')*$qty*$price;
+            return $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')*$qty*$price;
+            return $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')*$qty*$price;
+            return $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')*$qty*$price;
+            return $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
     }
     
     public function scopeSumImportPartTotal1($query, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                    $where->where('product_code', $product_code)
-                    ->where('group_material', 'Import Part');   
-                    })
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Import Part');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
                     ->where('fiscal_year', $year)
-                    ->get();
-
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+                    ->first(); 
          
 
-        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
+        $data[] = ['total' => $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
 
         return collect($data)->sum('total');
 
@@ -705,109 +660,97 @@ class SalesData extends Model
     public function scopeSumLocalPart($query, $month, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code)
-                        ->where('group_material', 'Local Part');
-                    })
-                    ->where('fiscal_year', $year);
-
-         $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
-
-
-
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Local Part');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
+                    ->where('fiscal_year', $year)
+                    ->first();
+    
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')*$qty*$price;
+            return $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
 
-        } elseif ($month == 'may') {
+        } 
+        elseif ($month == 'may') {
 
-            return $result->sum('may_qty')*$qty*$price;
+            return $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')*$qty*$price;
+            return $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')*$qty*$price;
+            return $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')*$qty*$price;
+            return $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')*$qty*$price;
+            return $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')*$qty*$price;
+            return $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')*$qty*$price;
+            return $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')*$qty*$price;
+            return $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')*$qty*$price;
+            return $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')*$qty*$price;
+            return $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')*$qty*$price;
+            return $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
     }
     
     public function scopeSumLocalPartTotal1($query, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                    $where->where('product_code', $product_code)
-                    ->where('group_material', 'Local Part');
-                        
-                    })
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Local Part');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
                     ->where('fiscal_year', $year)
-                    ->get();
-
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+                    ->first(); 
          
 
-        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
-
-        // return $result->sum('total_amount');
+        $data[] = ['total' => $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
 
         return collect($data)->sum('total');
 
@@ -817,106 +760,97 @@ class SalesData extends Model
     public function scopeSumInklaringImportPart($query, $month, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code)
-                        ->where('group_material', 'Inklaring Import Part');
-                    })
-                    ->where('fiscal_year', $year);
-
-         $part = Part::where('product_code', $product_code)       
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-       $price = !empty($part->price) ? $part->price->sum('price') : 0;  
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
-
-
-
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Inklaring Import Part');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
+                    ->where('fiscal_year', $year)
+                    ->first();
+    
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')*$qty*$price;
+            return $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
 
-        } elseif ($month == 'may') {
+        } 
+        elseif ($month == 'may') {
 
-            return $result->sum('may_qty')*$qty*$price;
+            return $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')*$qty*$price;
+            return $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')*$qty*$price;
+            return $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')*$qty*$price;
+            return $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')*$qty*$price;
+            return $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')*$qty*$price;
+            return $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')*$qty*$price;
+            return $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')*$qty*$price;
+            return $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')*$qty*$price;
+            return $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')*$qty*$price;
+            return $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')*$qty*$price;
+            return $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
     }
     
     public function scopeSumInklaringImportPartTotal1($query, $year, $product_code)
     {
         
-         $result = $query->whereHas('parts', function($where) use ($product_code) {
-                    $where->where('product_code', $product_code)
-                    ->where('group_material', 'Inklaring Import Part');
-                        
-                    })
+         $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Inklaring Import Part');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
                     ->where('fiscal_year', $year)
-                    ->get();
-
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+                    ->first(); 
          
 
-        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
+        $data[] = ['total' => $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
 
         return collect($data)->sum('total');
     }
@@ -924,106 +858,97 @@ class SalesData extends Model
     public function scopeSumInklaringCkd($query, $month, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code)
-                        ->where('group_material', 'Inklaring CKD');
-                    })
-                    ->where('fiscal_year', $year);
-
-         $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
-
-
-
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Inklaring CKD');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
+                    ->where('fiscal_year', $year)
+                    ->first();
+    
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')*$qty*$price;
+            return $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
 
-        } elseif ($month == 'may') {
+        } 
+        elseif ($month == 'may') {
 
-            return $result->sum('may_qty')*$qty*$price;
+            return $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')*$qty*$price;
+            return $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')*$qty*$price;
+            return $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')*$qty*$price;
+            return $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')*$qty*$price;
+            return $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')*$qty*$price;
+            return $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')*$qty*$price;
+            return $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')*$qty*$price;
+            return $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')*$qty*$price;
+            return $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')*$qty*$price;
+            return $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')*$qty*$price;
+            return $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
     }
      
     public function scopeSumInklaringCkdTotal1($query, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                    $where->where('product_code', $product_code)
-                    ->where('group_material', 'Inklaring CKD');
-                    
-                    })
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Inklaring CKD');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
                     ->where('fiscal_year', $year)
-                    ->get();
-
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+                    ->first(); 
          
 
-        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
+        $data[] = ['total' => $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
 
         return collect($data)->sum('total');
 
@@ -1033,106 +958,97 @@ class SalesData extends Model
     public function scopeSumImportDuty($query, $month, $year, $product_code)
     {
         
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code)
-                        ->where('group_material', 'Import Part Import Duty');
-                    })
-                    ->where('fiscal_year', $year);
-
-         $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
-
-
-
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Import Part Import Duty');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
+                    ->where('fiscal_year', $year)
+                    ->first();
+    
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')*$qty*$price;
+            return $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
 
-        } elseif ($month == 'may') {
+        } 
+        elseif ($month == 'may') {
 
-            return $result->sum('may_qty')*$qty*$price;
+            return $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')*$qty*$price;
+            return $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')*$qty*$price;
+            return $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')*$qty*$price;
+            return $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')*$qty*$price;
+            return $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')*$qty*$price;
+            return $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')*$qty*$price;
+            return $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')*$qty*$price;
+            return $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')*$qty*$price;
+            return $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')*$qty*$price;
+            return $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')*$qty*$price;
+            return $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
     }
     
     public function scopeSumImportDutyTotal1($query, $year, $product_code)
     {
         
-       $result = $query->whereHas('parts', function($where) use ($product_code) {
-                    $where->where('product_code', $product_code)
-                    ->where('group_material', 'Import Part Import Duty');
-                        
-                    })
+       $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code)
+                                ->where('group_material', 'Import Part Import Duty');
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
                     ->where('fiscal_year', $year)
-                    ->get();
-
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+                    ->first(); 
          
 
-        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
+        $data[] = ['total' => $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
 
         return collect($data)->sum('total');
 
@@ -1142,103 +1058,127 @@ class SalesData extends Model
 
     public function scopeSumTotalMaterial($query, $month, $year, $product_code)
     {
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code);
-                    })
-                    ->where('fiscal_year', $year)
-                    ->get();
+
         
-        $part = Part::where('product_code', $product_code)
-                        ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
+        // $result = $query->whereHas('bom.parts', function($where) use ($product_code) {
+        //                 $where->where('product_code', $product_code);
+        //             })
+                    
+        //             ->where('fiscal_year', $year)
+        //             ->get();
+         // $result = $query->whereHas('parts', function($where) use ($product_code) {
+        //                 $where->where('product_code', $product_code);
 
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;  
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+        //             })
+        //             ->join('boms', 'boms.part_id', '=', 'sales_datas.part_id')
+        //             ->join('bom_datas', 'bom_datas.bom_id', '=', 'boms.id')
+        //             ->join('parts', 'parts.id', '=', 'bom_datas.part_id')
+        //             ->join('master_prices', 'master_prices.part_id', 'parts.id')           
+        //             ->where('master_prices.source', '=', 'bom_datas.source')
+        //             // ->groupBy('parts.product_code')
+        //             ->where('fiscal_year', $year)
+        //             ->get();
+        
+        // $part = Part::where('product_code', $product_code)
+        //                 ->whereHas('price', function($where) use ($year) {
+        //                     $where->where('fiscal_year',$year);
+        //                 })
+        //                 ->whereHas('bom', function($where) use ($year) {
+        //                     $where->where('fiscal_year',$year);
+        //                 })
+        //                 ->first();
 
+        // $price = !empty($part->price) ? $part->price->sum('price') : 0;  
+        // $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
 
-
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code);
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
+                    ->where('fiscal_year', $year)
+                    ->first();
+    
         if ($month == 'apr') {
             
-            return $result->sum('apr_qty')*$qty*$price;
+            return $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
 
-        } elseif ($month == 'may') {
+        } 
+        elseif ($month == 'may') {
 
-            return $result->sum('may_qty')*$qty*$price;
+            return $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'june') {
 
-            return $result->sum('june_qty')*$qty*$price;
+            return $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'july') {
 
-            return $result->sum('july_qty')*$qty*$price;
+            return $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));;
         }
         elseif ($month == 'august') {
 
-            return $result->sum('august_qty')*$qty*$price;
+            return $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }
         elseif ($month == 'sep') {
 
-            return $result->sum('sep_qty')*$qty*$price;
+            return $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'okt') {
 
-            return $result->sum('okt_qty')*$qty*$price;
+            return $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'nov') {
 
-            return $result->sum('nov_qty')*$qty*$price;
+            return $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'dec') {
 
-            return $result->sum('des_qty')*$qty*$price;
+            return $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'jan') {
 
-            return $result->sum('jan_qty')*$qty*$price;
+            return $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'feb') {
 
-            return $result->sum('feb_qty')*$qty*$price;
+            return $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
         }elseif ($month == 'march') {
 
-            return $result->sum('mar_qty')*$qty*$price;
-        }
+            return $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'));
+        }    
     }
     
     public function scopeSumTotalMaterial1($query, $year, $product_code)
     {
-        $result = $query->whereHas('parts', function($where) use ($product_code) {
-                        $where->where('product_code', $product_code);
-                    })
+        $sales_data = $query->with([
+                        'parts',
+                        'parts.bom',
+                        'parts.bom.details' => function($q) use ($product_code) {
+                            $q->whereHas('parts', function($where) use ($product_code){
+                                $where->where('product_code', $product_code);
+                            });
+                        },
+                        'parts.bom.details.parts',
+                        'parts.price'
+                    ])
                     ->where('fiscal_year', $year)
-                    ->get();
-
-        $part = Part::where('product_code', $product_code)
-                    ->whereHas('price', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->whereHas('bom', function($where) use ($year) {
-                            $where->where('fiscal_year',$year);
-                        })
-                        ->first();
-
-        $price = !empty($part->price) ? $part->price->sum('price') : 0;    
-        $qty = !empty($part->bom->details) ? $part->bom->details->sum('qty') : 0;  
+                    ->first(); 
          
 
-        $data[] = ['total' => $result->sum('apr_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('may_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('june_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('july_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('august_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('sep_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('okt_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('nov_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('des_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('jan_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('feb_qty') *$qty* $price];
-        $data[] = ['total' => $result->sum('mar_qty') *$qty* $price];
+        $data[] = ['total' => $sales_data->apr_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->may_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->june_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->july_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->august_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->sep_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->oct_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->nov_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->dec_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->jan_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->feb_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
+        $data[] = ['total' => $sales_data->march_qty * ($sales_data->parts->bom->details->sum('qty') * $sales_data->parts->price->sum('price'))];
 
         return collect($data)->sum('total');
 

@@ -15,4 +15,9 @@ class BomData extends Model
     {
         return $this->belongsTo('App\Supplier','supplier_id', 'id');
     }
+
+    public function bom()
+    {
+        return $this->belongsTo('App\Bom', 'bom_id', 'id');
+    }
 }
