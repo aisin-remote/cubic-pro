@@ -67,7 +67,7 @@ class BomController extends Controller
             $bom->part_id                = $request->part_id;
             $bom->supplier_id            = $request->supplier_id;
             $bom->model                  = $request->model;
-            $bom->fiscal_year            = $request->fiscal_year;
+            // $bom->fiscal_year            = $request->fiscal_year;
             $bom->save();
                 $res = ['title' => 'success', 'type' => 'success', 'message' => 'Data berhasil disimpan'];
                         return response()->json($res);
@@ -82,7 +82,7 @@ class BomController extends Controller
             $bom->part_id                = $request->part_id;
             $bom->supplier_id            = $request->supplier_id;
             $bom->model                  = $request->model;
-            $bom->fiscal_year            = $request->fiscal_year;
+            // $bom->fiscal_year            = $request->fiscal_year;
             $bom->save();
 
 
@@ -175,7 +175,7 @@ class BomController extends Controller
             $bom->part_id                = $request->part_id;
             $bom->supplier_id            = $request->supplier_id;
             $bom->model                  = $request->model;
-            $bom->fiscal_year            = $request->fiscal_year;
+            // $bom->fiscal_year            = $request->fiscal_year;
             $bom->save();
 
             $bom->details()->delete();
@@ -266,7 +266,7 @@ class BomController extends Controller
     
     public function export() 
     {
-        $boms = Bom::select('fiscal_year','parts_bom.part_number as part_number', 'parts_bom.part_name as part_name', 'model','parts_bom_datas.part_number as part_number_details','suppliers.supplier_code','suppliers.supplier_name', 'bom_datas.source','bom_datas.qty')
+        $boms = Bom::select('parts_bom.part_number as part_number', 'parts_bom.part_name as part_name', 'model','parts_bom_datas.part_number as part_number_details','suppliers.supplier_code','suppliers.supplier_name', 'bom_datas.source','bom_datas.qty')
                     ->join('parts as parts_bom', 'boms.part_id', '=', 'parts_bom.id')
                     ->join('bom_datas', 'bom_datas.bom_id', '=', 'boms.id')
                     ->join('parts as parts_bom_datas', 'bom_datas.part_id', '=', 'parts_bom_datas.id')
@@ -305,7 +305,7 @@ class BomController extends Controller
                     $bom->part_number           = $data->part_number;
                     $bom->supplier_code         = $data->supplier_code;
                     $bom->model                 = $data->model;
-                    $bom->fiscal_year           = $data->fiscal_year;
+                    // $bom->fiscal_year           = $data->fiscal_year;
 
                     $bom->save();
 
@@ -345,7 +345,7 @@ class BomController extends Controller
                     $bom->part_id     =   $temp->part_id;
                     $bom->supplier_id =   $temp->supplier_id;
                     $bom->model       =   $temp->model;
-                    $bom->fiscal_year =   $temp->fiscal_year;
+                    // $bom->fiscal_year =   $temp->fiscal_year;
                     $bom->save();
 
                     foreach ($temp->details_temporary as $temp_det) {
@@ -479,22 +479,22 @@ class BomController extends Controller
        return Excel::create('Format Upload Data BOM', function($excel){
              $excel->sheet('mysheet', function($sheet){
                  // $sheet->fromArray($boms);
-                $sheet->cell('A1', function($cell) {$cell->setValue('fiscal_year');});
-                $sheet->cell('B1', function($cell) {$cell->setValue('part_number');});
-                $sheet->cell('C1', function($cell) {$cell->setValue('supplier_code');});
-                $sheet->cell('D1', function($cell) {$cell->setValue('model');});
-                $sheet->cell('E1', function($cell) {$cell->setValue('part_number_details');});
-                $sheet->cell('F1', function($cell) {$cell->setValue('supplier_code_details');});
-                $sheet->cell('G1', function($cell) {$cell->setValue('source');});
-                $sheet->cell('H1', function($cell) {$cell->setValue('qty');});
-                $sheet->cell('A2', function($cell) {$cell->setValue('2018');});
-                $sheet->cell('B2', function($cell) {$cell->setValue('423176-10200');});
-                $sheet->cell('C2', function($cell) {$cell->setValue('SUP01');});
-                $sheet->cell('D2', function($cell) {$cell->setValue('Plat');});
-                $sheet->cell('E2', function($cell) {$cell->setValue('423176-20200');});
-                $sheet->cell('F2', function($cell) {$cell->setValue('SUP01');});
-                $sheet->cell('G2', function($cell) {$cell->setValue('Local');});
-                $sheet->cell('H2', function($cell) {$cell->setValue('12');});
+                // $sheet->cell('A1', function($cell) {$cell->setValue('fiscal_year');});
+                $sheet->cell('A1', function($cell) {$cell->setValue('part_number');});
+                $sheet->cell('B1', function($cell) {$cell->setValue('supplier_code');});
+                $sheet->cell('C1', function($cell) {$cell->setValue('model');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('part_number_details');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('supplier_code_details');});
+                $sheet->cell('F1', function($cell) {$cell->setValue('source');});
+                $sheet->cell('G1', function($cell) {$cell->setValue('qty');});
+                // $sheet->cell('A2', function($cell) {$cell->setValue('2018');});
+                $sheet->cell('A2', function($cell) {$cell->setValue('423176-10200');});
+                $sheet->cell('B2', function($cell) {$cell->setValue('SUP01');});
+                $sheet->cell('C2', function($cell) {$cell->setValue('Plat');});
+                $sheet->cell('D2', function($cell) {$cell->setValue('423176-20200');});
+                $sheet->cell('E2', function($cell) {$cell->setValue('SUP01');});
+                $sheet->cell('F2', function($cell) {$cell->setValue('Local');});
+                $sheet->cell('G2', function($cell) {$cell->setValue('12');});
                  
              });
 

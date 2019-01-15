@@ -14,7 +14,7 @@ class OutputMasterController extends Controller
 {
     public function index(Request $request)
     {
- 
+        ini_set('max_execution_time', 0);
 
         $fiscal_year = !empty($request->fiscal_year) ? $request->fiscal_year : Carbon::now()->format('Y');
 

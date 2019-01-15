@@ -11,8 +11,11 @@ $(document).ready(function(){
                 "data":           null,
                 "defaultContent": ''
             },
-            { data: 'fiscal_year', name: 'fiscal_year'},
+            // { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
+            { data: 'parts.part_name', name: 'parts.part_name'},
+            { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
+            { data: 'suppliers.supplier_name', name: 'suppliers.supplier_name'},
             { data: 'model', name: 'model'},
             //  { data: 'reject_ratio', name: 'reject_ratio'},
             { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
@@ -49,6 +52,7 @@ $(document).ready(function(){
             ajax: data.details_url,
             columns: [
                { data: 'parts.part_number', name: 'parts.part_number'},
+               { data: 'parts.part_name', name: 'parts.part_name'},
                { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
                { data: 'suppliers.supplier_name', name: 'suppliers.supplier_name'},
                { data: 'source', name: 'source'},
@@ -71,6 +75,7 @@ $(document).ready(function(){
                     <thead>
                     <tr>
                         <th>Part Number</th>
+                        <th>Part Name</th>
                         <th>Supplier Code</th>
                         <th>Supplier Name</th>
                         <th>Source</th>
@@ -122,7 +127,7 @@ $(document).ready(function(){
                 "data":           null,
                 "defaultContent": ''
             },
-            { data: 'fiscal_year', name: 'fiscal_year'},
+            // { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
             // { data: 'parts.part_name', name: 'parts.part_name'},
             { data: 'model', name: 'model'},

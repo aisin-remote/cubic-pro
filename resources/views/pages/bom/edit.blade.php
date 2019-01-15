@@ -31,11 +31,11 @@
             @method('PUT')
                 <div class="col-md-12">
                     <div class="col-md-6">
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label class="control-label">Fiscal Year <span class="text-danger">*</span></label>
                             <input type="text" name="fiscal_year" placeholder="Fiscal Year" class="form-control tinymce" required="required" rows="5" value="{{ $bom->fiscal_year }}"> </input>
                             <span class="help-block"></span>
-                       </div>
+                       </div> -->
                         <div class="form-group">
                             <label class="control-label">Part Number<span class="text-danger">*</span></label>
                             <select name="part_id" class="select2" data-placeholder="Select Part Number" required="required" value="{{ $bom->parts->part_number }}">

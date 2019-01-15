@@ -20,7 +20,7 @@ class CreateMasterPricesTable extends Migration
             $table->string('supplier_id');
             $table->string('source');
             $table->string('fiscal_year');
-            $table->string('price');
+            $table->float('price', 10, 2);
            
             $table->timestamps();
         });

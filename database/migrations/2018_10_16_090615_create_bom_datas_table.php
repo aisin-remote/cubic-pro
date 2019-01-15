@@ -20,7 +20,7 @@ class CreateBomDatasTable extends Migration
             $table->string('part_id');
             $table->string('supplier_id');
             $table->string('source');
-            $table->string('qty');
+            $table->decimal('qty',8,2);
             $table->timestamps();
 
         });

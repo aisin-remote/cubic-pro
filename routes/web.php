@@ -299,7 +299,7 @@ Route::middleware('auth')->group(function(){
 	Route::get('approval-unbudget/{id}', 'ApprovalUnbudgetController@show')->name('approval_unbudget.show');
 	Route::get('approval-unbudget/details-data/{id}', 'ApprovalUnbudgetController@getDetailsData');
 	Route::get('/testing', function(){
-		dd(\Cart::instance('bom')->content());
+		return response()->json(\App\SalesData::sumPercTotalMaterial('apr', '2019'));
 	});
 
 
