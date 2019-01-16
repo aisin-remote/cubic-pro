@@ -309,7 +309,7 @@ class BomSemiController extends Controller
 
 
         // return $result;
-
+        $bom_semi = TemporaryBomSemi::with(['parts', 'suppliers'])->get();
 
         return DataTables::of($bom_semi)
         ->addColumn('details_url_temporary', function($bom_semi) {

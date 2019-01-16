@@ -19,7 +19,7 @@ class CreateTemporaryBomSemisTable extends Migration
             $table->string('part_id');
             $table->string('supplier_id');
             $table->string('model');
-            $table->string('fiscal_year');
+            // $table->string('fiscal_year');
             $table->string('supplier_code')->nullable();
             $table->string('part_number')->nullable();
             $table->timestamps();
