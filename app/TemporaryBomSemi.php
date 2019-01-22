@@ -19,6 +19,7 @@ class TemporaryBomSemi extends Model
     }
     public function details_temporary()
     {
-    	return $this->hasMany('App\TemporaryBomSemiData', 'temporary_bom_semi_id');
+    	return $this->hasMany('App\TemporaryBomSemiData', 'part_id_head', 'part_id');
     }
+
 }

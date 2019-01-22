@@ -127,11 +127,9 @@ $(document).ready(function(){
                 "data":           null,
                 "defaultContent": ''
             },
-            // { data: 'fiscal_year', name: 'fiscal_year'},
             { data: 'parts.part_number', name: 'parts.part_number'},
-            // { data: 'parts.part_name', name: 'parts.part_name'},
+            { data: 'supplier_code', name: 'supplier_code'},
             { data: 'model', name: 'model'},
-            //  { data: 'reject_ratio', name: 'reject_ratio'},
             { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
         ],
         order: [1, 'asc'],
@@ -221,11 +219,10 @@ $(document).ready(function(){
                 "defaultContent": ''
             },
             { data: 'parts.part_number', name: 'parts.part_number'},
-               { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
-               { data: 'suppliers.supplier_name', name: 'suppliers.supplier_name'},
-               { data: 'source', name: 'source'},
-               { data: 'qty', name: 'qty'},
-
+            { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
+            { data: 'suppliers.supplier_name', name: 'suppliers.supplier_name'},
+            { data: 'source', name: 'source'},
+            { data: 'qty', name: 'qty'},
             { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
         ],
         order: [1, 'asc'],

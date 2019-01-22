@@ -288,37 +288,30 @@ class BomController extends Controller
         $file = $request->file('file');
         $name = time() . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('public/uploads', $name);
-        $data = [];
+        $array = [];
         if ($request->hasFile('file')) {
-            Excel::load(public_path('storage/uploads/'.$name), function($reader) use ($data){
+            Excel::load(public_path('storage/uploads/'.$name), function($reader) use ($array){
 
                 foreach ($reader->all() as $data) {
 
-                    $part_id                    = Part::where('part_number', $data->part_number)->first();
-                    $supplier_id                = Supplier::where('supplier_code', $data->supplier_code)->first();
-                    $part_details               = Part::where('part_number', $data->part_number_details)->first();
-                    $supplier_details           = Supplier::where('supplier_code', $data->supplier_code_details)->first();
+                    
+                    $array[] = [
+                        'part_number'           => $data->part_number,
+                        'supplier_code'         => $data->supplier_code,
+                        'model'                 => $data->model
+                    ];
 
-                    $bom                        = TemporaryBom::firstOrNew(['part_id' => $part_id]);
-                    $bom->part_id               = !empty($part_id) ? $part_id->id : 0;
-                    $bom->supplier_id           = !empty($supplier_id) ? $supplier_id->id : 0;
-                    $bom->part_number           = $data->part_number;
-                    $bom->supplier_code         = $data->supplier_code;
-                    $bom->model                 = $data->model;
-                    // $bom->fiscal_year           = $data->fiscal_year;
-
-                    $bom->save();
-
-                    $details                    = TemporaryBomData::firstOrNew(['part_id' => $part_id]);
-                    $details->supplier_id       = !empty($supplier_details) ? $supplier_details->id : 0;
-                    $details->part_id           = !empty($part_details) ? $part_details->id : 0;
-                    $details->part_number       = $data->part_number_details;
-                    $details->supplier_code     = $data->supplier_code_details;
-                    $details->source            = $data->source;
-                    $details->qty               = $data->qty;
-                    $bom->details_temporary()->save($details);
-           
+                    $array_datas[] = [
+                            'part_id_head'   => $data->part_number,
+                            'part_number'    => $data->part_number_details,
+                            'supplier_code'  => $data->supplier_code_details,
+                            'source'         => $data->source,
+                            'qty'            => $data->qty
+                        ];
                 }
+                
+                TemporaryBom::insert(collect($array)->unique('part_number')->toArray());
+                TemporaryBomData::insert($array_datas);
             });
             $res = [
                         'title'                 => 'Sukses',
@@ -338,20 +331,25 @@ class BomController extends Controller
 
         DB::transaction(function() use ($temps) {
             foreach ($temps as $temp) {
-
+                $part_id                    = Part::where('part_number', $temp->part_number)->first();
+                $supplier_id                = Supplier::where('supplier_code', $temp->supplier_code)->first();
+                
                 if (!empty($temp->parts) && !empty($temp->suppliers))  {
 
                     $bom              = Bom::firstOrNew(['part_id'=> $temp->part_id]);
-                    $bom->part_id     =   $temp->part_id;
-                    $bom->supplier_id =   $temp->supplier_id;
+                    $bom->part_id     =   $part_id->id;
+                    $bom->supplier_id =   $supplier_id->id;
                     $bom->model       =   $temp->model;
                     // $bom->fiscal_year =   $temp->fiscal_year;
                     $bom->save();
 
                     foreach ($temp->details_temporary as $temp_det) {
+                        $part_details               = Part::where('part_number', $temp_det->part_number)->first();
+                        $supplier_details           = Supplier::where('supplier_code', $temp_det->supplier_code)->first();
+
                         $details              = new BomData;
-                        $details->part_id     =   $temp_det->part_id;
-                        $details->supplier_id =   $temp_det->supplier_id;
+                        $details->part_id     =   $part_details->id;
+                        $details->supplier_id =   $supplier_details->id;
                         $details->source      =   $temp_det->source;
                         $details->qty         =   $temp_det->qty;
                         $bom->details()->save($details);

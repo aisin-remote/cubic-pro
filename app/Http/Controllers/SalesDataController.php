@@ -348,7 +348,7 @@ class SalesDataController extends Controller
         $file = $request->file('file');
         $name = time() . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('public/uploads', $name);
-        $data = [];
+        $array = [];
         if ($request->hasFile('file')) {
 
             // $file = public_path('storage/uploads/1534217112.xls');
@@ -360,41 +360,43 @@ class SalesDataController extends Controller
 
                     $part_id                    = Part::where('part_number', $data->part_number)->first();
                     $customer_id                = Customer::where('customer_code', $data->customer_code)->first();
-
-                    $salesdata                  = new TemporarySalesData;
-                    $salesdata->part_id         = !empty($part_id) ? $part_id->id : 0;
-                    $salesdata->customer_id     = !empty($customer_id) ? $customer_id->id : 0;
-                    $salesdata->part_number     = $data->part_number;
-                    $salesdata->customer_code   = $data->customer_code;
-                    $salesdata->market          = $data->market;
-                    $salesdata->fiscal_year     = $data->fiscal_year;
-                    $salesdata->jan_qty         = $data->jan_qty;
-                    $salesdata->feb_qty         = $data->feb_qty;
-                    $salesdata->mar_qty         = $data->mar_qty;
-                    $salesdata->apr_qty         = $data->apr_qty;
-                    $salesdata->may_qty         = $data->may_qty;
-                    $salesdata->june_qty        = $data->june_qty;
-                    $salesdata->july_qty        = $data->july_qty;
-                    $salesdata->august_qty      = $data->august_qty;
-                    $salesdata->sep_qty         = $data->sep_qty;
-                    $salesdata->okt_qty         = $data->okt_qty;
-                    $salesdata->nov_qty         = $data->nov_qty;
-                    $salesdata->des_qty         = $data->des_qty;
-                    $salesdata->jan_amount      = $data->jan_amount;
-                    $salesdata->feb_amount      = $data->feb_amount;
-                    $salesdata->mar_amount      = $data->mar_amount;
-                    $salesdata->apr_amount      = $data->apr_amount;
-                    $salesdata->may_amount      = $data->may_amount;
-                    $salesdata->june_amount     = $data->june_amount;
-                    $salesdata->july_amount     = $data->july_amount;
-                    $salesdata->august_amount   = $data->august_amount;
-                    $salesdata->sep_amount      = $data->sep_amount;
-                    $salesdata->okt_amount      = $data->okt_amount;
-                    $salesdata->nov_amount      = $data->nov_amount;
-                    $salesdata->des_amount      = $data->des_amount;
-                    $salesdata->save();           
+                   
+                    $array[] = [
+                                    'part_id'         => !empty($part_id) ? $part_id->id : 0,
+                                    'customer_id'     => !empty($customer_id) ? $customer_id->id : 0,
+                                    'part_number'     => $data->part_number,
+                                    'customer_code'   => $data->customer_code,
+                                    'market'          => $data->market,  
+                                    'fiscal_year'     => $data->fiscal_year,
+                                    'jan_qty'         => $data->jan_qty,     
+                                    'feb_qty'         => $data->feb_qty,
+                                    'mar_qty'         => $data->mar_qty,
+                                    'apr_qty'         => $data->apr_qty,
+                                    'may_qty'         => $data->may_qty,
+                                    'june_qty'        => $data->june_qty,
+                                    'july_qty'        => $data->july_qty,
+                                    'august_qty'      => $data->august_qty,
+                                    'sep_qty'         => $data->sep_qty,
+                                    'okt_qty'         => $data->okt_qty,
+                                    'nov_qty'         => $data->nov_qty,
+                                    'des_qty'         => $data->des_qty,
+                                    'jan_amount'      => $data->jan_amount,
+                                    'feb_amount'      => $data->feb_amount,
+                                    'mar_amount'      => $data->mar_amount,
+                                    'apr_amount'      => $data->apr_amount,
+                                    'may_amount'      => $data->may_amount,
+                                    'june_amount'     => $data->june_amount,
+                                    'july_amount'     => $data->july_amount,
+                                    'august_amount'   => $data->august_amount,
+                                    'sep_amount'      => $data->sep_amount,
+                                    'okt_amount'      => $data->okt_amount,
+                                    'nov_amount'      => $data->nov_amount,
+                                    'des_amount'      => $data->des_amount                          
+                                ];           
                 }
-                // });
+
+                TemporarySalesData::insert($array);
+                
                 Storage::delete('public/uploads/'.$name);
                 $res = [
                             'title'                 => 'Sukses',

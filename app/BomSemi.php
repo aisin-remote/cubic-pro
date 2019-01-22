@@ -19,7 +19,7 @@ class BomSemi extends Model
     }
     public function details()
     {
-    	return $this->hasMany(\App\BomSemiData::class);
+    	return $this->hasMany('App\BomSemiData', 'bom_semi_id', 'id');
     }
     
 }

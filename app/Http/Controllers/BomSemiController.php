@@ -393,7 +393,7 @@ class BomSemiController extends Controller
     {
         $boms = BomSemi::select('parts_bom.part_number as part_number', 'parts_bom.part_name as part_name', 'model','parts_bom_semi_datas.part_number as part_number_details','suppliers.supplier_code','suppliers.supplier_name', 'bom_semi_datas.source','bom_semi_datas.qty')
                     ->join('parts as parts_bom', 'bom_semis.part_id', '=', 'parts_bom.id')
-                    ->join('bom_semi_datas', 'bom_semi_datas.bom_semi_id', '=', 'bom_semis.id')
+                    ->join('bom_semi_datas', 'bom_semi_datas.part_id_head', '=', 'bom_semis.part_id')
                     ->join('parts as parts_bom_semi_datas', 'bom_semi_datas.part_id', '=', 'parts_bom_semi_datas.id')
                     ->join('suppliers', 'bom_semis.supplier_id', '=', 'suppliers.id')
                     ->get();
@@ -421,11 +421,14 @@ class BomSemiController extends Controller
 	                $bom_semi->save();
 
 	                foreach ($temp->details_temporary as $temp_det) {
-	                	$details 		   	  = new BomSemiData;
+
+                        $details 		   	  = new BomSemiData;
+                        // $details->bom_semi_id = $temp_det->part_id_head;
 		                $details->part_id     =   $temp_det->part_id;
 		                $details->supplier_id =   $temp_det->supplier_id;
 		                $details->source      =   $temp_det->source;
-		                $details->qty         =   $temp_det->qty;
+                        $details->qty         =   $temp_det->qty;
+                        // $details->save();
 		                $bom_semi->details()->save($details);
 	                }
 	                
@@ -452,32 +455,39 @@ class BomSemiController extends Controller
         $file = $request->file('file');
         $name = time() . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('public/uploads', $name);
-        $data = [];
+        $array = [];
         if ($request->hasFile('file')) {
-            Excel::load(public_path('storage/uploads/'.$name), function($reader) use ($data){
+            Excel::load(public_path('storage/uploads/'.$name), function($reader) use ($array){
 
                 foreach ($reader->all() as $data) {
 
-                    $part_id                    = Part::where('part_number', $data->part_number)->first();
-                    $supplier_id                = Supplier::where('supplier_code', $data->supplier_code)->first();
-                    $part_details               = Part::where('part_number', $data->part_number_details)->first();
-                    $supplier_details           = Supplier::where('supplier_code', $data->supplier_code_details)->first();
+                    $part_id = Part::where('part_number', $data->part_number)->first();
+                    $supplier_id = Supplier::where('supplier_code', $data->supplier_code)->first();
+                    $part_details = Part::where('part_number', $data->part_number_details)->first();
+                    $supplier_details = Supplier::where('supplier_code', $data->supplier_code_details)->first();
 
-                    $bom_semi                   = TemporaryBomSemi::firstOrNew(['part_id' => $part_id]);
-                    $bom_semi->part_id          = !empty($part_id) ? $part_id->id : 0;
-                    $bom_semi->supplier_id      = !empty($supplier_id) ? $supplier_id->id : 0;
-                    $bom_semi->model            = $data->model;
-                    // $bom_semi->fiscal_year      = $data->fiscal_year;
-                    $bom_semi->save();
+                    $array[] = [
+                                    'part_id'               => !empty($part_id) ? $part_id->id : 0,
+                                    'supplier_id'           => !empty($supplier_id) ? $supplier_id->id : 0,
+                                    'part_number'           => $data->part_number,
+                                    'supplier_code'         => $data->supplier_code,
+                                    'model'                 => $data->model
+                                ];
 
-                    $details                    = new TemporaryBomSemiData;
-                    $details->supplier_id       = !empty($supplier_details) ? $supplier_details->id : 0;
-                    $details->part_id           = !empty($part_details) ? $part_details->id : 0;;
-                    $details->source            = $data->source;
-                    $details->qty               = $data->qty;
-                    $bom_semi->details_temporary()->save($details);
-           
+                    $array_datas[] = [
+                                        'part_id_head'   => !empty($part_id) ? $part_id->id : 0,
+                                        'part_id'        => !empty($part_details) ? $part_details->id : 0,
+                                        'supplier_id'    => !empty($supplier_details) ? $supplier_details->id : 0,
+                                        'part_number'    => $data->part_number_details,
+                                        'supplier_code'  => $data->supplier_code_details,
+                                        'source'         => $data->source,
+                                        'qty'            => $data->qty
+                                    ];
                 }
+
+                TemporaryBomSemi::insert($array);
+                TemporaryBomSemiData::insert($array_datas);
+               
             });
             $res = [
                         'title'                 => 'Sukses',

@@ -68,6 +68,17 @@ Route::middleware('auth')->group(function(){
 	Route::get('system/get_data', 'SystemController@getData');
 	Route::resource('system', 'SystemController');
 
+	// Master Item Category ARK. Ipan Herdiansyah
+	Route::get('item_category/get_data', 'ItemCategoryController@getData');
+	Route::resource('item_category', 'ItemCategoryController');
+
+	// Master Item ARK. Ipan Herdiansyah
+	Route::get('item/get_data', 'ItemController@getData');
+	Route::resource('item', 'ItemController');
+	Route::post('/item/import', 'ItemController@import')->name('item.import');
+	Route::get('/item/export', 'ItemController@export')->name('item.export');
+
+	
 	// Menu Capex
 	// Route::get('approval/{type}', 'ApprovalController@index');
 
@@ -202,6 +213,10 @@ Route::middleware('auth')->group(function(){
 	Route::resource('budgetplanning', 'BudgetPlanningController');
 	
 	Route::get('output_master/get_data', 'OutputMasterController@getData');
+	Route::get('output_master/get_sales_data/{fiscal_year}', 'OutputMasterController@getSalesData');
+	Route::get('output_master/get_material/{fiscal_year}', 'OutputMasterController@getMaterial');
+	Route::get('output_master/get_sales_material/{fiscal_year}', 'OutputMasterController@getSalesMaterial');
+	Route::get('output_master/get_group_material/{fiscal_year}', 'OutputMasterController@getGroupMaterial');
 	Route::get('output_master/download', 'OutputMasterController@download')->name('output_master.download');
 	Route::resource('output_master', 'OutputMasterController');
 

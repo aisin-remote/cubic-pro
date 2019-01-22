@@ -100,21 +100,6 @@
 
                                     @foreach (App\System::configMultiply('product_code') as $code)
 
-                                    @php($sales_amount[$code['id']]['apr'] = App\SalesData::sumSales('apr', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['may'] = App\SalesData::sumSales('may', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['june'] = App\SalesData::sumSales('june', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['july'] = App\SalesData::sumSales('july', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['august'] = App\SalesData::sumSales('august', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['sep'] = App\SalesData::sumSales('sep', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['okt'] = App\SalesData::sumSales('okt', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['nov'] = App\SalesData::sumSales('nov', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['dec'] = App\SalesData::sumSales('dec', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['jan'] = App\SalesData::sumSales('jan', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['feb'] = App\SalesData::sumSales('feb', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['march'] = App\SalesData::sumSales('march', $fiscal_year, $code['id']))
-                                    @php($sales_amount[$code['id']]['total'] = App\SalesData::sumSales('total', $fiscal_year, $code['id']))
-
-
                                     <tr>
                                         <td>{{ $code['text'] }}</td>
                                         <td>{{ $code['id'] }}</td>
@@ -136,19 +121,6 @@
                                 </tbody>
                                 <tfoot>
                                     <tr style="text-align:right">
-                                        @php($sales_total[$code['id']]['apr'] = App\SalesData::sumSalesTotal('apr', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['may'] = App\SalesData::sumSalesTotal('may', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['june'] = App\SalesData::sumSalesTotal('june', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['july'] = App\SalesData::sumSalesTotal('july', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['august'] = App\SalesData::sumSalesTotal('august', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['sep'] = App\SalesData::sumSalesTotal('sep', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['okt'] = App\SalesData::sumSalesTotal('okt', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['nov'] = App\SalesData::sumSalesTotal('nov', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['dec'] = App\SalesData::sumSalesTotal('dec', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['jan'] = App\SalesData::sumSalesTotal('jan', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['feb'] = App\SalesData::sumSalesTotal('feb', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['march'] = App\SalesData::sumSalesTotal('march', $fiscal_year, $code['id']))
-                                        @php($sales_total[$code['id']]['total'] = App\SalesData::sumSalesTotal('total', $fiscal_year, $code['id']))
                                         <th colspan="2" style="text-align:right">Total</th>
                                         <td>{{ number_format(App\SalesData::sumSalesTotal('apr', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
                                         <td>{{ number_format(App\SalesData::sumSalesTotal('may', $fiscal_year, $code['id']),0, ',' , '.') }}</td>
@@ -193,32 +165,6 @@
                                 </thead>
                                 <tbody>
                                     @foreach (App\System::configMultiply('product_code') as $code)
-
-                                    @php ($total[$code['id']]['apr'] = App\SalesData::sumTotalMaterial('apr', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['may'] = App\SalesData::sumTotalMaterial('may', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['june'] = App\SalesData::sumTotalMaterial('june', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['july'] = App\SalesData::sumTotalMaterial('july', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['august'] = App\SalesData::sumTotalMaterial('august', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['sep'] = App\SalesData::sumTotalMaterial('sep', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['okt'] = App\SalesData::sumTotalMaterial('okt', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['nov'] = App\SalesData::sumTotalMaterial('nov', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['dec'] = App\SalesData::sumTotalMaterial('dec', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['jan'] = App\SalesData::sumTotalMaterial('jan', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['feb'] = App\SalesData::sumTotalMaterial('feb', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['march'] = App\SalesData::sumTotalMaterial('march', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['total'] = App\SalesData::SumTotalMaterial('total', $fiscal_year, $code['id']))
 
                                     <tr>
                                         <td>{{ $code['text'] }}</td>
@@ -286,31 +232,6 @@
                                 <tbody>
                                     @foreach (App\System::configMultiply('product_code') as $code)
 
-                                    @php ($total[$code['id']]['apr'] = App\SalesData::PercTotalMaterial('apr', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['may'] = App\SalesData::PercTotalMaterial('may', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['june'] = App\SalesData::PercTotalMaterial('june', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['july'] = App\SalesData::PercTotalMaterial('july', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['august'] = App\SalesData::PercTotalMaterial('august', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['sep'] = App\SalesData::PercTotalMaterial('sep', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['okt'] = App\SalesData::PercTotalMaterial('okt', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['nov'] = App\SalesData::PercTotalMaterial('nov', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['dec'] = App\SalesData::PercTotalMaterial('dec', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['jan'] = App\SalesData::PercTotalMaterial('jan', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['feb'] = App\SalesData::PercTotalMaterial('feb', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['march'] = App\SalesData::PercTotalMaterial('march', $fiscal_year, $code['id']))
-
-                                    @php ($total[$code['id']]['total'] = App\SalesData::PercTotalMaterial('total', $fiscal_year, $code['id']))
                                     <tr>
                                         <td>{{ $code['text'] }}</td>
                                         <td>{{ $code['id'] }}</td>
@@ -379,32 +300,6 @@
                                 <tbody>
                                     @foreach (App\System::configMultiply('product_code') as $code)
                                     <tr>
-                                         @php ($total[$code['id']]['apr'] = App\SalesData::materialGroup($group_material['text'], 'apr', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['may'] = App\SalesData::materialGroup($group_material['text'], 'may', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['june'] = App\SalesData::materialGroup($group_material['text'], 'june', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['july'] = App\SalesData::materialGroup($group_material['text'], 'july', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['august'] = App\SalesData::materialGroup($group_material['text'], 'august', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['sep'] = App\SalesData::materialGroup($group_material['text'], 'sep', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['okt'] = App\SalesData::materialGroup($group_material['text'], 'okt', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['nov'] = App\SalesData::materialGroup($group_material['text'], 'nov', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['dec'] = App\SalesData::materialGroup($group_material['text'], 'dec', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['jan'] = App\SalesData::materialGroup($group_material['text'], 'jan', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['feb'] = App\SalesData::materialGroup($group_material['text'], 'feb', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['march'] = App\SalesData::materialGroup($group_material['text'], 'march', $fiscal_year, $code['id']))
-
-                                        @php ($total[$code['id']]['total'] = App\SalesData::materialGroup($group_material['text'], 'total', $fiscal_year, $code['id']))
-
                                         <td>{{ $code['text'] }}</td>
                                         <td>{{ $code['id'] }}</td>
                                         <td style="text-align:right">{{ number_format(App\SalesData::materialGroup($group_material['text'], 'apr', $fiscal_year, $code['id']), 0,',','.') }}</td>
