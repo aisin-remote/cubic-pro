@@ -83,10 +83,7 @@
                                 <input type="text" name="item_price" class="form-control" placeholder="Item Price" required="required">
                                 <span class="help-block"></span>
                             </div>
-                            
-                        </div>
 
-                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">UoM<span class="text-danger">*</span></label>
                                 <select name="uom_id" class="select2" data-placeholder="Unit Of material">
@@ -97,7 +94,10 @@
                                 </select>
                                 <span class="help-block"></span>
                             </div>
+                            
+                        </div>
 
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Supplier<span class="text-danger">*</span></label>
                                 <select name="supplier_id" class="select2" data-placeholder="Supplier" >
@@ -125,6 +125,16 @@
                                 <input type="text" name="tag" class="form-control" placeholder="Tag">
                                 <span class="help-block"></span>
                             </div>
+
+                            <div class="form-group">
+                                <label class="control-label">Image</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Feature Image" readonly="readonly" name="feature_image">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default btn-bordered waves-light waves-light btn-open-media" type="button">Browse</button>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="col-md-12 text-right">
@@ -143,9 +153,11 @@
     </div>
 
 </div>
+    @include('pages.media.list')
 
 @endsection
 
 @push('js')
 <script src="{{ url('assets/js/pages/item-add-edit.js') }}"></script>
+<script src="{{ url('assets/js/pages/media.js') }}"></script>
 @endpush

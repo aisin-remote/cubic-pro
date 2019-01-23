@@ -24,7 +24,8 @@ class CreateItemsTable extends Migration
             $table->integer('uom_id');
             $table->integer('supplier_id');
             $table->string('lead_times');
-            $table->string('remarks');
+            $table->text('remarks')->nullable();
+            $table->string('feature_image')->nullable();
             $table->timestamps();
         });
     }

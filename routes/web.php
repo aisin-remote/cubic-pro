@@ -13,7 +13,7 @@
 use App\ApprovalMaster;
 
 Route::get('/', function () {
-    return redirect('dashboard');
+    return view('catalog');
 });
 
 Route::middleware('auth')->group(function(){
@@ -77,6 +77,14 @@ Route::middleware('auth')->group(function(){
 	Route::resource('item', 'ItemController');
 	Route::post('/item/import', 'ItemController@import')->name('item.import');
 	Route::get('/item/export', 'ItemController@export')->name('item.export');
+
+	// media
+	Route::prefix('media')->group(function(){
+		Route::post('uploads', 'MediaController@uploads')->name('media.uploads');
+		Route::get('get_data', 'MediaController@getData')->name('media.get_data');
+		Route::get('select_data/{id}', 'MediaController@selectData')->name('media.get_data');
+	});
+	Route::resource('/media', 'MediaController');
 
 	
 	// Menu Capex

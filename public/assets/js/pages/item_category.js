@@ -7,6 +7,7 @@ $(document).ready(function(){
         columns: [
             { data: 'category_code', name: 'category_code'},
             { data: 'category_name', name: 'category_name'},
+            { data: 'feature_image', name: 'feature_image'},
             { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
         ],
         drawCallback: function(){

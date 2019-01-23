@@ -52,6 +52,7 @@ class ItemController extends Controller
         $item->supplier_id = $request->supplier_id;
         $item->lead_times = $request->lead_times;
         $item->remarks = $request->remarks;
+        $item->feature_image = $request->feature_image;
         $item->save();
         
         $res = [
@@ -107,6 +108,7 @@ class ItemController extends Controller
         $item->supplier_id = $request->supplier_id;
         $item->lead_times = $request->lead_times;
         $item->remark = $request->remark;
+        $item->feature_image = $request->feature_image;
         $item->save();
 
         // return response()->json($department->load(['division']), 200);

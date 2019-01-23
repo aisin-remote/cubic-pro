@@ -38,6 +38,7 @@
                         <tr>
                             <th>Category Code</th>
                             <th>Category Name</th>
+                            <th>Feature Image</th>
                             <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>

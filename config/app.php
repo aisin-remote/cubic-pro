@@ -165,6 +165,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class
 
     ],
 
@@ -221,6 +222,7 @@ return [
         'Helper' => App\Helpers\Helper::class,
         'Cart' => Gloudemans\Shoppingcart\Facades\Cart::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
+        'Image' => Intervention\Image\Facades\Image::class
 
     ],
 

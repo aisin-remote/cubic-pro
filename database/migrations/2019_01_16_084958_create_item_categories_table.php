@@ -17,6 +17,7 @@ class CreateItemCategoriesTable extends Migration
             $table->increments('id');
             $table->string('category_code');
             $table->string('category_name');
+            $table->string('feature_image')->nullable();
             $table->timestamps();
         });
     }

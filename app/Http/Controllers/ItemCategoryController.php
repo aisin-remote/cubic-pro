@@ -41,6 +41,7 @@ class ItemCategoryController extends Controller
         $item_category = new ItemCategory;
         $item_category->category_code = $request->category_code;
         $item_category->category_name = $request->category_name;
+        $item_category->feature_image = $request->feature_image;
         $item_category->save();
 
         if ($request->wantsJson()) {
@@ -97,6 +98,7 @@ class ItemCategoryController extends Controller
 
         $item_category->category_code = $request->category_code;
         $item_category->category_name = $request->category_name;
+        $item_category->feature_image = $request->feature_image;
         $item_category->save();
 
         if ($request->wantsJson()) {
@@ -177,18 +179,6 @@ class ItemCategoryController extends Controller
         $item_category = ItemCategory::find($id);
         return view('pages.item_category.edit', compact(['item_category']));
     }
-
-    // public function getDepartmentByDivision($division_id)
-    // {
-    //     $division = Division::find($division_id);
-    //     $result = [['id' => '', 'text' => '']];
-
-    //     foreach ($division->department as $department) {
-    //         $result[] = ['id' => $department->id, 'text' => $department->department_name];
-    //     }
-
-    //     return response()->json($result);
-    // }
 
     public function import(Request $request)
     {

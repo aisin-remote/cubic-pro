@@ -119,7 +119,7 @@
                 </div> <!-- content -->
 
                 <footer class="footer text-right">
-                    &copy; 2018 PT. Aisin Indonesia Automotive
+                    &copy; 2019 PT. Aisin Indonesia Automotive
                 </footer>
 
             </div>

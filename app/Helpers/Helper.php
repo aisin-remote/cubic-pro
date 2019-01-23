@@ -6,6 +6,16 @@ use App\Permission;
 
 class Helper
 {
+    public static function bytesToHuman($bytes)
+    {
+        $units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+        for ($i = 0; $bytes > 1024; $i++) {
+            $bytes /= 1024;
+        }
+
+        return round($bytes, 2) . ' ' . $units[$i];
+    }
 
 	public static function createSlug($title, $type, $id = 0)
     {

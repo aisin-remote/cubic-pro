@@ -16,7 +16,7 @@ class CreateTemporaryBomDatasTable extends Migration
         Schema::dropIfExists('temporary_bom_datas');
         Schema::create('temporary_bom_datas', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('temporary_bom_id')->nullable();
+            $table->integer('part_id_head')->nullable();
             $table->string('part_id');
             $table->string('supplier_id');
             $table->string('source');
