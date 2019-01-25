@@ -8,8 +8,8 @@ class ItemCategory extends Model
 {
     protected $fillable = ['*'];
 
-    public function item()
+    public function items()
     {
-    	return $this->hasMany('App\Item','id','item_category_id');
+    	return $this->hasMany('App\Item','item_category_id','id');
     }
 }

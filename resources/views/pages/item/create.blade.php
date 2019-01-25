@@ -122,7 +122,11 @@
 
                             <div class="form-group">
                                 <label class="control-label">Tag</label>
-                                <input type="text" name="tag" class="form-control" placeholder="Tag">
+                                <select name="tags[]" class="select2" multiple="true" data-tags="true" data-placeholder="Select or type tags">
+                                    @foreach ($tags as $tag) 
+                                        <option value="{{ $tag->name }}">{{ $tag->name }}</option>
+                                    @endforeach
+                                </select>
                                 <span class="help-block"></span>
                             </div>
 

@@ -15,6 +15,7 @@ $(document).ready(function(){
             { data: 'supplier.supplier_name', name: 'supplier.supplier_name'},
             { data: 'lead_times', name: 'lead_times'},
             { data: 'remarks', name: 'remarks'},
+            { data: 'tags', name: 'tags'},
             { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
         ],
         drawCallback: function(){

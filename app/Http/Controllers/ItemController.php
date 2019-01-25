@@ -7,6 +7,7 @@ use App\ItemCategory;
 use App\Item;
 use App\SapUom;
 use App\Supplier;
+use App\Tag;
 use App\Exports\MasterItemExport;
 use Excel;
 use Storage;
@@ -22,7 +23,7 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $item = Item::with(['item_category','uom','supplier'])->get();
+        $item = Item::with(['item_category','uom','supplier','tags'])->get();
                 
         if ($request->wantsJson()) {
             return response()->json($item, 200);
@@ -54,6 +55,19 @@ class ItemController extends Controller
         $item->remarks = $request->remarks;
         $item->feature_image = $request->feature_image;
         $item->save();
+
+        if (count($request->tags) > 0 || !empty($request->tags)){
+
+            foreach ($request->tags as $tag) {
+
+                $tag = Tag::firstOrCreate(['name' => $tag]);
+                if ($tag) {
+                    $tagIds[] = $tag->id;
+                }
+            }
+            
+            $item->tags()->sync($tagIds);
+        }
         
         $res = [
                     'title' => 'Sukses',
@@ -107,9 +121,22 @@ class ItemController extends Controller
         $item->uom_id = $request->uom_id;
         $item->supplier_id = $request->supplier_id;
         $item->lead_times = $request->lead_times;
-        $item->remark = $request->remark;
+        $item->remarks = $request->remarks;
         $item->feature_image = $request->feature_image;
         $item->save();
+
+        if (count($request->tags) > 0 || !empty($request->tags)){
+
+            foreach ($request->tags as $tag) {
+
+                $tag = Tag::firstOrCreate(['name' => $tag]);
+                if ($tag) {
+                    $tagIds[] = $tag->id;
+                }
+            }
+            
+            $product->tags()->sync($tagIds);
+        }
 
         // return response()->json($department->load(['division']), 200);
         if ($request->wantsJson()) {
@@ -161,9 +188,14 @@ class ItemController extends Controller
 
     public function getData(Request $request)
     {
-        $item = Item::with(['item_category','uom','supplier'])->get();
+        $item = Item::with(['item_category','uom','supplier','tags'])->get();
         return DataTables::of($item)
-        ->rawColumns(['options'])
+        ->rawColumns(['options', 'tags'])
+
+        ->addColumn('tags', function($item){
+            $tags =  $item->tags->pluck('name');
+            return '<span class="badge bg-info">'.$tags->implode('</span>&nbsp;<span class="badge bg-info">');
+        })
 
         ->addColumn('options', function($item){
             return '
@@ -175,6 +207,7 @@ class ItemController extends Controller
                 </form>
             ';
         })
+        
 
         ->toJson();
     }
@@ -187,17 +220,22 @@ class ItemController extends Controller
         $item_category = ItemCategory::get();
         $uom = SapUom::get();
         $supplier = Supplier::get();
+        $tags=Tag::get();
         
         // dd($item_category);
-        return view('pages.item.create', compact(['item_category','uom','supplier']));
+        return view('pages.item.create', compact(['item_category','uom','supplier', 'tags']));
         
     }
 
     public function edit($id)
     {
-        $item = Item::with(['item_category','uom','supplier'])->get();
+        $item = Item::find($id);
+        $item_category = ItemCategory::get();
+        $uom = SapUom::get();
+        $supplier = Supplier::get();
+        $tags=Tag::get();
         
-        return view('pages.item.edit', compact(['item', 'item_category','uom','supplier']));
+        return view('pages.item.edit', compact(['item', 'item_category','uom','supplier','tags']));
     }
 
 
@@ -206,32 +244,32 @@ class ItemController extends Controller
         $file = $request->file('file');
         $name = time() . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('public/uploads', $name);
-
         $data = [];
         if ($request->hasFile('file')) {
             $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
 
-            // $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader) use ($data){
-                if ($datas->first()->has('item_code')){
+                // if ($datas->first()->has('item_code')){
                     foreach ($datas as $data) {
 
                         $item_id = Item::where('item_code', $data->item_code)->first();
+                        $item_category = ItemCategory::where('category_code', $data->category_code)->first();
+                        $uom = SapUom::where('uom_sname',$data->uom)->first();
+                        $supplier = Supplier::where('supplier_code',$data->supplier_code)->first();
                         
-                        $item                       = new Item;
-                        $item->item_category_id     = $data->item_category_id;
+                        $item                       = Item::firstOrNew(['id' => $item_id]);
+                        $item->item_category_id     = !empty($item_category) ? $item_category->id : NULL;
                         $item->item_code            = $data->item_code;
                         $item->item_description     = $data->item_description;
                         $item->item_spesification   = $data->item_spesification;
                         $item->item_brand           = $data->item_brand;
                         $item->item_price           = $data->item_price;
-                        $item->uom_id               = $data->uom_id;
-                        $item->supplier_id          = $data->supplier_id;
+                        $item->uom_id               = !empty($uom) ? $uom->id : NULL;
+                        $item->supplier_id          = !empty($supplier) ? $supplier->id : NULL;
                         $item->lead_times           = $data->lead_times;
-                        $item->remark               = $data->remark;
+                        $item->remarks              = $data->remarks;
                         $item->save();                  
                     }  
 
-                // });
                     $res = [
                                 'title'             => 'Sukses',
                                 'type'              => 'success',
@@ -242,21 +280,20 @@ class ItemController extends Controller
                             ->route('item.index')
                             ->with($res);
 
-        // }
-                } else {
+                // } else {
 
-                    Storage::delete('public/uploads/'.$name);
+                //     Storage::delete('public/uploads/'.$name);
 
-                    return redirect()
-                            ->route('item.index')
-                            ->with(
-                                [
-                                    'title' => 'Error',
-                                    'type' => 'error',
-                                    'message' => 'Wrong Format!'
-                                ]
-                            );
-                }
+                //     return redirect()
+                //             ->route('item.index')
+                //             ->with(
+                //                 [
+                //                     'title' => 'Error',
+                //                     'type' => 'error',
+                //                     'message' => 'Wrong Format!'
+                //                 ]
+                //             );
+                // }
         }
     }
 
@@ -272,6 +309,25 @@ class ItemController extends Controller
         })->download('csv');
 
     }
+
+    public function template_item() 
+    {
+       return Excel::create('Template Items', function($excel){
+             $excel->sheet('mysheet', function($sheet){
+                $sheet->cell('A1', function($cell) {$cell->setValue('category_code');});
+                $sheet->cell('B1', function($cell) {$cell->setValue('item_code');});
+                $sheet->cell('C1', function($cell) {$cell->setValue('description');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('spesification');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('brand');});
+                $sheet->cell('F1', function($cell) {$cell->setValue('price');});
+                $sheet->cell('G1', function($cell) {$cell->setValue('qty');});
+                $sheet->cell('H1', function($cell) {$cell->setValue('supplier_code');});
+                $sheet->cell('I1', function($cell) {$cell->setValue('lead_times');});
+                $sheet->cell('J1', function($cell) {$cell->setValue('remarks');});
+             });
+
+        })->download('csv');
+    } 
 }
 
 

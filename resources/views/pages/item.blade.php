@@ -50,6 +50,7 @@
                             <th>Supplier</th>
                             <th>Lead Times</th>
                             <th>Remarks</th>
+                            <th>Tags</th>
                             <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>
@@ -93,7 +94,7 @@
                             <div class="form-group">
                                 <label class="control-label">Select File</label>
                                 <input type="file" name="file" class="form-control" accept=".csv">
-                                <label class="text-muted">*) File format .csv</label>
+                                <center><a href="{{ route('item.template') }}" ><i class="mdi mdi-download"></i> Template Items.csv</a></center>
                             </div>
                         </form>
                     </div>

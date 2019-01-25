@@ -12,9 +12,7 @@
 */
 use App\ApprovalMaster;
 
-Route::get('/', function () {
-    return view('catalog');
-});
+Route::get('/', 'CatalogController@index');
 
 Route::middleware('auth')->group(function(){
 
@@ -73,10 +71,11 @@ Route::middleware('auth')->group(function(){
 	Route::resource('item_category', 'ItemCategoryController');
 
 	// Master Item ARK. Ipan Herdiansyah
-	Route::get('item/get_data', 'ItemController@getData');
-	Route::resource('item', 'ItemController');
 	Route::post('/item/import', 'ItemController@import')->name('item.import');
 	Route::get('/item/export', 'ItemController@export')->name('item.export');
+	Route::get('item/get_data', 'ItemController@getData');
+	Route::resource('item', 'ItemController');
+	Route::get('/item/export/template', 'ItemController@template_item')->name('item.template');
 
 	// media
 	Route::prefix('media')->group(function(){

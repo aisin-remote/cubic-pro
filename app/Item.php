@@ -23,4 +23,9 @@ class Item extends Model
     {
     	return $this->belongsTo('App\Supplier', 'supplier_id', 'id');	
     }
+
+    public function tags()
+    {
+    	return $this->belongsToMany('App\Tag', 'item_tags',	'item_id', 'tag_id');
+    }
 }
