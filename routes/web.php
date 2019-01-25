@@ -13,6 +13,7 @@
 use App\ApprovalMaster;
 
 Route::get('/', 'CatalogController@index');
+Route::get('/catalog', 'CatalogController@show');
 
 Route::middleware('auth')->group(function(){
 

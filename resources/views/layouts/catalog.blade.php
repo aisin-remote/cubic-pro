@@ -6,14 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="OneTech shop project">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="assets/styles/bootstrap4/bootstrap.min.css">
-    <link href="assets/plugins/fontawesome-free-5.0.1/css/fontawesome-all.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" type="text/css" href="assets/plugins/OwlCarousel2-2.2.1/owl.carousel.css">
-    <link rel="stylesheet" type="text/css" href="assets/plugins/OwlCarousel2-2.2.1/owl.theme.default.css">
-    <link rel="stylesheet" type="text/css" href="assets/plugins/OwlCarousel2-2.2.1/animate.css">
-    <link rel="stylesheet" type="text/css" href="assets/plugins/slick-1.8.0/slick.css">
-    <link rel="stylesheet" type="text/css" href="assets/styles/main_styles.css">
-    <link rel="stylesheet" type="text/css" href="assets/styles/responsive.css">
+    
+    @stack('style')
+    
 
     <style>
         .img-slick {
@@ -22,36 +17,44 @@
             padding: 0px 30px;
             object-fit: cover;
         }
+        .new_arrivals {
+            padding-bottom: 0px !important;
+            padding-top: 0px !important;
+        }
+        .custom_list li {
+            white-space: nowrap;
+        }
+        .custom_dropdown_placeholder {
+            white-space: nowrap;
+            width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .custom_dropdown i {
+            position: absolute;
+            top: 40%;
+            right: 5%;
+        }
     </style>
 
 </head>
 
 <body>
-    <script src="assets/js/jquery-3.3.1.min.js"></script>
-    <script src="assets/styles/bootstrap4/popper.js"></script>
-    <script src="assets/styles/bootstrap4/bootstrap.min.js"></script>
-    <script src="assets/plugins/greensock/TweenMax.min.js"></script>
-    <script src="assets/plugins/greensock/TimelineMax.min.js"></script>
-    <script src="assets/plugins/scrollmagic/ScrollMagic.min.js"></script>
-    <script src="assets/plugins/greensock/animation.gsap.min.js"></script>
-    <script src="assets/plugins/greensock/ScrollToPlugin.min.js"></script>
-    <script src="assets/plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
-    <script src="assets/plugins/slick-1.8.0/slick.js"></script>
-    <script src="assets/plugins/easing/easing.js"></script>
-    <script src="assets/js/custom.js"></script>
+    
+    @yield('content')
 
     <!-- Copyright -->
-
 	<div class="copyright">
-		<div class="container">
-			<div class="row">
-				<div class="col">
-					<footer class="footer text-center">
-						&copy; 2019 PT. Aisin Indonesia Automotive
-					</footer>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <footer class="footer text-center">
+                        &copy; 2019 PT. Aisin Indonesia Automotive
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    @stack('js')
 </body>
