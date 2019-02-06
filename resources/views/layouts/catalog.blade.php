@@ -11,6 +11,11 @@
     
 
     <style>
+        .form-control:focus {
+            outline: none !important;
+            border-color: none;
+            box-shadow: none;
+        }
         .img-slick {
             width: 100%;
             height: 150px;
@@ -34,6 +39,26 @@
             position: absolute;
             top: 40%;
             right: 5%;
+        }
+        .page_prev i, .page_next i {
+            color: rgba(0,0,0,0.7) !important;
+        }
+        .page_nav li.active {
+            background-color: rgba(0,0,0,0.7);
+            cursor: not-allowed;
+        }
+        .page_nav li.active a {
+            color: #fff;
+        }
+        .shop_page_nav .disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+        .page_nav > li > a {
+            width: 100% !important;
+        }
+        .page_nav > li {
+            text-align: center;
         }
     </style>
 

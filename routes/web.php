@@ -14,6 +14,9 @@ use App\ApprovalMaster;
 
 Route::get('/', 'CatalogController@index');
 Route::get('/catalog', 'CatalogController@show');
+Route::post('/catalog', 'CatalogController@store');
+Route::get('/catalog/{item_code}', 'CatalogController@details');
+
 
 Route::middleware('auth')->group(function(){
 
@@ -58,10 +61,10 @@ Route::middleware('auth')->group(function(){
 
 
 	// Master Part Category ARK. Ipan Herdiansyah
-	Route::get('part/get_data', 'PartController@getData');
-	Route::resource('part', 'PartController');
 	Route::post('/part/import', 'PartController@import')->name('part.import');
 	Route::get('/part/export', 'PartController@export')->name('part.export');
+	Route::get('part/get_data', 'PartController@getData');
+	Route::resource('part', 'PartController');
 	
 	// Master SYSTEM ARK. Ipan Herdiansyah
 	Route::get('system/get_data', 'SystemController@getData');
@@ -75,8 +78,29 @@ Route::middleware('auth')->group(function(){
 	Route::post('/item/import', 'ItemController@import')->name('item.import');
 	Route::get('/item/export', 'ItemController@export')->name('item.export');
 	Route::get('item/get_data', 'ItemController@getData');
-	Route::resource('item', 'ItemController');
 	Route::get('/item/export/template', 'ItemController@template_item')->name('item.template');
+	Route::resource('item', 'ItemController');
+	
+
+	// Upload PO ARK. Ipan Herdiansyah
+	Route::post('/upload_po/import', 'UploadPoController@import')->name('upload_po.import');
+	Route::get('upload_po/get_data', 'UploadPoController@getData');
+	Route::get('/upload_po/export/template', 'UploadPoController@template_upload_po')->name('upload_po.template');
+	Route::resource('upload_po', 'UploadPoController');
+	
+	// GR Confirm ARK. Ipan Herdiansyah
+	Route::get('gr_confirm/get_data', 'GrConfirmController@getData');
+	Route::get('gr_confirm/details-data/{id}', 'GrConfirmController@getDetailsData');
+	
+	Route::get('gr_confirm/details-data/{id}', 'GrConfirmController@getDetailsData');
+	Route::get('gr_confirm/details-data-session', 'GrConfirmController@getDataGrConfirm');
+	Route::resource('gr_confirm', 'GrConfirmController');
+
+	// GR Confirm Detail ARK. Ipan Herdiansyah
+	Route::get('gr_confirm_detail/get_data', 'GetConfirmDetailController@getData');
+	Route::post('gr_confirm_detail/store', 'GetConfirmDetailController@store')->name('gr_confirm_detail.store');
+	Route::delete('gr_confirm_detail/{id}', 'GetConfirmDetailController@destroy')->name('gr_confirm_detail.destroy');
+
 
 	// media
 	Route::prefix('media')->group(function(){

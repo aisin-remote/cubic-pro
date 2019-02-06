@@ -45,17 +45,15 @@
 								<div class="product_panel panel active">
 									<div class="arrivals_slider slider">
 
-										@foreach ($category->items as $item)
+										@foreach ($category->items->take(10) as $item)
+										
 											<div class="arrivals_slider_item">
 												<div class="border_active"></div>
-												<div class="product_item is_new d-flex flex-column align-items-center justify-content-center text-center">
-												<div class="product_image d-flex flex-column align-items-center justify-content-center"><img class="img-slick" src="{{ !empty($item->feature_image) ?  url('uploads/'.$item->feature_image) : url('assets/images/default-image.png') }}" alt=""></div>
+												<div class="product_item is_new d-flex flex-column align-items-center justify-content-center text-center" style="padding-bottom: 30px; cursor: default">
+												<div class="product_image d-flex flex-column align-items-center justify-content-center"><a href="{{ url('catalog/'.$item->item_code) }}"><img class="img-slick" src="{{ !empty($item->feature_image) ?  url('uploads/'.$item->feature_image) : url('assets/images/default-image.png') }}" alt=""></a></div>
 													<div class="product_content">
-													<div class="product_price">Rp. {{ number_format($item->item_price) }}</div>
-													<div class="product_name"><div><a href="product.html">{{ $item->item_description }}</a></div></div>
-														<div class="product_extras">
-															<button class="product_cart_button">Add to Cart</button>
-														</div>
+														<div class="product_price">Rp. {{ number_format($item->item_price) }}</div>
+													<div class="product_name"><div><a href="{{ url('catalog/'.$item->item_code) }}">{{ ucfirst($item->item_description) }} <br> <small>{{ $item->item_code }}</small></a></div></div>
 													</div>
 												</div>
 											</div>

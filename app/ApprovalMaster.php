@@ -263,4 +263,5 @@ class ApprovalMaster extends Model
 
         return $this->status;
     }
+
 }

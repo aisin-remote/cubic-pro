@@ -1,56 +1,47 @@
 @extends('layouts.master')
 
 @section('title')
-    Master Item
+	Upload DO
 @endsection
 
 @section('content')
 
-@php($active = 'item')
+@php($active = 'upload_do')
 
 <div class="container">
     <div class="row">
-        <div class="col-xs-12">
-            <div class="page-title-box">
-                <h4 class="page-title">Master Item</h4>
+		<div class="col-xs-12">
+			<div class="page-title-box">
+                <h4 class="page-title">Upload DO</h4>
                 <ol class="breadcrumb p-0 m-0">
                     <li class="active">
-                        Item
+                        Upload DO
                     </li>
                 </ol>
                 <div class="clearfix"></div>
             </div>
-        </div>
-    </div>
+		</div>
+	</div>
     <!-- end row -->
 
     <div class="row">
         <div class="col-sm-4">
-             <a href="{{ route('item.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Item</a>
+             <a href="{{ route('upload_po.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Data DO</a>
         </div><!-- end col -->
         <div class="col-xs-12 text-right">
-            <button class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" onclick="on_import()"><i class="mdi mdi-upload"></i> Import</button>
-            <a href="{{ route('item.export') }}" class="btn btn-custom btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-download"></i> Eksport</a>
+            <button class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" onclick="on_import()"><i class="mdi mdi-upload"></i> Upload</button>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-12">
             <div class="card-box">
-                <table class="table m-0 table-colored table-inverse" id="table-item">
+                <table class="table m-0 table-colored table-inverse" id="table-upload_po">
                     <thead>
                         <tr>
-                            <th>Item Category</th>
-                            <th>Item Code</th>
-                            <th>Description</th>
-                            <th>Spesification</th>
-                            <th>Brand</th>
-                            <th>Price</th>
-                            <th>UoM</th>
-                            <th>Supplier</th>
-                            <th>Lead Times</th>
-                            <th>Remarks</th>
-                            <th>Tags</th>
+                            <th>Approval Number</th>
+                            <th>PO Number</th>
+                            <th>PO Date</th>
                             <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>
@@ -89,12 +80,12 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <form action="{{ route('item.import') }}" method="post" enctype="multipart/form-data" id="form-import">
+                        <form action="{{ route('upload_po.import') }}" method="post" enctype="multipart/form-data" id="form-import">
                             @csrf
                             <div class="form-group">
                                 <label class="control-label">Select File</label>
                                 <input type="file" name="file" class="form-control" accept=".csv">
-                                <center><a href="{{ route('item.template') }}" ><i class="mdi mdi-download"></i> Template Upload PO.csv</a></center>
+                                <center><a href="{{ route('upload_po.template') }}" ><i class="mdi mdi-download"></i> Template Upload PO.csv</a></center>
                             </div>
                         </form>
                     </div>
@@ -119,5 +110,5 @@
     </script>
 @endif
 
-<script src="{{ url('assets/js/pages/item.js') }}"></script>
+<script src="{{ url('assets/js/pages/upload_po.js') }}"></script>
 @endpush

@@ -13,12 +13,14 @@ class CreateItemsTable extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('items');
+
         Schema::create('items', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('item_category_id');
             $table->string('item_code');
             $table->string('item_description');
-            $table->string('item_spesification');
+            $table->string('item_specification');
             $table->string('item_brand');
             $table->float('item_price');
             $table->integer('uom_id');

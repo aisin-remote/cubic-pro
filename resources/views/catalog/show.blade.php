@@ -23,9 +23,9 @@
                         <div class="sidebar_section">
                             <div class="sidebar_title">Categories</div>
                             <ul class="sidebar_categories">
-                            <li><a href="{{ url('catalog') }}"> All categories</a></li>
+                            <li><a href="{{ url('catalog') }}" {{ empty(request()->category) ? 'class=text-primary' : '' }}> All categories</a></li>
                                 @foreach ($categories as $category)
-                            <li><a href="{{ url('catalog?category='.$category->id) }}">{{ $category->category_name }}</a></li>
+                            <li><a {{ $category->id == request()->category ? 'class=text-primary' : '' }} href="{{ url('catalog?category='.$category->id) }}">{{ $category->category_name }}</a></li>
                                 @endforeach
                             </ul>
                         </div>
@@ -59,7 +59,7 @@
 
                     <div class="shop_content">
                         <div class="shop_bar clearfix">
-                        <div class="shop_product_count"><span>{{ count($items) }}</span> products found {!! !empty(request()->keyword) ? 'with keyword <em>"'.request()->keyword.'"</em>' : '' !!}</div>
+                        <div class="shop_product_count"><span>{{ $items->total() }}</span> products found {!! !empty(request()->keyword) ? 'with keyword <em>"'.request()->keyword.'"</em>' : '' !!}</div>
                             <div class="shop_sorting">
                                 <span>Sort by:</span>
                                 <ul>
@@ -80,35 +80,28 @@
                             
                             @foreach ($items as $item)
                             <!-- Product Item -->
+                            <a href="{{ url('catalog/'.$item->item_code) }}">
                             <div class="product_item is_new" style="position: absolute; left: 0px; top: 0px;">
                                 <div class="product_border"></div>
-                                <div class="product_image d-flex flex-column align-items-center justify-content-center"><img src="{{ !empty($item->feature_image) ?  url('uploads/'.$item->feature_image) : url('assets/images/default-image.png') }}" alt="" style="
+                                <div class="product_image d-flex flex-column align-items-center justify-content-center">
+                                <img src="{{ !empty($item->feature_image) ?  url('uploads/'.$item->feature_image) : url('assets/images/default-image.png') }}" alt="" style="
                                     padding: 20px;
-                                    object-fit: contain;
+                                    object-fit: cover;
+                                    width: 100%;
+                                    height: 100%;
                                 "></div>
                                 <div class="product_content">
                                 <div class="product_price">Rp. {{ number_format($item->item_price) }}</div>
-                                <div class="product_name"><div><a href="#" tabindex="0">{{ $item->item_description }}</a></div></div>
+                                <div class="product_name"><div><a href="{{ url('catalog/'.$item->item_code) }}" tabindex="0">{{ ucfirst($item->item_description) }}</a></div></div>
                                 </div>
-                                <div class="product_fav"><i class="fas fa-shopping-cart"></i></div>
                             </div>
+                            </a>
                             @endforeach
 
                         </div>
 
                         <!-- Shop Page Navigation -->
-
-                        {{-- <div class="shop_page_nav d-flex flex-row">
-                            <div class="page_prev d-flex flex-column align-items-center justify-content-center"><i class="fas fa-chevron-left"></i></div>
-                            <ul class="page_nav d-flex flex-row">
-                                <li><a href="#">1</a></li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">...</a></li>
-                                <li><a href="#">21</a></li>
-                            </ul>
-                            <div class="page_next d-flex flex-column align-items-center justify-content-center"><i class="fas fa-chevron-right"></i></div>
-                        </div> --}}
+                        {{ $items->appends(request()->input())->links('vendor.pagination.custom') }}
 
                     </div>
 

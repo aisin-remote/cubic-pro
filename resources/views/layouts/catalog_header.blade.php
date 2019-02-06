@@ -7,10 +7,25 @@
 				<div class="row">
 					<div class="col d-flex flex-row">
 						<div class="top_bar_content ml-auto">
-							<div class="top_bar_user">
-								<div class="user_icon"><img src="assets/images/catalog/user.svg" alt=""></div>
-								<div><a href="login">Sign in</a></div>
-							</div>
+							@if (auth()->check())
+								<div class="top_bar_menu">
+									<ul class="standard_dropdown top_bar_dropdown">
+										<li>
+											<a href="#">{{ auth()->user()->name }}<i class="fal fa-chevron-down"></i></a>
+											<ul>
+												<li><a href="#">Dashboard</a></li>
+												<li><a href="#">Logout</a></li>
+											</ul>
+										</li>
+									</ul>
+								</div>
+							@else
+								<div class="top_bar_user">
+									<div class="user_icon"><img src="assets/images/catalog/user.svg" alt=""></div>
+									<div><a href="login">Sign in</a></div>
+								</div>
+							@endif
+							
 						</div>
 					</div>
 				</div>
@@ -26,7 +41,7 @@
 					<!-- Logo -->
 					<div class="col-lg-4 col-sm-4 col-3 order-1">
 						<div class="logo_container">
-							<div class="logo"><a href="#">Cubic Pro</a></div>
+						<div class="logo"><a href="{{ url('/') }}">Cubic Pro</a></div>
 						</div>
 					</div>
 
@@ -51,13 +66,31 @@
 												</ul>
 											</div>
 										</div>
-										<button type="submit" class="header_search_button trans_300" value="Submit"><img src="assets/images/catalog/search.png" alt=""></button>
+										<button type="submit" class="header_search_button trans_300" value="Submit"><img src="{{ url('assets/images/catalog/search.png') }}" alt=""></button>
 									</form>
 								</div>
 							</div>
 						</div>
 					</div>
+					
+					<div class="col-lg-2 col-9 order-lg-3 order-2 text-lg-left text-right">
+						<div class="wishlist_cart d-flex flex-row align-items-center justify-content-end">
 
+							<!-- Cart -->
+							<div class="cart">
+								<div class="cart_container d-flex flex-row align-items-center justify-content-end">
+									<div class="cart_icon">
+										<img src="{{ url('assets/images/catalog/cart.png') }}" alt="">
+									<div class="cart_count"><span>{{ count(\App\Cart::countTotal()) }}</span></div>
+									</div>
+									<div class="cart_content">
+										<div class="cart_text"><a href="#">Cart</a></div>
+									<div class="cart_price">Rp. {{ \App\Cart::countTotal() ? number_format(\App\Cart::countTotal()->pluck('total')->sum()) : '0' }}</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
 				</div>
 			</div>
