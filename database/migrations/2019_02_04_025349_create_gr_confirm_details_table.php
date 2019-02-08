@@ -16,15 +16,12 @@ class CreateGrConfirmDetailsTable extends Migration
         Schema::create('gr_confirm_details', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('gr_confirm_id');
-            $table->string('gr_no');
-            $table->string('budget_no');
-            $table->integer('item_id');
-            $table->string('item_name');
-            $table->string('uom');
-            $table->decimal('qty_order');
-            $table->decimal('qty_receive');
-            $table->decimal('qty_outstanding');
-            $table->text('notes');
+            $table->integer('approval_detail_id');
+            $table->string('gr_no')->nullable();
+            $table->decimal('qty_order')->default(0);
+            $table->decimal('qty_receive')->default(0);
+            $table->decimal('qty_outstanding')->default(0);
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

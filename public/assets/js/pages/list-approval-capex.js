@@ -4,20 +4,11 @@ $(document).ready(function(){
 	tApprovalCapex = $('#table-approval-capex').DataTable({
 		ajax: SITE_URL + '/approval-capex/approval_capex',
         columns: [
-            {
-                "className":      'details-control',
-                "orderable":      false,
-                "searchable":     true,
-                "data":           null,
-                "defaultContent": ''
-            },
             { data: 'departments.department_name', name: 'departments.department_name'},
             { data: 'approval_number', name: 'approval_number'},
             { data: 'total', name: 'total'},
             { data: 'status', name: 'status'},
-            {data: 'overbudget_info', name: 'overbudget_info', orderable: false, searchable: false },
-            // { data: 'model', name: 'model'},
-            //  { data: 'reject_ratio', name: 'reject_ratio'},
+            { data: 'overbudget_info', name: 'overbudget_info', orderable: false, searchable: false },
             { data: 'action', name: 'action', searching: false, sorting: false, class: 'text-center' }
         ],
         order: [1, 'asc'],

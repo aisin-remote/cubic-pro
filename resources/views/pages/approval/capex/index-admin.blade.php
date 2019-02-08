@@ -36,7 +36,6 @@
                 <table class="table m-0 table-colored table-inverse" id="table-approval-capex">
                     <thead>
                         <tr>
-                            <th style="width: 50px"></th>
                             <th>Department</th>
                             <th>Approval Number</th>
                             <th>Total</th>

@@ -225,7 +225,7 @@ class ApprovalMaster extends Model
 
     public function departments()
     {
-        return $this->belongsTo('App\Department', 'department_id', 'id');
+        return $this->belongsTo('App\Department', 'department', 'department_code');
     }
 
     public function divisions()
@@ -262,6 +262,17 @@ class ApprovalMaster extends Model
         if(\Entrust::hasRole('director')) $this->status = -4;
 
         return $this->status;
+    }
+
+    public function gr_confirm()
+    {
+    	return $this->hasOne('App\GrConfirm', 'approval_id');
+    	
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'created_by');
     }
 
 }

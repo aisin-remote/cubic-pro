@@ -1,5 +1,7 @@
 @extends('layouts.catalog')
-
+@section('title')
+    {{ $items->first()->item_description }}
+@endsection
 @section('content')
 <div class="super_container">
 	

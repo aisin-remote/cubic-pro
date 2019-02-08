@@ -20,6 +20,11 @@ Route::get('/catalog/{item_code}', 'CatalogController@details');
 
 Route::middleware('auth')->group(function(){
 
+	Route::get('/cart', 'CartController@index');
+	Route::put('/cart/{id}', 'CartController@update');
+	Route::delete('/cart/{id}', 'CartController@delete');
+	Route::get('/cart/checkout', 'CartController@checkout');
+
 	Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 	Route::get('/dashboard/get_chart', 'DashboardController@getChart')->name('dashboard.chart');
 	Route::get('/dashboard/get_data_park', 'DashboardController@getDataPark')->name('dashboard.get_data_park');
@@ -94,12 +99,15 @@ Route::middleware('auth')->group(function(){
 	
 	Route::get('gr_confirm/details-data/{id}', 'GrConfirmController@getDetailsData');
 	Route::get('gr_confirm/details-data-session', 'GrConfirmController@getDataGrConfirm');
+	Route::get('gr_confirm/get_user/{po_number}', 'GrConfirmController@getUser');
 	Route::resource('gr_confirm', 'GrConfirmController');
 
 	// GR Confirm Detail ARK. Ipan Herdiansyah
-	Route::get('gr_confirm_detail/get_data', 'GetConfirmDetailController@getData');
-	Route::post('gr_confirm_detail/store', 'GetConfirmDetailController@store')->name('gr_confirm_detail.store');
-	Route::delete('gr_confirm_detail/{id}', 'GetConfirmDetailController@destroy')->name('gr_confirm_detail.destroy');
+	Route::get('gr_confirm_detail/get_data', 'GrConfirmDetailController@getData');
+	Route::post('gr_confirm_detail/xedit', 'GrConfirmDetailController@xedit');
+	Route::post('gr_confirm_detail/store', 'GrConfirmDetailController@store')->name('gr_confirm_detail.store');
+	Route::delete('gr_confirm_detail/{id}', 'GrConfirmDetailController@destroy')->name('gr_confirm_detail.destroy');
+	
 
 
 	// media

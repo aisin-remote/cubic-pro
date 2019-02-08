@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="OneTech shop project">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Cubic Pro | @yield('title')</title>
     
     @stack('style')
     
@@ -65,7 +67,9 @@
 </head>
 
 <body>
-    
+    <script>
+        var SITE_URL = "{{ url('/') }}";
+    </script>
     @yield('content')
 
     <!-- Copyright -->

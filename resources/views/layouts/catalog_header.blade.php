@@ -13,8 +13,12 @@
 										<li>
 											<a href="#">{{ auth()->user()->name }}<i class="fal fa-chevron-down"></i></a>
 											<ul>
-												<li><a href="#">Dashboard</a></li>
-												<li><a href="#">Logout</a></li>
+												<li><a href="{{ url('dashboard') }}">Dashboard</a></li>
+												
+												<form action="{{ route('logout') }}" method="POST" id="form-logout" style="display:none">
+												{{ csrf_field() }}
+												</form>
+												<li><a onclick="document.getElementById('form-logout').submit()" href="javascript:void(0)"><i class="fas fa-lock"></i> Logout</a></li>
 											</ul>
 										</li>
 									</ul>
@@ -81,10 +85,10 @@
 								<div class="cart_container d-flex flex-row align-items-center justify-content-end">
 									<div class="cart_icon">
 										<img src="{{ url('assets/images/catalog/cart.png') }}" alt="">
-									<div class="cart_count"><span>{{ count(\App\Cart::countTotal()) }}</span></div>
+									<div class="cart_count"><span>{{ \App\Cart::countTotal()->pluck('qty')->sum() }}</span></div>
 									</div>
 									<div class="cart_content">
-										<div class="cart_text"><a href="#">Cart</a></div>
+									<div class="cart_text"><a href="{{ url('cart') }}">Cart</a></div>
 									<div class="cart_price">Rp. {{ \App\Cart::countTotal() ? number_format(\App\Cart::countTotal()->pluck('total')->sum()) : '0' }}</div>
 									</div>
 								</div>
@@ -114,6 +118,7 @@
 								</div>
 
 								<ul class="cat_menu">
+								<li><a href="{{ url('catalog') }}">All Category</a></li>
 									@foreach (App\ItemCategory::get() as $category)
 										<li><a href="{{ url('catalog?category='.$category->id) }}">{{ $category->category_code}} ( {{$category->category_name}} )</a></li>
 									@endforeach

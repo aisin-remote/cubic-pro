@@ -1,5 +1,5 @@
 @extends('layouts.catalog')
-
+@section('title', 'Catalogs')
 @section('content')
 <div class="super_container">
 	

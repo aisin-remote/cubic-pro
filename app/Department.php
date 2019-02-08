@@ -13,5 +13,10 @@ class Department extends Model
     {
     	return $this->belongsTo('App\Division');	
     }
+
+    public function user()
+    {
+        return $this->hasMany('App\User');
+    }
     
 }

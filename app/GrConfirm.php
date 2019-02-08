@@ -23,4 +23,5 @@ class GrConfirm extends Model
     {
     	return $this->hasMany(\App\GrConfirmDetail::class);
     }
+
 }

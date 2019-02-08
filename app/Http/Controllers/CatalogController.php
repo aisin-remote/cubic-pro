@@ -32,11 +32,11 @@ class CatalogController extends Controller
                     });
             }
 
-            if (!empty($request->category)) {
-                $where->where('item_category_id', $request->category);
-            }
         })
         ->groupBy('item_code')
+        ->when(!empty($request->category), function($query) use ($request){
+            $query->where('item_category_id', $request->category);
+        })
         ->paginate(15);
 
         $categories = ItemCategory::get();
@@ -59,12 +59,20 @@ class CatalogController extends Controller
 
             $item = Item::find($request->item_id);
 
-            $cart = new Cart;
+            $cart = Cart::firstOrNew(['item_id' => $item->id]);
             $cart->user_id = auth()->user()->id;
             $cart->item_id = $item->id;
-            $cart->qty = $request->qty;
+
+            if ($cart->exists) {
+                $qty = $cart->qty + $request->qty;
+                $cart->qty = $qty;
+                $cart->total = $item->item_price * $qty;
+            } else {
+                $cart->qty = $request->qty;
+                $cart->total = $item->item_price * $request->qty;
+            }
+
             $cart->price = $item->item_price;
-            $cart->total = $item->item_price * $request->qty;
             $cart->reason = $request->reason;
             $cart->save();
 
