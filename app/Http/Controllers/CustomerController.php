@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Customer;
+use Excel;
+use Storage;
 
 use DataTables;
 
@@ -192,5 +194,59 @@ class CustomerController extends Controller
         $customer = Customer::find($id);
         return view('pages.customer.edit', compact(['customer']));
     }
+
+    public function import(Request $request)
+    {
+        $file = $request->file('file');
+        $name = time() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('public/uploads', $name);
+        $data = [];
+        if ($request->hasFile('file')) {
+            $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
+
+                    foreach ($datas as $data) {
+
+                        $customer   = Customer::firstOrNew(['customer_code' => $data->customer_code]);
+                        $customer->customer_code        = $data->customer_code;
+                        $customer->customer_name        = $data->customer_name;
+                        $customer->customer_address     = $data->customer_address;
+                        $customer->customer_phone       = $data->customer_phone;
+                        $customer->customer_email       = $data->customer_email;
+                        $customer->customer_website     = $data->customer_website;
+                        $customer->customer_pic_name    = $data->customer_pic_name;
+                        $customer->customer_pic_phone   = $data->customer_pic_phone;
+                        $customer->customer_pic_email   = $data->customer_pic_email;
+                        $customer->save();                  
+                    }  
+
+                    $res = [
+                                'title'             => 'Sukses',
+                                'type'              => 'success',
+                                'message'           => 'Upload Data Success!'
+                            ];
+                    Storage::delete('public/uploads/'.$name); 
+                    return redirect()
+                            ->route('customer.index')
+                            ->with($res);
+        }
+    }
+
+    public function template_customer() 
+    {
+       return Excel::create('Template Customer', function($excel){
+            $excel->sheet('mysheet', function($sheet){
+                $sheet->cell('A1', function($cell) {$cell->setValue('customer_code');});
+                $sheet->cell('B1', function($cell) {$cell->setValue('customer_name');});
+                $sheet->cell('C1', function($cell) {$cell->setValue('customer_address');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('customer_phone');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('customer_email');});
+                $sheet->cell('F1', function($cell) {$cell->setValue('customer_website');});
+                $sheet->cell('G1', function($cell) {$cell->setValue('customer_pic_name');});
+                $sheet->cell('H1', function($cell) {$cell->setValue('customer_pic_phone');});
+                $sheet->cell('I1', function($cell) {$cell->setValue('customer_pic_email');});
+            });
+
+        })->download('csv');
+    } 
 
 }

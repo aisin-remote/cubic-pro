@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Supplier;
+use Excel;
+use Storage;
 
 use DataTables;
 
@@ -192,5 +194,59 @@ class SupplierController extends Controller
         $supplier = Supplier::find($id);
         return view('pages.supplier.edit', compact(['supplier']));
     }
+
+    public function import(Request $request)
+    {
+        $file = $request->file('file');
+        $name = time() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('public/uploads', $name);
+        $data = [];
+        if ($request->hasFile('file')) {
+            $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
+
+                    foreach ($datas as $data) {
+
+                        $supplier   = Supplier::firstOrNew(['supplier_code' => $data->supplier_code]);
+                        $supplier->supplier_code        = $data->supplier_code;
+                        $supplier->supplier_name        = $data->supplier_name;
+                        $supplier->supplier_address     = $data->supplier_address;
+                        $supplier->supplier_phone       = $data->supplier_phone;
+                        $supplier->supplier_email       = $data->supplier_email;
+                        $supplier->supplier_website     = $data->supplier_website;
+                        $supplier->supplier_pic_name    = $data->supplier_pic_name;
+                        $supplier->supplier_pic_phone   = $data->supplier_pic_phone;
+                        $supplier->supplier_pic_email   = $data->supplier_pic_email;
+                        $supplier->save();                  
+                    }  
+
+                    $res = [
+                                'title'             => 'Sukses',
+                                'type'              => 'success',
+                                'message'           => 'Upload Data Success!'
+                            ];
+                    Storage::delete('public/uploads/'.$name); 
+                    return redirect()
+                            ->route('supplier.index')
+                            ->with($res);
+        }
+    }
+
+    public function template_supplier() 
+    {
+       return Excel::create('Template Supplier', function($excel){
+            $excel->sheet('mysheet', function($sheet){
+                $sheet->cell('A1', function($cell) {$cell->setValue('supplier_code');});
+                $sheet->cell('B1', function($cell) {$cell->setValue('supplier_name');});
+                $sheet->cell('C1', function($cell) {$cell->setValue('supplier_address');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('supplier_phone');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('supplier_email');});
+                $sheet->cell('F1', function($cell) {$cell->setValue('supplier_website');});
+                $sheet->cell('G1', function($cell) {$cell->setValue('supplier_pic_name');});
+                $sheet->cell('H1', function($cell) {$cell->setValue('supplier_pic_phone');});
+                $sheet->cell('I1', function($cell) {$cell->setValue('supplier_pic_email');});
+            });
+
+        })->download('csv');
+    } 
 }
     

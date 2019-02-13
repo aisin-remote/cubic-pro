@@ -34,3 +34,12 @@ function on_delete(supplier_id)
     $('#modal-delete-confirm').modal('show');
     $('#btn-confirm').data('value', supplier_id);
 }
+
+function on_import()
+{
+    $('#modal-import').modal('show');
+}
+
+$('#btn-import').click(function(){
+    $('#form-import').submit();
+});

@@ -28,6 +28,9 @@
         <div class="col-sm-4">
              <a href="{{ route('supplier.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Supplier</a>
         </div><!-- end col -->
+        <div class="col-xs-12 text-right">
+            <button class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" onclick="on_import()"><i class="mdi mdi-upload"></i> Import</button>
+        </div>
     </div>
 
     <div class="row">
@@ -66,6 +69,36 @@
             <div class="modal-body">The data you choose will be deleted, are you sure?</div>
             <div class="modal-footer">
                 <button type="submit" id="btn-confirm" class="btn btn-danger btn-bordered waves-effect waves-light">Delete</button>
+                <button type="button" class="btn btn-default btn-bordered waves-effect waves-light" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for import -->
+<div class="modal fade in" tabindex="-1" role="dialog" id="modal-import">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                <h4 class="modal-title">Import Data</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form action="{{ route('supplier.import') }}" method="post" enctype="multipart/form-data" id="form-import">
+                            @csrf
+                            <div class="form-group">
+                                <label class="control-label">Select File</label>
+                                <input type="file" name="file" class="form-control" accept=".csv">
+                                <center><a href="{{ route('supplier.template') }}" ><i class="mdi mdi-download"></i> Template Master Supplier.csv</a>   </center>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" id="btn-import" class="btn btn-primary btn-bordered waves-effect waves-light" onclick="on_table_temporary()">Import</button>
                 <button type="button" class="btn btn-default btn-bordered waves-effect waves-light" data-dismiss="modal">Cancel</button>
             </div>
         </div>

@@ -30,7 +30,6 @@
         </div><!-- end col -->
         <div class="col-xs-12 text-right">
             <button class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" onclick="on_import()"><i class="mdi mdi-upload"></i> Import</button>
-            <a href="{{ route('item.export') }}" class="btn btn-custom btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-download"></i> Eksport</a>
         </div>
     </div>
 
@@ -94,7 +93,7 @@
                             <div class="form-group">
                                 <label class="control-label">Select File</label>
                                 <input type="file" name="file" class="form-control" accept=".csv">
-                                <center><a href="{{ route('item.template') }}" ><i class="mdi mdi-download"></i> Template Upload PO.csv</a></center>
+                                <center><a href="{{ route('item.template') }}" ><i class="mdi mdi-download"></i> Template Master Item.csv</a></center>
                             </div>
                         </form>
                     </div>

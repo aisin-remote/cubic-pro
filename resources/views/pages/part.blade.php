@@ -30,7 +30,7 @@
         </div><!-- end col -->
         <div class="col-xs-12 text-right">
             <button class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" onclick="on_import()"><i class="mdi mdi-upload"></i> Import</button>
-            <a href="{{ route('part.export') }}" class="btn btn-custom btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-download"></i> Eksport</a>
+            <!-- <a href="{{ route('part.export') }}" class="btn btn-custom btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-download"></i> Eksport</a> -->
         </div>
     </div>
 

@@ -57,10 +57,14 @@ Route::middleware('auth')->group(function(){
 	Route::resource('section', 'SectionController');
 
 	// Master Department ARK. Ipan Herdiansyah
+	Route::post('/customer/import', 'CustomerController@import')->name('customer.import');
+	Route::get('/customer/export/template', 'CustomerController@template_customer')->name('customer.template');
 	Route::get('customer/get_data', 'CustomerController@getData');
 	Route::resource('customer', 'CustomerController');
 
 	// Master Supplier ARK. Ipan Herdiansyah
+	Route::post('/supplier/import', 'SupplierController@import')->name('supplier.import');
+	Route::get('/supplier/export/template', 'SupplierController@template_supplier')->name('supplier.template');
 	Route::get('supplier/get_data', 'SupplierController@getData');
 	Route::resource('supplier', 'SupplierController');
 
