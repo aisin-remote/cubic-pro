@@ -132,7 +132,7 @@
             var budget_no = $(this).find('td:nth-child(2)');
 
             // set budget_no anchor
-            budget_no.html('<a href="{{ url("capex") }}/'+budget_no.text()+'" >'+budget_no.text()+'</a>');
+            budget_no.html('<a href="{{ url("expense/select") }}/'+budget_no.text()+'" >'+budget_no.text()+'</a>');
 
         });
     }
@@ -192,7 +192,7 @@
 	function initGLAccountEditable()
     {
         function getSource() {
-            var url = "{{ url('ajax/account-list-capex') }}";
+            var url = SITE_URL+"/gl_account/index";
             return $.ajax({
                 type:  'GET',
                 async: true,
@@ -200,7 +200,9 @@
                 dataType: "json"
             });
         }
+		
         getSource().done(function(result) {
+			alert(result);
             $('.cmb_editable_account').editable({  //to keep track of selected values in single select
                 type: 'select2',  
                 url: "{{ url('approval/xedit') }}",

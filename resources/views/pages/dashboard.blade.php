@@ -88,5 +88,10 @@
 @endsection
 
 @push('js')
+@if (session()->has('message'))
+    <script type="text/javascript">
+        show_notification("{{ session('title') }}","{{ session('type') }}","{{ session('message') }}");
+    </script>
+@endif
 <script src="{{ url('assets/js/pages/dashboard.js') }}"></script>
 @endpush

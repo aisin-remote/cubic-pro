@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\SapModel\SapGlAccount;
 use DataTables;
-
 class GlAccountController extends Controller
 {
     public function index(Request $request)
@@ -136,4 +135,16 @@ class GlAccountController extends Controller
                 ->route('gl_account.index')
                 ->with($res);
     }
+	
+	public function getCmbGlAccount()
+	{
+		$gl_account = SapGlAccount::all();
+		$data = [];
+		foreach($gl_account as $glc)
+		{
+			$data[] = array('value'=>$glc->gl_acode,'text'=>$glc->gl_aname);
+		}
+		
+		return response()->json($data, 200);
+	}
 }

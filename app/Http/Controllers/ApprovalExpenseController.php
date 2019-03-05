@@ -10,6 +10,8 @@ use App\SapModel\SapCostCenter;
 use App\SapModel\SapUom;
 use App\ApprovalDetail;
 use App\ApprovalMaster;
+use App\ApprovalDtl;
+use App\ApproverUser;
 use DB;
 use DataTables;
 use Cart;
@@ -177,7 +179,20 @@ class ApprovalExpenseController extends Controller
                     $approval->budget_reserved       = 2018;
                     $capex->details()->save($approval);
                 }
-
+				// Simpan approver user
+				$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
+				
+				foreach($approval_master as $am){
+					
+					$approval_dtl 	 = ApprovalDtl::where('approval_id',$request->approval_id)->get();
+					
+					foreach($approval_dtl as $app_dtl){
+						$approver_user = new ApproverUser();
+						$approver_user->approval_master_id  = $am->id;
+						$approver_user->user_id  			= $app_dtl->user_id;
+						$approver_user->save();
+					}
+				}
                 $res = [
                             'title' => 'Sukses',
                             'type' => 'success',
@@ -185,13 +200,16 @@ class ApprovalExpenseController extends Controller
                         ];
 
                 Cart::instance('expense')->destroy();
-                return redirect()
+               
+            });
+         return redirect()
                             ->route('approval-expense.ListApproval')
                             ->with($res);
-            });
-        
     }
-
+	public function ListApprovalUnvalidated()
+	{
+		return view('pages.approval.expense.list-approval');
+	}
     /**
      * Display the specified resource.
      *
@@ -203,23 +221,25 @@ class ApprovalExpenseController extends Controller
 
         return view('pages.approval.expense.index-admin');
     }
-    public function getApprovalExpense(){
-        $type = '';
-        $status ='';
+    public function getApprovalExpense($status){
+        $type 	= 'ex';
 
         $user = \Auth::user();
-
-        $approval_expense = ApprovalMaster::with('departments')
-                                ->where('budget_type', 'like', 'ex%')
-                                ->get();
+		$approval_expense = ApprovalMaster::with('departments')
+                                ->where('budget_type', 'like', 'ex%');
+		if($status == 'need_approval'){
+			$approval_expense->where('status','0');
+		}
+		
+        $approval_expense = $approval_expense->get();
         return DataTables::of($approval_expense)
         ->rawColumns(['action'])
 
         ->addColumn("action", function ($approval_expense) use ($type, $status){ 
             if($status!='need_approval'){
-                // return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='$type"."/$approvals->approval_number' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a></div>";
+
                 if(\Entrust::hasRole('user')) {
-                    return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.$type.'/'.$approval_expense->approval_number.'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+                    return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/ex/'.$approval_expense->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
 
                         <a href="#" onclick="printApproval(&#39;'.$approval_expense->approval_number.'&#39;)" class="btn btn-primary" ><span class="glyphicon glyphicon-print" aria-hidden="true"></span></a>
 
@@ -229,20 +249,20 @@ class ApprovalExpenseController extends Controller
                             <input type="hidden" name="_method" value="DELETE">
                         </form>';
                 }elseif(\Entrust::hasRole('budget')) {
-                    return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.$type.'/'.$approval_expense->approval_number.'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a><a href="#" class="btn btn-danger" onclick="cancelApproval(&#39;'.$approval_expense->approval_number.'&#39;)"><span class="glyphicon glyphicon-remove"aria-hidden="true"></span></a></div>';
+                    return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/ex/'.$approval_expense->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a><a href="#" class="btn btn-danger" onclick="cancelApproval(&#39;'.$approval_expense->approval_number.'&#39;);return false;"><span class="glyphicon glyphicon-remove"aria-hidden="true"></span></a></div>';
                 }else{
-                    return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='$type"."/$approval_expense->approval_number' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a></div>";
+                    return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a></div>";
                 }
             }else{
                 // return "else";
-                return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='$approval_expense->approval_number' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a  href='javascript:validateApproval(&#39;$approval_expense->approval_number&#39;);' class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href='$approval_expense->approval_number' class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a  href='#' onclick='javascript:validateApproval(&#39;$approval_expense->approval_number&#39;);return false;' class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
             }
         })
 
         ->editColumn("total", function ($approvals) {
                 return number_format($approvals->total);
             })
-        ->editColumn("status", function ($approvals){ // dev-4.2.1 by Fahrul, 20171116
+        ->editColumn("status", function ($approvals){
             if ($approvals->status == '0') {
                 return "User Created";
             }elseif ($approvals->status == '1') {
@@ -269,7 +289,11 @@ class ApprovalExpenseController extends Controller
         ->toJson();
     }
 
-    
+    public function DetailApproval($approval_number)
+	{
+		$master = ApprovalMaster::getSelf($approval_number);
+		return view('pages.approval.expense.view',compact('master'));
+	}
     public function delete($id)
     {
         DB::transaction(function() use ($id){

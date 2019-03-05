@@ -52,6 +52,6 @@
 @endsection
 
 @push('js')
-<script src="{{ url('assets/js/pages/capex-closing.js') }}"></script>
+<script src="{{ url('assets/js/pages/expense-closing.js') }}"></script>
 @endpush
                               

@@ -70,7 +70,28 @@
 @endsection
 @push('js')
 <script type="text/javascript">
-	
+	var table = tData = $('#table-approval-capex').DataTable({
+				  processing: true,
+				  serverSide: true,
+				  ajax: SITE_URL + '/approval-capex/get_data',
+				  columns: [
+					{ data: 'budget_no', name: 'budget_no' },
+					{ data: 'project_name', name: 'project_name' },
+					{ data: 'pr_specs', name: 'pr_specs' },
+					{ data: 'price_actual', name: 'price_actual' },
+					{ data: 'plan_gr', name: 'plan_gr' },
+					{ data: 'asset_kind', name: 'asset_kind' },
+					{ data: 'settlement_date', name: 'settlement_date' },
+					{ data: 'option', name: 'option' },
+				  ],
+				  ordering: false,
+				  searching: false,
+				  paging: false,
+				  info: false,
+				  drawCallback: function(d) {
+					$('[data-toggle="tooltip"]').tooltip({html: true, "show": 500, "hide": 100});
+				  }
+				});
     var table = $('table').dataTable({
         "ajax": "{{ url('approval/detail').'/'.$master->approval_number }}",
         "ordering": false,
@@ -102,6 +123,7 @@
 		}
         
     });
+	
 	function validateApproval(approval_number)
     {
         var confirmed = confirm('Are you sure to validate Approval: '+approval_number+'?');
@@ -132,7 +154,7 @@
             var budget_no = $(this).find('td:nth-child(2)');
 
             // set budget_no anchor
-            budget_no.html('<a href="{{ url("capex") }}/'+budget_no.text()+'" >'+budget_no.text()+'</a>');
+            budget_no.html('<a href="{{ url("capex/select/") }}/'+budget_no.text()+'" >'+budget_no.text()+'</a>');
 
         });
     }
@@ -149,7 +171,31 @@
             };
         })
     }
-	
+	function initEditable()
+	{
+		$('.editable').editable({
+			type: 'text',
+			url: SITE_URL + '/capex/xedit',
+			params: {
+				_token: $('meta[name="csrf-token"]').attr('content'),
+			},
+			validate: function(value) {
+				if($.trim(value) == '') return 'This field is required';
+			},
+			display: function(value, response) {
+				return false;   //disable this method
+			},
+			success: function(data, config) {
+				console.log(data);
+				if (data.error) {
+					return data.error;
+				};
+
+				$(this).text(data.value);
+				table.ajax.reload( null, false );
+			}
+		});
+	}
 	function xeditClasser()
     {
         $('tbody tr').each(function(i, e) {
@@ -192,7 +238,7 @@
 	function initGLAccountEditable()
     {
         function getSource() {
-            var url = "{{ url('ajax/account-list-capex') }}";
+            var url = SITE_URL+"/getCmbGlAccount";
             return $.ajax({
                 type:  'GET',
                 async: true,
@@ -200,13 +246,17 @@
                 dataType: "json"
             });
         }
+		
         getSource().done(function(result) {
+			
             $('.cmb_editable_account').editable({  //to keep track of selected values in single select
+				inputClass:'input-large',
                 type: 'select2',  
                 url: "{{ url('approval/xedit') }}",
+				mode:'inline',
                 params: {
                     _token: "{{ csrf_token() }}",
-                    approval_number: "{{ $master->approval_number }}"
+                    approval_details_id: "{{ $master->approval_number }}"
                 },
                 autotext: 'always',
                 placeholder: 'Silahkan pilih',
@@ -216,13 +266,13 @@
                 },
 
                 success: function(data, config) {
-                    console.log(result);
                     if (data.error) {
                         return data.error;
                     };
 
                     $(this).text(data.value);
-                }
+                },
+				selector:2,
             });
 
 

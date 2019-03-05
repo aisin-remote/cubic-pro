@@ -6,12 +6,15 @@ $(document).ready(function(){
 
     if (budget_no  !== '' && budget_no !== null && budget_no !== undefined ) {
       var arr_expense = getData(budget_no);
-
-      $('[name="budget_description"]').val(arr_expense.description);
-      $('[name="qty_remaining"]').val(arr_expense.qty_plan);
-      $('[name="price_remaining"]').val(arr_expense.budget_plan);
-      $('[name="budget_remaining_log"]').val(arr_expense.budget_remaining);
-      
+	  if(arr_expense.is_closed){
+		  show_notification("Error",'error','Budget['+budget_no+'] already fully reserved, please contact Accounting/Finance Dept. for further assistance');
+		  $('[name="budget_no"]').val('').trigger('change');
+	  }else{
+		  $('[name="budget_description"]').val(arr_expense.description);
+		  $('[name="qty_remaining"]').val(arr_expense.qty_plan);
+		  $('[name="price_remaining"]').val(arr_expense.budget_plan);
+		  $('[name="budget_remaining_log"]').val(arr_expense.budget_remaining);
+      }
     }
     
   });
@@ -30,6 +33,8 @@ $(document).ready(function(){
   
 
 });
+
+$('select[name="remarks[]"]').select2({tags:true});
 
 function onDelete(rowid)
 {

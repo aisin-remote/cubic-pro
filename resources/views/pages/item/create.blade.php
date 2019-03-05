@@ -68,7 +68,7 @@
 
                             <div class="form-group">
                                 <label class="control-label">Spesification<span class="text-danger">*</span></label>
-                                <input type="text" name="item_spesification" class="form-control" placeholder="Item Spesification" required="required">
+                                <input type="text" name="item_specification" class="form-control" placeholder="Item Specification" required="required">
                                 <span class="help-block"></span>
                             </div>
 
@@ -80,7 +80,7 @@
 
                             <div class="form-group">
                                 <label class="control-label">Price<span class="text-danger">*</span></label>
-                                <input type="text" name="item_price" class="form-control" placeholder="Item Price" required="required">
+                                <input type="text" name="item_price" class="form-control autonumeric text-right" placeholder="Item Price" required="required">
                                 <span class="help-block"></span>
                             </div>
 
@@ -137,6 +137,13 @@
                                     <span class="input-group-btn">
                                         <button class="btn btn-default btn-bordered waves-light waves-light btn-open-media" type="button">Browse</button>
                                     </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label">File</label>
+                                <div class="input-group">
+                                    <input type="file" name="feature_file" class="form-control" accept=".pdf">
                                 </div>
                             </div>
                         </div>

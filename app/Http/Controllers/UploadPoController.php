@@ -21,7 +21,11 @@ class UploadPoController extends Controller
      */
     public function index(Request $request)
     {
-        $po = UploadPurchaseOrder::get();
+        $po = DB::table('approval_masters')
+                    ->select('approval_masters.approval_number', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date')
+                    ->leftJoin('upload_purchase_orders', 'approval_masters.approval_number', '=', 'upload_purchase_orders.approval_number')
+                    ->where('approval_masters.status','0')
+                    ->get();
         
 
         if ($request->wantsJson()) {
@@ -139,21 +143,14 @@ class UploadPoController extends Controller
 
     public function getData(Request $request)
     {
-        $po = UploadPurchaseOrder::get();
+        $po = DB::table('approval_masters')
+                    ->select('approval_masters.approval_number', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date')
+                    ->leftJoin('upload_purchase_orders', 'approval_masters.approval_number', '=', 'upload_purchase_orders.approval_number')
+                    ->where('approval_masters.status','0')
+                    ->get();
+                    
         return DataTables::of($po)
-        ->rawColumns(['options'])
-
-        ->addColumn('options', function($po){
-            return '
-                <a href="'.route('upload_po.edit', $po->id).'" class="btn btn-success btn-xs" data-toggle="tooltip" title="Edit"><i class="mdi mdi-pencil"></i></a>
-                <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Delete" onclick="on_delete('.$po->id.')"><i class="mdi mdi-close"></i></button>
-                <form action="'.route('upload_po.destroy', $po->id).'" method="POST" id="form-delete-'.$po->id .'" style="display:none">
-                    '.csrf_field().'
-                    <input type="hidden" name="_method" value="DELETE">
-                </form>
-            ';
-        })
-
+       
         ->toJson();
     }
 
@@ -229,4 +226,16 @@ class UploadPoController extends Controller
 
         })->download('csv');
     } 
+
+    public function xedit(Request $request)
+    {
+        $name = $request->name;
+        $upo = UploadPurchaseOrder::firstOrNew(['approval_number' => $request->pk]);
+        $upo->approval_number = $request->pk;
+        $upo->$name = $request->value;
+        $upo->save();
+
+        return response()->json(['value' => $request->value], 200);
+
+    }
 }

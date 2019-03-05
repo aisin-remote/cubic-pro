@@ -28,9 +28,9 @@
         <div class="col-sm-4">
              <a href="{{ route('upload_po.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Data DO</a>
         </div><!-- end col -->
-        <div class="col-xs-12 text-right">
+        <!-- <div class="col-xs-12 text-right">
             <button class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" onclick="on_import()"><i class="mdi mdi-upload"></i> Upload</button>
-        </div>
+        </div> -->
     </div>
 
     <div class="row">
@@ -40,9 +40,9 @@
                     <thead>
                         <tr>
                             <th>Approval Number</th>
+                            <th>Approval Create Date</th>
                             <th>PO Number</th>
                             <th>PO Date</th>
-                            <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>
                 </table>

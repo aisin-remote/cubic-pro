@@ -1,24 +1,24 @@
 @extends('layouts.master')
 @section('title')
-	Ubah Peran
+	Edit Manage Approval
 @endsection
 
 @section('content')
 
-@php($active = 'settings/role')
+@php($active = 'manage_approval')
 	
 	<div class="container">
 
         <div class="row">
 			<div class="col-xs-12">
 				<div class="page-title-box">
-                    <h4 class="page-title">Ubah Peran</h4>
+                    <h4 class="page-title">Edit Manage Approval</h4>
                     <ol class="breadcrumb p-0 m-0">
                         <li>
-                            <a href="{{ route('role.index') }}">Peran</a>
+                            <a href="{{ route('manage_approval.index') }}">Manage Approval</a>
                         </li>
                         <li class="active">
-                            Ubah Peran
+                            Edit Manage Approval
                         </li>
                     </ol>
                     <div class="clearfix"></div>
@@ -28,81 +28,140 @@
         <!-- end row -->
 
 
-        <form action="{{ route('role.update', $role->id) }}" method="post" id="form-add-edit">
-            @csrf
-            @method('PUT')
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="panel-content">
-                        <div class="col-md-6">
+        <div class="row">
+        <div class="col-md-12">
+            <div class="card-box">
+                <div class="row">
+                    <form id="form-add-edit" action="{{ route('manage_approval.update', $approval->id) }}" method="post">
+                        @csrf
+						@method('put')
+						<input type="hidden" name="approval_id" value="{{$approval->id}}">
+                       <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">Nama Peran<span class="text-danger">*</span></label>
-                                <input type="text" name="name" class="form-control" placeholder="Nama Peran" required="required" value="{{ $role->display_name }}">
+                                <label class="control-label">Approval Name <span class="text-danger">*</span></label>
+                                <input type="text" name="name" placeholder="Approval Name" class="form-control tinymce" required="required" rows="5" value="{{$approval->name}}"></input>
                                 <span class="help-block"></span>
-                            </div>
-
+                           </div>
+                           
                         </div>
 
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Deskripsi</label>
-                                <textarea name="description" placeholder="Deskripsi" class="form-control" rows="5">{{ $role->description }}</textarea>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Is Seq <span class="text-danger">*</span></label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="is_seq" id="is-seq-1" value="1" {{$approval->is_seq?'checked="checked"':''}} >
+                                                    <label for="is-seq-1">
+                                                        Yes
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="is_seq" id="is-seq-0" value="0" {{$approval->is_seq?'':'checked="checked"'}} >
+                                                    <label for="is-seq-0">
+                                                        No
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                   </div>  
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Is Must All <span class="text-danger">*</span></label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="is_must_all" id="is-must-all-1" value="1" {{$approval->is_must_all?'checked="checked"':''}}>
+                                                    <label for="is-must-all-1">
+                                                        Yes
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="is_must_all" id="is-must-all-0" value="0" {{$approval->is_must_all?'':'checked="checked"'}}>
+                                                    <label for="is-must-all-0">
+                                                        No
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                   </div>  
+                                </div>
                             </div>
-
                         </div>
-
-                        <div class="col-md-12" style="margin-top: 20px">
-                            <h3 class="panel-title">Izin</h3>
+                         
+                        
+                        <div class="col-md-12 text-right">
                             <hr>
                         </div>
-
-                       @foreach ($permissions as $permission)
-                        <div class="col-md-3">
-                            <ul class="no-list">
-                                <li>
-                                    <div class="checkbox checkbox-primary">
-                                         <input type="checkbox" name="permissions[]" value="{{ $permission->id }}" class="parent parent-{{ $permission->id }}" data-value="{{ $permission->id }}" {{in_array($permission->id, $role->perms()->pluck('id')->toArray()) ? 'checked=checked' : '' }}>
-                                        <label for="checkbox2">
-                                            {{ $permission->display_name }}
-                                        </label>
-                                    </div>
-
-                                    <ul class="no-list">
-                                        @foreach ($permission->children as $children)
-                                        <li>
-                                            <div class="checkbox checkbox-primary">
-                                                <input type="checkbox" name="permissions[]" value="{{ $children->id }}" class=" children children-{{ $permission->id}}" data-value="{{ $permission->id }}"  {{in_array($children->id, $role->perms()->pluck('id')->toArray()) ? 'checked=checked' : '' }}>
-                                                <label for="checkbox2">
-                                                    {{ $children->display_name }}
-                                                </label>
+                        <div class="col-sm-6">
+                        <p>Approval Details</p>
+                            </div>
+                            <div class="col-sm-6 text-right">
+                                <button type="button" class="btn btn-sm btn-primary btn-success" onclick="on_add()">Add</button>
+                            </div>
+                            <table class="table jambo_table table-bordered" id="table-details-appr">
+                                <thead>
+                                    <tr>
+										<th style="width:20px">Opsi</th>
+                                        <th style="width:150px">Level</th>
+                                        <th style="width: 250px">User</th>
+                                    </tr>
+                                </thead>
+                                <!-- <tbody>
+                                    <tr class="text-center" id="empty-row">
+                                        <td colspan="4">No data available.</td>
+                                    </tr>
+                                </tbody> -->
+                                <tbody>
+									@foreach($approval_dtl as $app_dtl)
+                                    <tr>
+										<td></td>
+                                        <td>
+                                            <div class="form-group">
+                                                <input class="form-control" name="level[]" value="{{$app_dtl->level}}">
                                             </div>
-                                        </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                        @endforeach
+                                        </td>
 
-                        
+                                        <td>
+                                            <div class="form-group">
+                                                <select class="select2 form-control" name="user[]" data-placeholder="Choose User">
+                                                    <option></option>
+                                                    @foreach ($users as $user)
+                                                    <option value="{{ $user->id }}" {{$app_dtl->user_id == $user->id?'selected':''}}>{{ $user->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+									@endforeach
+                                </tbody>
+                            </table>
+                        </div>
 
                         <div class="col-md-12">
-                            <hr>
                             <div class="pull-right">
-                                <button class="btn btn-default btn-bordered waves-effect waves-light" type="reset">Reset</button>
-                                <button class="btn btn-primary btn-bordered waves-effect waves-light" type="submit">Simpan Perubahan</button>
+                                <input type="submit" name="submit" value="Save" class="btn btn-sm btn-primary">
+                                <input type="reset" name="reset" value="Reset" class="btn btn-sm btn-default">
                             </div>
                         </div>
-
-                    </div>
+                        <div class="clearfix"></div>
+                    </form>
                 </div>
             </div>
-        </form>
-        
+        </div>
     </div>
+</div>
 
 @endsection
 
 @push('js')
-    <script src="{{ url('assets/js/pages/role-create-edit.js') }}"></script>
+    <script src="{{ url('assets/js/pages/manage_approval-edit.js') }}"></script>
 @endpush

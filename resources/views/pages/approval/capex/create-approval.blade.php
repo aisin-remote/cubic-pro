@@ -15,16 +15,19 @@
                 <h4 class="page-title"> Create Capex Approval Sheet</h4>
                 <ol class="breadcrumb p-0 m-0">
                     <li class="active">
+						 
                         @if (\Entrust::hasRole('user')) 
-                         <a href="{{ route('approval-capex.create') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Capex Approval Sheet</a>
-                        
-                    </li>
-                    <li>
-                        <form action="{{route('approval_capex.approval')}}" method="post">
-                            @csrf
-                            <button type="submit" class="btn btn-success btn-bordered waves-effect waves-light m-b-20"> Submit Approval</a>
-                        </form>
-                        @endif
+						<div class="pull-right">
+                         <a href="{{ route('approval-capex.create') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Add Item</a>
+						 <button type="button" id="btn-submit" class="btn btn-success btn-bordered waves-effect waves-light m-b-20"> Submit Approval</a>
+						 <form action="{{route('approval_capex.approval')}}" method="post" id="formSubmitApproval">
+							@csrf
+							<input type="hidden" name="approval_id" id="happroval_id"/>
+                            
+						</form>
+						</div>
+						@endif
+						
                     </li>
                 </ol>
             </div>
@@ -55,7 +58,17 @@
     </div>
 
 </div>
-
+<div class="modal fade in " tabindex="-1" role="dialog" id="modal-info">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                <h4 class="modal-title">Info</h4>
+            </div>
+            <div class="modal-body">Anda minimal harus mengirim satu item data ?</div>
+        </div>
+    </div>
+</div>
 <!-- Modal for question -->
 <div class="modal fade in" tabindex="-1" role="dialog" id="modal-delete-confirm">
     <div class="modal-dialog modal-sm">
@@ -72,7 +85,27 @@
         </div>
     </div>
 </div>
-
+<div class="modal fade in" tabindex="-1" role="dialog" id="modal-approved-by">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                <h4 class="modal-title">Approval By </h4>
+            </div>
+            <div class="modal-body">
+				<select name="approved_by" class="select2" >
+					@foreach($approval as $appr)
+						<option value="{{$appr->id}}">{{$appr->name}}</option>
+					@endforeach
+				</select>
+			</div>
+            <div class="modal-footer">
+                <button type="submit" id="btn-submit-create" class="btn btn-success btn-bordered waves-effect waves-light">Submit</button>
+                <button type="button" class="btn btn-default btn-bordered waves-effect waves-light" data-dismiss="modal">Batal</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('js')
@@ -84,23 +117,6 @@
 @endif
 
 <script src="{{ url('assets/js/pages/approval-capex.js') }}"></script>
-<script>
-    v_widget_type="chart_gold_antam";
-    v_period=360;//hari
-    v_width=400;
-    v_height=300;
-    he_org_show_chart(v_widget_type,v_period,v_width,v_height,'div_chart_antam');
-
-    function he_org_show(v_widget_type,v_width,v_height,div)
-    {
-        document.getElementById(div).innerHTML="<iframe src='//harga-emas.org/widget/widget.php?v_widget_type="+v_widget_type+"&v_height="+v_height+"' width='"+v_width+"' height='"+v_height+"' style='border: solid 1px;'></iframe>";
-    }
-    function he_org_show_chart(v_widget_type,v_period,v_width,v_height,div)
-    {
-        document.getElementById(div).innerHTML="<iframe src='//harga-emas.org/widget/widget.php?v_widget_type="+v_widget_type+"&v_period="+v_period+"' width='"+v_width+"' height='"+v_height+"' style='border: solid 1px;'></iframe>";
-    }
-</script>
-
 
 @endpush
 

@@ -17,7 +17,7 @@ class ApprovalMaster extends Model
 	protected $hidden = ['created_at', 'updated_at'];
 	protected $fillable = ['*'];
 	
-	public function get_list($type, $status)
+	public function get_list()
     {
         // return $status;
     // dev-4.0, Ferry, 20161222, Merging kemungkinan sedikit saya ubah, punya Yudo sementara aku comment
@@ -29,7 +29,7 @@ class ApprovalMaster extends Model
     // $approvals = self::select('name','approval_number','total','status','overbudget_info','action');
 
     // v2.12 by Ferry, 20150820, Filter uc / ue
-        if (($type == 'ub') && 
+	if (($type == 'ub') && 
             \Entrust::hasRole(['admin', 'gm', 'department_head', 'director', 'user', 
                 'budget', 'purchasing', 'accounting'])) {
 
@@ -203,22 +203,22 @@ class ApprovalMaster extends Model
         return false;
     }
 
-    public function NeedDirApproval($query, $andAbove = false)
+    public static function NeedDirApproval($query, $andAbove = false)
     {
         return !$andAbove ? $query->where('status', '=', 3) : $query->where('status', '>', 3);
     }
 
-    public function NeedGMApproval($query, $andAbove = false)
+    public static function NeedGMApproval($query, $andAbove = false)
     {
         return !$andAbove ? $query->where('status', '=', 2) : $query->where('status', '>', 2);
     }
 
-    public function NeedDeptHeadApproval($query, $andAbove = false)
+    public static function NeedDeptHeadApproval($query, $andAbove = false)
     {
         return !$andAbove ? $query->where('status', '=', 1) : $query->where('status', '>', 1);
     }
 
-    public function NeedBudgetValidation($query, $andAbove = false)
+    public static function NeedBudgetValidation($query, $andAbove = false)
     {
         return !$andAbove ? $query->where('status', '=', 0) : $query->where('status', '>', 0);
     }
@@ -230,7 +230,7 @@ class ApprovalMaster extends Model
 
     public function divisions()
     {
-        return $this->belongsTo('App\Division', 'division_id', 'id');
+        return $this->belongsTo('App\Division', 'division', 'division_code');
     }
     public function sap_assets()
     {
@@ -244,25 +244,6 @@ class ApprovalMaster extends Model
     {
         return $this->belongsTo('App\SapModel\SapUom', 'sap_uom_id', 'id');
     }
-    public function cancel()
-    {
-        if ($this->status < 0) {
-            throw new \Exception("This approval already canceled.", 1);
-        }
-
-        if(\Entrust::hasRole('budget')) $this->status = -1; 
-
-        // if dept head
-        if(\Entrust::hasRole('department_head')) $this->status = -2;
-
-        // if group manager
-        if(\Entrust::hasRole('gm')) $this->status = -3;
-
-        // if dept head
-        if(\Entrust::hasRole('director')) $this->status = -4;
-
-        return $this->status;
-    }
 
     public function gr_confirm()
     {
@@ -274,5 +255,125 @@ class ApprovalMaster extends Model
     {
         return $this->belongsTo('App\User', 'created_by');
     }
+	
+	public static function get_pending_sum ($budget_type, $group_type, $group_name, $thousands = 1000000, $rounded = 2)
+	{
+		$user = auth()->user();
+		$total = 0.0;
+		$arr_budget_type = is_array($budget_type) ? $budget_type : array($budget_type, 'u'.substr($budget_type, 0, 1) );
 
+		$approvals = self::query()->whereIn('budget_type', $arr_budget_type);
+
+        if($user->hasRole('budget')) self::NeedBudgetValidation($approvals);
+
+        if($user->hasRole('department_head')) self::NeedDeptHeadApproval($approvals);
+
+        if($user->hasRole('gm')) self::NeedGMApproval($approvals);
+
+        if($user->hasRole('director')) self::NeedDirApproval($approvals);
+
+        $total = $approvals->whereIn($group_type, is_array($group_name) ? $group_name : array($group_name))->sum('total');
+        $total = round(floatval($total)/$thousands, $rounded);
+
+        return $total;
+    }
+	public function approve()
+    {
+        if(\Entrust::hasRole('budget')) $this->status = 1;
+
+        if(\Entrust::hasRole('department_head')) $this->status = 2;
+
+        if(\Entrust::hasRole('gm')) $this->status = 3;
+
+        if(\Entrust::hasRole('director')) $this->status = 4;
+
+        return $this->status;
+    }
+	public function cancel()
+	{
+		if ($this->status < 0) {
+			throw new \Exception("This approval already canceled.", 1);
+		}
+
+        if(\Entrust::hasRole('budget')) $this->status = -1;
+
+        if(\Entrust::hasRole('department_head')) $this->status = -2;
+
+        if(\Entrust::hasRole('gm')) $this->status = -3;
+
+        if(\Entrust::hasRole('director')) $this->status = -4;
+
+        return $this->status;
+    }
+	public static function getSelf($approval_number)
+    {
+        return self::where('approval_number', $approval_number)->first();
+    }
+	public static function getDetails($approval_number)
+    {
+        return self::with('details')->where('approval_number', '=', $approval_number)->first();
+    }
+	public static function getApprovalDetailsApi($approval_number)
+    {
+        $data['data'] = [];
+
+        if (!is_null($master = self::getDetails($approval_number))) {
+            $i = 1;			
+            foreach ($master->details as $value) {
+                $data['data'][] = [
+                    str_pad($i, 2, '0', STR_PAD_LEFT),  
+                    $value->budget_no,
+                    $value->asset_no,                
+                    $value->sap_track_no,          
+                    $value->sap_asset_no,               
+                    $value->sap_account_code,          
+                    $value->sap_cc_code,               
+                    "",        //budget description
+                    $value->remarks,            
+                    $value->project_name,
+                    $value->budget_remaining_log,    
+                    $value->budget_reserved,       
+                    $value->actual_price_user, // actual_price_purchasing
+                    $value->price_to_download,      
+                    $value->currency,                      
+                    $value->pr_specs, // qty remaining
+                    "", // budget status
+                    $value->actual_gr,
+                    $value->sap_vendor_code,  
+                    $value->po_number,
+                    $value->sap_track_no,
+                    $value->sap_tax_code,  
+                    ];
+                    $i++;
+                }
+            }
+
+            return $data;
+	}
+	public static function get_budgetInfo($type, $status, $id)
+    {
+		$overbudget_info ="-";
+		
+        if ($type == 'ub') {
+            $approvals = self::query()->where('budget_type', 'like', 'u%');
+        } else {
+            $approvals = self::query()->where('budget_type', '=', $type)->where('approval_number',"=",$id);
+        }
+		
+        $user = auth()->user();
+		
+        if (\Entrust::hasRole('user')) {
+            $approvals->where('department', $user->department->department_code);
+        }
+
+        if (count($approvals = $approvals->get()) > 0) {
+            foreach ($approvals as $v) {
+
+                $overbudget_info = $v->status < 0 ? 'Canceled' : ($v->isOverExist() ? 'Overbudget exist' : 'Underbudget');            
+
+            }
+        }
+		
+        return $overbudget_info;
+    }
 }

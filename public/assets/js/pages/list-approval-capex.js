@@ -2,7 +2,7 @@ var tApprovalCapex;
 $(document).ready(function(){
 
 	tApprovalCapex = $('#table-approval-capex').DataTable({
-		ajax: SITE_URL + '/approval-capex/approval_capex',
+		ajax: SITE_URL + '/approval-capex/approval_capex/no_need_approval',
         columns: [
             { data: 'departments.department_name', name: 'departments.department_name'},
             { data: 'approval_number', name: 'approval_number'},
@@ -93,21 +93,7 @@ function on_delete(approval_capex_id)
 }
 function printApproval(approval_number)
 {
-    var data = {
-        _token: "{{ csrf_token() }}",
-        approval_number: approval_number
-    };
-
-    $.post( "{{ url('approval/print') }}", data, function( data ) {
-        if (data.error) {
-            alert(data.error);
-            return false;
-        };
-         //dev-4.0 by yudo, 20161214, mengubah link ke print_excel
-        window.location.replace("{{ url('approval/print_excel') }}/"+approval_number);
-    });
-
-    return false;
+	window.location.href=SITE_URL+"/approval/print_approval_excel/"+approval_number
 }
 
 function cancelApproval(approval_number)
@@ -115,13 +101,13 @@ function cancelApproval(approval_number)
   // var formdata = $('#table-approval-capex').serializeArray();
   var confirmed = confirm('Are you sure to cancel Approval: '+approval_number+'?');
   $.ajax({
-    url: SITE_URL + '/approval-capex/cancel',
+    url: SITE_URL + '/approval/cancel_approval',
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },
-    type: 'post',
+    type: 'get',
     dataType: 'json',
-    data: approval_number,
+    data: {approval_number:approval_number},
     success: function(res) {
       show_notification(res.title, res.type, res.message);
     },

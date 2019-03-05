@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bb39be8a1a98e9971c531df865590231",
+    "content-hash": "5917773e4b19bded9c8037b2f5290ac2",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -599,27 +599,27 @@
         },
         {
             "name": "gloudemans/shoppingcart",
-            "version": "2.5.0",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Crinsane/LaravelShoppingcart.git",
-                "reference": "7ff157b7e1ef10d27cd2759d5151aae2cc6b1b9a"
+                "reference": "f460ab7312cce32cb428cf39a500a2d16600b1d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Crinsane/LaravelShoppingcart/zipball/7ff157b7e1ef10d27cd2759d5151aae2cc6b1b9a",
-                "reference": "7ff157b7e1ef10d27cd2759d5151aae2cc6b1b9a",
+                "url": "https://api.github.com/repos/Crinsane/LaravelShoppingcart/zipball/f460ab7312cce32cb428cf39a500a2d16600b1d6",
+                "reference": "f460ab7312cce32cb428cf39a500a2d16600b1d6",
                 "shasum": ""
             },
             "require": {
-                "illuminate/events": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*",
-                "illuminate/session": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*",
-                "illuminate/support": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*"
+                "illuminate/events": "5.1.* || 5.2.* || 5.3.* || 5.4.* || 5.5.*|| 5.6.* || 5.7.*",
+                "illuminate/session": "5.1.* || 5.2.* || 5.3.* || 5.4.* || 5.5.*|| 5.6.* || 5.7.*",
+                "illuminate/support": "5.1.* || 5.2.* || 5.3.* || 5.4.* || 5.5.*|| 5.6.* || 5.7.*"
             },
             "require-dev": {
                 "mockery/mockery": "~0.9.0",
                 "orchestra/testbench": "~3.1",
-                "phpunit/phpunit": "~5.0|~6.0|~7.0"
+                "phpunit/phpunit": "~5.0 || ~6.0 || ~7.0"
             },
             "suggest": {
                 "gloudemans/notify": "Simple flash notifications for Laravel"
@@ -655,7 +655,7 @@
                 "laravel",
                 "shoppingcart"
             ],
-            "time": "2018-02-17T09:34:00+00:00"
+            "time": "2019-02-04T14:29:34+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1197,30 +1197,30 @@
         },
         {
             "name": "laravel/passport",
-            "version": "v7.1.0",
+            "version": "v7.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/passport.git",
-                "reference": "b0c0dcbb8d7d61ba814b1e2cb404dbb4e1d8a852"
+                "reference": "56330509283d465acaaff842637e539d03bcf9ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/passport/zipball/b0c0dcbb8d7d61ba814b1e2cb404dbb4e1d8a852",
-                "reference": "b0c0dcbb8d7d61ba814b1e2cb404dbb4e1d8a852",
+                "url": "https://api.github.com/repos/laravel/passport/zipball/56330509283d465acaaff842637e539d03bcf9ca",
+                "reference": "56330509283d465acaaff842637e539d03bcf9ca",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "firebase/php-jwt": "~3.0|~4.0|~5.0",
                 "guzzlehttp/guzzle": "~6.0",
-                "illuminate/auth": "~5.6",
-                "illuminate/console": "~5.6",
-                "illuminate/container": "~5.6",
-                "illuminate/contracts": "~5.6",
-                "illuminate/database": "~5.6",
-                "illuminate/encryption": "~5.6",
-                "illuminate/http": "~5.6",
-                "illuminate/support": "~5.6",
+                "illuminate/auth": "~5.6.0|~5.7.0|~5.8.0",
+                "illuminate/console": "~5.6.0|~5.7.0|~5.8.0",
+                "illuminate/container": "~5.6.0|~5.7.0|~5.8.0",
+                "illuminate/contracts": "~5.6.0|~5.7.0|~5.8.0",
+                "illuminate/database": "~5.6.0|~5.7.0|~5.8.0",
+                "illuminate/encryption": "~5.6.0|~5.7.0|~5.8.0",
+                "illuminate/http": "~5.6.0|~5.7.0|~5.8.0",
+                "illuminate/support": "~5.6.0|~5.7.0|~5.8.0",
                 "league/oauth2-server": "^7.0",
                 "php": ">=7.1",
                 "phpseclib/phpseclib": "^2.0",
@@ -1263,7 +1263,7 @@
                 "oauth",
                 "passport"
             ],
-            "time": "2019-01-22T14:41:41+00:00"
+            "time": "2019-02-14T16:29:26+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -1875,16 +1875,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.2.0",
+            "version": "v4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "594bcae1fc0bccd3993d2f0d61a018e26ac2865a"
+                "reference": "5221f49a608808c1e4d436df32884cbc1b821ac0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/594bcae1fc0bccd3993d2f0d61a018e26ac2865a",
-                "reference": "594bcae1fc0bccd3993d2f0d61a018e26ac2865a",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/5221f49a608808c1e4d436df32884cbc1b821ac0",
+                "reference": "5221f49a608808c1e4d436df32884cbc1b821ac0",
                 "shasum": ""
             },
             "require": {
@@ -1922,7 +1922,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2019-01-12T16:31:37+00:00"
+            "time": "2019-02-16T20:54:15+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -3244,7 +3244,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -4035,16 +4035,16 @@
         },
         {
             "name": "yajra/laravel-datatables-oracle",
-            "version": "v8.13.4",
+            "version": "v8.13.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yajra/laravel-datatables.git",
-                "reference": "8aedd88a02599d5d0a4a1a2bb5aac849397dd594"
+                "reference": "a97a173a52f2b60075f310dac39932faa377fb4f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yajra/laravel-datatables/zipball/8aedd88a02599d5d0a4a1a2bb5aac849397dd594",
-                "reference": "8aedd88a02599d5d0a4a1a2bb5aac849397dd594",
+                "url": "https://api.github.com/repos/yajra/laravel-datatables/zipball/a97a173a52f2b60075f310dac39932faa377fb4f",
+                "reference": "a97a173a52f2b60075f310dac39932faa377fb4f",
                 "shasum": ""
             },
             "require": {
@@ -4102,7 +4102,7 @@
                 "jquery",
                 "laravel"
             ],
-            "time": "2019-01-29T03:12:37+00:00"
+            "time": "2019-02-13T01:34:34+00:00"
         },
         {
             "name": "zendframework/zend-diactoros",
@@ -4453,16 +4453,16 @@
         },
         {
             "name": "mockery/mockery",
-            "version": "1.2.0",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mockery/mockery.git",
-                "reference": "100633629bf76d57430b86b7098cd6beb996a35a"
+                "reference": "0eb0b48c3f07b3b89f5169ce005b7d05b18cf1d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mockery/mockery/zipball/100633629bf76d57430b86b7098cd6beb996a35a",
-                "reference": "100633629bf76d57430b86b7098cd6beb996a35a",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/0eb0b48c3f07b3b89f5169ce005b7d05b18cf1d2",
+                "reference": "0eb0b48c3f07b3b89f5169ce005b7d05b18cf1d2",
                 "shasum": ""
             },
             "require": {
@@ -4471,7 +4471,7 @@
                 "php": ">=5.6.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~5.7.10|~6.5|~7.0"
+                "phpunit/phpunit": "~5.7.10|~6.5|~7.0|~8.0"
             },
             "type": "library",
             "extra": {
@@ -4514,7 +4514,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2018-10-02T21:52:37+00:00"
+            "time": "2019-02-13T09:37:52+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -5199,16 +5199,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.3",
+            "version": "7.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2cb759721e53bc05f56487f628c6b9fbb6c18746"
+                "reference": "23a200a60552cb9ba483a8d1e106c70fb0be0bb9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2cb759721e53bc05f56487f628c6b9fbb6c18746",
-                "reference": "2cb759721e53bc05f56487f628c6b9fbb6c18746",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/23a200a60552cb9ba483a8d1e106c70fb0be0bb9",
+                "reference": "23a200a60552cb9ba483a8d1e106c70fb0be0bb9",
                 "shasum": ""
             },
             "require": {
@@ -5279,7 +5279,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-02-01T05:24:07+00:00"
+            "time": "2019-02-15T14:00:34+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",

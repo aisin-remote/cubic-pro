@@ -22,10 +22,24 @@ $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip({html: true, "show": 500, "hide": 100});
       }
     });
-  $('#btn-approval').click(function(){
-    approval();
+  
+   $('#btn-submit').click(function(){
+	  if($('.checklist').length > 0){
+		  $('#modal-approved-by').modal('show');
+	  }else{
+		  $('#modal-info').modal('show');
+	  }
+	  
   });
-
+  $('#btn-submit-create').click(function(){
+	var approval = $('select[name="approved_by"] option:selected').val();
+	$('#happroval_id').val(approval);  
+	$('#formSubmitApproval').submit(); 
+  }); 
+  
+  $('#btn-save').click(function(){
+    save();
+  });
 });
 
 function approval()

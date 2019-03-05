@@ -46,7 +46,7 @@ class ItemController extends Controller
         $item->item_category_id = $request->item_category_id;
         $item->item_code = $request->item_code;
         $item->item_description = $request->item_description;
-        $item->item_spesification = $request->item_spesification;
+        $item->item_specification = $request->item_specification;
         $item->item_brand = $request->item_brand;
         $item->item_price = $request->item_price;
         $item->uom_id = $request->uom_id;
@@ -54,6 +54,7 @@ class ItemController extends Controller
         $item->lead_times = $request->lead_times;
         $item->remarks = $request->remarks;
         $item->feature_image = $request->feature_image;
+        $item->feature_file = $request->feature_file;
         $item->save();
 
         if (count($request->tags) > 0 || !empty($request->tags)){
@@ -115,7 +116,7 @@ class ItemController extends Controller
 
         $item->item_code = $request->item_code;
         $item->item_description = $request->item_description;
-        $item->item_spesification = $request->item_spesification;
+        $item->item_specification = $request->item_specification;
         $item->item_brand = $request->item_brand;
         $item->item_price = $request->item_price;
         $item->uom_id = $request->uom_id;
@@ -123,6 +124,7 @@ class ItemController extends Controller
         $item->lead_times = $request->lead_times;
         $item->remarks = $request->remarks;
         $item->feature_image = $request->feature_image;
+        $item->feature_file = $request->feature_file;
         $item->save();
 
         if (count($request->tags) > 0 || !empty($request->tags)){
@@ -259,16 +261,30 @@ class ItemController extends Controller
                         $item                       = Item::firstOrNew(['id' => $item_id]);
                         $item->item_category_id     = !empty($item_category) ? $item_category->id : NULL;
                         $item->item_code            = $data->item_code;
-                        $item->item_description     = $data->item_description;
-                        $item->item_spesification   = $data->item_spesification;
-                        $item->item_brand           = $data->item_brand;
-                        $item->item_price           = $data->item_price;
+                        $item->item_description     = $data->description;
+                        $item->item_specification   = $data->specification;
+                        $item->item_brand           = $data->brand;
+                        $item->item_price           = $data->price;
                         $item->uom_id               = !empty($uom) ? $uom->id : NULL;
                         $item->supplier_id          = !empty($supplier) ? $supplier->id : NULL;
                         $item->lead_times           = $data->lead_times;
                         $item->remarks              = $data->remarks;
                         $item->save();                  
                     }  
+
+                    if (count($data->tags) > 0 || !empty($data->tags)){
+                        // dd($data->tags);
+
+                        foreach (explode(';', $data->tags) as $tag) {
+            
+                            $tag = Tag::firstOrCreate(['name' => $tag]);
+                            if ($tag) {
+                                $tagIds[] = $tag->id;
+                            }
+                        }
+                        
+                        $item->tags()->sync($tagIds);
+                    }
 
                     $res = [
                                 'title'             => 'Sukses',
@@ -279,21 +295,6 @@ class ItemController extends Controller
                     return redirect()
                             ->route('item.index')
                             ->with($res);
-
-                // } else {
-
-                //     Storage::delete('public/uploads/'.$name);
-
-                //     return redirect()
-                //             ->route('item.index')
-                //             ->with(
-                //                 [
-                //                     'title' => 'Error',
-                //                     'type' => 'error',
-                //                     'message' => 'Wrong Format!'
-                //                 ]
-                //             );
-                // }
         }
     }
 
@@ -317,13 +318,14 @@ class ItemController extends Controller
                 $sheet->cell('A1', function($cell) {$cell->setValue('category_code');});
                 $sheet->cell('B1', function($cell) {$cell->setValue('item_code');});
                 $sheet->cell('C1', function($cell) {$cell->setValue('description');});
-                $sheet->cell('D1', function($cell) {$cell->setValue('spesification');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('specification');});
                 $sheet->cell('E1', function($cell) {$cell->setValue('brand');});
                 $sheet->cell('F1', function($cell) {$cell->setValue('price');});
-                $sheet->cell('G1', function($cell) {$cell->setValue('qty');});
+                $sheet->cell('G1', function($cell) {$cell->setValue('UoM');});
                 $sheet->cell('H1', function($cell) {$cell->setValue('supplier_code');});
                 $sheet->cell('I1', function($cell) {$cell->setValue('lead_times');});
                 $sheet->cell('J1', function($cell) {$cell->setValue('remarks');});
+                $sheet->cell('K1', function($cell) {$cell->setValue('tags');});
              });
 
         })->download('csv');

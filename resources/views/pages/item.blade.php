@@ -42,7 +42,7 @@
                             <th>Item Category</th>
                             <th>Item Code</th>
                             <th>Description</th>
-                            <th>Spesification</th>
+                            <th>Specification</th>
                             <th>Brand</th>
                             <th>Price</th>
                             <th>UoM</th>

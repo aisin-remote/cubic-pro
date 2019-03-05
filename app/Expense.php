@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Carbon\Carbon;
 class Expense extends Model
 {
     protected $fillable = ['*'];
@@ -36,5 +36,24 @@ class Expense extends Model
         }
 
         return $data;
+    }
+	public function toArray($flag = '', $source_id = '', $time = '')
+    {
+        $user = auth()->user();
+
+        $array = parent::toArray();
+
+        if ($flag == 'archiving') {
+            $array['archived_by'] = $user->id;
+            $array['archived_at'] = Carbon::now()->format('Y-m-d H:i:s');
+        }
+        elseif ($flag == 'fyear_closing') {
+            $array['original_id'] 		= $source_id;
+            $array['period_closed_by'] 	= $user->id;
+            $array['period_closed_at'] 	= $time;
+            $array['created_at'] 		= Carbon::now()->format('Y-m-d H:i:s');
+            $array['updated_at'] 		= Carbon::now()->format('Y-m-d H:i:s');
+        }
+        return $array;
     }
 }

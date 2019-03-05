@@ -43,13 +43,17 @@ class CartController extends Controller
         $total_formatted = number_format($cart->pluck('total')->sum());
         return response()->json(['total' => $total_formatted]);
     }
-
+	public function deleteCart($id)
+	{
+		$item = Cart::where('user_id', auth()->user()->id)->where('item_id', $id)->delete();
+		return response()->json(['message'=>'Deleting is success']);
+	}
     public function checkout(Request $request)
     {
         if ($request->budget_type == 'capex') {
-            return redirect('approval/cx');
+            return redirect('approval/create/cx/add');
         } else {
-            return redirect('expense');
+            return redirect('approval/create/ex/add');
         }
     }
 }

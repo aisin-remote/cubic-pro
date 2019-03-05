@@ -144,8 +144,14 @@
                             
                             <div class="form-group">
                                 <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
-                                <textarea type="text" name="remarks" placeholder="Purchase Request Item Detail" class="form-control tinymce" required="required" rows="5"></textarea>
+								<select name="remarks" data-placeholder="Item Detail" required="required">
+                                    <option></option>
+                                        @foreach ($carts as $cart)
+                                        <option value="{{ $cart->item->item_description }}" item_id="{{$cart->item_id}}">{{ $cart->item->item_description }}</option>
+                                        @endforeach
+                                </select>	  
                                 <span class="help-block"></span>
+								
                            </div> 
 
                             <div class="form-group">
@@ -206,17 +212,20 @@
                            
                            <div class="form-group">
                                 
-                                <div class="checkbox">
+                                <!-- <div class="checkbox">
                                     <input id="checkbox0" type="checkbox" name="foreign_currency" onclick="foreignCurrency(this)">
                                     <label for="checkbox0">
                                         Foreign Currency
                                     </label>
-                                </div>
+                                </div> -->
+								
                                 <div class="row">
-                                    <div class="form-group" id="hide12" style="display: none">
-                                        
+                                    <div class="form-group" id="hide12" style="display: block">
+										<div class="col-sm-12">
+											<label class="control-label">Foreign Currency <span class="text-danger">*</span></label>
+										</div>
                                         <div class="col-sm-6">
-                                            <select class="select2" name="currency" id="currency" data-placeholder="Select currency">
+                                            <select class="select2" name="currency" id="currency" data-placeholder="Select currency" required="required">
                                                   <option value=""></option>
                                                   <option value="USD">USD</option>
                                                   <option value="JPY">JPY</option>

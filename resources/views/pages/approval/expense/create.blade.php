@@ -31,50 +31,19 @@
                 <div class="row">
                     <form id="form-add-edit" action="{{route('approval_expense.store')}}" enctype="multipart/form-data" method="post">
                         @csrf
+                        
+                               
                         <div class="col-md-6">
-                            <div class="form-group">
+						    <div class="form-group">
                                 <label class="control-label">Budget No<span class="text-danger">*</span></label>
                                 <select name="budget_no" class="select2" data-placeholder="Select Budget" required="required">
-                                    <option></option>
+                                    <option value="">-</option>
                                         @foreach ($expenses as $expense)
                                         <option value="{{ $expense->id }}">{{ $expense->budget_no }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
                            </div> 
-                           
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Item Category <span class="text-danger">*</span></label>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="radio">
-                                                    <input type="radio" name="asset_category" id="asset_category-1" value="1" checked="">
-                                                    <label for="asset_category-1">
-                                                        Non Chemical
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="radio">
-                                                    <input type="radio" name="asset_category" id="asset_category-0" value="0" checked="">
-                                                    <label for="asset_category-0">
-                                                        Chemical
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                   </div>  
-                                </div>
-                            </div>
-                        </div>
-                               
-                        <div class="col-md-6">
-
                             <div class="form-group">
                                 <label class="control-label">Budget Description <span class="text-danger">*</span></label>
                                 <textarea type="text" name="budget_description" placeholder="Budget Description" class="form-control tinymce" required="required" rows="5" readonly="readonly"></textarea>
@@ -141,11 +110,38 @@
 
 
                         <div class="col-md-6">
-                            <div class="form-group">
+							<div class="form-group">
+								<label class="control-label">Item Category <span class="text-danger">*</span></label>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="radio">
+											<input type="radio" name="asset_category" id="asset_category-1" value="1" checked="">
+											<label for="asset_category-1">
+												Non Chemical
+											</label>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="radio">
+											<input type="radio" name="asset_category" id="asset_category-0" value="0" checked="">
+											<label for="asset_category-0">
+												Chemical
+											</label>
+										</div>
+									</div>
+								</div>
+						   </div>  
+						   <div class="form-group">
                                 <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
-                                <textarea type="text" name="remarks" placeholder="Purchase Request Item Detail" class="form-control tinymce" required="required" rows="5"></textarea>
+								<select name="remarks[]" class="select2" data-placeholder="Item Detail" required="required" multiple="multiple">
+                                    <option></option>
+                                        @foreach ($carts as $cart)
+                                        <option value="{{ $cart->item->item_description }}" item_id="{{$cart->item_id}}">{{ $cart->item->item_description }}</option>
+                                        @endforeach
+                                </select>	  
                                 <span class="help-block"></span>
-                           </div> 
+								
+                           </div>
                             <div class="form-group">
                                 <label class="control-label">G/L Group<span class="text-danger">*</span></label>
                                 <select name="sap_gl_account_id" class="select2" data-placeholder="Select G/L Group" required="required">
@@ -208,7 +204,7 @@
                             </div> 
                         </div>
                          
-                        <div class="col-md-12 text-right">
+                        <div class="col-md-12 text-right m-t-20">
                             <div class="modal-footer">
                                     <button class="btn btn-default btn-bordered waves-effect waves-light" type="reset">Reset</button>
 

@@ -199,7 +199,7 @@
         <script src="{{ url('assets/plugins/dropzone/dropzone.min.js') }}"></script>
 
         <!-- Select2 -->
-        <script src="{{ url('assets/plugins/select2/js/select2.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url('assets/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
 
         <!-- fullcalendar -->
         <script src="{{ url('assets/plugins/moment/moment.js') }}"></script>

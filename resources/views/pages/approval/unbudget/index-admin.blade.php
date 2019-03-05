@@ -33,7 +33,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card-box">
-                <table class="table m-0 table-colored table-inverse" id="table-approval-capex">
+                <table class="table m-0 table-colored table-inverse" id="table-approval-unbudget">
                     <thead>
                         <tr>
                             <th>Department</th>
@@ -78,6 +78,6 @@
     </script>
 @endif
 
-<script src="{{ url('assets/js/pages/approval-unbudget.js') }}"></script>
+<script src="{{ url('assets/js/pages/list-approval-unbudget.js') }}"></script>
 
 @endpush

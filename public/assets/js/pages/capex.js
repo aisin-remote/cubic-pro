@@ -52,7 +52,7 @@ function budgetView()
             var budget_no = $(this).find('td:nth-child(1)');
 
             // set budget_no anchor
-            budget_no.html(`<a href="${SITE_URL}/capex/xedit/${budget_no.text()}" >${budget_no.text()}</a>`);
+            budget_no.html(`<a href="${SITE_URL}/capex/select/${budget_no.text()}" >${budget_no.text()}</a>`);
 
         });
     }
@@ -136,6 +136,7 @@ function initEditable()
             };
 
             $(this).text(data.value);
+			tCapex.ajax.reload( null, false );
         }
     });
 }

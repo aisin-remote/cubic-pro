@@ -28,6 +28,7 @@ class CreateItemsTable extends Migration
             $table->string('lead_times');
             $table->text('remarks')->nullable();
             $table->string('feature_image')->nullable();
+            $table->string('feature_file')->nullable();
             $table->timestamps();
         });
     }

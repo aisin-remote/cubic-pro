@@ -81,7 +81,7 @@ class ManageApprovalController extends Controller
                 ->route('manage_approval.index')
                 ->with($res);
     }
-
+	
     public function getData()
     {
 
@@ -106,31 +106,44 @@ class ManageApprovalController extends Controller
     public function edit($id)
     {
         $approval = Approval::find($id);
-    	// $department = Department::get();
-    	$user 		= User::get();
+		$approval_dtl = ApprovalDtl::where('approval_id',$id)->get();
+    	$users 		= User::get();
     	$role      = Role::get();
-        return view('pages.manage_approval.edit', compact(['approval', 'user','role']));
+        return view('pages.manage_approval.edit', compact(['approval','approval_dtl','users','role']));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
+		DB::transaction(function() use ($request){
+			$approval = Approval::find($request->approval_id);
 
-        $approval = Approval::find($id);
+			if (empty($approval)) {
+				return response()->json('Type not found', 500);
+			}
+			
+			$approval->name 		= $request->name;
+			$approval->is_seq 		= $request->is_seq;
+			$approval->is_must_all 	= $request->is_must_all;
+			$approval->total_approval = count($request->level);
+			$approval->save();
+			
+			ApprovalDtl::where('approval_id',$approval->id)->delete();
 
-        if (empty($approval)) {
-            return response()->json('Type not found', 500);
-        }
-        $approval->approval_name 		= $request->approval_name;
-        // $approval->department_id 		= $request->department_id;
-        $approval->user_id 				= $request->user_id;
-        $approval->level 				= $request->level;
-        
-        $approval->save();
-
-        if ($request->wantsJson()) {
-            return response()->json($approval);
-        }
-
+			for($i=0; $i < count($request->level); $i++)
+			{
+				$approval_dtl = new ApprovalDtl();
+				$approval_dtl->approval_id 	= $approval->id; 
+				$approval_dtl->user_id 		= $request->user[$i];
+				$approval_dtl->level 		= $request->level[$i];
+				
+				$approval_dtl->save();
+			}
+			
+		});
+		
+		if ($request->wantsJson()) {
+			return response()->json($approval);
+		}
         $res = [
                     'title' => 'Sukses',
                     'type' => 'success',

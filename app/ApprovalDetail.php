@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
+use DB;
 class ApprovalDetail extends Model
 {
 	protected $fillable = [
@@ -39,6 +39,7 @@ class ApprovalDetail extends Model
         'pr_specs',
         'pr_uom',
     ];
+	
     public static function getByBudgetNo($budget_no)
     {
         return self::query()->where('budget_no', $budget_no)->first();

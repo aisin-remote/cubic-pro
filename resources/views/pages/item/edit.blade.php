@@ -132,6 +132,13 @@
                                     </span>
                                 </div>
                             </div>
+
+                            <div class="form-group">
+                                <label class="control-label">File</label>
+                                <div class="input-group">
+                                    <input type="file" name="feature_file" class="form-control" accept=".pdf">
+                                </div>
+                            </div>
                         </div>                       
 
                         <div class="col-md-12 text-right">

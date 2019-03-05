@@ -34,7 +34,7 @@
                     <form method="post" id="form-add-edit">
                         @csrf
                         @method('PUT')
-
+						
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Approval Number<span class="text-danger"> : </span></label> {{ $approval_masters->approval_number }}
@@ -43,13 +43,13 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Department<span class="text-danger"> : </span></label>
-                                 
-                                {{ $approval_masters->departments->department_name }}     
+								{{$approval_masters->departments->department_name}}
+                                    
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Division<span class="text-danger"> : </span></label> {{ $approval_masters->divisions->division_name }}
-                                
+                                <label class="control-label">Division<span class="text-danger"> : </span></label> 
+                                {{$approval_masters->divisions->division_name}}
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">
@@ -61,17 +61,17 @@
                                 <label class="control-label">Status<span class="text-danger">  : </span></label> 
                                 @if ($approval_masters->status == '0')
                                    User Created 
-                                   @elseif ($approval_master->status  == '1')
+                                   @elseif ($approval_masters->status  == '1')
                                    Validasi Budget
-                                   @elseif ($approval_master->status  == '2')
+                                   @elseif ($approval_masters->status  == '2')
                                    Approved by Dept. Head
-                                   @elseif ($approval_master->status  == '3')
+                                   @elseif ($approval_masters->status  == '3')
                                    Approved by GM
-                                   @elseif ($approval_master->status  == '4')
+                                   @elseif ($approval_masters->status  == '4')
                                    Approved by Director
-                                   @elseif ($approval_master->status  == '-1')
+                                   @elseif ($approval_masters->status  == '-1')
                                    Canceled on Quotation Validation
-                                   @elseif ($approval_master->status  == '-2')
+                                   @elseif ($approval_masters->status  == '-2')
                                    Canceled Dept. Head Approval
                                 @endif
                                 

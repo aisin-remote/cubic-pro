@@ -4,12 +4,12 @@ $(document).ready(function(){
     tExpense = $('#table-expense').DataTable({
         ajax: SITE_URL + '/expense/get_data',
         "fnDrawCallback": function (oSettings) {
-            // budgetStatusStyler();
-            // budgetClosingStyler();
-            // budgetView();
-            // xeditClasser();
-            // initEditable();
-            // initSelectable();
+            budgetStatusStyler();
+            budgetClosingStyler();
+            budgetView();
+            xeditClasser();
+            initEditable();
+            initSelectable();
             
         },
         columns: [
@@ -55,7 +55,7 @@ function budgetView()
             var budget_no = $(this).find('td:nth-child(1)');
 
             // set budget_no anchor
-            budget_no.html(`<a href="${SITE_URL}/expense/xedit/${budget_no.text()}" >${budget_no.text()}</a>`);
+            budget_no.html(`<a href="${SITE_URL}/expense/select/${budget_no.text()}" >${budget_no.text()}</a>`);
 
         });
     }
@@ -94,10 +94,10 @@ function xeditClasser()
     $('tbody tr').each(function(i, e) {
         var budget_no = $(this).find('td:nth-child(1)');
         var equipment_name = $(this).find('td:nth-child(2)');
-        var budget_plan = $(this).find('td:nth-child(3)');
-        var budget_remaining = $(this).find('td:nth-child(5)');  // hotfix-3.4.11, Ferry, 20160422, Edit budget remaining
-        var plan_gr = $(this).find('td:nth-child(6)');
-        var closing_status = $(this).find('td:nth-child(8)');
+        var budget_plan = $(this).find('td:nth-child(6)');//3
+        var budget_remaining = $(this).find('td:nth-child(8)');//5  // hotfix-3.4.11, Ferry, 20160422, Edit budget remaining
+        var plan_gr = $(this).find('td:nth-child(9)');//6
+        var closing_status = $(this).find('td:nth-child(11)');//8
 
         // set equipment_name anchor
         equipment_name.html('<a href="#" class="editable" data-pk="'+budget_no.text()+'" data-name="equipment_name" data-title="Enter Equipment Name">'+equipment_name.text()+'</a>');
@@ -139,6 +139,7 @@ function initEditable()
             };
 
             $(this).text(data.value);
+			tExpense.ajax.reload( null, false );
         }
     });
 }

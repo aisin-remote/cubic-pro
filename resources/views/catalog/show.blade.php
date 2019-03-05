@@ -135,7 +135,7 @@
 <script src="assets/plugins/greensock/ScrollToPlugin.min.js"></script>
 <script src="assets/plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
 <script src="assets/plugins/easing/easing.js"></script>
-<script src="assets/plugins/Isotope/isotope.pkgd.min.js"></script>
+<script src="assets/plugins/isotope/isotope.pkgd.min.js"></script>
 <script src="assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
 <script src="assets/plugins/parallax-js-master/parallax.min.js"></script>
 <script src="assets/js/shop_custom.js"></script>

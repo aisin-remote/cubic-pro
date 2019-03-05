@@ -42,20 +42,22 @@
                             <div id="bg-default" class="panel-collapse collapse in" aria-expanded="true" style="">
                                <div class="portlet-body">
                                     <label class="control-label">Budget No<span class="text-danger">*</span></label>
-                                    <select name="budget_no" class="select2" data-placeholder="Select Budget" required="required">
+                                    <select name="budget_no" class="select2" data-placeholder="Select Budget" required="required" id="budget_no">
                                         <option></option>
-                                    
+										@foreach($budget_nos as $budget_no)
+											<option value="{{$budget_no->budget_no}}">{{$budget_no->budget_no}}</option>
+										@endforeach
                                     </select>
                                 <span class="help-block"></span>
                                </div> 
                                 <div class="portlet-body">
                                     <label class="control-label">Budget Name <span class="text-danger">*</span></label>
-                                    <inout type="text" name="budget_name" placeholder="Budget Name" class="form-control tinymce" required="required" readonly="readonly" rows="5"></inout>
+                                    <input type="text" name="budget_name" class="form-control tinymce" required="required" readonly="readonly" rows="5" id="budget_name">
                                     <span class="help-block"></span>
                                 </div>
                                 <div class="portlet-body">
                                     <label class="control-label">Settlement Date <span class="text-danger">*</span></label>
-                                    <inout type="text" name="budget_name" placeholder="Budget Name" class="form-control tinymce" required="required" rows="5"></inout>
+                                    <input type="text" name="settlement_date" class="form-control tinymce" required="required" rows="5" id="convert_settlement_date"/>
                                     <span class="help-block"></span>
                                 </div>
                             </div>
@@ -78,19 +80,21 @@
                             <div id="bg-default" class="panel-collapse collapse in" aria-expanded="true" style="">
                                <div class="portlet-body">
                                     <label class="control-label">Budget No<span class="text-danger">*</span></label>
-                                    <select name="budget_no" class="select2" data-placeholder="Select Budget" required="required">
+                                    <select name="budget_no_cip" class="select2" data-placeholder="Select Budget" required="required" id="budget_no_cip">
                                         <option></option>
-                                    
+										@foreach($budget_nos_cip as $budget_no_cip)
+											<option value="{{$budget_no_cip->budget_no}}">{{$budget_no_cip->budget_no}}</option>
+										@endforeach
                                     </select>
                                </div> 
                                 <div class="portlet-body">
-                                    <label class="control-label">Budget Name <span class="text-danger">*</span></label>
-                                    <inout type="text" name="budget_name" placeholder="Budget Name" class="form-control tinymce" required="required" readonly="readonly" rows="5"></inout>
+                                    <label class="control-label">Old Settlement Date<span class="text-danger">*</span></label>
+                                    <input type="text" name="old_settlement_date" class="form-control tinymce" required="required" readonly="readonly" rows="5" id="old_settlement_date"/>
                                     <span class="help-block"></span>
                                 </div>
                                 <div class="portlet-body">
                                     <label class="control-label">New Settlement Date <span class="text-danger">*</span></label>
-                                    <inout type="text" name="budget_name" placeholder="Budget Name" class="form-control tinymce" required="required" rows="5"></inout>
+                                    <input type="text" name="new_settlement_date" class="form-control tinymce" required="required" rows="5" id="new_settlement_date">
                                     <span class="help-block"></span>
                                 </div>
                             </div>
@@ -108,6 +112,6 @@
 @endsection
 
 @push('js')
-<script src="{{ url('assets/js/pages/cip-admin-add-edit.js') }}"></script>
+<script src="{{ url('assets/js/pages/cip-admin.js') }}"></script>
 
 @endpush
