@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\ItemCategory;
 use App\Item;
 use App\Cart;
+use PDF;
 
 class CatalogController extends Controller
 {
@@ -59,27 +60,69 @@ class CatalogController extends Controller
 
             $item = Item::find($request->item_id);
 
-            $cart = Cart::firstOrNew(['item_id' => $item->id]);
-            $cart->user_id = auth()->user()->id;
-            $cart->item_id = $item->id;
+            if ($request->submit == 'cart') {
 
-            if ($cart->exists) {
-                $qty = $cart->qty + $request->qty;
-                $cart->qty = $qty;
-                $cart->total = $item->item_price * $qty;
+                $cart = Cart::firstOrNew(['item_id' => $item->id]);
+                $cart->user_id = auth()->user()->id;
+                $cart->item_id = $item->id;
+
+                if ($cart->exists) {
+                    $qty = $cart->qty + $request->qty;
+                    $cart->qty = $qty;
+                    $cart->total = $item->item_price * $qty;
+                } else {
+                    $cart->qty = $request->qty;
+                    $cart->total = $item->item_price * $request->qty;
+                }
+
+                $cart->price = $item->item_price;
+                $cart->reason = $request->reason;
+                $cart->save();
+
+                return redirect()->back();
+
             } else {
-                $cart->qty = $request->qty;
-                $cart->total = $item->item_price * $request->qty;
+
+                $compare = [
+                    'id' => $item->id,
+                    'name' => $item->item_description,
+                    'supplier' => $item->supplier->supplier_name,
+                    'specification' => $item->item_specification,
+                    'price' => $item->item_price,
+                    'lead_times' => $item->lead_times,
+                    'guarantee' => 'yes',
+                    'technical_support' => 'yes',
+                    'other' => 'money back for guarantee, free shiping, call center 24 hours'
+                ];
+
+                session()->put('compare.'.$item->id, $compare);
+                return redirect()->back();           
+
             }
-
-            $cart->price = $item->item_price;
-            $cart->reason = $request->reason;
-            $cart->save();
-
-            return redirect()->back();
 
         } else {
             return redirect('login');
         }
+    }
+
+    public function compare()
+    {
+        $compares = session()->get('compare');
+        return view('catalog.compare', compact(['compares']));
+    }
+
+    public function compareRemove($id)
+    {
+        session()->forget('compare.'.$id);
+        return redirect()->back();
+    }
+
+    public function print()
+    {
+
+        $data['compares'] = session()->get('compare');
+        $pdf = PDF::setPaper('a4', 'landscape')->loadView('pdf.comparison', $data);
+        return $pdf->stream('comparison.pdf');
+
     }
 }

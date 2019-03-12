@@ -323,7 +323,7 @@ class ApprovalMaster extends Model
                 $data['data'][] = [
                     str_pad($i, 2, '0', STR_PAD_LEFT),  
                     $value->budget_no,
-                    $value->asset_no,                
+                    $value->asset_no."<input type='hidden' value='".$value->id."'>",                
                     $value->sap_track_no,          
                     $value->sap_asset_no,               
                     $value->sap_account_code,          

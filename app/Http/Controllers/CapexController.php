@@ -35,8 +35,8 @@ class CapexController extends Controller
     public function create()
     {
     	$capex         = Capex::get();
-      $period        = Config('period.fyear.open');
-      $department    = Department::get();
+        $period        = Config('period.fyear.open');
+        $department    = Department::get();
 
     	return view('pages.capex.create', compact('capex', 'period', 'department'));
     }
@@ -208,6 +208,14 @@ class CapexController extends Controller
         $name = time() . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('public/uploads', $name);
 
+        if (!is_null($request->overwrite)) {
+            // Capex::truncate();   //v3.2 by Ferry, Dangerous!
+        }
+
+        $is_revision = !is_null($request->revision);
+
+        // dd($is_revision);
+
         $data = [];
         if ($request->hasFile('file')) {
             $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
@@ -217,24 +225,63 @@ class CapexController extends Controller
                     foreach ($datas as $data) {
 
                         $capex = Capex::where('budget_no', $data->budget_no)->first();
+                        $gr = strtotime($data->gr);
+                        $gr_date = date('Y-m-d',$gr);
+                        
+                        if ( !empty($capex->budget_no) == $data->budget_no and $is_revision == false){
+                            return redirect()
+                            ->route('capex.index')
+                            ->with(
+                                [
+                                    'title' => 'Error',
+                                    'type' => 'error',
+                                    'message' => 'Duplicate Entry!'
+                                ]
+                            );
+                        } else if (!empty($capex->budget_no) != $data->budget_no) {
+                            $capex                    = new Capex;
+                            $capex->budget_no         = $data->budget_no;
+                            $capex->sap_cc_code       = $data->sap_cc_code;
+                            $capex->department        = $data->dep;
+                            $capex->equipment_name    = $data->equipment_name;
+                            $capex->plan_gr           = $gr_date;
+                            $capex->budget_plan       = $data->price;
+                            $capex->budget_remaining  = $data->price;
+                            $capex->save();  
+                        } else {
+                            $capex                    = Capex::firstOrNew(['budget_no' => $data->budget_no]);
+                            $capex->budget_no         = $data->budget_no;
+                            $capex->sap_cc_code       = $data->sap_cc_code;
+                            $capex->department        = $data->dep;
+                            $capex->equipment_name    = $data->equipment_name;
+                            $capex->plan_gr           = $gr_date;
+                            $capex->budget_plan       = $data->price;
+                            $capex->budget_remaining  = $data->price;
+                            $capex->is_revised        = $is_revision;
+                            $capex->revised_by        = \Auth::user()->id;
+                            $capex->revised_at        = date('Y-m-d H:i:s');
+                            $capex->save();  
 
-                        $capex                    = new Capex;
-                        $capex->budget_no         = $data->budget_no;
-                        $capex->sap_cc_code       = $data->sap_cc_code;
-                        $capex->department        = $data->dep;
-                        $capex->equipment_name    = $data->equipment_name;
-                        $capex->plan_gr           = $data->gr;
-                        $capex->budget_plan       = $data->price;
-                        $capex->budget_remaining  = $data->price;
-                        $capex->save();  
+                        }
                                         
                     }  
 
-                // });
+                    if ($is_revision) {
+
+                        $period_revision = Period::where('name', 'fyear_plan_code')->first();
+                        if ($period_revision) {
+                            $period_revision->value = 'R';
+                        }
+                        else {
+                            $period_revision = Period::firstOrNew(['name' => 'fyear_plan_code', 'value' => 'R']);
+                        }
+                        $period_revision->save();
+                    }
+
                     $res = [
                                 'title'             => 'Sukses',
                                 'type'              => 'success',
-                                'message'           => 'Data berhasil di Upload!'
+                                'message'           => 'Upload Success!'
                             ];
                     Storage::delete('public/uploads/'.$name); 
                     return redirect()
@@ -252,7 +299,7 @@ class CapexController extends Controller
                                 [
                                     'title' => 'Error',
                                     'type' => 'error',
-                                    'message' => 'Format Buruk!'
+                                    'message' => 'Bad Format!'
                                 ]
                             );
                 }
@@ -501,12 +548,25 @@ class CapexController extends Controller
     }
 	public function fiscalYearClosing()
     {
-        $fyear_open         = "2018";
-        $fyear_close        = "2018";
-        $fyear_open_from    = "2018";
-        $fyear_open_to      = "2018";
-        $fyear_close_from   = "2018";
-        $fyear_close_to     = "2018";
+		$period = Period::all();
+		if(!empty($period) && count($period)>= 6){
+					
+			$fyear_open 		= $period[0]->value; 
+			$fyear_close 		= $period[1]->value;
+			$fyear_open_from    = $period[2]->value;
+			$fyear_open_to      = $period[3]->value;
+			$fyear_close_from   = $period[4]->value;
+			$fyear_close_to     = $period[5]->value;
+			
+		}else{
+			$fyear_open         = "";
+			$fyear_close        = "";
+			$fyear_open_from    = "";
+			$fyear_open_to      = "";
+			$fyear_close_from   = "";
+			$fyear_close_to     = "";
+		}
+       
 
         return view('fyear.closing', compact('fyear_open', 'fyear_close','fyear_open_from','fyear_open_to','fyear_close_from','fyear_close_to'));
     }
@@ -517,154 +577,162 @@ class CapexController extends Controller
 
         try {
             // start transcact
+						
 			DB::transaction(function() use ($request){
+				$period = Period::all();
+				if(!empty($period) && count($period)>= 6){
+					
+					$fyear_open 		= $period[0]->value; 
+					$fyear_close 		= $period[1]->value;
+					$fyear_open_from    = $period[2]->value;
+					$fyear_open_to      = $period[3]->value;
+					$fyear_close_from   = $period[4]->value;
+					$fyear_close_to     = $period[5]->value;
+					
+				}else{
+					$data['error'] = 'Period data is not active';
+					
+					return $data; 
+				}
 
-            $fyear_open 		= config('period.fyear_open');
-            $fyear_close 		= config('period.fyear_close');
-            $fyear_open_from    = config('period.fyear_open_from');
-            $fyear_open_to      = config('period.fyear_open_to');
-            $fyear_close_from   = config('period.fyear_close_from');
-            $fyear_close_to     = config('period.fyear_close_to');
+				if (($fyear_open == '') || ($fyear_close == '')) {
+					$data['error'] = 'Fiscal Year Closing Error - No valid fiscal year';
+					return $data;
+				}
 
+				// Closing Capex -- Move all Data to period_master_budgets table
 
-            if (($fyear_open == '') || ($fyear_close == '')) {
-                $data['error'] = 'Fiscal Year Closing Error - No valid fiscal year';
-                return $data;
-            }
+				$budgets = Capex::where('fyear', $fyear_open)->get();
 
-            // Closing Capex -- Move all Data to period_master_budgets table
+				foreach ($budgets as $budget) {
 
-            $budgets = Capex::where('fyear', $fyear_open)->get();
+					// Uniform Timestamps
+					$now = Carbon::now()->format('Y-m-d H:i:s');
+					// Get the source & save to archives
+					$newInsert = Capex::where('id', $budget->id)->first()->replicate();
+					\DB::table('period_master_budgets')->insert($newInsert->toArray('fyear_closing', $budget->id, $now));  // toArray overriden in Capex Model
 
-            foreach ($budgets as $budget) {
+					// Delete the source after success copy!
+					Capex::where('id', $budget->id)->delete();
+				}
 
-                // Uniform Timestamps
-                $now = Carbon::now()->format('Y-m-d H:i:s');
-                // Get the source & save to archives
-                $newInsert = Capex::where('id', $budget->id)->first()->replicate();
-                \DB::table('period_master_budgets')->insert($newInsert->toArray('fyear_closing', $budget->id, $now));  // toArray overriden in Capex Model
+				// Closing Capex_Archive -- Move all Data to period_master_budgets table
 
-                // Delete the source after success copy!
-                Capex::where('id', $budget->id)->delete();
-            }
+				$budgets = CapexArchive::where('fyear', $fyear_open)->get();
 
-            // Closing Capex_Archive -- Move all Data to period_master_budgets table
+				foreach ($budgets as $budget) {
 
-            $budgets = CapexArchive::where('fyear', $fyear_open)->get();
+					// Uniform Timestamps
+					$now = Carbon::now()->format('Y-m-d H:i:s');
+					// Get the source & save to archives
+					$newInsert = CapexArchive::where('id', $budget->id)->first()->replicate();
+					\DB::table('period_master_budgets')->insert($newInsert->toArray('fyear_closing', $budget->id, $now));  // toArray overriden in Capex_archive Model
 
-            foreach ($budgets as $budget) {
+					// Delete the source after success copy!
+					CapexArchive::where('id', $budget->id)->delete();
+				}
 
-                // Uniform Timestamps
-                $now = Carbon::now()->format('Y-m-d H:i:s');
-                // Get the source & save to archives
-                $newInsert = CapexArchive::where('id', $budget->id)->first()->replicate();
-                \DB::table('period_master_budgets')->insert($newInsert->toArray('fyear_closing', $budget->id, $now));  // toArray overriden in Capex_archive Model
+				// Closing Expense -- Move all Data to period_master_budgets table
 
-                // Delete the source after success copy!
-                CapexArchive::where('id', $budget->id)->delete();
-            }
+				$budgets = Expense::where('fyear', $fyear_open)->get();
 
-            // Closing Expense -- Move all Data to period_master_budgets table
+				foreach ($budgets as $budget) {
 
-            $budgets = Expense::where('fyear', $fyear_open)->get();
+					// Uniform Timestamps
+					$now = Carbon::now()->format('Y-m-d H:i:s');
+					// Get the source & save to archives
+					$newInsert = Expense::where('id', $budget->id)->first()->replicate();
+					\DB::table('period_master_budgets')->insert($newInsert->toArray('fyear_closing', $budget->id, $now));  // toArray overriden in Expense Model
 
-            foreach ($budgets as $budget) {
+					// Delete the source after success copy!
+					Expense::where('id', $budget->id)->delete();
+				}
 
-                // Uniform Timestamps
-                $now = Carbon::now()->format('Y-m-d H:i:s');
-                // Get the source & save to archives
-                $newInsert = Expense::where('id', $budget->id)->first()->replicate();
-                \DB::table('period_master_budgets')->insert($newInsert->toArray('fyear_closing', $budget->id, $now));  // toArray overriden in Expense Model
+				// Closing Expense_Archive -- Move all Data to period_master_budgets table
 
-                // Delete the source after success copy!
-                Expense::where('id', $budget->id)->delete();
-            }
+				$budgets = ExpenseArchive::where('fyear', $fyear_open)->get();
 
-            // Closing Expense_Archive -- Move all Data to period_master_budgets table
+				foreach ($budgets as $budget) {
 
-            $budgets = ExpenseArchive::where('fyear', $fyear_open)->get();
+					// Uniform Timestamps
+					$now = Carbon::now()->format('Y-m-d H:i:s');
+					// Get the source & save to archives
+					$newInsert = ExpenseArchive::where('id', $budget->id)->first()->replicate();
+					\DB::table('period_master_budgets')->insert($newInsert->toArray('fyear_closing', $budget->id, $now));  // toArray overriden in Expense_archive Model
 
-            foreach ($budgets as $budget) {
+					// Delete the source after success copy!
+					ExpenseArchive::where('id', $budget->id)->delete();
+				}
 
-                // Uniform Timestamps
-                $now = Carbon::now()->format('Y-m-d H:i:s');
-                // Get the source & save to archives
-                $newInsert = ExpenseArchive::where('id', $budget->id)->first()->replicate();
-                \DB::table('period_master_budgets')->insert($newInsert->toArray('fyear_closing', $budget->id, $now));  // toArray overriden in Expense_archive Model
+				// Closing Approval_detail -- Move all Data to period_approval_detail table
+				$approval_details = ApprovalDetail::where('fyear', $fyear_open)->get();
 
-                // Delete the source after success copy!
-                ExpenseArchive::where('id', $budget->id)->delete();
-            }
+				foreach ($approval_details as $approval_detail) {
 
-            // Closing Approval_detail -- Move all Data to period_approval_detail table
-            $approval_details = ApprovalDetail::where('fyear', $fyear_open)->get();
+					// Uniform Timestamps
+					$now = Carbon::now()->format('Y-m-d H:i:s');
+					// Get the source & save to archives
+					$newInsert = ApprovalDetail::where('id', $approval_detail->id)->first()->replicate();
+					\DB::table('period_approval_details')->insert($newInsert->toArray('fyear_closing', $approval_detail->id, $now));  // toArray overriden in Approval_detail Model
 
-            foreach ($approval_details as $approval_detail) {
+					// Don't Delete, Be careful, Deletion only on master due to relation hasmany
+					// Approval_detail::where('id', $approval_detail->id)->delete();
+				}
 
-                // Uniform Timestamps
-                $now = Carbon::now()->format('Y-m-d H:i:s');
-                // Get the source & save to archives
-                $newInsert = Approval_detail::where('id', $approval_detail->id)->first()->replicate();
-                \DB::table('period_approval_details')->insert($newInsert->toArray('fyear_closing', $approval_detail->id, $now));  // toArray overriden in Approval_detail Model
+				// Closing Approval_master -- Move all Data to period_approval_master table
+				$approvals = ApprovalMaster::where('fyear', $fyear_open)->get();
 
-                // Don't Delete, Be careful, Deletion only on master due to relation hasmany
-                // Approval_detail::where('id', $approval_detail->id)->delete();
-            }
+				foreach ($approvals as $approval) {
 
-            // Closing Approval_master -- Move all Data to period_approval_master table
-            $approvals = ApprovalMaster::where('fyear', $fyear_open)->get();
+					// Uniform Timestamps
+					$now = Carbon::now()->format('Y-m-d H:i:s');
+					// Get the source & save to archives
+					$newInsert = ApprovalMaster::where('id', $approval->id)->first()->replicate();
+					\DB::table('period_approval_masters')->insert($newInsert->toArray('fyear_closing', $approval->id, $now));  // toArray overriden in Approval_master Model
 
-            foreach ($approvals as $approval) {
+					// Delete the source after success copy! cascade with Approval Details --> hasMany
+					ApprovalMaster::where('id', $approval->id)->delete();
+				}
 
-                // Uniform Timestamps
-                $now = Carbon::now()->format('Y-m-d H:i:s');
-                // Get the source & save to archives
-                $newInsert = ApprovalMaster::where('id', $approval->id)->first()->replicate();
-                \DB::table('period_approval_masters')->insert($newInsert->toArray('fyear_closing', $approval->id, $now));  // toArray overriden in Approval_master Model
+				// hotfix 3.4.11 by Andre mengganti konstanta dengan variabel
+				// Set periods closing
+				$period = Period::where('name','fyear_open')->first();
+				$period->value = $fyear_open + 1;
+				$period->save();
 
-                // Delete the source after success copy! cascade with Approval Details --> hasMany
-                ApprovalMaster::where('id', $approval->id)->delete();
-            }
+				$period = Period::where('name','fyear_close')->first();
+				$period->value = $fyear_open;
+				$period->save();
 
-            // hotfix 3.4.11 by Andre mengganti konstanta dengan variabel
-            // Set periods closing
-            $period = Period::where('name','fyear_open')->first();
-            $period->value = $fyear_open + 1;
-            $period->save();
+				$period = Period::where('name','fyear_open_from')->first();
+				$period->value = ($fyear_open + 1).substr($period->value, 4, 4);
+				$period->save();
 
-            $period = Period::where('name','fyear_close')->first();
-            $period->value = $fyear_open;
-            $period->save();
+				$period = Period::where('name','fyear_open_to')->first();
+				// $y = Carbon::now()->format('Y');
+				$period->value = ($fyear_open + 2).substr($period->value, 4, 4);
+				$period->save();
 
-            $period = Period::where('name','fyear_open_from')->first();
-            $period->value = ($fyear_open + 1).substr($period->value, 4, 4);
-            $period->save();
+				$period = Period::where('name','fyear_close_from')->first();
+				// $y = Carbon::now()->format('Y');
+				$period->value = $fyear_open.substr($period->value, 4, 4);
+				$period->save();
 
-            $period = Period::where('name','fyear_open_to')->first();
-            // $y = Carbon::now()->format('Y');
-            $period->value = ($fyear_open + 2).substr($period->value, 4, 4);
-            $period->save();
+				$period = Period::where('name','fyear_close_to')->first();
+				// $y = Carbon::now()->format('Y');
+				$period->value = ($fyear_open + 1).substr($period->value, 4, 4);
+				$period->save();
+				// end hotfix 3.4.11 by Andre mengganti konstanta dengan variabel
 
-            $period = Period::where('name','fyear_close_from')->first();
-            // $y = Carbon::now()->format('Y');
-            $period->value = $fyear_open.substr($period->value, 4, 4);
-            $period->save();
-
-            $period = Period::where('name','fyear_close_to')->first();
-            // $y = Carbon::now()->format('Y');
-            $period->value = ($fyear_open + 1).substr($period->value, 4, 4);
-            $period->save();
-            // end hotfix 3.4.11 by Andre mengganti konstanta dengan variabel
-
-            // hotfix-3.4.16, Ferry, 20161006, Periode Revisi berganti ke Original Plan utk siklus FY Berikutnya
-            $period_revision = Period::where('name', 'fyear_plan_code')->first();
-            if ($period_revision) {
-                $period_revision->value = 'O';
-            }
-            else {
-                $period_revision = Period::firstOrNew(['name' => 'fyear_plan_code', 'value' => 'O']);
-            }
-            $period_revision->save();
+				// hotfix-3.4.16, Ferry, 20161006, Periode Revisi berganti ke Original Plan utk siklus FY Berikutnya
+				$period_revision = Period::where('name', 'fyear_plan_code')->first();
+				if ($period_revision) {
+					$period_revision->value = 'O';
+				}
+				else {
+					$period_revision = Period::firstOrNew(['name' => 'fyear_plan_code', 'value' => 'O']);
+				}
+				$period_revision->save();
 
 			});
 			

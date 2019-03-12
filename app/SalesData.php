@@ -430,5 +430,125 @@ class SalesData extends Model
             return !empty($sales_data->total) ? $sales_data->total : 0;
         }  
     }
+
+    public function getAprAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getMayAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getJuneAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getJulyAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getAugustAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getSepAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getOktAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getNovAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getDesAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getJanAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getFebAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getMarAmountAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getAprQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getMayQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getJuneQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getJulyQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getAugustQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getSepQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getOktQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getNovQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getDesQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getJanQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getFebQtyAttribute($value)
+    {
+        return number_format($value);
+    }
+
+    public function getMarQtyAttribute($value)
+    {
+        return number_format($value);
+    }
     
 }

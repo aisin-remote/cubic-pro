@@ -82,7 +82,7 @@ class ApprovalCapexController extends Controller
 					'id'    => $request->budget_no,
 					'name'  => $request->project_name,
 					'price' => $request->price_actual,
-					'qty' => $request->pr_specs,
+					'qty' 	=> $request->pr_specs,
 					'options' => [
 						'budget_no'             => $budget->budget_no,
 						'budget_description'    => $request->budget_description,
@@ -122,8 +122,12 @@ class ApprovalCapexController extends Controller
 
     function destroy($id)
     {
-        Cart::remove($id);
-
+		// dd($id);
+		// $capex = Cart::instance('capex')->destroy();
+		// dd($capex);
+		// print_r($capex->rowId);exit;
+        // Cart::remove($id);
+		Cart::destroy();
         $res = [
                     'type' => 'success',
                     'title' => 'Success',
@@ -192,19 +196,19 @@ class ApprovalCapexController extends Controller
                 $capex->details()->save($approval);
             }
 			// Simpan approver user
-			$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
+			// $approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
 			
-			foreach($approval_master as $am){
+			// foreach($approval_master as $am){
 				
-				$approval_dtl 	 = ApprovalDtl::where('approval_id',$request->approval_id)->get();
+				// $approval_dtl 	 = ApprovalDtl::where('approval_id',$request->approval_id)->get();
 				
-				foreach($approval_dtl as $app_dtl){
-					$approver_user = new ApproverUser();
-					$approver_user->approval_master_id  = $am->id;
-					$approver_user->user_id  			= $app_dtl->user_id;
-					$approver_user->save();
-				}
-			}
+				// foreach($approval_dtl as $app_dtl){
+					// $approver_user = new ApproverUser();
+					// $approver_user->approval_master_id  = $am->id;
+					// $approver_user->user_id  			= $app_dtl->user_id;
+					// $approver_user->save();
+				// }
+			// }
 			
             $res = [
                         'title' => 'Sukses',
@@ -367,6 +371,9 @@ class ApprovalCapexController extends Controller
         $user = auth()->user();
         $approval_capex = ApprovalMaster::with('departments')
                                 ->where('budget_type', 'like', 'cx%');
+		if(\Entrust::hasRole('user')) {
+			$approval_capex->where('created_by',$user->id);
+		}
 		if($status == 'need_approval'){
 			$approval_capex->where('status','0');
 		}
@@ -441,7 +448,12 @@ class ApprovalCapexController extends Controller
 	}
 	public function AjaxDetailApproval($approval_number)
 	{
-		 return ApprovalMaster::getApprovalDetailsApi($approval_number);
+		 
+		 // return ApprovalMaster::getApprovalDetailsApi($approval_number);
+		 $approval_master = ApprovalMaster::join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
+						->join('capexes','capexes.budget_no','=','approval_details.budget_no')
+						->where('approval_number',$approval_number);
+		 return DataTables::of($approval_master)->toJson();
 	}
     public function getDetailsData($id)
     {
@@ -455,48 +467,14 @@ class ApprovalCapexController extends Controller
 	
 	public function xedit(Request $request)
     {
-        $capex = '';
+		$status = 0;
+		\DB::transaction(function() use ($request, &$capex){
 
-        DB::transaction(function() use ($request, &$capex){
+			$status =  ApprovalDetail::where($request->name,$request->pk)->update([$request->name=>$request->value]);
 
-            $capex = Capex::where('budget_no', $request->pk)->first();
-
-            if (($request->name == 'budget_plan') || ($request->name == 'budget_remaining')) {
-                $request->value = str_replace(',', '', $request->value);
-
-                if (!is_numeric($request->value)) {
-                  throw new \Exception("Value should be numeric", 1);
-                }
-
-                if ($capex->budget_used != 0) {
-                  throw new \Exception("Could not update: Capex already used.", 1);
-                }
-            }
-
-            if ($request->name == 'is_closed') {
-              if ($request->value == 'Open') {
-                  $request->value = 0;
-              } else {
-                  $request->value = 1;
-              }
-          }
-
-          // update attribute
-          $name = $request->name;
-          $capex->$name = $request->value;
-
-          $capex->save();
-
-          if (($request->name == 'budget_plan') || ($request->name == 'budget_remaining')) {
-              $capex->$name = number_format($capex->$name, 0);
-          }
-
-          $capex = $capex->$name;
-
-        });
-
-        return $capex;
-
+		});
+		
+		return $status;
     }
 
     

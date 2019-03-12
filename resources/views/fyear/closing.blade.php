@@ -32,7 +32,7 @@
 						</label>
 						&nbsp;&nbsp;
 						<button type="button" class="btn btn-primary" id="btnclosing">Close Fiscal Year : {{$fyear_open}}</button>
-						
+						<input type="hidden" id="fyear_open" value="{{$fyear_open}}">
 					</div>
 				</div>					
 			</div>
@@ -51,7 +51,13 @@
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$('#btnclosing').click(function(){
-			cancelClosing();
+			// $('#fyear_open').val('');
+			 var fyear_open = $('#fyear_open').val();
+			 if(fyear_open != ""){
+				cancelClosing();
+			 }else{
+				show_notification('Error','error',"Period data is not active"); 
+			 }
 		});
 	});
 		function cancelClosing()
@@ -60,18 +66,20 @@
 				var reconfirmed = confirm('Are you sure to close current fiscal year ?');
 
 				if (reconfirmed) {
-					btnClose.disabled = true;
-					$.getJSON(SITE_URL+"fyear/doClosing",data,function(data){
+					
+					$('#btnclosing').attr('disabled',true);
+					$.getJSON(SITE_URL+"/fyear/doClosing",{},function(data){
 						if (data.error) {
 							show_notification('Error','error',data.error);
-							btnClose.disabled = false;
+							$('#btnclosing').attr('disabled',true);
 						}
 						else {
 							show_notification('Success','success',data.success);
-							btnClose.disabled = true;
+							$('#btnclosing').attr('disabled',true);
 						}
 					});
 				}
+				
 			}
 			else {
 				show_notification('Error','error','Please click the checkbox for confirmation!');

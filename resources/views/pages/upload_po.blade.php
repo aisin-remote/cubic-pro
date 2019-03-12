@@ -1,21 +1,21 @@
 @extends('layouts.master')
 
 @section('title')
-	Upload DO
+    Input Purchase Order
 @endsection
 
 @section('content')
 
-@php($active = 'upload_do')
+@php($active = 'input_po')
 
 <div class="container">
     <div class="row">
 		<div class="col-xs-12">
 			<div class="page-title-box">
-                <h4 class="page-title">Upload DO</h4>
+                <h4 class="page-title">Input Purchase Order</h4>
                 <ol class="breadcrumb p-0 m-0">
                     <li class="active">
-                        Upload DO
+                        Input Purchase Order
                     </li>
                 </ol>
                 <div class="clearfix"></div>
@@ -26,11 +26,11 @@
 
     <div class="row">
         <div class="col-sm-4">
-             <a href="{{ route('upload_po.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Data DO</a>
+             <a href="{{ route('upload_po.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Data PO</a>
         </div><!-- end col -->
-        <!-- <div class="col-xs-12 text-right">
-            <button class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" onclick="on_import()"><i class="mdi mdi-upload"></i> Upload</button>
-        </div> -->
+        <div class="col-xs-12 text-right">
+        <a href="{{ route('upload_po.export') }}" class="btn btn-custom btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-download"></i> Download</a>
+        </div>
     </div>
 
     <div class="row">
@@ -40,9 +40,11 @@
                     <thead>
                         <tr>
                             <th>Approval Number</th>
+                            <th>Description</th>
                             <th>Approval Create Date</th>
                             <th>PO Number</th>
                             <th>PO Date</th>
+                            <th>Quotation</th>
                         </tr>
                     </thead>
                 </table>

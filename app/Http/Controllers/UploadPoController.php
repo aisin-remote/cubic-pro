@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\UploadPurchaseOrder;
 use App\ApprovalMaster;
+use App\Exports\UploadPoExport;
 use Excel;
 use Storage;
 use DB;
@@ -22,9 +23,10 @@ class UploadPoController extends Controller
     public function index(Request $request)
     {
         $po = DB::table('approval_masters')
-                    ->select('approval_masters.approval_number', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date')
+                    ->select('approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date','upload_purchase_orders.quotation')
                     ->leftJoin('upload_purchase_orders', 'approval_masters.approval_number', '=', 'upload_purchase_orders.approval_number')
-                    ->where('approval_masters.status','0')
+                    ->Join('approval_details', 'approval_details.approval_master_id','=', 'approval_masters.id')
+                    ->where('approval_masters.status','4')
                     ->get();
         
 
@@ -144,9 +146,10 @@ class UploadPoController extends Controller
     public function getData(Request $request)
     {
         $po = DB::table('approval_masters')
-                    ->select('approval_masters.approval_number', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date')
+                    ->select('approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date', 'upload_purchase_orders.quotation')
                     ->leftJoin('upload_purchase_orders', 'approval_masters.approval_number', '=', 'upload_purchase_orders.approval_number')
-                    ->where('approval_masters.status','0')
+                    ->Join('approval_details', 'approval_details.approval_master_id','=', 'approval_masters.id')
+                    ->where('approval_masters.status','4')
                     ->get();
                     
         return DataTables::of($po)
@@ -159,73 +162,91 @@ class UploadPoController extends Controller
         return view('pages.upload_po.create');
     }
 
-    public function edit($id)
-    {
-        $po = UploadPurchaseOrder::find($id);
+    // public function edit($id)
+    // {
+    //     $po = UploadPurchaseOrder::find($id);
         
-        return view('pages.upload_po.edit', compact(['po']));
-    }
+    //     return view('pages.upload_po.edit', compact(['po']));
+    // }
 
-    public function import(Request $request)
-    {
-        $file = $request->file('file');
-        $name = time() . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('public/uploads', $name);
+    // public function import(Request $request)
+    // {
+    //     $file = $request->file('file');
+    //     $name = time() . '.' . $file->getClientOriginalExtension();
+    //     $path = $file->storeAs('public/uploads', $name);
 
-        $data = [];
-        if ($request->hasFile('file')) {
-            $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
+    //     $data = [];
+    //     if ($request->hasFile('file')) {
+    //         $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
 
-                if ($datas->first()->has('po_number')){
-                    foreach ($datas as $data) {
+    //             if ($datas->first()->has('po_number')){
+    //                 foreach ($datas as $data) {
 
-                        $po = UploadPurchaseOrder::where('po_number', $data->po_number)->first();
+    //                     $po = UploadPurchaseOrder::where('po_number', $data->po_number)->first();
                         
-                        $po                     = new UploadPurchaseOrder;
-                        $po->approval_number    = $data->approval_number;
-                        $po->po_number          = $data->po_number;
-                        $po->po_date            = $data->po_date;
-                        $po->save();                  
-                    }  
+    //                     $po                     = new UploadPurchaseOrder;
+    //                     $po->approval_number    = $data->approval_number;
+    //                     $po->po_number          = $data->po_number;
+    //                     $po->po_date            = $data->po_date;
+    //                     $po->save();                  
+    //                 }  
 
-                    $res = [
-                                'title'             => 'Sukses',
-                                'type'              => 'success',
-                                'message'           => 'Upload Data Success!'
-                            ];
-                    Storage::delete('public/uploads/'.$name); 
-                    return redirect()
-                            ->route('upload_po.index')
-                            ->with($res);
+    //                 $res = [
+    //                             'title'             => 'Sukses',
+    //                             'type'              => 'success',
+    //                             'message'           => 'Upload Data Success!'
+    //                         ];
+    //                 Storage::delete('public/uploads/'.$name); 
+    //                 return redirect()
+    //                         ->route('upload_po.index')
+    //                         ->with($res);
 
-                } else {
+    //             } else {
 
-                    Storage::delete('public/uploads/'.$name);
+    //                 Storage::delete('public/uploads/'.$name);
 
-                    return redirect()
-                            ->route('upload_po.index')
-                            ->with(
-                                [
-                                    'title' => 'Error',
-                                    'type' => 'error',
-                                    'message' => 'Wrong Format!'
-                                ]
-                            );
-                }
-        }
-    }
+    //                 return redirect()
+    //                         ->route('upload_po.index')
+    //                         ->with(
+    //                             [
+    //                                 'title' => 'Error',
+    //                                 'type' => 'error',
+    //                                 'message' => 'Wrong Format!'
+    //                             ]
+    //                         );
+    //             }
+    //     }
+    // }
 
-    public function template_upload_po() 
+    // public function template_upload_po() 
+    // {
+    //    return Excel::create('Template Upload PO', function($excel){
+    //          $excel->sheet('mysheet', function($sheet){
+    //             $sheet->cell('A1', function($cell) {$cell->setValue('approval_number');});
+    //             $sheet->cell('B1', function($cell) {$cell->setValue('po_number');});
+    //             $sheet->cell('C1', function($cell) {$cell->setValue('po_date');});
+    //          });
+
+    //     })->download('csv');
+    // } 
+
+    public function export() 
     {
-       return Excel::create('Template Upload PO', function($excel){
-             $excel->sheet('mysheet', function($sheet){
-                $sheet->cell('A1', function($cell) {$cell->setValue('approval_number');});
-                $sheet->cell('B1', function($cell) {$cell->setValue('po_number');});
-                $sheet->cell('C1', function($cell) {$cell->setValue('po_date');});
+        $po = DB::table('approval_masters')
+                    ->select('approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date', 'upload_purchase_orders.quotation')
+                    ->leftJoin('upload_purchase_orders', 'approval_masters.approval_number', '=', 'upload_purchase_orders.approval_number')
+                    ->Join('approval_details', 'approval_details.approval_master_id','=', 'approval_masters.id')
+                    ->where('approval_masters.status','4')
+                    ->get();
+
+        return Excel::create('Data Input PO', function($excel) use ($po){
+             $excel->sheet('mysheet', function($sheet) use ($po){
+                 $sheet->fromArray($po);
              });
 
         })->download('csv');
-    } 
+
+    }
 
     public function xedit(Request $request)
     {

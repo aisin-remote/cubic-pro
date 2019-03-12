@@ -15,8 +15,13 @@ use App\ApprovalMaster;
 Route::get('/', 'CatalogController@index');
 Route::get('/catalog', 'CatalogController@show');
 Route::post('/catalog', 'CatalogController@store');
+Route::get('/catalog/compare', 'CatalogController@compare');
+Route::get('/catalog/compare/print', 'CatalogController@print');
+Route::get('/catalog/compare/remove/{id}', 'CatalogController@compareRemove');
 Route::get('/catalog/{item_code}', 'CatalogController@details');
-
+Route::get('/testing2', function(){
+	session()->forget('compare');
+});
 
 Route::middleware('auth')->group(function(){
 
@@ -94,7 +99,8 @@ Route::middleware('auth')->group(function(){
 
 	// Upload PO ARK. Ipan Herdiansyah
 	Route::post('/upload_po/import', 'UploadPoController@import')->name('upload_po.import');
-	Route::post('UploadPo/xedit', 'UploadPoController@xedit');
+	Route::post('upload_po/xedit', 'UploadPoController@xedit');
+	Route::get('/upload_po/export', 'UploadPoController@export')->name('upload_po.export');
 	Route::get('upload_po/get_data', 'UploadPoController@getData');
 	Route::get('/upload_po/export/template', 'UploadPoController@template_upload_po')->name('upload_po.template');
 	Route::resource('upload_po', 'UploadPoController');
@@ -201,7 +207,7 @@ Route::middleware('auth')->group(function(){
 	
 	// Menu Expense
 	// Route::get('approval/ex/', 'ApprovalController@approvalExpense')->name('approval-expense.ListApproval');
-	Route::post('capex/xedit', 'ExpenseController@xedit');
+	Route::post('expense/xedit', 'ExpenseController@xedit');
 	Route::get('approval/create/ex', 'ApprovalController@createApprovalExpense')->name('approval-expense.index');
 	Route::get('approval/create/ex/add', 'ApprovalController@createExpense')->name('approval-expense.create');
 	Route::get('approval/ex/store', 'ApprovalController@store')->name('approval-expense.store');

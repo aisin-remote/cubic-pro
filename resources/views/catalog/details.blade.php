@@ -102,7 +102,8 @@
                                 
 
                                 <div class="button_container">
-                                    <button type="submit" class="button cart_button">Add to Cart</button>
+                                    <button type="submit" class="button cart_button" name="submit" value="cart">Add to Cart</button>
+                                    <button type="submit" class="btn btn-info btn-lg" style="cursor:pointer" name="submit" value="compare">Compare</button>
                                 </div>
                                 
                             </form>

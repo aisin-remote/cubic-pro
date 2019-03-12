@@ -227,6 +227,9 @@ class ApprovalExpenseController extends Controller
         $user = \Auth::user();
 		$approval_expense = ApprovalMaster::with('departments')
                                 ->where('budget_type', 'like', 'ex%');
+		if(\Entrust::hasRole('user')) {
+			$approval_expense->where('created_by',$user->id);
+		}
 		if($status == 'need_approval'){
 			$approval_expense->where('status','0');
 		}

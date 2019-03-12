@@ -72,7 +72,7 @@
 
                            <div class="form-group">
                                 <label class="control-label">Price<span class="text-danger">*</span></label>
-                                <input type="number" name="price" placeholder="Price" class="form-control tinymce" required="required" rows="5"  value="{{$masterprice->price}}" ></input>
+                                <input type="number" name="price" placeholder="Price" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price}}" ></input>
                                 <span class="help-block"></span>
                            </div>
                         </div>

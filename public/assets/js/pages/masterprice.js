@@ -8,7 +8,7 @@ $(document).ready(function(){
             { data: 'parts.part_number', name: 'parts.part_number'},
             { data: 'suppliers.supplier_code', name: 'suppliers.supplier_code'},
             { data: 'source', name: 'source'},
-            { data: 'price', name: 'price'},
+            { data: 'price', name: 'price', class: 'text-right'},
 
             { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
         ],

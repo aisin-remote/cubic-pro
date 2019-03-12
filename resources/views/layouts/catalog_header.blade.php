@@ -8,6 +8,14 @@
 					<div class="col d-flex flex-row">
 						<div class="top_bar_content ml-auto">
 							@if (auth()->check())
+
+								<div class="top_bar_user">
+									<div class="user_icon"><i class="fas fa-clone" style="color: #aaa"></i></div>
+									<div><a href="{{ url('catalog/compare') }}">Compare <span class="badge" style="background-color: #0e8ce4;
+    color: #fff;
+    border-radius: 50%;">{{ !empty(session()->get('compare')) ? count(session()->get('compare')) : 0 }}</span></a></div>
+								</div>
+
 								<div class="top_bar_menu">
 									<ul class="standard_dropdown top_bar_dropdown">
 										<li>

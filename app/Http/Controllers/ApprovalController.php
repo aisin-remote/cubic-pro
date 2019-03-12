@@ -25,6 +25,7 @@ use App\ApprovalDetail;
 use App\Cart;
 use App\Approval;
 use Cart as Carts;
+use App\ApproverUser;
 use Excel;
 class ApprovalController extends Controller
 {
@@ -532,10 +533,15 @@ class ApprovalController extends Controller
 		$data = array('success'=>'Approval ['.$request->approval_number.'] approved.');
 		
 		try{
+			
 		 DB::transaction(function() use ($request){
-			 
+			$user = auth()->user(); 
             $approval = ApprovalMaster::getSelf($request->approval_number);
-
+			// if(Helpers::can($approval))
+			// {
+				$approver_user = ApproverUser::where('approval_master_id',$approval->id)->where('user_id',$user->id)->update(array('is_approve'=>'1'));
+				
+			// }
             $approval->approve();
 			
             if ($approval->budget_type != 'ub' && $approval->budget_type != 'uc' && $approval->budget_type != 'ue' && $approval->status == 3) {
@@ -569,6 +575,7 @@ class ApprovalController extends Controller
             $approval->save();
 			
 		 });
+		 
 		}catch(\Exception $e){
 			$data['error'] = $e->getMessage();
 		}

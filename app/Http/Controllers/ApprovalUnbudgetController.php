@@ -153,6 +153,9 @@ class ApprovalUnbudgetController extends Controller
         $user = auth()->user();
         $approval_ub = ApprovalMaster::with('departments')
 								->whereIn('budget_type',['ub,uc','ue']);
+		if(\Entrust::hasRole('user')) {
+			$approval_ub->where('created_by',$user->id);
+		}
 		if($status == 'need_approval'){
 			$approval_ub->where('status','0');
 		}

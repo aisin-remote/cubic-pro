@@ -18,6 +18,7 @@ class CreateUploadPurchaseOrdersTable extends Migration
             $table->string('approval_number');
             $table->string('po_number');
             $table->date('po_date');
+            $table->string('quotation')->nullable();
             $table->timestamps();
         });
     }

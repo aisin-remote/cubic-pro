@@ -33,36 +33,38 @@
                   
    <div class="row">
 	<div class="col-md-12">
-		<div class="card-box">
-			<table id="example" class="table display nowrap table-bordered responsive-utilities jambo_table">
-				<thead>
-					<tr>
-						<th>No<br>&nbsp;</th>  
-						<th>Budget<br>Number</th>
-						<th>Equipment<br>Number</th> 
-						<th>SAP<br>Track No</th>  
-						<th>SAP<br>Asset No</th> 
-						<th>SAP<br>Acc Code (GL Account)</th> 
-						<th>SAP<br>Cost Center</th> 
-						<th>Budget<br>Desc</th>  
-						<th>PR Item/<br>Specs.</th>   
-						<th>Project<br>Name</th>
-						<th>Budget<br>Remain</th>
-						<th class='bg-primary'>Budget<br>Reserved</th>
-						<th class='bg-primary'>Actual<br>Price</th>
-						<th class='bg-primary'>Price<br>Download</th> 
-						<th>Currency</th>  
-						<th>Actual<br>Qty</th>
-						<th class='bg-primary'>Status<br>(Resv. vs Act.)</th>
-						<th>Actual<br>GR</th>
-						<th>SAP Vendor</th>   
-						<th>Collective<br>Number</th>
-						<th>Requirement No</th> 
-						<th>SAP<br>TaxCode</th> 
-					</tr>
-				</thead>
-			</table>
-		</div>
+		<!-- <div class="card-box"> -->
+			<div style="width:100%;overflow:scroll;">
+				<table id="example" class="table display nowrap table-bordered responsive-utilities jambo_table">
+					<thead>
+						<tr>
+							<!--<th>No<br>&nbsp;</th> --> 
+							<th>Budget<br>Number</th>
+							<th>Equipment<br>Number</th> 
+							<th>SAP<br>Track No</th>  
+							<th>SAP<br>Asset No</th> 
+							<th>SAP<br>Acc Code (GL Account)</th> 
+							<th>SAP<br>Cost Center</th> 
+							<th>Budget<br>Desc</th>  
+							<th>PR Item/<br>Specs.</th>   
+							<th>Project<br>Name</th>
+							<th>Budget<br>Remain</th>
+							<th class='bg-primary'>Budget<br>Reserved</th>
+							<th class='bg-primary'>Actual<br>Price</th>
+							<th class='bg-primary'>Price<br>Download</th> 
+							<th>Currency</th>  
+							<th>Actual<br>Qty</th>
+							<th class='bg-primary'>Status<br>(Resv. vs Act.)</th>
+							<th>Actual<br>GR</th>
+							<th>SAP Vendor</th>   
+							<th>Collective<br>Number</th>
+							<th>Requirement No</th> 
+							<th>SAP<br>TaxCode</th> 
+						</tr>
+					</thead>
+				</table>
+			</div>
+	<!--	</div>  -->
 	</div>
    </div>
 </div>                                
@@ -70,39 +72,39 @@
 @endsection
 @push('js')
 <script type="text/javascript">
-	var table = tData = $('#table-approval-capex').DataTable({
-				  processing: true,
-				  serverSide: true,
-				  ajax: SITE_URL + '/approval-capex/get_data',
-				  columns: [
-					{ data: 'budget_no', name: 'budget_no' },
-					{ data: 'project_name', name: 'project_name' },
-					{ data: 'pr_specs', name: 'pr_specs' },
-					{ data: 'price_actual', name: 'price_actual' },
-					{ data: 'plan_gr', name: 'plan_gr' },
-					{ data: 'asset_kind', name: 'asset_kind' },
-					{ data: 'settlement_date', name: 'settlement_date' },
-					{ data: 'option', name: 'option' },
-				  ],
-				  ordering: false,
-				  searching: false,
-				  paging: false,
-				  info: false,
-				  drawCallback: function(d) {
-					$('[data-toggle="tooltip"]').tooltip({html: true, "show": 500, "hide": 100});
-				  }
-				});
-    var table = $('table').dataTable({
-        "ajax": "{{ url('approval/detail').'/'.$master->approval_number }}",
-        "ordering": false,
-        "scrollX": true,
-        "paging": false,
-        "searching": false,
-		"fnDrawCallback": function (oSettings) {
+    
+	var table = $('#example').DataTable({
+        ajax: "{{ url('approval/detail').'/'.$master->approval_number }}",
+
+        columns: [
+            { data: 'budget_no', name: 'budget_no'},
+            { data: 'asset_no', name: 'asset_no'},
+            { data: 'sap_track_no', name: 'sap_track_no'},
+            { data: 'sap_asset_no', name: 'sap_asset_no'},
+            { data: 'sap_account_code', name: 'sap_account_code'},
+            { data: 'sap_cc_code', name: 'sap_cc_code'},
+            { data: 'equipment_name', name: 'equipment_name'},
+            { data: 'remarks', name: 'remarks'},
+			{ data: 'project_name', name: 'project_name'},
+			{ data: 'budget_remaining_log', name: 'budget_remaining_log'},
+			{ data: 'budget_reserved', name: 'budget_reserved'},
+			{ data: 'actual_price_user', name: 'actual_price_user'},
+			{ data: 'price_to_download', name: 'price_to_download'},
+			{ data: 'currency', name: 'currency'},
+			{ data: 'budget_remaining', name: 'budget_remaining'},
+			{ data: 'status', name: 'status'},
+			{ data: 'actual_gr', name: 'actual_gr'},
+			{ data: 'sap_vendor_code', name: 'sap_vendor_code'},
+			{ data: 'po_number', name: 'po_number'},
+			{ data: 'sap_track_no', name: 'sap_track_no'},
+			{ data: 'sap_tax_code', name: 'sap_tax_code'},
+            // { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
+        ],
+        drawCallback: function(d) {
+        	$('[data-toggle="popover"]').popover();
 			budgetView();  
 					
 			budgetStatusStyler();
-			
 			@if (\Entrust::can('update_actual_price'))
 				// xeditClasser();
 				// initEditable();
@@ -111,7 +113,8 @@
 				// initCurrencyEditable();
 
 			@elseif(\Entrust::hasRole(['budget']))
-				// xeditClasser();
+				xeditClasser();
+				initEditable();
 				// initGLAccountEditable();
 				// initSapCostCenterEditable();
 
@@ -119,11 +122,10 @@
 				// xeditSapAssetNumberClasser();
 				// initEditable();
 			@endif
-			
-		}
-        
+        },
+		paging:false,
+		searching:false,
     });
-	
 	function validateApproval(approval_number)
     {
         var confirmed = confirm('Are you sure to validate Approval: '+approval_number+'?');
@@ -175,8 +177,10 @@
 	{
 		$('.editable').editable({
 			type: 'text',
-			url: SITE_URL + '/capex/xedit',
+			url: SITE_URL + '/approval/xedit',
+			
 			params: {
+				  type:$('#type').val(),
 				_token: $('meta[name="csrf-token"]').attr('content'),
 			},
 			validate: function(value) {
@@ -199,24 +203,25 @@
 	function xeditClasser()
     {
         $('tbody tr').each(function(i, e) {
-            var budget_no = $(this).find('td:nth-child(2)');        
-            var sap_gl_account_capex = $(this).find('td:nth-child(6)');
-            var sap_cost_center = $(this).find('td:nth-child(7)');          
-            var actual_price_purchasing = $(this).find('td:nth-child(13)'); 
-            var price_to_download = $(this).find('td:nth-child(14)'); 
-            var currency = $(this).find('td:nth-child(15)');        
-            var sap_vendor_code = $(this).find('td:nth-child(19)'); 
-            var po_number = $(this).find('td:nth-child(20)');  
-            var sap_tax_code = $(this).find('td:nth-child(22)'); 
-            
+			
+            var budget_no = $(this).find('td:nth-child(1)');        
+            var sap_gl_account_capex = $(this).find('td:nth-child(5)');
+            var sap_cost_center = $(this).find('td:nth-child(6)');          
+            var actual_price_purchasing = $(this).find('td:nth-child(12)'); 
+            var price_to_download = $(this).find('td:nth-child(13)'); 
+            var currency = $(this).find('td:nth-child(14)');        
+            var sap_vendor_code = $(this).find('td:nth-child(18)'); 
+            var po_number = $(this).find('td:nth-child(19)');  
+            var sap_tax_code = $(this).find('td:nth-child(21)'); 
+          
             // set actual_price_purchasing anchor
-            actual_price_purchasing.html('<a href="#" class="editable" data-pk="'+budget_no.text()+'" data-name="actual_price_purchasing" data-title="Enter Actual Price">'+actual_price_purchasing.text()+'</a>');
+            actual_price_purchasing.html('<a href="#" class="editable" data-pk="'+actual_price_purchasing.text()+'" data-name="actual_price_user" data-title="Enter Actual Price">'+actual_price_purchasing.text()+'</a>');
 
             // dev-4.0, Ferry, 20161219, Assign SAP Vendor code
             sap_vendor_code.html('<a href="#" class="cmb_editable" data-pk="'+budget_no.text()+'" data-name="sap_vendor_code" data-value="'+sap_vendor_code.text().split(' - ', 1)+'" data-title="Select SAP Vendor">'+sap_vendor_code.text()+'</a>');
 
             // dev-4.0, Ferry, 20170310, Assign SAP Tax code
-            sap_tax_code.html('<a href="#" class="cmb_editable_tax" data-pk="'+budget_no.text()+'" data-name="sap_tax_code" data-value="'+sap_tax_code.text().split(' - ', 1)+'" data-title="Select SAP Tax">'+sap_tax_code.text()+'</a>');
+            // sap_tax_code.html('<a href="#" class="cmb_editable_tax" data-pk="'+budget_no.text()+'" data-name="sap_tax_code" data-value="'+sap_tax_code.text().split(' - ', 1)+'" data-title="Select SAP Tax">'+sap_tax_code.text()+'</a>');
 
             // set po_number anchor
             po_number.html('<a href="#" class="editable" data-pk="'+budget_no.text()+'" data-name="po_number" data-title="Enter Collective Number">'+po_number.text()+'</a>');
@@ -228,13 +233,43 @@
             sap_cost_center.html('<a href="#" class="cmb_editable_costcenter" data-pk="'+budget_no.text()+'" data-name="sap_cost_center" data-value="'+sap_cost_center.text().split(' - ', 1)+'" data-title="Select Cost Center">'+sap_cost_center.text()+'</a>');
 
             //price to download
-            price_to_download.html('<a href="#" class="editable" data-pk="'+budget_no.text()+'" data-name="price_to_download" data-value="'+price_to_download.text().split(' - ', 1)+'" data-title="Enter Price Foreign Currency">'+price_to_download.text()+'</a>');
+            price_to_download.html('<a href="#" class="editable" data-pk="'+price_to_download.text().split(' - ', 1)+'" data-name="price_to_download" data-value="'+price_to_download.text().split(' - ', 1)+'" data-title="Enter Price Foreign Currency">'+price_to_download.text()+'</a>');
 
              //currency
-            currency.html('<a href="#" class="cmb_editable_currency" data-pk="'+budget_no.text()+'" data-name="currency" data-value="'+currency.text().split(' - ', 1)+'" data-title="Select Currency">'+currency.text()+'</a>');
+            currency.html('<a href="#" class="cmb_editable_currency" data-pk="'+currency.text()+'" data-name="currency" data-value="'+currency.text().split(' - ', 1)+'" data-title="Select Currency">'+currency.text()+'</a>');
 
         }); 
     }
+	function initCurrency()
+	{
+		var cmb = [{value:"USD",text:"USD"}];
+		$('.cmb_editable_currency').editable({
+			type: 'text',
+			url: SITE_URL + '/approval/xedit',
+			
+			params: {
+				  type:$('#type').val(),
+				_token: $('meta[name="csrf-token"]').attr('content'),
+			},
+			validate: function(value) {
+				if($.trim(value) == '') return 'This field is required';
+			},
+			display: function(value, response) {
+				return false;   //disable this method
+			},
+			source:cmb,
+			success: function(data, config) {
+				console.log(data);
+				if (data.error) {
+					return data.error;
+				};
+
+				$(this).text(data.value);
+				table.ajax.reload( null, false );
+			}
+			
+		});
+	}
 	function initGLAccountEditable()
     {
         function getSource() {

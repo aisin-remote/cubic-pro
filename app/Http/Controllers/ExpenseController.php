@@ -207,6 +207,12 @@ class ExpenseController extends Controller
         $name = time() . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('public/uploads', $name);
 
+        if (!is_null($request->overwrite)) {
+            // Capex::truncate();   //v3.2 by Ferry, Dangerous!
+        }
+
+        $is_revision = !is_null($request->revision);
+
         $data = [];
         if ($request->hasFile('file')) {
             $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
@@ -216,16 +222,44 @@ class ExpenseController extends Controller
                     foreach ($datas as $data) {
 
                         $expense = Expense::where('budget_no', $data->budget_no)->first();
+                        // dd($data);
+                        $gr = strtotime($data->gr);
+                        $gr_date = date('Y-m-d',$gr);
 
-                        $expense                    = new Expense;
-                        $expense->budget_no         = $data->budget_no;
-                        $expense->sap_cc_code       = $data->sap_cc_code;
-                        $expense->department        = $data->dep;
-                        $expense->description       = $data->equipment_name;
-                        $expense->plan_gr           = $data->gr;
-                        $expense->budget_plan       = $data->price;
-                        $expense->budget_remaining  = $data->price;
-                        $expense->save();  
+                        if (!empty($expense->budget_no) == $data->budget_no and $is_revision == false){
+                            return redirect()
+                            ->route('expense.index')
+                            ->with(
+                                [
+                                    'title' => 'Error',
+                                    'type' => 'error',
+                                    'message' => 'Duplicate Entry!'
+                                ]
+                            );
+                        } else if (!empty($expense->budget_no) != $data->budget_no) {
+                            $expense                    = new Expense;
+                            $expense->budget_no         = $data->budget_no;
+                            $expense->sap_cc_code       = $data->sap_cc_code;
+                            $expense->department        = $data->dep;
+                            $expense->description       = $data->equipment_name;
+                            $expense->plan_gr           = $gr_date;
+                            $expense->budget_plan       = $data->price;
+                            $expense->budget_remaining  = $data->price;
+                            $expense->save();  
+                        } else {
+                            $expense                    = Expense::firstOrNew(['budget_no' => $data->budget_no]);
+                            $expense->budget_no         = $data->budget_no;
+                            $expense->sap_cc_code       = $data->sap_cc_code;
+                            $expense->department        = $data->dep;
+                            $expense->description       = $data->equipment_name;
+                            $expense->plan_gr           = $gr_date;
+                            $expense->budget_plan       = $data->price;
+                            $expense->budget_remaining  = $data->price;
+                            $expense->is_revised        = $is_revision;
+                            $expense->revised_by        = \Auth::user()->id;
+                            $expense->revised_at        = date('Y-m-d H:i:s');
+                            $expense->save();
+                        }
                                         
                     }  
 
