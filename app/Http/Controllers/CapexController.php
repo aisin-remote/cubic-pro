@@ -45,7 +45,7 @@ class CapexController extends Controller
     {
 
       	$capex                  = new Capex;
-        $capex->department_id   = $request->department_id;
+        $capex->department   	= $request->department_id;
         $capex->budget_no       = $request->budget_no;
         $capex->budget_plan     = $request->budget_plan;
         $capex->equipment_name  = $request->equipment_name;
@@ -54,13 +54,14 @@ class CapexController extends Controller
         // $capex->is_closed       = $request->is_closed;
         $capex->budget_remaining= $request->budget_plan;
         // $capex->status          = $request->status;
+		$capex->fyear			= date('Y');
         $capex->save();
 
       	$res = [
 
       				'title' 		=> 'Success',
       				'type'			=> 'success',
-      				'message'		=> 'Data Saved Success'
+      				'message'		=> 'Data has been inserted'
     			];
       	return redirect()
       			->route('capex.index')
@@ -69,8 +70,8 @@ class CapexController extends Controller
 	
     public function getData(Request $request)
     {
-        $capexs = Capex::get();
-
+		$capexs = Capex::ability();
+	    $capexs = $capexs->get();
         return DataTables::of($capexs)
 
         ->rawColumns(['options', 'is_closed'])
@@ -189,7 +190,7 @@ class CapexController extends Controller
         $res = [
                     'title'     => 'Sukses',
                     'type'      => 'success',
-                    'message'     => 'Data berhasil dihapus!'
+                    'message'     => 'Data has been removed!'
                 ];
 
         return redirect()

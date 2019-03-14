@@ -116,7 +116,7 @@ function cancelApproval(approval_number)
     },
     complete: function()
     {
-      tData.draw();
+      tApprovalCapex.draw();
       $('#modal-details').modal('hide');
       $('#form-details input').val('');
       $('#form-details select').val('').trigger('change');

@@ -43,13 +43,13 @@ class ExpenseController extends Controller
 
     public function store(Request $request)
     {
-
+		$user = auth()->user();
       	$capex 				          = new Expense;
-        $capex->department_id   = $request->department_id;
+        $capex->department  	= $user->department->department_code;
         $capex->budget_no       = $request->budget_no;
         $capex->budget_plan     = $request->budget_plan;
         $capex->qty_plan     	= $request->qty_plan;
-        $capex->equipment_name  = $request->equipment_name;
+        $capex->description  	= $request->description;
         $capex->plan_gr         = $request->plan_gr;
         // $capex->budget_remaining= $request->budget_plan;
         // $capex->is_closed       = $request->is_closed;
@@ -76,8 +76,10 @@ class ExpenseController extends Controller
 	}
     public function getData(Request $request)
     {
-        $expenses = Expense::get();
-
+	   $user = auth()->user();
+	   $expenses = Expense::ability();
+	   $expenses = $expenses->get();
+       
         return DataTables::of($expenses)
 
         ->rawColumns(['options', 'is_closed'])
@@ -87,21 +89,21 @@ class ExpenseController extends Controller
                     return '
                         
                     ';
-                }elseif(\Entrust::hasRole('budget')) {
-                    return '
-                        
-                        <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$expense->id.')"><i class="mdi mdi-close"></i></button>
-                        <form action="'.route('expense.destroy', $expense->id).'" method="POST" id="form-delete-'.$expense->id .'" style="display:none">
-                            '.csrf_field().'
-                            <input type="hidden" name="_method" value="DELETE">
-                        </form>
-                        
-                    ';
-                }else{
-                    return '
-                        
-                    ';
-                }
+			}elseif(\Entrust::hasRole('budget')) {
+				return '
+					
+					<button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$expense->id.')"><i class="mdi mdi-close"></i></button>
+					<form action="'.route('expense.destroy', $expense->id).'" method="POST" id="form-delete-'.$expense->id .'" style="display:none">
+						'.csrf_field().'
+						<input type="hidden" name="_method" value="DELETE">
+					</form>
+					
+				';
+			}else{
+				return '
+					
+				';
+			}
 
         })
         ->editColumn("status", function ($expense) {

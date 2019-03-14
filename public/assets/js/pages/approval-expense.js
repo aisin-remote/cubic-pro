@@ -22,19 +22,12 @@ $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip({html: true, "show": 500, "hide": 100});
       }
     });
-  
-   $('#btn-submit').click(function(){
-	  if($('.checklist').length > 0){
-		  $('#modal-approved-by').modal('show');
-	  }else{
-		  $('#modal-info').modal('show');
-	  }
-	  
-  });
-  $('#btn-submit-create').click(function(){
-	var approval = $('select[name="approved_by"] option:selected').val();
-	$('#happroval_id').val(approval);  
-	$('#formSubmitApproval').submit(); 
+  $('#btn-submit').click(function(){
+	if($('.checklist').length >0){
+		$('#formSubmitApproval').submit();
+	}else{
+		show_notification('Error','error','You have to add item minimal 1 data');
+	}
   }); 
   
   $('#btn-save').click(function(){
@@ -72,11 +65,12 @@ function approval()
 function onDelete(rowid)
 {
   $.ajax({
-    url: SITE_URL + 'approval-expense/delete/'+rowid,
+    url: SITE_URL + '/approvalex/getDelete',
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },
-    type:'delete',
+    type:'post',
+	data:{rowid:rowid},
     dataType: 'json',
     success: function(res) {
       show_notification(res.title, res.type, res.message);

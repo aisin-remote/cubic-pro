@@ -111,24 +111,20 @@
                                 </select>
                                 <span class="help-block"></span>
                            </div>
-                               
-                           <div class="form-group">
-                                <label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
-                                <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5"></input>
-                                <span class="help-block"></span>
-                           </div>
-
                            <div class="form-group">
                                 <label class="control-label">Asset Code<span class="text-danger">*</span></label>
                                 <input type="text" name="asset_code" placeholder="Asset Code" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
                                 <span class="help-block"></span>
-                           </div>   
-                            
-                            
+                           </div>       
+                           <div class="form-group">
+                                <label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
+                                <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>                   
                            <div class="form-group">
                                 <label class="control-label">Settlement Date (for CIP) <span class="text-danger">*</span></label>
-                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('M-D-Y') }}" rows="5"></input>
-                                <span class="help-block"></span>
+                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}" rows="5"></input>
+                                <span class="help-block"></span><!-- Carbon\Carbon::now()->format('M-D-Y') -->
                            </div>
 
                             <div class="form-group">
@@ -136,7 +132,7 @@
                                 <select name="sap_cost_center_id" class="select2" data-placeholder="Select SAP Cost Center" required="required">
                                     <option></option>
                                         @foreach ($sap_costs as $sap_cost)
-                                        <option value="{{ $sap_cost->id }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
+                                        <option value="{{ $sap_cost->cc_code }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -198,7 +194,7 @@
                            </div>
                            <div class="form-group">
                                 <label class="control-label">Actual GR <span class="text-danger">*</span></label>
-                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('M-D-Y') }}"></input>
+                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}"></input>
                                 <span class="help-block"></span>
                            </div>
 

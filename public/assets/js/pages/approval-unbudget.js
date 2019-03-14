@@ -1,14 +1,14 @@
 var tUnbudget;
 $(document).ready(function(){
 
-    tUnbudget = $('#table-approval-unbudget').DataTable({
+    tUnbudget = $('#table-unbudget').DataTable({
 		  processing: true,
 		  serverSide: true,
 		  ajax: SITE_URL + '/approval-unbudget/get_data',
 		  columns: [
 			{ data: 'budget_no', name: 'budget_no' },
 			{ data: 'project_name', name: 'project_name' },
-			{ data: 'pr_specs', name: 'pr_specs' },
+			{ data: 'qty_actual', name: 'qty_actual' },
 			{ data: 'price_remaining', name: 'price_remaining' },
 			{ data: 'plan_gr', name: 'plan_gr' },
 			{ data: 'option', name: 'option' },
@@ -24,18 +24,13 @@ $(document).ready(function(){
 		});
 		
 	$('#btn-submit').click(function(){
-	  if($('.checklist').length > 0){
-		  $('#modal-approved-by').modal('show');
+	  if($('.checklist').length >0){
+			$('#formSubmitApproval').submit();
 	  }else{
-		  $('#modal-info').modal('show');
+			show_notification('Error','error','You have to add item minimal 1 data');
 	  }
 	  
 	});
-	$('#btn-submit-create').click(function(){
-		var approval = $('select[name="approved_by"] option:selected').val();
-		$('#happroval_id').val(approval);  
-		$('#formSubmitApproval').submit(); 
-	}); 
   
 	$('#btn-save').click(function(){
 		save();
@@ -45,12 +40,13 @@ $(document).ready(function(){
 function onDelete(rowid)
 {
   $.ajax({
-    url: SITE_URL + 'approval-unbudget/delete/'+rowid,
+    url: SITE_URL + '/approvalub/getDelete',
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },
-    type:'delete',
+    type:'post',
     dataType: 'json',
+	data:{rowid:rowid},
     success: function(res) {
       show_notification(res.title, res.type, res.message);
     },
@@ -59,7 +55,7 @@ function onDelete(rowid)
     },
     complete: function()
     {
-      tData.draw();
+      tUnbudget.draw();
       $('#modal-details').modal('hide');
       $('#form-details input').val('');
       $('#form-details select').val('').trigger('change');

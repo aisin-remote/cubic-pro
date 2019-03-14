@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  // $('#form-add-edit').validate();
+  $('#form-add-edit').validate();
   
   $('input[name="type"]').change(function(){
 	 if($(this).val() == 1){
@@ -46,6 +46,18 @@ $(document).ready(function(){
     }
   	
   });
+  
+  $('[name="sap_gl_account_id"]').change(function(){
+	
+    var sap_gl_account_id = $(this).val();
+    if (sap_gl_account_id !== '' && sap_gl_account_id !== null && sap_gl_account_id !== undefined) {
+      var arr_asset = getGlGroup(sap_gl_account_id);
+      
+      $('[name="gl_fname"]').val(arr_asset.gl_acode);
+    }
+    
+  });
+  
   $('select[name="remarks"]').select2({tags:true});
 });
 
@@ -76,7 +88,17 @@ function getData(id)
 
 	return res.responseJSON;
 }
+function getGlGroup(id)
+{
+	var res = $.ajax({
+		url: SITE_URL + '/expense/getGlGroup/' + id,
+		type: 'get',
+		dataType: 'json',
+		async: false
+	});
 
+	return res.responseJSON;
+}
 function getAsset(id)
 {
 	var res = $.ajax({

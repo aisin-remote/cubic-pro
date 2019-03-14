@@ -9,7 +9,7 @@ use DB;
 use Storage;
 use App\Capex;
 use App\Capex_archive;      
-use App\Helper;
+use App\Helpers;
 use App\User;
 use App\Department;
 use Carbon\Carbon;          
@@ -271,7 +271,8 @@ class ApprovalController extends Controller
     public function getCIPAdminList() {
 		$budget_nos 	= $this->getCIPAdminListConvert();
 		$budget_nos_cip = $this->getCIPAdminListConvert('cip'); 
-		
+		// dd($budget_nos);
+		// dd($budget_nos_cip);
         return view("pages.capex.cip-admin",compact('budget_nos','budget_nos_cip'));
     }
 	public function getCIPAdminListConvert($mode='one-time',$control="data") {
@@ -300,7 +301,7 @@ class ApprovalController extends Controller
 				return $this->getCIPFormatted($control, $approvals);
 			}
         }else {
-            return $data[''] = '';
+            return array();//$data[''] = '';
         }
     }
 	public function getCIPFormatted($control='combolist', $approvals)
@@ -537,11 +538,9 @@ class ApprovalController extends Controller
 		 DB::transaction(function() use ($request){
 			$user = auth()->user(); 
             $approval = ApprovalMaster::getSelf($request->approval_number);
-			// if(Helpers::can($approval))
-			// {
-				$approver_user = ApproverUser::where('approval_master_id',$approval->id)->where('user_id',$user->id)->update(array('is_approve'=>'1'));
+			// approve di tabel approver_user
+			$approver_user = ApproverUser::where('approval_master_id',$approval->id)->where('user_id',$user->id)->update(array('is_approve'=>'1'));
 				
-			// }
             $approval->approve();
 			
             if ($approval->budget_type != 'ub' && $approval->budget_type != 'uc' && $approval->budget_type != 'ue' && $approval->status == 3) {
@@ -583,14 +582,12 @@ class ApprovalController extends Controller
 		return $data;
 	}
 	public function cancelApproval(Request $request)
-	{
-		
-		$data = array('success'=>'Approval ['.$request->approval_number.'] approved.');
+	{		
 		
 		try{
 			
 			 DB::transaction(function() use ($request){
-				 
+				$user = auth()->user();  
 				$approval = ApprovalMaster::getSelf($request->approval_number);
 				
 				if (($approval->budget_type != 'uc') && ($approval->budget_type != 'ue')) {
@@ -623,11 +620,12 @@ class ApprovalController extends Controller
 						}
 					}
 				}
+				$approver_user = ApproverUser::where('approval_master_id',$approval->id)->where('user_id',$user->id)->update(array('is_approve'=>'0'));
 				$approval->cancel();
 				$approval->save();
 				
 			 });
-			 
+			 $data = array('success'=>'Approval ['.$request->approval_number.'] approved.');
 		}catch(\Exception $e){
 			$data['error'] = $e->getMessage();
 		}
@@ -636,6 +634,8 @@ class ApprovalController extends Controller
 	}
 	public function printApproval($approval_number)
     {
+		$approval_master = ApprovalMaster::where('approval_number',$approval_number)->first();
+
         if (is_null($approval = ApprovalMaster::getSelf($approval_number))) {
 			$res = [
                     'title' => 'Error',

@@ -346,7 +346,9 @@ Route::middleware('auth')->group(function(){
 	// Route SAP Cost Center
 	Route::get('cost_center/get_data', 'Sap\CostCenterController@getData');
 	Route::resource('cost_center', 'Sap\CostCenterController');
-
+	
+	Route::get('getCmbCostCenter','Sap\CostCenterController@getCmbCostCenter');
+	
 	// Route SAP GL Account
 	Route::get('gl_account/get_data', 'Sap\GlAccountController@getData');
 	Route::resource('gl_account', 'Sap\GlAccountController');
@@ -360,7 +362,9 @@ Route::middleware('auth')->group(function(){
 	// Route SAP Taxe
 	Route::get('taxe/get_data', 'Sap\TaxeController@getData');
 	Route::resource('taxe', 'Sap\TaxeController');
-
+	
+	Route::get('getCmbTax','Sap\TaxeController@getCmbTax');
+	
 	// Route SAP Uom
 	Route::get('uom/get_data', 'Sap\UomController@getData');
 	Route::resource('uom', 'Sap\UomController');
@@ -373,6 +377,7 @@ Route::middleware('auth')->group(function(){
 	Route::get('vendor/get_data', 'Sap\VendorController@getData');
 	Route::resource('vendor', 'Sap\VendorController');
 	
+	Route::get('getCmbVendor','Sap\VendorController@getCmbVendor');
 	// Route Link To Sap
 	Route::get('link_to_sap','Sap\PrController@index');
 	Route::get('pr_convert_excel/{approval_number}','Sap\PrController@pr_convert_excel');
@@ -387,6 +392,8 @@ Route::middleware('auth')->group(function(){
 	Route::get('approval/cx/unvalidated','ApprovalCapexController@ListApprovalUnvalidated'); // Pending Approval Capex
 	Route::get('approval/cx/{id}','ApprovalCapexController@DetailApproval');
 	Route::get('approval/detail/{id}','ApprovalCapexController@AjaxDetailApproval');
+	Route::get('approval-expense/detail/{id}','ApprovalExpenseController@AjaxDetailApproval');
+	Route::get('approval-unbudget/detail/{id}','ApprovalUnbudgetController@AjaxDetailApproval');
 	Route::get('approval/approve','ApprovalController@approveAjax');
 	Route::get('approval/cancel_approval','ApprovalController@cancelApproval');
 	Route::get('approval/print_approval/{approval_number}','ApprovalController@printApproval');
@@ -404,8 +411,10 @@ Route::middleware('auth')->group(function(){
 
 	//Route Delete List Approval 
 	Route::delete('approval-capex/delete/{id}', 'ApprovalCapexController@delete')->name('approval_capex.delete');
-	Route::delete('approval-expense/delete/{id}', 'ApprovalExpenseController@delete')->name('approval_expense.delete');
+	Route::delete('approval-expense/delete/{id}','ApprovalExpenseController@delete')->name('approval_expense.delete');
 	Route::delete('approval-unbudget/delete/{id}', 'ApprovalUnbudgetController@delete')->name('approval_unbudget.delete');
+	Route::post('approvalex/getDelete/', 'ApprovalExpenseController@getDelete');
+	Route::post('approvalub/getDelete/', 'ApprovalUnbudgetController@getDelete');
 
 	// Route Cart Approval Expense
 	Route::get('approval/ex/unvalidated','ApprovalExpenseController@ListApprovalUnvalidated'); // Pending Approval (Expense)

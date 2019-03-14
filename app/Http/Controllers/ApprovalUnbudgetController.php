@@ -8,8 +8,9 @@ use App\SapModel\SapAsset;
 use App\SapModel\SapGlAccount;           
 use App\SapModel\SapCostCenter;           
 use App\SapModel\SapUom;
-use App\ApprovalDetail;
 use App\ApprovalMaster;
+use App\ApprovalDetail;
+use App\Approval;
 use App\ApprovalDtl;
 use App\ApproverUser;
 use DB;
@@ -32,10 +33,10 @@ class ApprovalUnbudgetController extends Controller
             foreach ($unbudgets as $unbudget) {
 
                 $result['data'][] = [
-                                        'budget_no'         => $unbudget->options->budget_no,
+                                        'budget_no'         => $unbudget->options->budget_no.'<input type="hidden" class="checklist">',
                                         'project_name'      => $unbudget->name,
                                         'price_remaining'   => $unbudget->price,
-                                        'pr_specs'          => $unbudget->qty,
+                                        'qty_actual'        => $unbudget->qty,
                                         'plan_gr'           => $unbudget->options->plan_gr,
                                         'option' => ' 
                                             <button class="btn btn-danger btn-xs btn-bordered" onclick="onDelete(\''.$unbudget->rowId.'\')" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-close"></i></button>'
@@ -58,38 +59,41 @@ class ApprovalUnbudgetController extends Controller
 
 		$cartData 			= [
 
-									'id' => "EX",//$budget->budget_no
+									'id' => "ub",//$budget->budget_no
 									'name' => $request->project_name,
 									'price' => $request->price_actual,
-									'qty' => $request->pr_specs,
+									'qty' => 1,
 									'options' => [
-										'budget_no' => "",//$budget->budget_no,
-										'asset_category' => $request->asset_category,
-										'sap_gl_account' => $request->sap_gl_account_id,
-										'qty_remaining' => "",//$request->qty_remaining,
+										'budget_no' => "",//$budget->budget_no,									
+										'sap_account_code' => $request->sap_gl_account_id,
+										'sap_account_text'	=> $request->gl_fname,
+										// 'budget_description'    => $request->budget_description,
+										'qty_remaining' => "",//$request->qty_remaining,	
 										'qty_actual' => $request->qty_actual,
 										'remarks' => $request->remarks,
-										'sap_cos_center_id' => $request->sap_cos_center,//$request->sap_cos_center_id,
+										'sap_cost_center_id' => $request->sap_cos_center,//$request->sap_cos_center_id,
 										'sap_uom_id' => $request->sap_uom_id,
 										'price_actual' => $request->price_actual,
 										'budget_remaining_log' => "",//$request->budget_remaining_log,
 										'price_to_download' => $request->price_to_download,
 										'plan_gr' => $request->plan_gr,
+										'pr_specs'	=> $request->pr_specs,
 										'currency'=> $request->currency,
+										'is_chemical' => $request->asset_category,
 									]
 								];
 								
 		if($request->type == "1"){
-			$cartData['id'] = "CX";
+			$cartData['id'] = "uc";
 			$cartData['options']['sap_asset'] 		= $request->sap_asset_id;
 			$cartData['options']['asset_code'] 		= $request->asset_code;
 		}else{
-			$cartData['id'] = "EX";
+			$cartData['id'] = "ue";
 			$cartData['options']['sap_gl_account'] 	= $request->sap_gl_account_id;
 			$cartData['options']['gl_fname'] 		= $request->gl_fname;
 			
 		}
-		dd($cartData);
+		
         Cart::instance('unbudget')->add($cartData);
 
 
@@ -98,7 +102,7 @@ class ApprovalUnbudgetController extends Controller
                     'title' => 'Success',
                     'message' => 'Data has been inserted'
                 ];
-
+		
         return redirect()
                         ->route('approval-unbudget.index')
                         ->with($res);
@@ -113,13 +117,11 @@ class ApprovalUnbudgetController extends Controller
     function destroy($id)
     {
         Cart::remove($id);
-
-        $res = [
+		 $res = [
+					'title' => 'Success',
                     'type' => 'success',
-                    'title' => 'Success',
                     'message' => 'Data has been removed'
                 ];
-
         return response()
                 ->json($res);
 
@@ -156,6 +158,18 @@ class ApprovalUnbudgetController extends Controller
 		if(\Entrust::hasRole('user')) {
 			$approval_ub->where('created_by',$user->id);
 		}
+
+        if (\Entrust::hasRole('department_head')) {
+            $approval_ub->whereIn('department', [$user->department->department_code]);
+        }
+
+        if (\Entrust::hasRole('gm')) {
+            $approval_ub->where('division', $user->division->division_code);
+        }
+
+        if (\Entrust::hasRole('director')) {
+            $approval_ub->where('dir', $user->dir);
+        }
 		if($status == 'need_approval'){
 			$approval_ub->where('status','0');
 		}
@@ -174,8 +188,8 @@ class ApprovalUnbudgetController extends Controller
 
                         <a href="#" onclick="printApproval(&#39;'.$approvalub->approval_number.'&#39;)" class="btn btn-primary" ><span class="glyphicon glyphicon-print" aria-hidden="true"></span></a>
 
-                        <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$approvalub->approval_number.')"><i class="mdi mdi-close"></i></button>
-                        <form action="'.route('approval_unbudget.delete', $approvalub->approval_number).'" method="POST" id="form-delete-'.$approvalub->approval_number .'" style="display:none">
+                        <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete(\''.$approvalub->id.'\')"><i class="mdi mdi-close"></i></button>
+                        <form action="'.route('approval_unbudget.delete', $approvalub->id).'" method="POST" id="form-delete-'.$approvalub->id .'" style="display:none">
                             '.csrf_field().'
                             <input type="hidden" name="_method" value="DELETE">
                         </form>';
@@ -228,19 +242,48 @@ class ApprovalUnbudgetController extends Controller
 		$master = ApprovalMaster::getSelf($approval_number);
 		return view('pages.approval.unbudget.view',compact('master'));
 	}
+	public function AjaxDetailApproval($approval_number)
+	{
+		$approval_master = ApprovalMaster::select('*','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code')->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
+						->where('approval_number',$approval_number); 
+		
+		 return DataTables::of($approval_master)
+				->editColumn("asset_no", function ($approval) {
+					return $approval->asset_no.'<input class="approval_data" type="hidden" value="'.$approval->id_ad.'">';
+				})
+				->editColumn("status", function ($approval){ 
+					//status approval
+					if ($approval->status == '0') {
+						return "User Created";
+					}elseif ($approval->status == '1') {
+						return "Validasi Budget";
+					}elseif ($approval->status == '2') {
+						return "Approved by Dept. Head";
+					}elseif ($approval->status == '3') {
+						return "Approved by GM";
+					}elseif ($approval->status == '4') {
+						return "Approved by Director";
+					}elseif ($approval->status == '-1') {
+						return "Canceled on Quotation Validation";
+					}elseif ($approval->status == '-2') {
+						return "Canceled Dept. Head Approval";
+					}else{
+						return "Canceled on Group Manager Approval";
+					}
+				})->toJson();
+	}
 	public function delete($id)
     {
         DB::transaction(function() use ($id){
-            $approval_expense = ApprovalMaster::find($id);
-            $approval_expense->details()->delete();
-            $approval_expense->delete();
+            $approval_unbudget = ApprovalMaster::find($id);
+            $approval_unbudget->details()->delete();
+            $approval_unbudget->delete();
         });
-        $res = [
-                    'title' => 'Sukses',
+		 $res = [
+					'title' => 'Success',
                     'type' => 'success',
-                    'message' => 'Data berhasil dihapus!'
+                    'message' => 'Data has been removed!'
                 ];
-
         return redirect()
                     ->route('approval-unbudget.ListApproval')
                     ->with($res);
@@ -254,45 +297,50 @@ class ApprovalUnbudgetController extends Controller
                 // Save data in Tabel Bom
                 $user = \Auth::user();
                 
-
                 foreach (Cart::instance('unbudget')->content() as $details) {
-                    $approval_no = ApprovalMaster::getNewApprovalNumber('UB', $user->department_id);  
+                    $approval_no = ApprovalMaster::getNewApprovalNumber(strtoupper($details->id), $user->department_id);  
                 
                     $capex                         = new ApprovalMaster;
                     $capex->approval_number        = $approval_no;
-                    $capex->budget_type            = 'ex';
+                    $capex->budget_type            = $details->id;
                     $capex->dir                    = $user->direction;
-                    $capex->division_id            = $user->division_id;
-                    $capex->department_id          = $user->department_id;
+                    $capex->division               = $user->division->division_code;
+                    $capex->department             = $user->department->department_code;
                     $capex->total                  = $details->price;
                     $capex->status                 = 0;
                     $capex->created_by             = $user->id;
+					$capex->fyear 				   =  date('Y');
                     $capex->save();
                     $approval                        = new ApprovalDetail;
                     $approval->budget_no             = $details->options->budget_no;
                     $approval->project_name          = $details->name;
                     $approval->actual_qty            = $details->qty;
                     $approval->actual_price_user     = $details->price;
-                    $approval->sap_gl_account_id     = $details->options->sap_gl_account_id;
-                    $approval->qty_remaining         = $details->options->qty_remaining;
-                    $approval->qty_actual            = $details->options->qty_actual;
+					if($details->id == "uc"){
+						
+					}else{
+						$approval->sap_account_code      = $details->options->sap_gl_account;
+						$approval->sap_account_text		 = $details->options->gl_fname;
+					}
+                    // $approval->qty_remaining         = $details->options->qty_remaining;
+                    // $approval->qty_actual            = $details->options->qty_actual;
                     $approval->remarks               = $details->options->remarks;
-                    $approval->sap_cost_center_id     = $details->options->sap_cost_center_id;
-                    $approval->sap_uom_id            = $details->options->sap_uom_id;
+                    $approval->sap_cc_code     		 = $details->options->sap_cost_center_id;
+                    $approval->pr_uom           	 = $details->options->sap_uom_id;
                     // $approval->price_remaining       = $details->options->price_actual;
                     $approval->budget_remaining_log  = $details->options->budget_remaining_log;
                     $approval->price_to_download     = $details->options->price_to_download;
                     $approval->actual_gr             = $details->options->plan_gr;
-                    $approval->fyear                 = '2018';
-                    $approval->budget_reserved       = 2018;
+                    $approval->fyear                 = date('Y');
+                    $approval->budget_reserved       = $details->options->budget_remaining_log;
                     $capex->details()->save($approval);
                 }
 				// Simpan approver user
 				$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
 				
 				foreach($approval_master as $am){
-					
-					$approval_dtl 	 = ApprovalDtl::where('approval_id',$request->approval_id)->get();
+					$approvals = Approval::where('department',$user->department->department_code)->first();
+					$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
 					
 					foreach($approval_dtl as $app_dtl){
 						$approver_user = new ApproverUser();
@@ -302,16 +350,26 @@ class ApprovalUnbudgetController extends Controller
 					}
 				}
                 $res = [
-                            'title' => 'Sukses',
-                            'type' => 'success',
-                            'message' => 'Data berhasil disimpan!'
-                        ];
+					'title' => 'Success',
+                    'type' => 'success',
+                    'message' => 'Data has been inserted'
+                ];
 
-                Cart::instance('expense')->destroy();
+                Cart::instance('unbudget')->destroy();
                
             });
          return redirect()
-                            ->route('approval-expense.ListApproval')
+                            ->route('approval-unbudget.ListApproval')
                             ->with($res);
     }
+	public function getDelete(Request $request)
+	{
+		Cart::instance('unbudget')->remove($request->rowid);
+		 $res = [
+                    'title' => 'Success',
+                    'type' => 'success',
+                    'message' => 'Data has been removed'
+                ];
+		return json_encode($res);
+	}
 }

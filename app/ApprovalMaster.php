@@ -9,7 +9,7 @@ use App\Capex;
 use App\Expense;        // Added by Ferry, July 10th 2015
 use DB;
 use Illuminate\Support\Collection; 
-
+use App\Period;
 use Datatables;
 
 class ApprovalMaster extends Model
@@ -170,7 +170,13 @@ class ApprovalMaster extends Model
 
         public static function getNewApprovalNumber($type, $dept)
         {
-        $year = substr(config('period.fyear_open'), -2);    
+		$period = Period::all();
+		if(!empty($period) && count($period) >= 6){
+			$year = $period[0]->value;
+		}else{
+			$year = "xx";
+		}
+        $year = substr($year, -2);	    
         $iteration = 0;
 
         if (!is_null($last = self::getLastCapex($type, $dept))) {

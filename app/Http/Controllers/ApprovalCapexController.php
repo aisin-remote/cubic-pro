@@ -82,7 +82,7 @@ class ApprovalCapexController extends Controller
 					'id'    => $request->budget_no,
 					'name'  => $request->project_name,
 					'price' => $request->price_actual,
-					'qty' 	=> $request->pr_specs,
+					'qty' 	=> 1,// default satu
 					'options' => [
 						'budget_no'             => $budget->budget_no,
 						'budget_description'    => $request->budget_description,
@@ -96,6 +96,7 @@ class ApprovalCapexController extends Controller
 						'price_remaining'       => $request->price_remaining,
 						'price_to_download'     => $request->price_to_download,
 						'plan_gr'               => $request->plan_gr,
+						'pr_specs'				=> $request->pr_specs,
 						'settlement_date'       => $request->settlement_date,
 						'type' => 'capex'
 					]
@@ -172,7 +173,7 @@ class ApprovalCapexController extends Controller
                 $capex->total                  = $details->price;
                 $capex->status                 = 0;
                 $capex->created_by             = $user->id;
-				$capex->fyear				   = 2018;
+				$capex->fyear				   = date('Y');
                 $capex->save();
                 $approval                        = new ApprovalDetail;
                 $approval->budget_no             = $details->options->budget_no;
@@ -190,25 +191,25 @@ class ApprovalCapexController extends Controller
 				// $approval->price_to_download	 = 1000;
                 $approval->actual_gr             = $details->options->plan_gr;
                 $approval->settlement_date       = $details->options->settlement_date;
-                $approval->fyear                 = '2018';
-                $approval->budget_reserved       = 2018;
+                $approval->fyear                 = date('Y');
+                $approval->budget_reserved       = $details->options->budget_remaining_log;
 				// $approval->save();
                 $capex->details()->save($approval);
             }
 			// Simpan approver user
-			// $approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
-			
-			// foreach($approval_master as $am){
+			$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
 				
-				// $approval_dtl 	 = ApprovalDtl::where('approval_id',$request->approval_id)->get();
+			foreach($approval_master as $am){
+				$approvals = Approval::where('department',$user->department->department_code)->first();
+				$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
 				
-				// foreach($approval_dtl as $app_dtl){
-					// $approver_user = new ApproverUser();
-					// $approver_user->approval_master_id  = $am->id;
-					// $approver_user->user_id  			= $app_dtl->user_id;
-					// $approver_user->save();
-				// }
-			// }
+				foreach($approval_dtl as $app_dtl){
+					$approver_user = new ApproverUser();
+					$approver_user->approval_master_id  = $am->id;
+					$approver_user->user_id  			= $app_dtl->user_id;
+					$approver_user->save();
+				}
+			}
 			
             $res = [
                         'title' => 'Sukses',
@@ -374,10 +375,22 @@ class ApprovalCapexController extends Controller
 		if(\Entrust::hasRole('user')) {
 			$approval_capex->where('created_by',$user->id);
 		}
+
+        if (\Entrust::hasRole('department_head')) {
+            $approval_capex->whereIn('department', [$user->department->department_code]);
+        }
+
+        if (\Entrust::hasRole('gm')) {
+            $approval_capex->where('division', $user->division->division_code);
+        }
+
+        if (\Entrust::hasRole('director')) {
+            $approval_capex->where('dir', $user->dir);
+        }
+		
 		if($status == 'need_approval'){
 			$approval_capex->where('status','0');
 		}
-		
         $approval_capex = $approval_capex->get();
 		
         return DataTables::of($approval_capex)
@@ -403,8 +416,8 @@ class ApprovalCapexController extends Controller
                     return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a></div>";
                 }
             }else{
-                // return "else";
-                return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a  href='#' onclick='javascript:validateApproval(&#39;$approval_capex->approval_number&#39;);return false;'class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                // return "else"; <a  href='#' onclick='javascript:validateApproval(&#39;$approval_capex->approval_number&#39;);return false;'class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a>
+                return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
             }
         })
 
@@ -448,12 +461,34 @@ class ApprovalCapexController extends Controller
 	}
 	public function AjaxDetailApproval($approval_number)
 	{
-		 
-		 // return ApprovalMaster::getApprovalDetailsApi($approval_number);
-		 $approval_master = ApprovalMaster::join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
+		 $approval_master = ApprovalMaster::select('*','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code')->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
 						->join('capexes','capexes.budget_no','=','approval_details.budget_no')
 						->where('approval_number',$approval_number);
-		 return DataTables::of($approval_master)->toJson();
+		
+		 return DataTables::of($approval_master)
+				->editColumn("asset_no", function ($approval) {
+					return $approval->asset_no.'<input class="approval_data" type="hidden" value="'.$approval->id_ad.'">';
+				})
+				->editColumn("status", function ($approval){ 
+					//status approval
+					if ($approval->status == '0') {
+						return "User Created";
+					}elseif ($approval->status == '1') {
+						return "Validasi Budget";
+					}elseif ($approval->status == '2') {
+						return "Approved by Dept. Head";
+					}elseif ($approval->status == '3') {
+						return "Approved by GM";
+					}elseif ($approval->status == '4') {
+						return "Approved by Director";
+					}elseif ($approval->status == '-1') {
+						return "Canceled on Quotation Validation";
+					}elseif ($approval->status == '-2') {
+						return "Canceled Dept. Head Approval";
+					}else{
+						return "Canceled on Group Manager Approval";
+					}
+				})->toJson();
 	}
     public function getDetailsData($id)
     {
@@ -470,7 +505,7 @@ class ApprovalCapexController extends Controller
 		$status = 0;
 		\DB::transaction(function() use ($request, &$capex){
 
-			$status =  ApprovalDetail::where($request->name,$request->pk)->update([$request->name=>$request->value]);
+			$status =  ApprovalDetail::where('id',$request->pk)->update([$request->name=>$request->value]);
 
 		});
 		

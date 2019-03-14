@@ -1,15 +1,18 @@
 var tCapex;
 $(document).ready(function(){
-
+	var is_budget = $('#is_budget').val();
     tCapex = $('#table-capex').DataTable({
         ajax: SITE_URL + '/capex/get_data',
         "fnDrawCallback": function (oSettings) {
             budgetStatusStyler();
             budgetClosingStyler();
             budgetView();
-            xeditClasser();
-            initEditable();
-            initSelectable();
+			if(is_budget==1){
+				xeditClasser();
+				initEditable();
+				initSelectable();
+				// initDatepickerable();
+			}
             
         },
         columns: [

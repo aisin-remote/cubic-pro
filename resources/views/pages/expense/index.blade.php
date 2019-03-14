@@ -59,7 +59,7 @@
     </div>
 
 </div>
-
+<input type="hidden" id="is_budget" value="{{\Entrust::hasRole(['budget'])?'1':'0'}}">
 <!-- Modal for question -->
 <div class="modal fade in" tabindex="-1" role="dialog" id="modal-delete-confirm">
     <div class="modal-dialog modal-sm">

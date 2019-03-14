@@ -64,7 +64,7 @@
         <!-- custom css -->
 
         <link rel="stylesheet" href="{{ url('assets/css/custom.css') }}">
-
+		<link rel="stylesheet" href="{{ url('assets/plugins/bootstrap3-editable/bootstrap3-editable/css/bootstrap-editable.css')}}">
         <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -235,7 +235,8 @@
         <script src="{{ url('assets/plugins/custombox/js/legacy.min.js') }}"></script>
 
         <!-- bootstrap editable -->
-        <script src="{{ url('assets/js/bootstrap-editable.min.js') }}"></script>
+        <!-- <script src="{{ url('assets/js/bootstrap-editable.min.js') }}"></script> -->
+		<script src="{{ url('assets/plugins/bootstrap3-editable/bootstrap3-editable/js/bootstrap-editable.min.js') }}"></script>
 
         <!-- general js -->
         <script src="{{ url('assets/js/general.js') }}"></script>

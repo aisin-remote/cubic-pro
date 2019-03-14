@@ -188,13 +188,13 @@ function validateApproval(approval_number)
 			approval_number: approval_number
 		};
 
-		$.getJSON( "{{ url('approval/approve') }}", data, function( data ) {
+		$.getJSON( SITE_URL+"/approval/approve", data, function( data ) {
 			if (data.error) {
 				show_notification('Error','error',data.error);
 				return false;
 			}else{
 				show_notification('Success','success',data.success);
-				window.location.replace("{{ url('approval').'/ex/unvalidated' }}");
+				window.location.href=SITE_URL+"/approval/ex/unvalidated";
 			}
 			
 		});
@@ -218,7 +218,7 @@ function cancelApproval(approval_number)
 				return false;
 			}else{
 					show_notification('Success','success',data.success);
-					window.location.replace("approval/ex/unvalidated");
+					window.location.href=SITE_URL+"/approval/ex/unvalidated";
 				}
 			tApprovalCapex.api().ajax.reload( null, false );
 		});

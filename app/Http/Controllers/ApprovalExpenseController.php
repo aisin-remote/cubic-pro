@@ -8,8 +8,9 @@ use App\SapModel\SapAsset;
 use App\SapModel\SapGlAccount;           
 use App\SapModel\SapCostCenter;           
 use App\SapModel\SapUom;
-use App\ApprovalDetail;
 use App\ApprovalMaster;
+use App\ApprovalDetail;
+use App\Approval;
 use App\ApprovalDtl;
 use App\ApproverUser;
 use DB;
@@ -28,11 +29,11 @@ class ApprovalExpenseController extends Controller
             $result['draw'] = 0;
             $result['recordsTotal'] = Cart::count();
             $result['recordsFiltered'] = Cart::count();
-
+			
             foreach ($expenses as $expense) {
 
                 $result['data'][] = [
-                                    'budget_no'         => $expense->options->budget_no,
+                                    'budget_no'         => $expense->options->budget_no.'<input type="hidden" class="checklist">',
                                     'project_name'      => $expense->name,
                                     'price_remaining'   => $expense->price,
                                     'pr_specs'          => $expense->qty,
@@ -64,17 +65,18 @@ class ApprovalExpenseController extends Controller
         $sap_costs          = SapCostCenter::find($request->sap_cost_id); 
         $sap_uoms           = SapUom::find($request->sap_uom_id);
 
-        $budget = Expense::find($request->budget_no);
+        $budget 			= Expense::find($request->budget_no);
 
         Cart::instance('expense')->add([
 
                     'id' => $request->budget_no,
                     'name' => $request->project_name,
                     'price' => $request->price_remaining,
-                    'qty' => $request->pr_specs,
+                    'qty' => 1,
                     'options' => [
                         'budget_no'             => $budget->budget_no,
-                        'sap_gl_account_id'     => $request->sap_gl_account_id,
+                        'sap_account_code'      => $request->sap_gl_account_id,
+						'sap_account_text'		=> $request->gl_fname,
                         'budget_description'    => $request->budget_description,
                         'qty_remaining'         => $request->qty_remaining,
                         'qty_actual'            => $request->qty_actual,
@@ -83,15 +85,19 @@ class ApprovalExpenseController extends Controller
                         'sap_uom_id'            => $request->sap_uom_id,
                         'price_actual'          => $request->price_actual,
                         'budget_remaining_log'  => $request->budget_remaining_log,
+						'currency'				=> $request->currency,
                         'price_to_download'     => $request->price_to_download,
                         'plan_gr'               => $request->plan_gr,
+						'pr_specs'				=> $request->pr_specs,
+						'is_chemical'			=> $request->asset_category,
+						
                     ]
                 ]);
 
 
         $res = [
+					'title' => 'Success',
                     'type' => 'success',
-                    'title' => 'Success',
                     'message' => 'Data has been inserted'
                 ];
 
@@ -111,8 +117,8 @@ class ApprovalExpenseController extends Controller
         Cart::remove($id);
 
         $res = [
-                    'type' => 'success',
-                    'title' => 'Success',
+					'title' => 'Success',
+                    'type' => 'success',  
                     'message' => 'Data has been removed'
                 ];
 
@@ -131,7 +137,7 @@ class ApprovalExpenseController extends Controller
 
     public function getGlGroup($id)
     {
-        $sap_gl_group = SapGlAccount::find($id);
+        $sap_gl_group = SapGlAccount::where('gl_gcode',$id)->first();
         return response()->json($sap_gl_group);
     }
 
@@ -148,43 +154,47 @@ class ApprovalExpenseController extends Controller
                 
 
                 foreach (Cart::instance('expense')->content() as $details) {
-                    $approval_no = ApprovalMaster::getNewApprovalNumber('EX', $user->department_id);  
+                    $approval_no = ApprovalMaster::getNewApprovalNumber('EX', $user->department->department_code);  
                 
                     $capex                         = new ApprovalMaster;
                     $capex->approval_number        = $approval_no;
                     $capex->budget_type            = 'ex';
                     $capex->dir                    = $user->direction;
-                    $capex->division_id            = $user->division_id;
-                    $capex->department_id          = $user->department_id;
+                    $capex->division               = $user->division->division_code;
+                    $capex->department             = $user->department->department_code;
                     $capex->total                  = $details->price;
                     $capex->status                 = 0;
                     $capex->created_by             = $user->id;
+					$capex->fyear 				   =  date('Y');
                     $capex->save();
                     $approval                        = new ApprovalDetail;
                     $approval->budget_no             = $details->options->budget_no;
                     $approval->project_name          = $details->name;
-                    $approval->actual_qty            = $details->qty;
+                    // $approval->actual_qty            = $details->qty;
+					$approval->actual_qty            = $details->options->qty_actual;
                     $approval->actual_price_user     = $details->price;
-                    $approval->sap_gl_account_id     = $details->options->sap_gl_account_id;
-                    $approval->qty_remaining         = $details->options->qty_remaining;
-                    $approval->qty_actual            = $details->options->qty_actual;
+                    $approval->sap_account_code      = $details->options->sap_account_code;
+					$approval->sap_account_text		 = $details->options->sap_account_text;
+                    // $approval->qty_remaining         = $details->options->qty_remaining;
+                   
                     $approval->remarks               = $details->options->remarks;
-                    $approval->sap_cost_center_id     = $details->options->sap_cost_center_id;
-                    $approval->sap_uom_id            = $details->options->sap_uom_id;
+					$approval->pr_specs 			 = $details->options->pr_specs;
+                    $approval->sap_cc_code     		 = $details->options->sap_cost_center_id;
+                    $approval->pr_uom            	 = $details->options->sap_uom_id;
                     // $approval->price_remaining       = $details->options->price_actual;
                     $approval->budget_remaining_log  = $details->options->budget_remaining_log;
                     $approval->price_to_download     = $details->options->price_to_download;
                     $approval->actual_gr             = $details->options->plan_gr;
-                    $approval->fyear                 = '2018';
-                    $approval->budget_reserved       = 2018;
+                    $approval->fyear                 = date('Y');
+                    $approval->budget_reserved       = $details->options->budget_remaining_log;
                     $capex->details()->save($approval);
                 }
 				// Simpan approver user
 				$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
 				
 				foreach($approval_master as $am){
-					
-					$approval_dtl 	 = ApprovalDtl::where('approval_id',$request->approval_id)->get();
+					$approvals = Approval::where('department',$user->department->department_code)->first();
+					$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
 					
 					foreach($approval_dtl as $app_dtl){
 						$approver_user = new ApproverUser();
@@ -194,9 +204,9 @@ class ApprovalExpenseController extends Controller
 					}
 				}
                 $res = [
-                            'title' => 'Sukses',
+                            'title' => 'Success',
                             'type' => 'success',
-                            'message' => 'Data berhasil disimpan!'
+                            'message' => 'Data has been inserted'
                         ];
 
                 Cart::instance('expense')->destroy();
@@ -230,6 +240,18 @@ class ApprovalExpenseController extends Controller
 		if(\Entrust::hasRole('user')) {
 			$approval_expense->where('created_by',$user->id);
 		}
+
+        if (\Entrust::hasRole('department_head')) {
+            $approval_expense->whereIn('department', [$user->department->department_code]);
+        }
+
+        if (\Entrust::hasRole('gm')) {
+            $approval_expense->where('division', $user->division->division_code);
+        }
+
+        if (\Entrust::hasRole('director')) {
+            $approval_expense->where('dir', $user->dir);
+        }
 		if($status == 'need_approval'){
 			$approval_expense->where('status','0');
 		}
@@ -258,7 +280,8 @@ class ApprovalExpenseController extends Controller
                 }
             }else{
                 // return "else";
-                return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a  href='#' onclick='javascript:validateApproval(&#39;$approval_expense->approval_number&#39;);return false;' class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+				//<a  href='#' onclick='javascript:validateApproval(&#39;$approval_expense->approval_number&#39;);return false;' class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a>
+                return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
             }
         })
 
@@ -297,6 +320,36 @@ class ApprovalExpenseController extends Controller
 		$master = ApprovalMaster::getSelf($approval_number);
 		return view('pages.approval.expense.view',compact('master'));
 	}
+	public function AjaxDetailApproval($approval_number)
+	{
+		 $approval_master = ApprovalMaster::select('*','approval_masters.status as am_status','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code')->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
+						->join('expenses','expenses.budget_no','=','approval_details.budget_no')
+						->where('approval_number',$approval_number);
+		 return DataTables::of($approval_master)
+				->editColumn("asset_no", function ($approval) {
+					return $approval->asset_no.'<input class="approval_data" type="hidden" value="'.$approval->id_ad.'">';
+				})
+				->editColumn("status", function ($approval) {
+					if ($approval->am_status == '0') {
+						return "User Created";
+					}elseif ($approval->am_status == '1') {
+						return "Validasi Budget";
+					}elseif ($approval->am_status == '2') {
+						return "Approved by Dept. Head";
+					}elseif ($approval->am_status == '3') {
+						return "Approved by GM";
+					}elseif ($approval->am_status == '4') {
+						return "Approved by Director";
+					}elseif ($approval->am_status == '-1') {
+						return "Canceled on Quotation Validation";
+					}elseif ($approval->am_status == '-2') {
+						return "Canceled Dept. Head Approval";
+					}else{
+						return "Canceled on Group Manager Approval";
+					}
+					
+				})->toJson();
+	}
     public function delete($id)
     {
         DB::transaction(function() use ($id){
@@ -305,13 +358,24 @@ class ApprovalExpenseController extends Controller
             $approval_expense->delete();
         });
         $res = [
-                    'title' => 'Sukses',
+                    'title' => 'Success',
                     'type' => 'success',
-                    'message' => 'Data berhasil dihapus!'
+                    'message' => 'Data has been removed'
                 ];
 
         return redirect()
                     ->route('approval-expense.ListApproval')
                     ->with($res);
     }
+	public function getDelete(Request $request)
+	{
+		Cart::instance('expense')->remove($request->rowid);
+		
+		 $res = [
+                    'title' => 'Success',
+                    'type' => 'success',
+                    'message' => 'Data has been removed'
+                ];
+		return json_encode($res);
+	}
 }

@@ -136,4 +136,16 @@ public function index(Request $request)
                 ->route('cost_center.index')
                 ->with($res);
     }
+	
+	public function getCmbCostCenter()
+	{
+		$cost_center = SapCostCenter::all();
+		$data = [];
+		foreach($cost_center as $cc)
+		{
+			$data[] = array('value'=>$cc->cc_code,'text'=>$cc->cc_code);
+		}
+		
+		return response()->json($data, 200);
+	}
 }

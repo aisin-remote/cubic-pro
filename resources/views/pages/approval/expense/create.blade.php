@@ -78,7 +78,7 @@
                                 <select name="sap_cos_center_id" class="select2" data-placeholder="Select SAP Cost Center" required="required">
                                     <option></option>
                                         @foreach ($sap_costs as $sap_cost)
-                                        <option value="{{ $sap_cost->id }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
+                                        <option value="{{ $sap_cost->cc_code }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -95,7 +95,7 @@
                                     <option></option>
                                         <option></option>
                                         @foreach ($sap_uoms as $sap_uom)
-                                        <option value="{{ $sap_uom->id }}">{{ $sap_uom->uom_code }} - {{ $sap_uom->uom_fname }}</option>
+                                        <option value="{{ $sap_uom->uom_code }}">{{ $sap_uom->uom_code }} - {{ $sap_uom->uom_fname }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -115,7 +115,7 @@
 								<div class="row">
 									<div class="col-md-6">
 										<div class="radio">
-											<input type="radio" name="asset_category" id="asset_category-1" value="1" checked="">
+											<input type="radio" name="asset_category" id="asset_category-1" value="Non Chemical" checked="">
 											<label for="asset_category-1">
 												Non Chemical
 											</label>
@@ -123,7 +123,7 @@
 									</div>
 									<div class="col-md-6">
 										<div class="radio">
-											<input type="radio" name="asset_category" id="asset_category-0" value="0" checked="">
+											<input type="radio" name="asset_category" id="asset_category-0" value="Chemical" checked="">
 											<label for="asset_category-0">
 												Chemical
 											</label>
@@ -133,7 +133,7 @@
 						   </div>  
 						   <div class="form-group">
                                 <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
-								<select name="remarks[]" class="select2" data-placeholder="Item Detail" required="required" multiple="multiple">
+								<select name="remarks" class="select2" data-placeholder="Item Detail" required="required">
                                     <option></option>
                                         @foreach ($carts as $cart)
                                         <option value="{{ $cart->item->item_description }}" item_id="{{$cart->item_id}}">{{ $cart->item->item_description }}</option>
@@ -147,7 +147,7 @@
                                 <select name="sap_gl_account_id" class="select2" data-placeholder="Select G/L Group" required="required">
                                     <option></option>
                                         @foreach ($sap_gl_account as $sap_gl_account)
-                                        <option value="{{ $sap_gl_account->id }}">{{ $sap_gl_account->gl_gname }}</option>
+                                        <option value="{{ $sap_gl_account->gl_gcode }}">{{ $sap_gl_account->gl_gname }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -172,7 +172,7 @@
                            </div> 
                            <div class="form-group">
                                 <label class="control-label">Actual GR <span class="text-danger">*</span></label>
-                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('M-D-Y') }}"></input>
+                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}"></input>
                                 <span class="help-block"></span>
                            </div>  
                            

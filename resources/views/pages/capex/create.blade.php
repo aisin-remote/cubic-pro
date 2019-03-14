@@ -36,7 +36,7 @@
                                 <select name="department_id" class="select2" data-placeholder="Select Supplier Code" required="required">
                                     <option></option>
                                     @foreach ($department as $departement)
-                                    <option value="{{ $departement->id }}">{{ $departement->departement_code }} - {{ $departement->department_name }}</option>
+                                    <option value="{{ $departement->department_code }}">{{ $departement->departement_code }} - {{ $departement->department_name }}</option>
                                     @endforeach
                                 </select>
                                 <span class="help-block"></span>

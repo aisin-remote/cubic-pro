@@ -1,9 +1,8 @@
 <?php
-
-use App\User;
+namespace App;
 use App\ApproverUser;
 
-class Helpers
+trait Helpers
 {
 		public static function can($approval_master)
 		{

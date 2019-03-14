@@ -132,4 +132,16 @@ class VendorController extends Controller
                 ->route('vendor.index')
                 ->with($res);
     }
+	
+	public function getCmbVendor()
+	{
+		$vendor = SapVendor::all();
+		$data = [];
+		foreach($vendor as $v)
+		{
+			$data[] = array('value'=>$v->vendor_code,'text'=>$v->vendor_fname);
+		}
+		
+		return response()->json($data, 200);
+	}
 }

@@ -34,7 +34,7 @@ $(document).ready(function(){
 
 });
 
-$('select[name="remarks[]"]').select2({tags:true});
+$('select[name="remarks"]').select2({tags:true});
 
 function onDelete(rowid)
 {

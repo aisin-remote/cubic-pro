@@ -19,7 +19,7 @@
 						 <div class="btn-group pull-right">
 							<a href="{{ route('approval-expense.create') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Add Item</a>
 							<button type="button" id="btn-submit" class="btn btn-success btn-bordered waves-effect waves-light m-b-20"> Submit Approval</a>
-							<form action="{{route('approval_expense.approval')}}" method="post">
+							<form action="{{route('approval_expense.approval')}}" method="post" id="formSubmitApproval">
 								@csrf
 								<input type="hidden" name="approval_id" id="happroval_id"/>
 								

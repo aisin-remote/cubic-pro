@@ -38,6 +38,24 @@ class Capex extends Model
 
         return $data;
     }
+	public static function ability()
+	{
+		$user = auth()->user();
+		
+		if(\Entrust::hasRole('user')) {
+			$capexs = self::where('department',$user->department->department_code);
+		}else if (\Entrust::hasRole('department_head')) {
+            $capexs = self::whereIn('department', [$user->department->department_code]);
+        }else if (\Entrust::hasRole('gm')) {
+            $capexs = self::where('division', $user->division->division_code);
+        }else if (\Entrust::hasRole('director')) {
+            $capexs = self::where('dir', $user->dir);
+        }else{
+			$capexs = self::query();
+		}
+		
+		return $capexs;
+	}
 	public function toArray($flag = '', $source_id = '', $time = '')
     {
         $user = auth()->user();

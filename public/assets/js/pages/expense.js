@@ -1,15 +1,19 @@
 var tExpense;
 $(document).ready(function(){
-
+	var is_budget = $('#is_budget').val();
     tExpense = $('#table-expense').DataTable({
         ajax: SITE_URL + '/expense/get_data',
         "fnDrawCallback": function (oSettings) {
             budgetStatusStyler();
             budgetClosingStyler();
             budgetView();
-            xeditClasser();
-            initEditable();
-            initSelectable();
+			if(is_budget==1){
+				xeditClasser();
+				initEditable();
+				initSelectable();
+				// initDatepickerable();
+			}
+			
             
         },
         columns: [
@@ -100,7 +104,7 @@ function xeditClasser()
         var closing_status = $(this).find('td:nth-child(11)');//8
 
         // set equipment_name anchor
-        equipment_name.html('<a href="#" class="editable" data-pk="'+budget_no.text()+'" data-name="equipment_name" data-title="Enter Equipment Name">'+equipment_name.text()+'</a>');
+        equipment_name.html('<a href="#" class="editable" data-pk="'+budget_no.text()+'" data-name="description" data-title="Enter Equipment Name">'+equipment_name.text()+'</a>');
 
         // set budget_no anchor
         // budget_no.html('<a href="#" class="editable" data-pk="'+budget_no.text()+'" data-name="budget_no" data-title="Enter Budget Number">'+budget_no.text()+'</a>');

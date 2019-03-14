@@ -130,4 +130,16 @@ class TaxeController extends Controller
                 ->route('taxe.index')
                 ->with($res);
     }
+	
+	public function getCmbTax()
+	{
+		$sap_tax = SapTaxe::all();
+		$data = [];
+		foreach($sap_tax as $tax)
+		{
+			$data[] = array('value'=>$tax->tax_code,'text'=>$tax->tax_name);
+		}
+		
+		return response()->json($data, 200);
+	}
 }
