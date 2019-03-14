@@ -402,3 +402,7 @@ tr.shown td.details-control:before {
     font-size: 15em;
     color: #ccc;
 }
+
+.datepicker-inline {
+    width: 400px !important;
+}

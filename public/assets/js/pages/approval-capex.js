@@ -8,7 +8,7 @@ $(document).ready(function(){
       columns: [
         { data: 'budget_no', name: 'budget_no' },
         { data: 'project_name', name: 'project_name' },
-        { data: 'pr_specs', name: 'pr_specs' },
+        { data: 'actual_qty', name: 'actual_qty' },
         { data: 'price_actual', name: 'price_actual' },
         { data: 'plan_gr', name: 'plan_gr' },
         { data: 'asset_kind', name: 'asset_kind' },

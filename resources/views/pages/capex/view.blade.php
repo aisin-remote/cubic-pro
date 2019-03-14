@@ -20,24 +20,27 @@
     </div>
 	<div class="row">
 			<div class="col-md-12">
-				<table>
-					<tr>
-						<th>Budget No</th>
-						<th>: {{$capex->budget_no}}</th>
-					</tr>
-					<tr>
-						<th>Budget Description</th>
-						<th>: {{$capex->equipment_name}}</th>
-					</tr>
-					<tr>
-						<th>Budget Plan | Remaining</th>
-						<th> : {{$capex->budget_plan.' | '.$capex->budget_remaining}}</th>
-					</tr>
-					<tr>
-						<th>Budget Reserved | Used</th>
-						<th> : {{$capex->budget_reserved.' | '.$capex->budget_used}}</th>
-					</tr>
-				</table>
+				<div class="form-group">
+					<label class="control-label">Budget No<span class="text-danger"> : </span></label>
+					{{$capex->budget_no}}
+					<span class="help-block"></span>
+				</div>
+				<div class="form-group">
+					<label class="control-label">Budget Description<span class="text-danger"> : </span></label>
+					{{$capex->equipment_name}}
+						
+					<span class="help-block"></span>
+				</div>
+				<div class="form-group">
+					<label class="control-label">Budget Plan | Remaining<span class="text-danger"> : </span></label> 
+					{{number_format($capex->budget_plan).' | '.number_format($capex->budget_remaining)}}
+					<span class="help-block"></span>
+				</div>
+				<div class="form-group">
+					<label class="control-label">Budget Reserved | Used<span class="text-danger"> : </span></label>
+					{{number_format($capex->budget_reserved).' | '.number_format($capex->budget_used)}}
+					<span class="help-block"></span>
+				</div>
 			</div>
 		</div>
 		<div class="row">
@@ -56,14 +59,31 @@
 						</tr>
 					</thead>
 					@foreach($approval_details as $ap)
+					
 					<tr>
 						<td>{{$ap->approval_number}}</td>
 						<td>{{$ap->project_name}}</td>
-						<td>{{$ap->budget_reserved}}</td>
-						<td>{{$ap->actual_price_user}}</td>
+						<td>{{number_format($ap->budget_reserved)}}</td>
+						<td>{{number_format($ap->actual_price_user)}}</td>
 						<td>{{$ap->actual_qty}}</td>
 						<td>{{$capex->status == 0?'Available':'not Available'}}</td>
-						<td>{{$ap->status}}</td>
+						@if($ap->status == 0)
+						<td>User Created</td>
+						@elseif($ap->status == 1)
+						<td>Validasi Budget</td>	
+						@elseif($ap->status == 2)
+						<td>Approved by Dept. Head</td>
+						@elseif($ap->status == 3)
+						<td>Approved by GM</td>
+						@elseif($ap->status == 4)
+						<td>Approved by Director</td>
+						@elseif($ap->status == -1)
+						<td>Canceled on Quotation Validation</td>
+						@elseif($ap->status == -2)
+						<td>Canceled Dept. Head Approval</td>
+						@else
+						<td>Canceled on Group Manager Approval</td>	
+						@endif
 						<td>{{$ap->actual_gr}}</td>
 					</tr>
 					@endforeach

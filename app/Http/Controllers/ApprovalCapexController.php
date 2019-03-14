@@ -9,8 +9,9 @@ use App\SapModel\SapAsset;
 use App\SapModel\SapGlAccount;           
 use App\SapModel\SapCostCenter;           
 use App\SapModel\SapUom;
-use App\ApprovalDetail;
+use App\Approval;
 use App\ApprovalMaster;
+use App\ApprovalDetail;
 use App\ApprovalDtl;
 use App\ApproverUser;
 use DB;
@@ -25,7 +26,6 @@ class ApprovalCapexController extends Controller
 {
     public function getData()
     {
-	   // Cart::instance('capex')->remove('152ba585b3042b0328afec8e89e6f9bc');
        $capexs = Cart::instance('capex')->content();
         if (Cart::count() > 0) {
 
@@ -45,7 +45,8 @@ class ApprovalCapexController extends Controller
                                         'sap_asset_id' => $capex->options->sap_asset_id,
                                         'sap_cost_center_id' => $capex->options->sap_cost_center_id,
                                         'project_name' => $capex->name,
-                                        'pr_specs' => $capex->qty,
+                                        'pr_specs' => $capex->pr_specs,
+										'actual_qty' => $capex->qty,
                                         'price_actual' => $capex->price,
                                         'asset_kind' => $capex->options->asset_kind,
                                         'plan_gr' => $capex->options->plan_gr,
@@ -69,14 +70,32 @@ class ApprovalCapexController extends Controller
 
     public function store(Request $request)
     {
-
-        $capex              = Capex::find($request->capex_id);
-        $sap_gl_account     = SapGlAccount::find($request->sap_gl_account_id);
+		/*
+		   "budget_no" => "1"
+		  "asset_kind" => "CIP"
+		  "asset_category" => "Chemical"
+		  "sap_asset_id" => "3"
+		  "asset_code" => "AV"
+		  "project_name" => "purpose project"
+		  "settlement_date" => "2019-03-14"
+		  "sap_cost_center_id" => "A00000"
+		  "remarks" => "Back Support"
+		  "sap_uom_id" => "1"
+		  "budget_description" => "eagle view reward"
+		  "pr_specs" => "item spec 2"
+		  "price_remaining" => "2000000.00"
+		  "budget_remaining_log" => "4000000.00"
+		  "plan_gr" => "2019-03-14"
+		  "price_actual" => "1000000"
+		  "foreign_currency" => "on"
+		  "currency" => "USD"
+		  "price_to_download" => "100"
+		*/
+        $capex              = Capex::find($request->budget_no);
         $sap_assets         = SapAsset::find($request->sap_asset_id);
         $sap_costs          = SapCostCenter::find($request->sap_cost_center_id); 
         $sap_uoms           = SapUom::find($request->sap_uom_id);
 
-        $budget = Capex::find($request->budget_no);
 	    Cart::instance('capex')->add([
 
 					'id'    => $request->budget_no,
@@ -84,16 +103,18 @@ class ApprovalCapexController extends Controller
 					'price' => $request->price_actual,
 					'qty' 	=> 1,// default satu
 					'options' => [
-						'budget_no'             => $budget->budget_no,
+						'budget_no'             => $capex->budget_no,
 						'budget_description'    => $request->budget_description,
 						'asset_kind'            => $request->asset_kind,
 						'asset_category'        => $request->asset_category,
-						'sap_cost_center_id'    => $request->sap_cost_center_id,
-						'sap_asset_id'          => $request->sap_asset_id,
+						'sap_cost_center_id'    => $sap_costs->cc_code,//$request->sap_cost_center_id,
+						'sap_asset_id'          => $sap_assets->asset_code,//$request->sap_asset_id,
+						'asset_code'			=> $request->asset_code,
 						'remarks'               => $request->remarks,
-						'sap_uom_id'            => $request->sap_uom_id,
+						'sap_uom_id'            => $sap_uoms->uom_code,//$request->sap_uom_id,					
 						'budget_remaining_log'  => $request->budget_remaining_log,
 						'price_remaining'       => $request->price_remaining,
+						'currency'				=> $request->currency,
 						'price_to_download'     => $request->price_to_download,
 						'plan_gr'               => $request->plan_gr,
 						'pr_specs'				=> $request->pr_specs,
@@ -101,7 +122,6 @@ class ApprovalCapexController extends Controller
 						'type' => 'capex'
 					]
 				]);
-
 		
         $res = [
                     'type' => 'success',
@@ -112,7 +132,6 @@ class ApprovalCapexController extends Controller
         return redirect()
                         ->route('approval-capex.index')
                         ->with($res);
-        // dd()
     }
 
     function show($id)
@@ -123,12 +142,7 @@ class ApprovalCapexController extends Controller
 
     function destroy($id)
     {
-		// dd($id);
-		// $capex = Cart::instance('capex')->destroy();
-		// dd($capex);
-		// print_r($capex->rowId);exit;
-        // Cart::remove($id);
-		Cart::destroy();
+		Cart::instance('capex')->remove($id);
         $res = [
                     'type' => 'success',
                     'title' => 'Success',
@@ -187,8 +201,9 @@ class ApprovalCapexController extends Controller
                 $approval->remarks               = $details->options->remarks;
                 $approval->pr_uom            	 = $details->options->sap_uom_id;
                 $approval->budget_remaining_log  = $details->options->budget_remaining_log;
-                $approval->price_to_download     = $details->options->price_to_download;
+                $approval->price_to_download     = $details->options->price_to_download ==""?0:$details->options->price_to_download;
 				// $approval->price_to_download	 = 1000;
+				$approval->pr_specs 			 = $details->options->pr_specs;
                 $approval->actual_gr             = $details->options->plan_gr;
                 $approval->settlement_date       = $details->options->settlement_date;
                 $approval->fyear                 = date('Y');
@@ -215,14 +230,12 @@ class ApprovalCapexController extends Controller
                         'title' => 'Sukses',
                         'type' => 'success',
                         'message' => 'Data berhasil disimpan!'
-                    ];
-
-    
-
-            Cart::instance('capex')->destroy();
-			
+                    ];		
            
         });
+		
+		Cart::instance('capex')->destroy();
+		
          return redirect()
                         ->route('approval-capex.ListApproval')
                         ->with($res);

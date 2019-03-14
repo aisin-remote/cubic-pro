@@ -15,7 +15,6 @@ $(document).ready(function(){
 		  $('[name="budget_remaining_log"]').val(arr_capex.budget_remaining);
 	  }
     }
-  	
   });
 
   $('[name="sap_asset_id"]').change(function(){
@@ -30,6 +29,12 @@ $(document).ready(function(){
   });
   $('select[name="remarks"]').select2({tags:true});
 });
+
+function maxAmountQuotation()
+{
+	var maxBudget = $('input[name="price_remaining"]').val();
+	
+}
 
 function setReadOnlyInput ()
 {

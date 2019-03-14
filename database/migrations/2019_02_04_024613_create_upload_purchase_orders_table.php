@@ -16,6 +16,7 @@ class CreateUploadPurchaseOrdersTable extends Migration
         Schema::create('upload_purchase_orders', function (Blueprint $table) {
             $table->increments('id');
             $table->string('approval_number');
+            $table->date('pr_receive');
             $table->string('po_number');
             $table->date('po_date');
             $table->string('quotation')->nullable();

@@ -23,7 +23,7 @@ class UploadPoController extends Controller
     public function index(Request $request)
     {
         $po = DB::table('approval_masters')
-                    ->select('approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date','upload_purchase_orders.quotation')
+                    ->select('approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date','upload_purchase_orders.quotation','upload_purchase_orders.pr_receive')
                     ->leftJoin('upload_purchase_orders', 'approval_masters.approval_number', '=', 'upload_purchase_orders.approval_number')
                     ->Join('approval_details', 'approval_details.approval_master_id','=', 'approval_masters.id')
                     ->where('approval_masters.status','4')
@@ -146,7 +146,7 @@ class UploadPoController extends Controller
     public function getData(Request $request)
     {
         $po = DB::table('approval_masters')
-                    ->select('approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date', 'upload_purchase_orders.quotation')
+                    ->select('approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date', 'upload_purchase_orders.quotation', 'upload_purchase_orders.pr_receive')
                     ->leftJoin('upload_purchase_orders', 'approval_masters.approval_number', '=', 'upload_purchase_orders.approval_number')
                     ->Join('approval_details', 'approval_details.approval_master_id','=', 'approval_masters.id')
                     ->where('approval_masters.status','4')
@@ -233,7 +233,7 @@ class UploadPoController extends Controller
     public function export() 
     {
         $po = DB::table('approval_masters')
-                    ->select('approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date', 'upload_purchase_orders.quotation')
+                    ->select('approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date', 'upload_purchase_orders.quotation', 'upload_purchase_orders.pr_receive')
                     ->leftJoin('upload_purchase_orders', 'approval_masters.approval_number', '=', 'upload_purchase_orders.approval_number')
                     ->Join('approval_details', 'approval_details.approval_master_id','=', 'approval_masters.id')
                     ->where('approval_masters.status','4')

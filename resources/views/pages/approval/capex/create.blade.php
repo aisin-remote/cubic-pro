@@ -123,7 +123,7 @@
                            </div>                   
                            <div class="form-group">
                                 <label class="control-label">Settlement Date (for CIP) <span class="text-danger">*</span></label>
-                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}" rows="5"></input>
+                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" date="true" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}" rows="5"></input>
                                 <span class="help-block"></span><!-- Carbon\Carbon::now()->format('M-D-Y') -->
                            </div>
 
@@ -132,7 +132,7 @@
                                 <select name="sap_cost_center_id" class="select2" data-placeholder="Select SAP Cost Center" required="required">
                                     <option></option>
                                         @foreach ($sap_costs as $sap_cost)
-                                        <option value="{{ $sap_cost->cc_code }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
+                                        <option value="{{ $sap_cost->id }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -194,7 +194,7 @@
                            </div>
                            <div class="form-group">
                                 <label class="control-label">Actual GR <span class="text-danger">*</span></label>
-                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}"></input>
+                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}" date="true"></input>
                                 <span class="help-block"></span>
                            </div>
 
@@ -202,21 +202,21 @@
                        
                             <div class="form-group">
                                 <label class="control-label">Amount on Quotation (IDR) <span class="text-danger">*</span></label>
-                                <input type="number" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control tinymce" required="required" rows="5"></input>
+                                <input type="number" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control tinymce" required="required" number="true" rows="5"></input>
                                 <span class="help-block"></span>
                            </div>
                            
                            <div class="form-group">
                                 
-                                <!-- <div class="checkbox">
+                                <div class="checkbox">
                                     <input id="checkbox0" type="checkbox" name="foreign_currency" onclick="foreignCurrency(this)">
                                     <label for="checkbox0">
                                         Foreign Currency
                                     </label>
-                                </div> -->
+                                </div>
 								
                                 <div class="row">
-                                    <div class="form-group" id="hide12" style="display: block">
+                                    <div class="form-group" id="hide12" style="display: none;">
 										<div class="col-sm-12">
 											<label class="control-label">Foreign Currency <span class="text-danger">*</span></label>
 										</div>

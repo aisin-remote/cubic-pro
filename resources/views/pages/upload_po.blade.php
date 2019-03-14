@@ -42,6 +42,7 @@
                             <th>Approval Number</th>
                             <th>Description</th>
                             <th>Approval Create Date</th>
+                            <th>PR Receive</th>
                             <th>PO Number</th>
                             <th>PO Date</th>
                             <th>Quotation</th>
