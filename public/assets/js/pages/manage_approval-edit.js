@@ -1,5 +1,11 @@
 $(document).ready(function(){
-  $('#form-add').validate();
+  $('#form-add-edit').validate({
+	rules: {
+        '^user[]': {
+            required: true
+        }
+    }
+  });
   arr_pos = get_pos();
 });
 
@@ -16,20 +22,25 @@ function get_pos() {
 }
 
 var row_length = 0;
-
+function del(obj)
+{
+	$(obj).parent().parent().remove();
+}
 function on_add(){
 
   $('#empty-row').remove();
-
+  var num = $('#table-details-appr tbody tr').length;
+	  num = parseInt(num) + 1;
   row_length = row_length + 1; /*$('#table-details-appr > tbody > tr').length;*/
-
+	name = checkLevel(num);
   //console.log(row_length);
 
   var table = '<tr id="'+ row_length +'">'  +
         '<td style="width:50px" class="text-center"><button type="button" class="btn btn-danger btn-xs removeRow"><i class="fa fa-times"></i></button></td>' +
         '<td>'+
         '<div class="form-group">' +
-        '<input name="level[]" type="text" class="form-control" placeholder="Level" required="required">'+
+		name+
+        '<input name="level[]" value="'+num+'" type="hidden" class="form-control" placeholder="Level" required="required">'+
         '<span class="help-block"></span>' +
         '</div>'+
         '</td>' +
@@ -51,7 +62,23 @@ function on_add(){
   $('.number').autoNumeric();
 
 }
-
+function checkLevel(level)
+{
+	if(level == 4)
+	{
+		name = "Director";
+	}else if(level == 5)
+	{
+		name = "Purchasing";
+	}else if(level == 6)
+	{
+		name = "Accounting";
+	}else{
+		name = "";
+	}
+	
+	return name;
+}
 $('#table-details-appr').on('click', '.removeRow', function(){
 
   var init_length = $('#table-details-appr > tbody > tr').length;

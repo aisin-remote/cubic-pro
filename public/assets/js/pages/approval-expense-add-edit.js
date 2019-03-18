@@ -34,7 +34,10 @@ $(document).ready(function(){
 
 });
 
-$('select[name="remarks"]').select2({tags:true});
+$('select[name="remarks"]').select2().change(function(){
+	 var qty_item = $(this).find('option:selected').attr('qty_item');
+	 $('input[name="qty_item"]').val(qty_item);
+  });
 
 function onDelete(rowid)
 {

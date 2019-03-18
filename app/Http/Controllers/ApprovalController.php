@@ -540,7 +540,7 @@ class ApprovalController extends Controller
 			$user = auth()->user(); 
             $approval = ApprovalMaster::getSelf($request->approval_number);
 			// approve di tabel approver_user
-			$approver_user = ApproverUser::where('approval_master_id',$approval->id)->where('user_id',$user->id)->update(array('is_approve'=>'1'));
+			$approver_user = ApproverUser::where('approval_master_id',$approval->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
 				
             $approval->approve();
 			

@@ -3,7 +3,7 @@ $(document).ready(function(){
 	tManageApproval = $('#tabel-manage_approval').DataTable({
 		ajax: SITE_URL + '/manage_approval/get_data',
         columns: [
-            { data: 'name', name: 'name'},
+            { data: 'department_name', name: 'department_name'},
             { data: 'total_approval', name: 'total_approval' },
             { data: 'options', name: 'options', class: 'text-center' },
         ],

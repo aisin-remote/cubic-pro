@@ -38,8 +38,12 @@
 						<input type="hidden" name="approval_id" value="{{$approval->id}}">
                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">Approval Name <span class="text-danger">*</span></label>
-                                <input type="text" name="name" placeholder="Approval Name" class="form-control tinymce" required="required" rows="5" value="{{$approval->name}}"></input>
+                                <label class="control-label">Department <span class="text-danger">*</span></label>
+								<select class="form-control select2" name="department">
+										@foreach($department as $dept)
+											<option value="{{$dept->department_code}}">{{'('.$dept->department_code.') - '.$dept->department_name}}</option>
+										@endforeach
+								</select>
                                 <span class="help-block"></span>
                            </div>
                            
@@ -121,12 +125,29 @@
                                     </tr>
                                 </tbody> -->
                                 <tbody>
-									@foreach($approval_dtl as $app_dtl)
+									@foreach($approval_dtl as $i => $app_dtl)
                                     <tr>
-										<td></td>
+										<td>
+										@if($i > 2)
+											<button class="btn btn-danger btn-xs" onclick="del(this)"><i class="fa fa-times"></i></button>
+										@endif
+										</td>
                                         <td>
                                             <div class="form-group">
-                                                <input class="form-control" name="level[]" value="{{$app_dtl->level}}">
+												@if($app_dtl->level == 1)
+													Budgeting
+												@elseif($app_dtl->level == 2)
+												    Department Head
+												@elseif($app_dtl->level == 3)
+													General Manager
+												@elseif($app_dtl->level == 4)
+													Director
+												@elseif($app_dtl->level == 5)
+													Purchasing
+												@elseif($app_dtl->level == 6)
+													Accounting
+												@endif
+                                                <input type="hidden" class="form-control" name="level[]" value="{{$app_dtl->level}}">
                                             </div>
                                         </td>
 

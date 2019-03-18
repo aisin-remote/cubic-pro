@@ -105,6 +105,7 @@
                             <select name="budget_type" class="form-control">
                                 <option value="capex">Capex</option>
                                 <option value="expense">Expense</option>
+								<option value="unbudget">Unbudget</option>
                             </select>
                         </div>
                     </div>

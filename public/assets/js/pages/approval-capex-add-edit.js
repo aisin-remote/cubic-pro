@@ -27,7 +27,10 @@ $(document).ready(function(){
     }
   	
   });
-  $('select[name="remarks"]').select2({tags:true});
+  $('select[name="remarks"]').select2().change(function(){
+	 var actual_qty = $(this).find('option:selected').attr('actual_qty');
+	 $('input[name="actual_qty"]').val(actual_qty);
+  });
 });
 
 function maxAmountQuotation()

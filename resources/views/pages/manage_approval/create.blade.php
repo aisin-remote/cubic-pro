@@ -35,9 +35,13 @@
                     <form id="form-add-edit" action="{{ route('manage_approval.store') }}" method="post">
                         @csrf
                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Approval Name <span class="text-danger">*</span></label>
-                                <input type="text" name="name" placeholder="Approval Name" class="form-control tinymce" required="required" rows="5"></input>
+							<div class="form-group">
+                                <label class="control-label">Department <span class="text-danger">*</span></label>
+								<select class="form-control select2" name="department" required="required">
+										@foreach($department as $dept)
+											<option value="{{$dept->department_code}}">{{'('.$dept->department_code.') - '.$dept->department_name}}</option>
+										@endforeach
+								</select>
                                 <span class="help-block"></span>
                            </div>
                            
@@ -94,20 +98,20 @@
                                 </div>
                             </div>
                         </div>
-                         
-                        </div>
+                       
                         <div class="col-md-12 text-right">
                             <hr>
                         </div>
                         <div class="col-sm-6">
                         <p>Approval Details</p>
-                            </div>
+                        </div>
                             <div class="col-sm-6 text-right">
                                 <button type="button" class="btn btn-sm btn-primary btn-success" onclick="on_add()">Add</button>
                             </div>
                             <table class="table jambo_table table-bordered" id="table-details-appr">
                                 <thead>
                                     <tr>
+										<th style="width:50px"></th>
                                         <th style="width:150px">Level</th>
                                         <th style="width: 250px">User</th>
                                     </tr>
@@ -119,15 +123,17 @@
                                 </tbody> -->
                                 <tbody>
                                     <tr>
+										<td></td>
                                         <td>
                                             <div class="form-group">
-                                                <input class="form-control" name="level[]">
+												Budgeting
+                                                <input type="hidden" class="form-control" name="level[]" value="1">
                                             </div>
                                         </td>
 
                                         <td>
                                             <div class="form-group">
-                                                <select class="select2 form-control" name="user[]" data-placeholder="Choose User">
+                                                <select class="select2 form-control" name="user[]" data-placeholder="Choose User" required="required">
                                                     <option></option>
                                                     @foreach ($users as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -138,15 +144,17 @@
                                     </tr>
 
                                     <tr>
+										<td></td>
                                         <td>
                                             <div class="form-group">
-                                                <input class="form-control" name="level[]">
+												Department Head
+                                                <input type="hidden" class="form-control" name="level[]" value="2">
                                             </div>
                                         </td>
 
                                         <td>
                                             <div class="form-group">
-                                                <select class="select2 form-control" name="user[]" data-placeholder="Choose User">
+                                                <select class="select2 form-control" name="user[]" data-placeholder="Choose User" required="required">
                                                     <option></option>
                                                     @foreach ($users as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -157,15 +165,17 @@
                                     </tr>
 
                                     <tr>
+										<td></td>
                                         <td>
                                             <div class="form-group">
-                                                <input class="form-control" name="level[]">
+												General Manager
+                                                <input type="hidden" class="form-control" name="level[]" value="3">
                                             </div>
                                         </td>
 
                                         <td>
                                             <div class="form-group">
-                                                <select class="form-control select2" name="user[]" data-placeholder="Choose User">
+                                                <select class="form-control select2" name="user[]" data-placeholder="Choose User" required="required">
                                                     <option></option>
                                                     @foreach ($users as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -177,7 +187,7 @@
                                 </tbody>
                             </table>
                         </div>
-
+					
                         <div class="col-md-12">
                             <div class="pull-right">
                                 <input type="submit" name="submit" value="Save" class="btn btn-sm btn-primary">

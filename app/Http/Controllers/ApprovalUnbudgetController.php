@@ -16,7 +16,8 @@ use App\ApproverUser;
 use DB;
 use DataTables;
 use Cart;
-
+use App\Item;
+use App\Cart as Carts;
 class ApprovalUnbudgetController extends Controller
 {
     public function getData()
@@ -56,13 +57,13 @@ class ApprovalUnbudgetController extends Controller
 
     public function store(Request $request)
     {
-
+		$item 				= Item::find($request->remarks);
 		$cartData 			= [
 
 									'id' => "ub",//$budget->budget_no
 									'name' => $request->project_name,
 									'price' => $request->price_actual,
-									'qty' => 1,
+									'qty' => $request->qty_item,
 									'options' => [
 										'budget_no' => "",//$budget->budget_no,									
 										'sap_account_code' => $request->sap_gl_account_id,
@@ -70,7 +71,8 @@ class ApprovalUnbudgetController extends Controller
 										// 'budget_description'    => $request->budget_description,
 										'qty_remaining' => "",//$request->qty_remaining,	
 										'qty_actual' => $request->qty_actual,
-										'remarks' => $request->remarks,
+										'remarks' => $item->item_description,
+										'item_id' => $item->id,
 										'sap_cost_center_id' => $request->sap_cos_center,//$request->sap_cos_center_id,
 										'sap_uom_id' => $request->sap_uom_id,
 										'price_actual' => $request->price_actual,
@@ -95,7 +97,7 @@ class ApprovalUnbudgetController extends Controller
 		}
 		
         Cart::instance('unbudget')->add($cartData);
-
+		Carts::where('item_id',$item->id)->where('user_id',auth()->user()->id)->delete();
 
         $res = [
                     'type' => 'success',
@@ -324,12 +326,15 @@ class ApprovalUnbudgetController extends Controller
 					}
                     // $approval->qty_remaining         = $details->options->qty_remaining;
                     // $approval->qty_actual            = $details->options->qty_actual;
-                    $approval->remarks               = $details->options->remarks;
+                     $approval->remarks               = $details->options->remarks;
+					$approval->item_id 				 = $details->options->item_id;
                     $approval->sap_cc_code     		 = $details->options->sap_cost_center_id;
                     $approval->pr_uom           	 = $details->options->sap_uom_id;
+					$approval->pr_specs				 = $details->options->pr_specs;
+					$approval->sap_is_chemical        = $details->options->is_chemical;
                     // $approval->price_remaining       = $details->options->price_actual;
                     $approval->budget_remaining_log  = $details->options->budget_remaining_log;
-                    $approval->price_to_download     = $details->options->price_to_download;
+                    $approval->price_to_download     = $details->options->price_to_download==""?0:$details->options->price_to_download;
                     $approval->actual_gr             = $details->options->plan_gr;
                     $approval->fyear                 = date('Y');
                     $approval->budget_reserved       = $details->options->budget_remaining_log;
@@ -337,25 +342,34 @@ class ApprovalUnbudgetController extends Controller
                 }
 				// Simpan approver user
 				$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
-				
-				foreach($approval_master as $am){
-					$approvals = Approval::where('department',$user->department->department_code)->first();
-					$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
-					
-					foreach($approval_dtl as $app_dtl){
-						$approver_user = new ApproverUser();
-						$approver_user->approval_master_id  = $am->id;
-						$approver_user->user_id  			= $app_dtl->user_id;
-						$approver_user->save();
+				$approvals = Approval::where('department',$user->department->department_code)->first();
+				if(empty($approvals)){
+					$res = [
+							'title' => 'Error',
+							'type' => 'error',
+							'message' => 'There is no approval for your department'
+							];
+				}else{
+					foreach($approval_master as $am){
+						
+						$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
+						
+						foreach($approval_dtl as $app_dtl){
+							$approver_user = new ApproverUser();
+							$approver_user->approval_master_id  = $am->id;
+							$approver_user->user_id  			= $app_dtl->user_id;
+							$approver_user->save();
+						}
 					}
+					$res = [
+							'title' => 'Success',
+							'type' => 'success',
+							'message' => 'Data has been inserted'
+						];
+					Cart::instance('unbudget')->destroy();
 				}
-                $res = [
-					'title' => 'Success',
-                    'type' => 'success',
-                    'message' => 'Data has been inserted'
-                ];
 
-                Cart::instance('unbudget')->destroy();
+                
                
             });
          return redirect()

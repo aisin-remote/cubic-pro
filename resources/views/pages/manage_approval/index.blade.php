@@ -36,7 +36,7 @@
                 <table class="table m-0 table-colored table-inverse" id="tabel-manage_approval">
                     <thead>
                         <tr>
-                            <th>Approval Name</th>
+                            <th>Department</th>
                             <th>Total Approval</th>
                             <th style="width: 100px">Opsi</th>
                         </tr>

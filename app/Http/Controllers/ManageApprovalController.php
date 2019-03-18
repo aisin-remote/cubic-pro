@@ -33,67 +33,86 @@ class ManageApprovalController extends Controller
     public function create()
     {
     	$approval 	= Approval::get();
-    	// $department = Department::get();
+    	$department = Department::get();
     	$users 		= User::get();
     	$role      = Role::get();
 
-    	return view('pages.manage_approval.create', compact(['approval','users','role'])) ;
+    	return view('pages.manage_approval.create', compact(['approval','users','role','department'])) ;
     }
 
     public function store(Request $request)
     {
-    	DB::transaction(function() use ($request){
+		 
+    	$ret = DB::transaction(function() use ($request){
+			
+			$res = [
+					'title' => 'Succses',
+					'type' => 'success',
+					'message' => 'Data Saved Success!'
+				];
+		
+			try{
+				$level 						= $request->level;
+				$user 						= $request->user;
+				
+				$approval = new Approval;
+				$approval->department       = $request->department;
+				$approval->is_seq       	= $request->is_seq;
+				$approval->is_must_all      = $request->is_must_all;
+				$approval->total_approval   = count($level);
+				$approval->save();
+				
+				if (count($level) > 0 && count($user) > 0) {
+					for ($i = 0; $i < count($level); $i++) {
+						
+							if ($level[$i] != "" && $user[$i] != "") {
+						
+								$approval_d 				= new ApprovalDtl;
+								$approval_d->approval_id	= $approval->id;
+								$approval_d->level       	= $level[$i];
+								$approval_d->user_id 		= $user[$i];
 
-		    $approval = new Approval;
-		    $approval->name             = $request->name;
-		    $approval->is_seq       	= $request->is_seq;
-		    $approval->is_must_all      = $request->is_must_all;
-		    $approval->total_approval      = count(array_filter($request->level));
-		    $approval->save();
+								$approval_d->save();
+							}else{
+								throw new \Exception("There is empty data", 1);
+							}
 
-		    if (count($request->level > 0) && count($request->user) > 0) {
-		        
-		        for ($i = 0; $i < count($request->user); $i++) {
-
-		        	if (!empty($request->level[$i]) && !empty($request->user[$i])) {
-
-	        			$approval_d 				= new ApprovalDtl;
-			            $approval_d->approval_id	= $approval->id;
-			            $approval_d->level       	= $request->level[$i];
-			            $approval_d->user_id 		= $request->user[$i];
-
-			            $approval_d->save();
-		        	}
-		            
-
-		        }
-		    }
-
+					}
+				}else{
+					throw new \Exception("There is empty data", 1);
+				}
+			
+			}catch(\Exception $e){
+				 DB::rollback();
+				 $res = [
+					'title' => 'Error',
+					'type' => 'error',
+					'message' => $e->getMessage(),
+				]; 
+			}
+			
+			return $res;
 		 });
 
-        $res = [
-                    'title' => 'Succses',
-                    'type' => 'success',
-                    'message' => 'Data Saved Success!'
-                ];
-
-        return redirect()
+       return redirect()
                 ->route('manage_approval.index')
-                ->with($res);
+                ->with($ret);
+
+       
     }
 	
     public function getData()
     {
 
-    	$approval = Approval::get();
+    	$approval = Approval::select('*','approvals.id as approval_id')->join('departments', 'approvals.department','=','departments.department_code')->get();
         return DataTables::of($approval)
         ->rawColumns(['options'])
 
         ->addColumn('options', function($approval){
             return '
-                <a href="'.route('manage_approval.edit', $approval->id).'" class="btn btn-success btn-xs" data-toggle="tooltip" title="Edit"><i class="mdi mdi-pencil"></i></a>
-                <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Delete" onclick="on_delete('.$approval->id.')"><i class="mdi mdi-close"></i></button>
-                <form action="'.route('manage_approval.destroy', $approval->id).'" method="POST" id="form-delete-'.$approval->id .'" style="display:none">
+                <a href="'.route('manage_approval.edit', $approval->approval_id).'" class="btn btn-success btn-xs" data-toggle="tooltip" title="Edit"><i class="mdi mdi-pencil"></i></a>
+                <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Delete" onclick="on_delete('.$approval->approval_id.')"><i class="mdi mdi-close"></i></button>
+                <form action="'.route('manage_approval.destroy', $approval->approval_id).'" method="POST" id="form-delete-'.$approval->approval_id .'" style="display:none">
                     '.csrf_field().'
                     <input type="hidden" name="_method" value="DELETE">
                 </form>
@@ -105,41 +124,56 @@ class ManageApprovalController extends Controller
 
     public function edit($id)
     {
-        $approval = Approval::find($id);
-		$approval_dtl = ApprovalDtl::where('approval_id',$id)->get();
-    	$users 		= User::get();
-    	$role      = Role::get();
-        return view('pages.manage_approval.edit', compact(['approval','approval_dtl','users','role']));
+        $approval 		= Approval::find($id);
+		$approval_dtl 	= ApprovalDtl::where('approval_id',$id)->orderBy('level','ASC')->get();
+    	$users 			= User::get();
+    	$role      		= Role::get();
+		$department 	= Department::get();
+        return view('pages.manage_approval.edit', compact(['approval','approval_dtl','users','role','department']));
     }
 
     public function update(Request $request)
     {
-		DB::transaction(function() use ($request){
-			$approval = Approval::find($request->approval_id);
+		$ret = DB::transaction(function() use ($request){
+					try{
+						$res = [
+								'title' => 'Succses',
+								'type' => 'success',
+								'message' => 'Data Saved Success!'
+							];
+						$approval = Approval::find($request->approval_id);
 
-			if (empty($approval)) {
-				return response()->json('Type not found', 500);
-			}
-			
-			$approval->name 		= $request->name;
-			$approval->is_seq 		= $request->is_seq;
-			$approval->is_must_all 	= $request->is_must_all;
-			$approval->total_approval = count($request->level);
-			$approval->save();
-			
-			ApprovalDtl::where('approval_id',$approval->id)->delete();
+						if (empty($approval)) {
+							return response()->json('Type not found', 500);
+						}
+						
+						$approval->department 	= $request->department;
+						$approval->is_seq 		= $request->is_seq;
+						$approval->is_must_all 	= $request->is_must_all;
+						$approval->total_approval = count($request->level);
+						$approval->save();
+						
+						ApprovalDtl::where('approval_id',$approval->id)->delete();
 
-			for($i=0; $i < count($request->level); $i++)
-			{
-				$approval_dtl = new ApprovalDtl();
-				$approval_dtl->approval_id 	= $approval->id; 
-				$approval_dtl->user_id 		= $request->user[$i];
-				$approval_dtl->level 		= $request->level[$i];
-				
-				$approval_dtl->save();
-			}
+						for($i=0; $i < count($request->level); $i++)
+						{
+							$approval_dtl = new ApprovalDtl();
+							$approval_dtl->approval_id 	= $approval->id; 
+							$approval_dtl->user_id 		= $request->user[$i];
+							$approval_dtl->level 		= $request->level[$i];
+							
+							$approval_dtl->save();
+						}
+					}catch(\Exception $e){
+						 DB::rollback();
+						 $res = [
+							'title' => 'Error',
+							'type' => 'error',
+							'message' => $e->getMessage(),
+						]; 
+					}
 			
-		});
+				});
 		
 		if ($request->wantsJson()) {
 			return response()->json($approval);

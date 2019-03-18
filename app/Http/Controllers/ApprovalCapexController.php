@@ -17,10 +17,10 @@ use App\ApproverUser;
 use DB;
 use App\Department;
 use DataTables;
-
+use App\Item;
 
 use Cart;         
-
+use App\Cart as Carts;
 
 class ApprovalCapexController extends Controller
 {
@@ -70,38 +70,18 @@ class ApprovalCapexController extends Controller
 
     public function store(Request $request)
     {
-		/*
-		   "budget_no" => "1"
-		  "asset_kind" => "CIP"
-		  "asset_category" => "Chemical"
-		  "sap_asset_id" => "3"
-		  "asset_code" => "AV"
-		  "project_name" => "purpose project"
-		  "settlement_date" => "2019-03-14"
-		  "sap_cost_center_id" => "A00000"
-		  "remarks" => "Back Support"
-		  "sap_uom_id" => "1"
-		  "budget_description" => "eagle view reward"
-		  "pr_specs" => "item spec 2"
-		  "price_remaining" => "2000000.00"
-		  "budget_remaining_log" => "4000000.00"
-		  "plan_gr" => "2019-03-14"
-		  "price_actual" => "1000000"
-		  "foreign_currency" => "on"
-		  "currency" => "USD"
-		  "price_to_download" => "100"
-		*/
         $capex              = Capex::find($request->budget_no);
         $sap_assets         = SapAsset::find($request->sap_asset_id);
         $sap_costs          = SapCostCenter::find($request->sap_cost_center_id); 
         $sap_uoms           = SapUom::find($request->sap_uom_id);
+		$item 				= Item::find($request->remarks);
 
 	    Cart::instance('capex')->add([
 
 					'id'    => $request->budget_no,
 					'name'  => $request->project_name,
 					'price' => $request->price_actual,
-					'qty' 	=> 1,// default satu
+					'qty' 	=> $request->actual_qty,// default satu
 					'options' => [
 						'budget_no'             => $capex->budget_no,
 						'budget_description'    => $request->budget_description,
@@ -110,7 +90,8 @@ class ApprovalCapexController extends Controller
 						'sap_cost_center_id'    => $sap_costs->cc_code,//$request->sap_cost_center_id,
 						'sap_asset_id'          => $sap_assets->asset_code,//$request->sap_asset_id,
 						'asset_code'			=> $request->asset_code,
-						'remarks'               => $request->remarks,
+						'remarks'               => $item->item_description,//$request->remarks,
+						'item_id'				=> $item->id,
 						'sap_uom_id'            => $sap_uoms->uom_code,//$request->sap_uom_id,					
 						'budget_remaining_log'  => $request->budget_remaining_log,
 						'price_remaining'       => $request->price_remaining,
@@ -122,7 +103,7 @@ class ApprovalCapexController extends Controller
 						'type' => 'capex'
 					]
 				]);
-		
+		Carts::where('item_id',$item->id)->where('user_id',auth()->user()->id)->delete();
         $res = [
                     'type' => 'success',
                     'title' => 'Success',
@@ -199,6 +180,7 @@ class ApprovalCapexController extends Controller
                 $approval->sap_cc_code		     = $details->options->sap_cost_center_id;
                 $approval->sap_asset_no          = $details->options->sap_asset_id;
                 $approval->remarks               = $details->options->remarks;
+				$approval->item_id 				 = $details->options->item_id;
                 $approval->pr_uom            	 = $details->options->sap_uom_id;
                 $approval->budget_remaining_log  = $details->options->budget_remaining_log;
                 $approval->price_to_download     = $details->options->price_to_download ==""?0:$details->options->price_to_download;
@@ -214,27 +196,36 @@ class ApprovalCapexController extends Controller
 			// Simpan approver user
 			$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
 				
-			foreach($approval_master as $am){
-				$approvals = Approval::where('department',$user->department->department_code)->first();
-				$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
-				
-				foreach($approval_dtl as $app_dtl){
-					$approver_user = new ApproverUser();
-					$approver_user->approval_master_id  = $am->id;
-					$approver_user->user_id  			= $app_dtl->user_id;
-					$approver_user->save();
+			$approvals = Approval::where('department',$user->department->department_code)->first();
+			if(empty($approvals)){
+				$res = [
+						'title' => 'Error',
+						'type' => 'error',
+						'message' => 'There is no approval for your department'
+					];
+			}else{
+				foreach($approval_master as $am){
+					
+					$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
+					
+					foreach($approval_dtl as $app_dtl){
+						$approver_user = new ApproverUser();
+						$approver_user->approval_master_id  = $am->id;
+						$approver_user->user_id  			= $app_dtl->user_id;
+						$approver_user->save();
+					}
 				}
-			}
-			
-            $res = [
-                        'title' => 'Sukses',
-                        'type' => 'success',
-                        'message' => 'Data berhasil disimpan!'
-                    ];		
+				$res = [
+						'title' => 'Success',
+						'type' => 'success',
+						'message' => 'Data has been inserted'
+					];
+				Cart::instance('capex')->destroy();
+			}		
            
         });
 		
-		Cart::instance('capex')->destroy();
+		
 		
          return redirect()
                         ->route('approval-capex.ListApproval')

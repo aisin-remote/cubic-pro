@@ -143,11 +143,11 @@
 								<select name="remarks" data-placeholder="Item Detail" required="required">
                                     <option></option>
                                         @foreach ($carts as $cart)
-                                        <option value="{{ $cart->item->item_description }}" item_id="{{$cart->item_id}}">{{ $cart->item->item_description }}</option>
+                                        <option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" actual_qty="{{$cart->qty}}">{{ $cart->item->item_description }}</option>
                                         @endforeach
-                                </select>	  
+                                </select>	
+								<input type="hidden" name="actual_qty">
                                 <span class="help-block"></span>
-								
                            </div> 
 
                             <div class="form-group">

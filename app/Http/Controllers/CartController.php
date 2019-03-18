@@ -52,8 +52,10 @@ class CartController extends Controller
     {
         if ($request->budget_type == 'capex') {
             return redirect('approval/create/cx/add');
-        } else {
+        } else if($request->budget_type == 'expense'){
             return redirect('approval/create/ex/add');
-        }
+        }else{
+			 return redirect('approval/create/ub/add');
+		}
     }
 }
