@@ -49,14 +49,19 @@ function cancelApproval(approval_number)
     dataType: 'json',
     data: {approval_number:approval_number},
     success: function(res) {
-      show_notification(res.title, res.type, res.message);
+	 if(res.error){
+		show_notification('Error', 'error',res.error); 
+	 }else{
+		show_notification('Success', 'success',res.success);
+	 }
+	 return false;
     },
     error: function(xhr, sts, err) {
       show_notification('Error', 'error', err);
     },
     complete: function()
     {
-      tData.draw();
+      tApprovalExpense.draw();
       $('#modal-details').modal('hide');
       $('#form-details input').val('');
       $('#form-details select').val('').trigger('change');

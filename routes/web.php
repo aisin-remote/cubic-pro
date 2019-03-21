@@ -11,7 +11,6 @@
 |
 */
 use App\ApprovalMaster;
-
 Route::get('/', 'CatalogController@index');
 Route::get('/catalog', 'CatalogController@show');
 Route::post('/catalog', 'CatalogController@store');
@@ -32,6 +31,8 @@ Route::middleware('auth')->group(function(){
 	Route::get('/cart/checkout', 'CartController@checkout');
 
 	Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+	Route::get('/dashboard/view/{group_type}','DashboardController@view');
+	Route::get('/dashboard/getJSONData','DashboardController@getJSONData');
 	Route::get('/dashboard/get_chart', 'DashboardController@getChart')->name('dashboard.chart');
 	Route::get('/dashboard/get_data_park', 'DashboardController@getDataPark')->name('dashboard.get_data_park');
 	Route::get('/dashboard/get_data_user', 'DashboardController@getDataUser')->name('dashboard.get_data_user');
@@ -385,6 +386,7 @@ Route::middleware('auth')->group(function(){
 	// Route Manage Approval
 	Route::get('manage_approval/get_data', 'ManageApprovalController@getData');
 	Route::get('/master/approval/get_user', 'ManageApprovalController@getUser');
+	Route::get('/master/approval/get_level', 'ManageApprovalController@getLevel');
 	Route::resource('manage_approval', 'ManageApprovalController');
 
 	// Route Cart Approval Capex

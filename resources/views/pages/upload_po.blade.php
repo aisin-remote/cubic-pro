@@ -25,9 +25,6 @@
     <!-- end row -->
 
     <div class="row">
-        <div class="col-sm-4">
-             <a href="{{ route('upload_po.create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Data PO</a>
-        </div><!-- end col -->
         <div class="col-xs-12 text-right">
         <a href="{{ route('upload_po.export') }}" class="btn btn-custom btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-download"></i> Download</a>
         </div>
@@ -39,6 +36,7 @@
                 <table class="table m-0 table-colored table-inverse" id="table-upload_po">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Approval Number</th>
                             <th>Description</th>
                             <th>Approval Create Date</th>

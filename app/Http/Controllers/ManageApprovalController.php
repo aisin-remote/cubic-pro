@@ -35,13 +35,15 @@ class ManageApprovalController extends Controller
     	$approval 	= Approval::get();
     	$department = Department::get();
     	$users 		= User::get();
-    	$role      = Role::get();
+		$role      = Role::get();
+		$level_approval = System::configmultiply('level_approval');
 
-    	return view('pages.manage_approval.create', compact(['approval','users','role','department'])) ;
+    	return view('pages.manage_approval.create', compact(['approval','users','role','department','level_approval'])) ;
     }
 
     public function store(Request $request)
     {
+		// dd($request->all());
 		 
     	$ret = DB::transaction(function() use ($request){
 			
@@ -52,7 +54,7 @@ class ManageApprovalController extends Controller
 				];
 		
 			try{
-				$level 						= $request->level;
+				$level 						= $request->level_approval;
 				$user 						= $request->user;
 				
 				$approval = new Approval;
@@ -79,7 +81,8 @@ class ManageApprovalController extends Controller
 
 					}
 				}else{
-					throw new \Exception("There is empty data", 1);
+					// dd($level);
+					throw new \Exception("There is empty data ---", 1);
 				}
 			
 			}catch(\Exception $e){
@@ -221,6 +224,13 @@ class ManageApprovalController extends Controller
                         ->toArray();
 
         return response()->json(array_merge($this->arr_dummy, $data));
+	}
+	
+	public function getLevel(Request $request)
+    {
+        $data = System::ConfigMultiply('level_approval');
+                
+        return response()->json(array_merge($this->arr_dummy, $data->toArray()));
     }
 
 }

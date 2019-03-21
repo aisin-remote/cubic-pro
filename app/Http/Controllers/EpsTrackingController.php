@@ -12,17 +12,12 @@ use Carbon\Carbon;
 
 class EpsTrackingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         // $fiscal_year = !empty($request->fiscal_year) ? $request->fiscal_year : Carbon::now()->format('Y');
-        $year = '2018';
-
-        return view('pages.eps_tracking', compact(['year']));
+        // $year = '2018';
+        return view('pages.eps_tracking');
+        // return view('pages.eps_tracking', compact(['year']));
     }
 
     public function show($id)

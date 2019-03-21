@@ -15,17 +15,7 @@
                 <h4 class="page-title"> Create Expense Approval Sheet</h4>
                 <ol class="breadcrumb p-0 m-0">
                     <li class="active">
-						@if (\Entrust::hasRole('user')) 
-						 <div class="btn-group pull-right">
-							<a href="{{ route('approval-expense.create') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Add Item</a>
-							<button type="button" id="btn-submit" class="btn btn-success btn-bordered waves-effect waves-light m-b-20"> Submit Approval</a>
-							<form action="{{route('approval_expense.approval')}}" method="post" id="formSubmitApproval">
-								@csrf
-								<input type="hidden" name="approval_id" id="happroval_id"/>
-								
-							</form>
-						</div>
-                         @endif
+						
                     </li>
                 </ol>
                
@@ -37,6 +27,17 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card-box">
+				@if (\Entrust::hasRole('user')) 
+				 <div class="btn-group pull-right">
+					<a href="{{ route('approval-expense.create') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Add Item</a>
+					<button type="button" id="btn-submit" class="btn btn-success btn-bordered waves-effect waves-light m-b-20"> Submit Approval</a>
+					<form action="{{route('approval_expense.approval')}}" method="post" id="formSubmitApproval">
+						@csrf
+						<input type="hidden" name="approval_id" id="happroval_id"/>
+						
+					</form>
+				</div>
+				 @endif
                 <table class="table m-0 table-colored table-inverse" id="table-approval-expense">
                     <thead>
                         <tr>

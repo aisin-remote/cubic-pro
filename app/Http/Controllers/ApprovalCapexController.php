@@ -92,7 +92,7 @@ class ApprovalCapexController extends Controller
 						'asset_code'			=> $request->asset_code,
 						'remarks'               => $item->item_description,//$request->remarks,
 						'item_id'				=> $item->id,
-						'sap_uom_id'            => $sap_uoms->uom_code,//$request->sap_uom_id,					
+						'sap_uom_id'            => $sap_uoms->uom_sname,//$request->sap_uom_id,					
 						'budget_remaining_log'  => $request->budget_remaining_log,
 						'price_remaining'       => $request->price_remaining,
 						'currency'				=> $request->currency,
@@ -181,7 +181,8 @@ class ApprovalCapexController extends Controller
                 $approval->sap_asset_no          = $details->options->sap_asset_id;
                 $approval->remarks               = $details->options->remarks;
 				$approval->item_id 				 = $details->options->item_id;
-                $approval->pr_uom            	 = $details->options->sap_uom_id;
+                // $approval->pr_uom            	 = $details->options->sap_uom_id;
+                $approval->pr_uom            	 = $details->options->uom_sname;
                 $approval->budget_remaining_log  = $details->options->budget_remaining_log;
                 $approval->price_to_download     = $details->options->price_to_download ==""?0:$details->options->price_to_download;
 				// $approval->price_to_download	 = 1000;
@@ -211,7 +212,8 @@ class ApprovalCapexController extends Controller
 					foreach($approval_dtl as $app_dtl){
 						$approver_user = new ApproverUser();
 						$approver_user->approval_master_id  = $am->id;
-						$approver_user->user_id  			= $app_dtl->user_id;
+                        $approver_user->approval_detail_id  = $app_dtl->id;
+                        $approver_user->user_id  = $app_dtl->user_id;
 						$approver_user->save();
 					}
 				}

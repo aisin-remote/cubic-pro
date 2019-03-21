@@ -143,7 +143,7 @@
 								<select name="remarks" data-placeholder="Item Detail" required="required">
                                     <option></option>
                                         @foreach ($carts as $cart)
-                                        <option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" actual_qty="{{$cart->qty}}">{{ $cart->item->item_description }}</option>
+                                        <option value="{{ $cart->item_id }}" total="{{$cart->total}}" item_id="{{$cart->item_id}}" item_spec="{{$cart->item->item_spesification}}" actual_qty="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}">{{ $cart->item->item_description }}</option>
                                         @endforeach
                                 </select>	
 								<input type="hidden" name="actual_qty">
@@ -202,7 +202,7 @@
                        
                             <div class="form-group">
                                 <label class="control-label">Amount on Quotation (IDR) <span class="text-danger">*</span></label>
-                                <input type="number" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control tinymce" required="required" number="true" rows="5"></input>
+                                <input type="number" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control tinymce" required="required" number="true" rows="5" readonly="readonly"></input>
                                 <span class="help-block"></span>
                            </div>
                            

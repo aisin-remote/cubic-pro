@@ -7,8 +7,11 @@ $(document).ready(function(){
     if (budget_no  !== '' && budget_no !== null && budget_no !== undefined ) {
       var arr_expense = getData(budget_no);
 	  if(arr_expense.is_closed){
-		  show_notification("Error",'error','Budget['+budget_no+'] already fully reserved, please contact Accounting/Finance Dept. for further assistance');
+		  show_notification("Error",'error','Budget ['+arr_expense.budget_no+'] already fully reserved, please contact Accounting/Finance Dept. for further assistance');
 		  $('[name="budget_no"]').val('').trigger('change');
+	  }else if(parseInt(arr_expense.budget_plan) - parseInt(arr_expense.budget_reserved) <=0){
+		  show_notification("Error",'error', 'Budget ['+arr_expense.budget_no+'] already fully reserved, please contact Accounting/Finance Dept. for further assistance');
+		   $('[name="budget_no"]').val('').trigger('change');
 	  }else{
 		  $('[name="budget_description"]').val(arr_expense.description);
 		  $('[name="qty_remaining"]').val(arr_expense.qty_plan);
@@ -36,7 +39,14 @@ $(document).ready(function(){
 
 $('select[name="remarks"]').select2().change(function(){
 	 var qty_item = $(this).find('option:selected').attr('qty_item');
+	 var uom_id 	= $(this).find('option:selected').attr('uom_id');
+	 var item_spec  = $(this).find('option:selected').attr('item_spec');
+	 var total 		= $(this).find('option:selected').attr('total');
 	 $('input[name="qty_item"]').val(qty_item);
+	 $('input[name="qty_actual"]').val(qty_item);
+	 $('select[name="sap_uom_id"]').select2("val", uom_id);
+	 $('input[name="pr_specs"]').val(item_spec);
+	 $('input[name="price_actual"]').val(total);
   });
 
 function onDelete(rowid)

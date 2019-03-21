@@ -139,7 +139,7 @@
 									<select name="remarks" class="select2" data-placeholder="Item Detail" required="required">
 										<option></option>
 											@foreach ($carts as $cart)
-											<option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}">{{ $cart->item->item_description }}</option>
+											<option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_spesification}}" total="{{$cart->total}}">{{ $cart->item->item_description }}</option>
 											@endforeach
 									</select>	  
 									<input type="hidden" name="qty_item">
@@ -159,21 +159,22 @@
 										<option></option>
 											<option></option>
 											@foreach ($sap_uoms as $sap_uom)
-											<option value="{{ $sap_uom->uom_code }}">{{ $sap_uom->uom_code }} - {{ $sap_uom->uom_fname }}</option>
+											<option value="{{ $sap_uom->id }}">{{ $sap_uom->uom_code }} - {{ $sap_uom->uom_fname }}</option>
 											@endforeach
 									</select>
 									<span class="help-block"></span>
 							   </div> 
 							   <div class="form-group">
+									<label class="control-label">Price <span class="text-danger">*</span></label>
+									<input type="number" name="price_actual" placeholder="Price Actual" class="form-control tinymce" required="required"  readonly ></input>
+									<span class="help-block"></span>
+							   </div>
+							   <div class="form-group">
 									<label class="control-label">Quantity <span class="text-danger">*</span></label>
 									<input type="number" name="qty_actual" placeholder="Quantity Actual" class="form-control tinymce" required="required" ></input>
 									<span class="help-block"></span>
 							   </div> 
-								<div class="form-group">
-									<label class="control-label">Price <span class="text-danger">*</span></label>
-									<input type="number" name="price_actual" placeholder="Price Actual" class="form-control tinymce" required="required"  ></input>
-									<span class="help-block"></span>
-							   </div>
+								
 							   <div class="form-group">
 									<label class="control-label">Actual GR <span class="text-danger">*</span></label>
 									<input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}"></input>

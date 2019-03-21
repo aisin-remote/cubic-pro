@@ -3,12 +3,14 @@ $(document).ready(function(){
 
   $('[name="budget_no"]').change(function(){
   	var budget_no = $(this).val();
-
     if (budget_no  !== '' && budget_no !== null && budget_no !== undefined ) {
       var arr_capex = getData(budget_no);
 	  if(arr_capex.is_closed){
-		  show_notification("Error",'error','Budget['+budget_no+'] already fully reserved, please contact Accounting/Finance Dept. for further assistance');
-		  $([name="budget_no"]).val('').trigger('change');
+		  show_notification("Error",'error','Budget ['+arr_capex.budget_no+'] already closed, please contact Accounting/Finance Dept. for further assistance');
+		  $('[name="budget_no"]').val('').trigger('change');
+	  }else if(parseInt(arr_capex.budget_plan) - parseInt(arr_capex.budget_reserved) <=0){
+		  show_notification("Error",'error', 'Budget ['+arr_capex.budget_no+'] already fully reserved, please contact Accounting/Finance Dept. for further assistance');
+		   $('[name="budget_no"]').val('').trigger('change');
 	  }else{
 		  $('[name="budget_description"]').val(arr_capex.equipment_name);
 		  $('[name="price_remaining"]').val(arr_capex.budget_plan);
@@ -29,7 +31,13 @@ $(document).ready(function(){
   });
   $('select[name="remarks"]').select2().change(function(){
 	 var actual_qty = $(this).find('option:selected').attr('actual_qty');
+	 var uom_id 	= $(this).find('option:selected').attr('uom_id');
+	 var item_spec  = $(this).find('option:selected').attr('item_spec');
+	 var total 		= $(this).find('option:selected').attr('total');
 	 $('input[name="actual_qty"]').val(actual_qty);
+	 $('select[name="sap_uom_id"]').select2("val", uom_id);
+	 $('input[name="pr_specs"]').val(item_spec);
+	 $('input[name="price_actual"]').val(total);
   });
 });
 

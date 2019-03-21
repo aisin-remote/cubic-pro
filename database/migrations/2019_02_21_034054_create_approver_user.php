@@ -17,6 +17,7 @@ class CreateApproverUser extends Migration
 		Schema::create('approver_users', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('approval_master_id');
+            $table->integer('approval_detail_id');
             $table->integer('user_id');
             $table->boolean('is_approve')->default(0);
             $table->timestamps();

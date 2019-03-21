@@ -101,11 +101,11 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label">Direction</label>
-                            <select name="direction" class="select2" data-placeholder="Direction" data-allow-clear="true">
+                            <label class="control-label">Director</label>
+                            <select name="direction" class="select2" data-placeholder="Director" data-allow-clear="true">
                                 <option></option>
                                 @foreach ($dir_key as $dir_key)
-                                    <option value="{{ $dir_key['id'] }}"{{ $dir_key['id'] == $user->dir_key ? 'selected=selected' : '' }}>{{ $dir_key['text'] }}</option>
+                                    <option value="{{ $dir_key['id'] }}"{{ $dir_key['id'] == $user->direction ? 'selected=selected' : '' }}>{{ $dir_key['text'] }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -21,6 +21,29 @@ function get_pos() {
   return res.responseJSON;
 }
 
+$(document).ready(function(){
+  $('#form-add-edit').validate({
+	rules: {
+        '^level[]': {
+            required: true
+        }
+    }
+  });
+  arr_pos_level = get_pos_level();
+});
+
+function get_pos_level() {
+  var res = $.ajax({
+    url: SITE_URL + '/master/approval/get_level',
+    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        type: 'GET',
+        dataType:'JSON',
+        async: false,
+  });
+
+  return res.responseJSON;
+}
+
 var row_length = 0;
 
 function on_add(){
@@ -37,8 +60,7 @@ function on_add(){
         '<td style="width:50px" class="text-center"><button type="button" class="btn btn-danger btn-xs removeRow"><i class="fa fa-times"></i></button></td>' +
         '<td>'+
         '<div class="form-group">' +
-		name+
-        '<input name="level[]" value="'+num+'" type="hidden" class="form-control" placeholder="Level" required="required">'+
+        '<select name="level_approval[]" class="input-sm select-level" required="required" data-placeholder="Level" data-allow-clear="true"></select>'+
         '<span class="help-block"></span>' +
         '</div>'+
         '</td>' +
@@ -54,6 +76,11 @@ function on_add(){
 
   $('.select-pos').select2({
     data: arr_pos,
+    
+  });
+
+  $('.select-level').select2({
+    data: arr_pos_level,
     
   });
 

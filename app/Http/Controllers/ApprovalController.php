@@ -3,29 +3,32 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\ApprovalMaster;
 use DataTables;
 use DB;
-use Storage;
-use App\Capex;
-use App\Capex_archive;      
+use Storage;     
 use App\Helpers;
 use App\User;
 use App\Department;
 use Carbon\Carbon;          
 use App\Period;             
-use App\Expense; 
+
 use App\SapModel\SapAsset;           
 use App\SapModel\SapCostCenter;           
 use App\SapModel\SapGlAccount;           
-use App\SapModel\SapUom;           
-use App\Expense_archive;    
-use App\Approval_master;    
-use App\ApprovalDetail;
+use App\SapModel\SapUom;   
+use App\Capex;
+use App\CapexArchive; 
+use App\Expense;         
+use App\ExpenseArchive;    
+
 use App\Cart;
 use App\Approval;
-use Cart as Carts;
 use App\ApproverUser;
+use App\ApprovalDtl;
+use App\ApprovalMaster;    
+use App\ApprovalDetail;
+use Cart as Carts;
+
 use Excel;
 
 class ApprovalController extends Controller
@@ -72,7 +75,8 @@ class ApprovalController extends Controller
     public function createApproval()
     {
 		$approval = Approval::get();
-    	return view('pages.approval.capex.create-approval',compact(['approval']));
+		$isExistOverdueCIP = $this->isExistOverdueCIP();
+    	return view('pages.approval.capex.create-approval',compact(['approval','isExistOverdueCIP']));
     }
     public function create()
     {
@@ -81,7 +85,7 @@ class ApprovalController extends Controller
         $sap_gl_group    = SapGlAccount::get();
         $sap_uoms        = SapUom::get();
         $capexs          = Capex::where('department', auth()->user()->department->department_code)->get();
-		$carts 			 = Cart::where('user_id', auth()->user()->id)->get();
+		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
     	return view('pages.approval.capex.create', compact(['sap_assets','sap_costs','sap_gl_group', 'sap_uoms', 'capexs', 'carts']));
     }
     public function approvalExpense()
@@ -100,7 +104,7 @@ class ApprovalController extends Controller
         $sap_gl_account  = SapGlAccount::get();
         $sap_uoms        = SapUom::get();
         $expenses        = Expense::where('department', auth()->user()->department->department_code)->get();
-		$carts 			 = Cart::where('user_id', auth()->user()->id)->get();
+		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
         return view('pages.approval.expense.create', compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses','carts']));
     }
     public function storeExpense()
@@ -125,7 +129,7 @@ class ApprovalController extends Controller
         $sap_uoms        = SapUom::get();
         $expenses        = Expense::where('department', auth()->user()->department->department_code)->get();
 		$capexs          = Capex::where('department', auth()->user()->department->department_code)->get();
-		$carts 			 = Cart::where('user_id', auth()->user()->id)->get();
+		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
         return view('pages.approval.unbudget.create',compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses', 'capexs','carts']));
     }
     public function storeUnbudget()
@@ -529,110 +533,388 @@ class ApprovalController extends Controller
         $total = round(floatval($total->total)/$thousands, $rounded);
         return $total;
     }
-	
-	public function approveAjax(Request $request)
-	{
-		$data = array('success'=>'Approval ['.$request->approval_number.'] approved.');
+	public static function sumBudgetPlan(   $budget_type, 
+                                            $plan_code,
+                                            $group_name = [],
+                                            $group_type = 'division',
+                                            $thousands = 1000000000)
+    {
+
+        // Revised Plan = Plan (Actual based) + Revised (Plan) - Archive Plan
+        // Original Plan = Plan - Revised Plan + Archive Plan
+
+        $total = 0.0;
+		$period = Period::all();
+		if(!empty($period) && count($period)>=6)
+		{
+			$fyear_open = $period[0]->value;
+			
+			// Revised Plan
+			if ($plan_code == 'R') {
+				$total = $budget_type == 'cx' ? 
+							Capex::whereIn($group_type, $group_name)
+								 ->where('fyear', $fyear_open)   
+								 ->get([
+										DB::raw('SUM(CASE WHEN is_revised = 1 THEN budget_plan ELSE budget_used END) as total')
+									])
+								->first() :
+							Expense::whereIn($group_type, $group_name)
+								 ->where('fyear', $fyear_open)               
+								 ->get([
+										DB::raw('SUM(CASE WHEN is_revised = 1 THEN budget_plan ELSE budget_used END) as total')
+									])
+								->first();
+				$total = round(floatval($total->total)/$thousands, 2);
+			}
+			elseif ($plan_code == 'O') {
+
+			// Original Plan
+				$total_master = $budget_type == 'cx' ? 
+									Capex::whereIn($group_type, $group_name)       // Capex::whereIn('division', $division)
+										->where('fyear', $fyear_open)                // bugs fiscal year as parameter
+										->where('is_revised', 0)
+										->sum('budget_plan') :
+									Expense::whereIn($group_type, $group_name)       // Expense::whereIn('division', $division)
+										->where('fyear',$fyear_open)                // bugs fiscal year as parameter
+										->where('is_revised', 0)
+										->sum('budget_plan');
+				
+				$total_archive = $budget_type == 'cx' ? 
+									CapexArchive::whereIn($group_type, $group_name)       // Capex_archives::whereIn('division', $division)
+										->where('fyear', $fyear_open)                // fiscal year as parameter
+										->sum('budget_plan') :
+									ExpenseArchive::whereIn($group_type, $group_name)       //Expense_archives::whereIn('division', $division)
+										->where('fyear', $fyear_open)                //bugs fiscal year as parameter
+										->sum('budget_plan');
+				
+				$total = $total_master + $total_archive;
+				$total = round($total/$thousands, 2);
+			}
+		}              
 		
-		try{
-			
-		 DB::transaction(function() use ($request){
-			$user = auth()->user(); 
-            $approval = ApprovalMaster::getSelf($request->approval_number);
-			// approve di tabel approver_user
-			$approver_user = ApproverUser::where('approval_master_id',$approval->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
-				
-            $approval->approve();
-			
-            if ($approval->budget_type != 'ub' && $approval->budget_type != 'uc' && $approval->budget_type != 'ue' && $approval->status == 3) {
-				
-                $actual_prices = [];
+        
+        return $total;
+    }
+	
+    public static function sumBudgetActual($budget_type, 
+                                            $filter_date,
+                                            $group_name =[],
+                                            $group_type = 'division',
+                                            $thousands = 1000000000, $rounded = 2)
+    {
+        $total = 0.0;
+        $arr_budget_type = is_array($budget_type) ? $budget_type : 
+                            array($budget_type, 'u'.substr($budget_type, 0, 1) );
 
-                foreach ($approval->details as $detail) {
-                    
-                    if(is_null($detail)){
-                        $data['error']	="Master Budget No: ".$detail->budget_no." is Deleted by Finance.\nPlease Contact Finance Department";
-                        return $data;
-                    }
-                    
-                    $detail->budget_remaining -= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+        $total = ApprovalDetail::whereBetween('actual_gr', $filter_date)
+                                    ->join('approval_masters', 'approval_master_id', '=', 'approval_masters.id' )
+                                    ->whereIn('budget_type', $arr_budget_type)
+                                    ->whereIn($group_type, $group_name)
+                                    ->where('status', '>=', 3)  // filter GM Up (>=3)
+                                    ->get([
+                                                DB::raw('SUM(CASE WHEN actual_price_purchasing <= 0 THEN actual_price_user ELSE actual_price_purchasing END) as total')
+                                            ])
+                                    ->first();
+		
+        $total = round(floatval($total->total)/$thousands, $rounded);
+        return $total;
+		
+    }
+	 public static function sumBudgetPlanMonthly($budget_type, 
+                                                $filter_date,
+                                                $plan_code,       
+                                                $group_name = [],
+                                                $group_type = 'division',
+                                                $thousands = 1000000000)
+    {
+        $subtotal = 0.0;
+		$budgets  = [];
+        // Revised Plan = Plan (Actual based) + Revised (Plan) - Archive Plan
+        // Original Plan = Plan - Revised Plan + Archive PlanS
+		$period = Period::all();
+		if(!empty($period) && count($period)>=6)
+		{
+			$fyear_open = $period[0]->name; 
 
-                    $detail->budget_used += $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+			// Revised
+			if ($plan_code == 'R') {
 
-                    if ($approval->budget_type == 'ex') {
-                        
-                        $detail->qty_remaining -= $detail->actual_qty;
+				$budgets = $budget_type == 'cx' ? 
 
-                        $detail->qty_used += $detail->actual_qty;
-                    }
-
-                    $detail->status = $detail->budget_remaining >= 0 ? 0 : 1;
-                     
-                    $detail->is_closed = $detail->budget_remaining > 0 ? 0 : 1;
-                    $detail->save();
-                }
-            }
-            $approval->save();
-			
-		 });
-		 
-		}catch(\Exception $e){
-			$data['error'] = $e->getMessage();
+								Capex::whereBetween('plan_gr', $filter_date)
+										->where('fyear',$fyear_open)       
+										->whereIn($group_type, $group_name)   
+										->orderBy('plan_gr', 'asc')
+										->groupBy('month')->get([
+															DB::raw('substr(plan_gr,6,2) as month'),
+															DB::raw('SUM(CASE WHEN is_revised = 1 THEN budget_plan ELSE budget_used END) as total')
+														]) :
+								Expense::whereBetween('plan_gr', $filter_date)
+										->where('fyear',$fyear_open)        
+										->whereIn($group_type, $group_name)
+										->orderBy('plan_gr', 'asc')
+										->groupBy('month')->get([
+															DB::raw('substr(plan_gr,6,2) as month'),
+															DB::raw('SUM(CASE WHEN is_revised = 1 THEN budget_plan ELSE budget_used END) as total')
+														]);
+			}
+			elseif ($plan_code == 'O') {
+				// Original
+				$tbl_budget = $budget_type == 'cx' ? 'capexes' : 'expenses';
+				$tbl_archive = $budget_type == 'cx' ? 'capex_archives' : 'expense_archives';
+				$queries = DB::select(
+							'select substr(plan_gr,6,2) AS month, SUM(`budget_plan`) as total
+								from (
+										(select * from `'.$tbl_archive.'` 
+											where `plan_gr` between :filter_date1 and :filter_date2
+											and `'.$group_type.'` in (\''.implode("','", $group_name).'\')
+										)
+											union all 
+										(select `'.$tbl_budget.'`.*, `'.$tbl_archive.'`.`archived_by`, `'.$tbl_archive.'`.`archived_at` 
+											from `'.$tbl_budget.'` 
+											left join `'.$tbl_archive.'` 
+											on `'.$tbl_budget.'`.`budget_no` = `'.$tbl_archive.'`.`budget_no` 
+											where `'.$tbl_budget.'`.`'.$group_type.'` in (\''.implode("','", $group_name).'\') and 
+													`'.$tbl_budget.'`.`is_revised` = :is_revised and `'.$tbl_budget.'`.`plan_gr` 
+											between :filter_date3 and :filter_date4 
+												and `'.$tbl_archive.'`.`budget_no` is null
+										)
+									) t 
+								group by month
+								order by `plan_gr` asc',
+							[   'filter_date1'  => $filter_date[0],
+								'filter_date2'  => $filter_date[1],
+								'filter_date3'  => $filter_date[0],
+								'filter_date4'  => $filter_date[1],
+								'is_revised'    => 0
+							]);
+				$budgets = $queries;
+			}
 		}
 		
-		return $data;
-	}
-	public function cancelApproval(Request $request)
-	{		
+		if (count($budgets) <= 0) {
+			return [[0.0], [0.0],[]];
+		}
+		else {
+			$subtotals 		= array();
+			$subtotalsCopy 	= array();
+			$month 			= array();
+			foreach ($budgets as $budget) {
+				$subtotals[] 		= round(floatval($budget->total)/$thousands, 2);
+				$subtotalsCopy[] 	= round(floatval($budget->total)/$thousands, 2);
+				$month[] 			= $budget->month;
+			}
+			$n = sizeof($subtotalsCopy)-1;
+			$cummPlan = array();
+			while ($n >= 0) {
+				array_unshift($cummPlan, array_sum($subtotalsCopy));
+				
+				array_pop($subtotalsCopy);
+				$n--;
+			}
+			return array($subtotals, $cummPlan, $month);
+		}
+    }
+	
+	public static function sumBudgetActualMonthly($budget_type, 
+                                                    $filter_date,
+                                                    $group_name = [],
+                                                    $group_type = 'division',
+                                                    $thousands = 1000000000)
+    {
+        $subtotal = 0.0;
+        $budgets = ApprovalDetail::whereBetween('actual_gr', $filter_date)
+                                    ->join('approval_masters', 'approval_master_id', '=', 'approval_masters.id' )
+                                    ->where('budget_type', $budget_type)
+                                    ->whereIn($group_type, $group_name)
+                                    ->where('status', '>=', 3)  //filter GM Up (>=3)
+                                    ->orderBy('actual_gr', 'asc')
+                                    ->groupBy('month')
+                                    ->get([
+                                                DB::raw('MONTH(actual_gr) as month'),
+                                                DB::raw('SUM(CASE WHEN actual_price_purchasing <= 0 THEN actual_price_user ELSE actual_price_purchasing END) as total')
+                                            ]);
 		
+        if (count($budgets) <= 0) {
+            return [[0.0], [0.0],[]];
+        }
+        else {
+            $m = 4;
+			$subtotals 		= array();
+			$subtotalsCopy 	= array();
+			$month 			= array();
+            foreach ($budgets as $budget) {
+                while ($m < intval($budget->month)) {
+                    $subtotals[] = 0.00;
+                    $subtotalsCopy[] = 0.00;
+                    $m++;
+                }
+                if ($m == intval($budget->month)) {
+                    $subtotals[] 		= round(floatval($budget->total)/$thousands, 2);
+                    $subtotalsCopy[] 	= round(floatval($budget->total)/$thousands, 2);
+					$month[]			= $budget->month;
+                    $m++;
+                }
+                elseif ($m > intval($budget->month)) {
+                    $m = 1;
+                }
+            }
+			
+            $n = sizeof($subtotalsCopy)-1;
+            $cummActual = array();
+            while ($n >= 0) {
+                array_unshift($cummActual, array_sum($subtotalsCopy));
+                array_pop($subtotalsCopy);
+                $n--;
+            }
+			
+            return array($subtotals, $cummActual);            
+        }
+    }
+	 public static function isExistOverdueCIP() {
+        $user = \Auth::user();
+
+        $approvals = ApprovalDetail::where('department', $user->department->department_code)
+                                    ->whereNotNull('cip_no')
+                                    ->whereNull('settlement_name')
+                                    ->where('settlement_date', '<', Carbon::now()->format('Y-m-d'))
+                                    ->orderBy('budget_no')
+                                    ->join('approval_masters', 'approval_master_id', '=', 'approval_masters.id' )
+                                    ->where('budget_type', 'cx')
+                                    ->select('budget_no')
+                                    ->distinct()->get();
+        return (count($approvals) > 0);
+    }
+	
+	/*
+		1. ambil data approvals
+		2. ambil data level dari approval_dtls berdasarkan user approve
+		3. update approver_user berdasarkan user yang approve 
+		4. update approval master status dengan level dari user yang approve
+		5. kalau expense atau capex dan level user dari approval_dtls yang tertinggi maka :
+		   a. capex/expense budget_remaining diisi budget_remaining dikurangi approval_details.actual_price_purchasing atau  kalau 0 maka approval_details.actual_price_user
+		   b. capex/expense budget_used diisi budget_used ditambah approval_details.actual_price_purchasing atau  kalau 0 maka approval_details.actual_price_user
+		   c. kalau expense qty_remaining diisi qty_remaining dikurang actual_qty, qty_used diisi qty_used ditambah actual_qty
+		   d. capex/expense status jadi 1 klo approval_details.budget_remaining_log < 0 dan 0 klo approval_details.budget_remaining_log >= 0
+		   e. capex/expense is_closed jadi 1 klo approval_details.budget_remaining_log <=0 dan 0 klo approval_details.budget_remaining_log > 0
+	*/
+	public function approveAjax(Request $request)
+	{
 		try{
 			
 			 DB::transaction(function() use ($request){
-				$user = auth()->user();  
-				$approval = ApprovalMaster::getSelf($request->approval_number);
-				
-				if (($approval->budget_type != 'uc') && ($approval->budget_type != 'ue')) {
-					
-					foreach ($approval->details as $detail) {
-						$detail->budget_reserved = 0;
-						$detail->save();
-					}
+				 $user = auth()->user();
+				 $approvals 	= Approval::where('department',$user->department->department_code)->first();
+				 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
+				 $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
+				 if(!empty($approverLevel)){
+					 
+					 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
+					 $approval_master->status = $approverLevel->level;
+					 $approval_master->save();
+					 
+					 $approver_user   = ApproverUser::where('approval_master_id',$approvals->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
+					 
+					 if ($approval_master->budget_type != 'ub' && $approval_master->budget_type != 'uc' && $approval_master->budget_type != 'ue' && $approverLevel->level == $highestLevel->level) {
+						 
+						 foreach($approval_master->details as $detail)
+						 {
+							 $budget = $approval_master->budget_type == 'cx'?Capex::where('budget_no',$detail->budget_no)->first():Expense::where('budget_no',$detail->budget_no)->first();
+							 
+							 if(is_null($detail)){
+								$data['error']	="Master Budget No: ".$detail->budget_no." is Deleted by Finance.\nPlease Contact Finance Department";
+								return $data;
+							 }
+							 
+							 $budget->budget_remaining 	-= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
 
-					if ($approval->status > 2) {
-						$actual_prices = [];
-						foreach ($approval->details as $detail) {
+							 $budget->budget_used 		+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
 
-							$detail->budget_remaining_log += $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
-
-							// $detail->budget_used -= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
-
-							if ($approval->budget_type == 'ex') {
+							 if ($approval_master->budget_type == 'ex') {
 								
-								$detail->qty_remaining += $detail->actual_qty;
+								$budget->qty_remaining 	-= $detail->actual_qty;
 
-								// $detail->qty_used -= $detail->actual_qty;
-							}
+								$budget->qty_used 		+= $detail->actual_qty;
+							 }
 
-							// $detail->status 	= $detail->budget_remaining_log >= 0 ? 0 : 1;
-
-							// $detail->is_closed 	= 1;//$detail->status == 0 ? 0 : 1;
-
-							$detail->save();
-						}
-					}
-				}
-				$approver_user = ApproverUser::where('approval_master_id',$approval->id)->where('user_id',$user->id)->update(array('is_approve'=>'0'));
-				$approval->cancel();
-				$approval->save();
-				
+							 $budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
+							 
+							 $budget->is_closed = $budget->budget_remaining > 0 ? 0 : 1;
+							 
+							 $budget->save();
+						 }
+						 
+					 }
+					 
+				 }else{
+					$data['error']	="Cannot make approval, Approver level in approval is undefined";
+					return $data; 
+				 }
+				 
 			 });
-			 $data = array('success'=>'Approval ['.$request->approval_number.'] approved.');
+			$data['success'] = 'Approval ['.$request->approval_number.'] approved.';
+			
 		}catch(\Exception $e){
-			$data['error'] = $e->getMessage();
+			 DB::rollback();
+			 $data['error']	= $e->getMessage();
 		}
-		
+		 
 		return $data;
 	}
+	public function cancelApproval(Request $request)
+	{
+		try{
+			
+			 DB::transaction(function() use ($request){
+				 $user = auth()->user();
+				 $approvals 	= Approval::where('department',$user->department->department_code)->first();
+				 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
+				 $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
+				 if(!empty($approverLevel)){
+					 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
+					
+					 if ($approval_master->status == $highestLevel->level) {
+						foreach ($approval_master->details as $detail) {
+							$budget = $approval_master->budget_type == 'cx'?Capex::where('budget_no',$detail->budget_no)->first():Expense::where('budget_no',$detail->budget_no)->first();
+
+							$budget->budget_remaining 	+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+
+							$budget->budget_used 		-= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+
+							if ($approval_master->budget_type == 'ex') {
+								$budget->qty_remaining 	+= $detail->actual_qty;
+
+								$budget->qty_used 		-= $detail->actual_qty;
+							}
+
+							$budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
+
+							$budget->is_closed 	= $budget->status == 0 ? 0 : 1;
+
+							$budget->save();
+						}
+						
+					}
+					
+					 $approval_master->status = '-'.$approverLevel->level;
+					 $approval_master->save();
+					 $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)->where('user_id',$user->id)->update(array('is_approve'=>'-1','created_at'=>date('Y-m-d H:i:s')));
+				 }else{
+					$data['error']	="Cannot cancel approval, Approver level in approval is undefined";
+					return $data;  
+				 }
+			 });
+			 
+			$data['success'] = 'Cancel Approval ['.$request->approval_number.'] succcess.';
+			
+		}catch(\Exception $e){
+			 DB::rollback();
+			 $data['error']	= $e->getMessage();
+		}
+		 
+		return $data;
+	}
+	
 	public function printApproval($approval_number)
     {
 		$approval_master = ApprovalMaster::where('approval_number',$approval_number)->first();

@@ -17,7 +17,7 @@ class DivisionController extends Controller
     public function index(Request $request)
     {
         $division = Division::get();
-        $dir_key = System::config('dir_key');
+        $dir_key = System::configmultiply('dir_key');
 
         if ($request->wantsJson()) {
             return response()->json($divisions, 200);
@@ -172,14 +172,14 @@ class DivisionController extends Controller
 
     public function create()
     {
-        $dir_keys = System::config('dir_key');
+        $dir_keys = System::configmultiply('dir_key');
         return view('pages.division.create', compact(['dir_keys']));
     }
 
     public function edit($id)
     {
         $division = Division::find($id);
-        $dir_keys = System::config('dir_key');
+        $dir_keys = System::configmultiply('dir_key');
         return view('pages.division.edit', compact(['division','dir_keys']));
     }
 

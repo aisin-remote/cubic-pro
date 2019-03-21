@@ -83,7 +83,7 @@ class ApprovalExpenseController extends Controller
                         'remarks'               => $item->item_description,
 						'item_id'				=> $item->id,
                         'sap_cos_center_id'     => $request->sap_cos_center_id,
-                        'sap_uom_id'            => $request->sap_uom_id,
+                        'sap_uom_id'            => $sap_uoms->uom_sname,
                         'price_actual'          => $request->price_actual,
                         'budget_remaining_log'  => $request->budget_remaining_log,
 						'currency'				=> $request->currency,

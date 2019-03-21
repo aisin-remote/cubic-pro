@@ -126,56 +126,18 @@
 										<td></td>
                                         <td>
                                             <div class="form-group">
-												Budgeting
-                                                <input type="hidden" class="form-control" name="level[]" value="1">
+                                            <select name="level_approval[]" class="select2" data-placeholder="Level" data-allow-clear="true">
+                                                <option></option>
+                                                @foreach ($level_approval as $level_approvals)
+                                                    <option value="{{ $level_approvals['id'] }}">{{ $level_approvals['text'] }}</option>
+                                                @endforeach
+                                            </select>
                                             </div>
                                         </td>
 
                                         <td>
                                             <div class="form-group">
                                                 <select class="select2 form-control" name="user[]" data-placeholder="Choose User" required="required">
-                                                    <option></option>
-                                                    @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-										<td></td>
-                                        <td>
-                                            <div class="form-group">
-												Department Head
-                                                <input type="hidden" class="form-control" name="level[]" value="2">
-                                            </div>
-                                        </td>
-
-                                        <td>
-                                            <div class="form-group">
-                                                <select class="select2 form-control" name="user[]" data-placeholder="Choose User" required="required">
-                                                    <option></option>
-                                                    @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-										<td></td>
-                                        <td>
-                                            <div class="form-group">
-												General Manager
-                                                <input type="hidden" class="form-control" name="level[]" value="3">
-                                            </div>
-                                        </td>
-
-                                        <td>
-                                            <div class="form-group">
-                                                <select class="form-control select2" name="user[]" data-placeholder="Choose User" required="required">
                                                     <option></option>
                                                     @foreach ($users as $user)
                                                     <option value="{{ $user->id }}">{{ $user->name }}</option>

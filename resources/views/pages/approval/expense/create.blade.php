@@ -58,7 +58,28 @@
                                 <span class="help-block"></span>
                            </div> 
 
-                           
+                            <div class="form-group">
+                                <label class="control-label">SAP Cost Center<span class="text-danger">*</span></label>
+                                <select name="sap_cos_center_id" class="select2" data-placeholder="Select SAP Cost Center" required="required">
+                                    <option></option>
+                                        @foreach ($sap_costs as $sap_cost)
+                                        <option value="{{ $sap_cost->cc_code }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
+                                        @endforeach
+                                </select>
+                                <span class="help-block"></span>
+                           </div>
+						   <div class="form-group">
+                                <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
+								<select name="remarks" class="select2" data-placeholder="Item Detail" required="required">
+                                    <option></option>
+                                        @foreach ($carts as $cart)
+                                        <option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_spesification}}" total="{{$cart->total}}" >{{ $cart->item->item_description }}</option>
+                                        @endforeach
+                                </select>
+								<input type="hidden" name="qty_item">
+                                <span class="help-block"></span>
+								
+                           </div>
                            <div class="form-group"> 
                                 <label class="control-label">Qty [Remaining | Actual] <span class="text-danger">*</span></label>    
                                 <div class="row">
@@ -72,30 +93,24 @@
                                     </div>
                                 </div>
                             </div>
-                        
-                            <div class="form-group">
-                                <label class="control-label">SAP Cost Center<span class="text-danger">*</span></label>
-                                <select name="sap_cos_center_id" class="select2" data-placeholder="Select SAP Cost Center" required="required">
-                                    <option></option>
-                                        @foreach ($sap_costs as $sap_cost)
-                                        <option value="{{ $sap_cost->cc_code }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
-                                        @endforeach
-                                </select>
-                                <span class="help-block"></span>
-                           </div>
                            <div class="form-group">
                                 <label class="control-label">Item Specs <span class="text-danger">*</span></label>
                                 <input type="text" name="pr_specs" placeholder="Item Specs" class="form-control tinymce" required="required" rows="5"></input>
                                 <span class="help-block"></span>
                            </div>
 
-                           <div class="form-group">
+                            
+                        </div>
+
+
+                        <div class="col-md-6">
+							<div class="form-group">
                                 <label class="control-label">Unit <span class="text-danger">*</span></label>
                                 <select name="sap_uom_id" class="select2" data-placeholder="Select Unit Of Measeure" required="required">
                                     <option></option>
                                         <option></option>
                                         @foreach ($sap_uoms as $sap_uom)
-                                        <option value="{{ $sap_uom->uom_code }}">{{ $sap_uom->uom_code }} - {{ $sap_uom->uom_fname }}</option>
+                                        <option value="{{ $sap_uom->id }}">{{ $sap_uom->uom_code }} - {{ $sap_uom->uom_fname }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -103,13 +118,9 @@
 
                            <div class="form-group">
                                 <label class="control-label">Amount on Quotation (IDR) <span class="text-danger">*</span></label>
-                                <input type="number" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control tinymce" required="required" rows="5"></input>
+                                <input type="number" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
                                 <span class="help-block"></span>
-                           </div>   
-                        </div>
-
-
-                        <div class="col-md-6">
+                           </div>  
 							<div class="form-group">
 								<label class="control-label">Item Category <span class="text-danger">*</span></label>
 								<div class="row">
@@ -131,18 +142,7 @@
 									</div>
 								</div>
 						   </div>  
-						   <div class="form-group">
-                                <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
-								<select name="remarks" class="select2" data-placeholder="Item Detail" required="required">
-                                    <option></option>
-                                        @foreach ($carts as $cart)
-                                        <option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}">{{ $cart->item->item_description }}</option>
-                                        @endforeach
-                                </select>
-								<input type="hidden" name="qty_item">
-                                <span class="help-block"></span>
-								
-                           </div>
+						   
                             <div class="form-group">
                                 <label class="control-label">G/L Group<span class="text-danger">*</span></label>
                                 <select name="sap_gl_account_id" class="select2" data-placeholder="Select G/L Group" required="required">

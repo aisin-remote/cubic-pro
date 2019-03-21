@@ -26,21 +26,28 @@
             
     <div class="row">
         <div class="col-md-12">
-            <div class="card-box">
-                <table class="table m-0 table-colored table-inverse" id="table-eps_tracking">
+            <div class="card-box table-responsive">
+                <table class="table table-colored table-inverse table-responsive" id="table-eps_tracking">
                     <thead>
                         <tr>
-                            <th>Fiscal Year</th>
-                            <th>Approval Number</th>
-                            <th>Budget Type</th>
-                            <th>Budget Number</th>
-                            <th>Description</th>
-                            <th>Specification</th>
-                            <th>Qty</th>
-                            <th>UoM</th>
-                            <th>Actual Price Purchasing</th>
-                            <th>Status Approval</th>
-                            <th>Status GR</th>
+                            <th rowspan="2" style="vertical-align:middle">Approval Number</th>
+                            <th colspan="6" style="text-align:center">Status PR</th>
+                            <th rowspan="2" style="vertical-align:middle">Item Number</th>
+                            <th rowspan="2" style="vertical-align:middle">Name Of Good</th>
+                            <th rowspan="2" style="vertical-align:middle">Quantity</th>
+                            <th rowspan="2" style="vertical-align:middle">UoM</th>
+                            <th rowspan="2" style="vertical-align:middle">Unit Price (Rp.)</th>
+                            <th rowspan="2" style="vertical-align:middle">Supplier Name</th>
+                            <th rowspan="2" style="vertical-align:middle">PO Date</th>
+                            <th rowspan="2" style="vertical-align:middle">PO Number</th>
+                        </tr>
+                        <tr>
+                            <th>User Create PR Date</th>
+                            <th>Validation Budget</th>
+                            <th>Approved By Dept. Head</th>
+                            <th>Approved by GM</th>
+                            <th>Approved By BOD</th>
+                            <th>Receiving Date By Purch.</th>
                         </tr>
                     </thead>
                 </table>

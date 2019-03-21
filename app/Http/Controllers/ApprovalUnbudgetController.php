@@ -57,6 +57,7 @@ class ApprovalUnbudgetController extends Controller
 
     public function store(Request $request)
     {
+		$sap_uoms           = SapUom::find($request->sap_uom_id);
 		$item 				= Item::find($request->remarks);
 		$cartData 			= [
 
@@ -74,7 +75,7 @@ class ApprovalUnbudgetController extends Controller
 										'remarks' => $item->item_description,
 										'item_id' => $item->id,
 										'sap_cost_center_id' => $request->sap_cos_center,//$request->sap_cos_center_id,
-										'sap_uom_id' => $request->sap_uom_id,
+										'sap_uom_id' => $sap_uoms->uom_sname,
 										'price_actual' => $request->price_actual,
 										'budget_remaining_log' => "",//$request->budget_remaining_log,
 										'price_to_download' => $request->price_to_download,

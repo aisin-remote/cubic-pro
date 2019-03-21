@@ -27,7 +27,7 @@ class UserController extends Controller
                         ->with(['department'])
                         ->get();
 
-        $dir_key = System::config('dir_key');
+        $dir_key = System::configmultiply('dir_key');
 
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $itemCollection = $users;
@@ -45,7 +45,7 @@ class UserController extends Controller
         $roles = Role::get();
         $division = Division::get();
         $department = Division::get();
-        $dir_keys = System::config('dir_key');
+        $dir_keys = System::configmultiply('dir_key');
         $status = System::configmultiply('status');
 
         return view('pages.user.create', compact(['roles','division','department','dir_keys','status']));
@@ -92,7 +92,7 @@ class UserController extends Controller
         $user = User::find($id);
         $division = Division::get();
         $department = Department::where('division_id', $user->division_id)->get();
-        $dir_key = System::config('dir_key');
+        $dir_key = System::configmultiply('dir_key');
         $roles = Role::get();
         $status = System::configmultiply('status');
 
@@ -111,7 +111,8 @@ class UserController extends Controller
             $user->sap_cc_code = $request->sap_cc_code;
             $user->division_id = $request->division_id;
             $user->department_id = $request->department_id;
-            $user->direction = $request->dir_key;
+            $user->direction = $request->direction;
+            // dd($request->dir_key);
 
             if (!empty($request->password)) {
                 $user->password = Hash::make($request->password);
