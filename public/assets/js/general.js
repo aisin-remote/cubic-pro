@@ -104,7 +104,7 @@ $('.select2').select2();
 
 // datepicker
 $('.datepicker').datepicker({
-    format: "yyyy-mm-dd",
+    format: "dd-M-yyyy",
     autoclose: true,
     todayHighlight: true
 });
@@ -126,3 +126,46 @@ $('.autonumeric').autoNumeric('init', {
     mDec : 2,
     vMin: 0
 });
+var tempNotif = "";
+setInterval(setListenNotification(), 3000);
+
+function setListenNotification()
+{
+	$.ajax({
+		url: SITE_URL + '/dashboard/getMyNotification',
+		type: 'get',
+		dataType: 'json',
+		async: false,
+		data: {},
+		success: function(data) {
+		  if(tempNotif != data.notification){
+			var dataNotif = data.notification;
+			var htmlNotif = "<li>"+
+								"<h5>Notifications</h5>"+
+							"</li>"; 
+			for(var i =0; i<dataNotif.length;i++)
+			{
+				htmlNotif = htmlNotif+ '<li>'+
+								'<a href="#" class="user-list-item">'+
+									'<div class="icon bg-info">'+
+										'<i class="mdi mdi-account"></i>'+
+									'</div>'+
+									'<div class="user-desc">'+
+										'<span class="name">'+dataNotif[i].message+'</span>'+
+										'<span class="time">'+dataNotif[i].notifdate+'</span>'+
+									'</div>'+
+								'</a>'+
+							'</li>';
+			}
+			htmlNotif = htmlNotif+'<li class="all-msgs text-center">'+
+                                        '<p class="m-0"><a href="#">See all Notification</a></p>'+
+                                    '</li>';
+			$('#notification .badge').html(data.nNew);
+			$('#notification .dropdown-menu').html(htmlNotif);
+			
+		  }
+		  
+		},
+	});
+	
+}

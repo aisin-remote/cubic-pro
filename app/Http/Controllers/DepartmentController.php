@@ -166,7 +166,7 @@ class DepartmentController extends Controller
 
     public function getData(Request $request)
     {
-        $department = Department::with(['division'])->get();
+        $department = Department::with(['division'])->orderBy('id','DESC')->get();
         return DataTables::of($department)
         ->rawColumns(['options'])
 

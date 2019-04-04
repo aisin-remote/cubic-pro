@@ -2,6 +2,7 @@ var tTaxe;
 $(document).ready(function(){
 
 	tTaxe = $('#table-taxe').DataTable({
+		aaSorting: [],
 		ajax: SITE_URL + '/taxe/get_data',
 		headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         columns: [

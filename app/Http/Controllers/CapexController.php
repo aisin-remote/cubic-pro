@@ -125,6 +125,9 @@ class CapexController extends Controller
         ->editColumn("budget_remaining", function ($capex) {
                 return number_format($capex->budget_remaining);
         })
+		 ->editColumn("plan_gr", function ($capex) {
+                return date('d-M-Y',strtotime($capex->plan_gr));
+        })
         ->toJson();
     }
 
@@ -321,7 +324,7 @@ class CapexController extends Controller
 	}
 	public function getArchiveAjaxSource()
     {
-        $capexs = Capex::where('budget_used', '<=', 0 )->get();
+        $capexs = Capex::where('budget_used', '<=', 0 )->orderBy('id','DESC')->get();
 		
          return DataTables::of($capexs)
 		  ->editColumn("status", function ($capex) {
@@ -330,6 +333,9 @@ class CapexController extends Controller
 				}else{
 					return "Overbudget";
 				}
+		  })
+		  ->editColumn("plan_gr", function ($capex) {
+				return date('d-M-Y',strtotime($capex->plan_gr));
 		  })
 		  ->editColumn("is_closed", function ($capex) {
             if ($capex->is_closed=='0'){
@@ -342,7 +348,7 @@ class CapexController extends Controller
     }
 	public function getArchiveAjaxDestination()
 	{
-		$capexsarchive = CapexArchive::all();
+		$capexsarchive = CapexArchive::orderBy('id','DESC')->get();
 		return DataTables::of($capexsarchive)
 		  ->editColumn("status", function ($capex) {
 				if ($capex->status=='0'){
@@ -452,7 +458,7 @@ class CapexController extends Controller
         if (\Entrust::hasRole('director')) {
             $capexes->where('dir', $user->dir);
         }
-		
+		$capexes->orderBy('id','DESC');
         if($page_name=="current"){
             return Datatables::of($capexes)
 					->addColumn("action", function ($capexes) {
@@ -473,6 +479,9 @@ class CapexController extends Controller
 						})
 					->editColumn("budget_remaining", function ($capexes) {
 							return number_format($capexes->budget_remaining);
+						})
+					->editColumn("plan_gr", function ($capexes) {
+							return date('d-M-Y',strtotime($capexes->plan_gr));
 						})
 					->editColumn("status", function ($capexes) {
 							if ($capexes->status=='0'){
@@ -511,6 +520,9 @@ class CapexController extends Controller
 				->editColumn("budget_remaining", function ($capexes) {
 					return number_format($capexes->budget_remaining);
 				})
+				->editColumn("plan_gr", function ($capexes) {
+							return date('d-M-Y',strtotime($capexes->plan_gr));
+						})
 				->editColumn("status", function ($capexes) {
 					if ($capexes->status=='0'){
 						return "Underbudget";

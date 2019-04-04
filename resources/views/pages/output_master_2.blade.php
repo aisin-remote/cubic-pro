@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="col-md-1">
-                        <a class="btn btn-primary btn-bordered waves-effect waves-light" href="{{ route('output_master.download', request()->all()) }}">Unduh PDF</a>
+                        <button type="button" class="btn btn-primary btn-bordered waves-effect waves-light" onclick="unduh_excel();">Unduh Excel</button>
                 </div>
             </div>
         

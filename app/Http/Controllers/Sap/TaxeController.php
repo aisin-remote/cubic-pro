@@ -53,7 +53,7 @@ class TaxeController extends Controller
     public function getData()
     {
 
-    	$taxe = SapTaxe::get();
+    	$taxe = SapTaxe::orderBy('id','DESC')->get();
     	
     	return DataTables::of($taxe)
     	->rawColumns(['options'])

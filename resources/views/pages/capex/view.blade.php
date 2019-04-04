@@ -45,7 +45,7 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-				<table id="data_table" class="table table-bordered responsive-utilities jambo_table">
+				<table id="data_table" class="table table-colored table-colored table-inverse responsive-utilities">
 					<thead>
 						<tr>
 							<th>Approval No</th>
@@ -84,7 +84,7 @@
 						@else
 						<td>Canceled on Group Manager Approval</td>	
 						@endif
-						<td>{{$ap->actual_gr}}</td>
+						<td>{{date('d-M-Y',strtotime($ap->actual_gr))}}</td>
 					</tr>
 					@endforeach
 				</table>

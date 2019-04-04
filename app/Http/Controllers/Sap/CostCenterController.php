@@ -55,7 +55,7 @@ public function index(Request $request)
     public function getData()
     {
 
-    	$cost = SapCostCenter::get();
+    	$cost = SapCostCenter::orderBy('id','DESC')->get();
     	
     	return DataTables::of($cost)
     	->rawColumns(['options'])

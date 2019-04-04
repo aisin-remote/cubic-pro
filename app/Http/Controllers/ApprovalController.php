@@ -356,6 +356,7 @@ class ApprovalController extends Controller
 	public function getApprovalDetail($budget_no)
 	{
 		$approval_detail = ApprovalDetail::where('approval_details.budget_no',$budget_no)->join('capexes','approval_details.budget_no','=','capexes.budget_no')->first();
+		$approval_detail->settlement_date = date('d-M-Y',strtotime($approval_detail->settlement_date));
 		return json_encode($approval_detail);
 	}
 	public function convertToCIP (Request $request) {
@@ -367,7 +368,7 @@ class ApprovalController extends Controller
 				$i = 1;
 				foreach ($approvals as $approval) {
 					$approval->cip_no = $request->budget_no.'-'.str_pad($i, 4, '0', STR_PAD_LEFT);
-					$approval->settlement_date = $request->settlement_date;
+					$approval->settlement_date = date('Y-m-d',strtotime($request->settlement_date));
 					$approval->save();
 					$i++;
 				}
@@ -388,7 +389,7 @@ class ApprovalController extends Controller
 
 				$i = 1;
 				foreach ($approvals as $approval) {
-					$approval->settlement_date = $request->new_settlement_date;
+					$approval->settlement_date = date('Y-m-d',strtotime($request->new_settlement_date));
 					$approval->save();
 					$i++;
 				}
@@ -454,6 +455,9 @@ class ApprovalController extends Controller
 			 return DataTables::of($approvals)
 						->editColumn("settlement_name", function ($approval) {
 								return is_null($approval->settlement_name)?'-- Not Yet Assigned --' : $approval->settlement_name;
+						 })
+						 ->editColumn("actual_gr", function ($approval) {
+								return date('d-M-Y',strtotime($approval->actual_gr));
 						 })
 						->editColumn("status", function ($approval) {
 								return  is_null($approval->settlement_name) ? 'Open' : 'Close';
@@ -704,6 +708,9 @@ class ApprovalController extends Controller
 				$subtotalsCopy[] 	= round(floatval($budget->total)/$thousands, 2);
 				$month[] 			= $budget->month;
 			}
+			// $subtotals 		= array('5','10','15');
+			// $subtotalsCopy 	= array('5','10','15');
+			// $month 			= array('03','04','05');
 			$n = sizeof($subtotalsCopy)-1;
 			$cummPlan = array();
 			while ($n >= 0) {
@@ -744,22 +751,24 @@ class ApprovalController extends Controller
 			$subtotalsCopy 	= array();
 			$month 			= array();
             foreach ($budgets as $budget) {
-                while ($m < intval($budget->month)) {
-                    $subtotals[] = 0.00;
-                    $subtotalsCopy[] = 0.00;
-                    $m++;
-                }
-                if ($m == intval($budget->month)) {
+                // while ($m < intval($budget->month)) {
+                    // $subtotals[] = 0.00;
+                    // $subtotalsCopy[] = 0.00;
+                    // $m++;
+                // }
+                // if ($m == intval($budget->month)) {
                     $subtotals[] 		= round(floatval($budget->total)/$thousands, 2);
                     $subtotalsCopy[] 	= round(floatval($budget->total)/$thousands, 2);
 					$month[]			= $budget->month;
                     $m++;
-                }
-                elseif ($m > intval($budget->month)) {
-                    $m = 1;
-                }
+                // }
+                // elseif ($m > intval($budget->month)) {
+                    // $m = 1;
+                // }
             }
-			
+			// $subtotals 		= array('20','30','40');
+			// $subtotalsCopy 	= array('20','30','40');
+			// $month 			= array('01','03','04');
             $n = sizeof($subtotalsCopy)-1;
             $cummActual = array();
             while ($n >= 0) {
@@ -768,7 +777,7 @@ class ApprovalController extends Controller
                 $n--;
             }
 			
-            return array($subtotals, $cummActual);            
+            return array($subtotals, $cummActual, $month);            
         }
     }
 	 public static function isExistOverdueCIP() {
@@ -1019,24 +1028,24 @@ class ApprovalController extends Controller
                     ->with($res);
         }
 
-       if ($approval->status < 3) {
-			$res = [
-                    'title' => 'Error',
-                    'type' => 'error',
-                    'message' => 'Could not print Approval ['.$approval_number.']: GM Approval required.'
-                ];
+       // if ($approval->status < 3) {
+			// $res = [
+                    // 'title' => 'Error',
+                    // 'type' => 'error',
+                    // 'message' => 'Could not print Approval ['.$approval_number.']: GM Approval required.'
+                // ];
 
 			
-			if(strtolower($approval->budget_type)=="cx"){
-				return redirect()
-                    ->route('approval-capex.ListApproval')
-                    ->with($res);
-			}else if(strtolower($approval->budget_type) == "ex"){
-				return redirect()
-                    ->route('approval-expense.ListApproval')
-                    ->with($res);
-			}
-        }
+			// if(strtolower($approval->budget_type)=="cx"){
+				// return redirect()
+                    // ->route('approval-capex.ListApproval')
+                    // ->with($res);
+			// }else if(strtolower($approval->budget_type) == "ex"){
+				// return redirect()
+                    // ->route('approval-expense.ListApproval')
+                    // ->with($res);
+			// }
+        // }
 
         $user = auth()->user();
       
@@ -1094,89 +1103,40 @@ class ApprovalController extends Controller
 		
         $appVersion= 'App version = 4.3.0/ Printed by = '.\Auth::user()->name.' '.Carbon::now();
 
-        $data = array(array('Budget Type','PR Specs','Sap is Chemical','Budget No',
-							'Sap Account Text','Sap Account Code','Actual Qty','PR Uom',
-							'Sap Cost Center Code','Sap Asset No','Settlement Date / Actual GR',
-							'Sap Cost Center Code','Sap Cost Center Fname','Approval Number',
-							'App Version','Overbudget Info'));
-
-            foreach($print as $prints) {
-                 $newDate = date("M-y", strtotime($prints->budget_type == "cx" ? $prints->settlement_date : $prints->actual_gr));
-                 $data[] = array(
-                    $prints->budget_type == "uc" ? '-' : $prints->budget_type == "ue" ? '-' : $prints->equipment_name, 
-                    $prints->pr_specs,
-                    $prints->sap_is_chemical,
-                    $prints->budget_no,
-                    $prints->sap_account_text,
-                    $prints->sap_account_code, 
-                    $prints->actual_qty, 
-                    $prints->pr_uom,
-                    $prints->sap_cc_code,                                   
-                    $prints->sap_asset_no,
-                    $newDate,
-                    $prints->sap_cc_code,
-                    $prints->sap_cc_fname,
-                    $approval_number,
-                    $appVersion,
-                    $overbudget_info
-                );
-            }
-          
-        $excel = new \PHPExcel();	 
-		$excel->createSheet();
-        $excel->setActiveSheetIndex(1);
-        $excel->getActiveSheet()->setTitle('Approval');
-
-        $objWorksheet = $excel->getActiveSheet();
-        $objWorksheet->fromArray($data);
+        $data  = [];
+		$data2 = [];
+		foreach($print as $prints) {
+			 $newDate = date("M-y", strtotime($prints->budget_type == "cx" ? $prints->settlement_date : $prints->actual_gr));
+			 $data[] = array(
+				$prints->budget_type == "uc" ? '-' : $prints->budget_type == "ue" ? '-' : $prints->equipment_name, 
+				$prints->pr_specs,
+				$prints->sap_is_chemical,
+				$prints->budget_no,
+				$prints->sap_account_text,
+				$prints->sap_account_code, 
+				$prints->actual_qty, 
+				$prints->pr_uom,
+				$prints->sap_cc_code,                                   
+				$prints->sap_asset_no,
+				$newDate,
+				$prints->sap_cc_code,
+				$prints->sap_cc_fname,
+				$approval_number,
+				$appVersion,
+				$overbudget_info
+			);
+			$data2[] = array();
+		}
+		$excel = \PHPExcel_IOFactory::load(storage_path('template\pr_output.xlsm'));
+        $excel->setActiveSheetIndex(2);
+        $objWorksheet 	= $excel->getActiveSheet();
+        $objWorksheet->fromArray($data,null,'A1',false,false);
 		$writer = new \PHPExcel_Writer_Excel2007($excel);
 
         // Save the file.
-        $writer->save(storage_path().'/app/public/approval.xlsx');
-		header('Location:'.url('storage/approval.xlsx'));
+        $writer->save(storage_path().'/app/public/approval.xlsm');
+		header('Location:'.url('storage/approval.xlsm'));
 		exit;
-		 // return Excel::create($approval_number, function($excel) use ($print,$approval_number,$appVersion,$overbudget_info){
-             // $excel->sheet('mysheet', function($sheet) use ($print,$approval_number,$appVersion,$overbudget_info){
-				// $i = 1;
-				// $sheet->cell('A'.$i, function($cell)  {$cell->setValue('Budget Type');});
-				// $sheet->cell('B'.$i, function($cell)  {$cell->setValue('PR Specs');});
-				// $sheet->cell('C'.$i, function($cell)  {$cell->setValue('Is Chemical');});
-				// $sheet->cell('D'.$i, function($cell)  {$cell->setValue('Budget No');});
-				// $sheet->cell('E'.$i, function($cell)  {$cell->setValue('Sap Account Text');});
-				// $sheet->cell('F'.$i, function($cell)  {$cell->setValue('Sap Account Code');});
-				// $sheet->cell('G'.$i, function($cell)  {$cell->setValue('Actual Qty');});
-				// $sheet->cell('H'.$i, function($cell)  {$cell->setValue('PR UOM');});
-				// $sheet->cell('I'.$i, function($cell)  {$cell->setValue('Sap Cost Center Code');});
-				// $sheet->cell('J'.$i, function($cell)  {$cell->setValue('Sap Asset No');});
-				// $sheet->cell('K'.$i, function($cell)  {$cell->setValue('Settlement Date / Actual GR');});
-				// $sheet->cell('L'.$i, function($cell)  {$cell->setValue('Sap Cost Center Code');});
-				// $sheet->cell('M'.$i, function($cell)  {$cell->setValue('Sap Cost Center Fname');});
-				// $sheet->cell('N'.$i, function($cell)  {$cell->setValue('Approval Number');});
-				// $sheet->cell('O'.$i, function($cell)  {$cell->setValue('App Version');});
-				// $sheet->cell('P'.$i, function($cell)  {$cell->setValue('Overbudget Info');});	
-				// $i = 2;
-				// foreach($print as $p){
-					// $sheet->cell('A'.$i, function($cell) use ($p) {$cell->setValue($p->budget_type == "uc" ? '-' : $p->budget_type == "ue" ? '-' : $p->equipment_name);});
-					// $sheet->cell('B'.$i, function($cell) use ($p) {$cell->setValue($p->pr_specs);});
-					// $sheet->cell('C'.$i, function($cell) use ($p) {$cell->setValue($p->sap_is_chemical);});
-					// $sheet->cell('D'.$i, function($cell) use ($p) {$cell->setValue($p->budget_no);});
-					// $sheet->cell('E'.$i, function($cell) use ($p) {$cell->setValue($p->sap_account_text);});
-					// $sheet->cell('F'.$i, function($cell) use ($p) {$cell->setValue($p->sap_account_code);});
-					// $sheet->cell('G'.$i, function($cell) use ($p) {$cell->setValue($p->actual_qty);});
-					// $sheet->cell('H'.$i, function($cell) use ($p) {$cell->setValue($p->pr_uom);});
-					// $sheet->cell('I'.$i, function($cell) use ($p) {$cell->setValue($p->sap_cc_code);});
-					// $sheet->cell('J'.$i, function($cell) use ($p) {$cell->setValue($p->sap_asset_no);});
-					// $sheet->cell('K'.$i, function($cell) use ($p) {$cell->setValue(date("M-y", strtotime($p->budget_type == "cx" ? $p->settlement_date : $p->actual_gr)));});
-					// $sheet->cell('L'.$i, function($cell) use ($p) {$cell->setValue($p->sap_cc_code);});
-					// $sheet->cell('M'.$i, function($cell) use ($p) {$cell->setValue($p->sap_cc_fname);});
-					// $sheet->cell('N'.$i, function($cell) use ($approval_number) {$cell->setValue($approval_number);});
-					// $sheet->cell('O'.$i, function($cell) use ($appVersion) {$cell->setValue($appVersion);});
-					// $sheet->cell('P'.$i, function($cell) use ($overbudget_info) {$cell->setValue($overbudget_info);});
-					// $i++;
-				// }
-             // });
-			
-        // })->download('csv');
 		
     }
 	

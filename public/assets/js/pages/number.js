@@ -2,6 +2,7 @@ var tNumber;
 $(document).ready(function(){
 
 	tNumber = $('#table-number').DataTable({
+		aaSorting: [],
 		ajax: SITE_URL + '/number/get_data',
 		headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         columns: [

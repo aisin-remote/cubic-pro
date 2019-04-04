@@ -30,6 +30,7 @@
                 <table class="table m-0 table-colored table-inverse" id="table-bom_temporary">
                     <thead>
                         <tr>
+							<th style="width:50px"></th>
                             <th style="width: 50px"></th>
                             <!-- <th>Fiscal Year</th> -->
                             <th>Part Number</th>

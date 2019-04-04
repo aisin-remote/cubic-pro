@@ -2,6 +2,7 @@ var tVendor;
 $(document).ready(function(){
 
 	tVendor = $('#table-vendor').DataTable({
+		aaSorting: [],
 		ajax: SITE_URL + '/vendor/get_data',
 		headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         columns: [

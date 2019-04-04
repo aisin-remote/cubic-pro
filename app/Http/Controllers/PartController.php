@@ -178,7 +178,7 @@ class PartController extends Controller
 
     public function getData(Request $request)
     {
-        $part = Part::get();
+        $part = Part::orderBy('id','DESC')->get();
         return DataTables::of($part)
         ->rawColumns(['options'])
 

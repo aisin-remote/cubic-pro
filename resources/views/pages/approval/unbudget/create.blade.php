@@ -166,7 +166,7 @@
 							   </div> 
 							   <div class="form-group">
 									<label class="control-label">Price <span class="text-danger">*</span></label>
-									<input type="number" name="price_actual" placeholder="Price Actual" class="form-control tinymce" required="required"  readonly ></input>
+									<input type="number" name="price_actual" placeholder="Price Actual" class="form-control tinymce" required="required"  readonly="readonly" ></input>
 									<span class="help-block"></span>
 							   </div>
 							   <div class="form-group">
@@ -177,7 +177,7 @@
 								
 							   <div class="form-group">
 									<label class="control-label">Actual GR <span class="text-danger">*</span></label>
-									<input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}"></input>
+									<input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}"></input>
 									<span class="help-block"></span>
 							   </div>  
 								<div class="form-group">

@@ -141,7 +141,29 @@ class SalesData extends Model
             return $result->sum('total');
         }
     }
-      
+    public function scopeSumSalesTotal1($year, $product_code)
+    {
+		return 0;
+        
+    } 
+	public function scopeSumSalesTotal2($year, $product_code)
+    {
+		return 0;
+        
+    }
+	public function scopeSumTotalMaterial1($year, $product_code)
+    {
+		return 0;
+        
+    }
+	public function scopeSumPlasticMaterial($month,$year,$product_code)
+	{
+		return 0;
+	}
+	public function scopeSumPlasticMaterialTotal1($month,$year,$product_code)
+	{
+		return 0;
+	}
     public function scopeMaterialGroup($query, $group, $month, $year, $product_code) {
         
         $sales_data = DB::table('v_material_group')
@@ -213,7 +235,6 @@ class SalesData extends Model
                             ->where('product_code', $product_code)
                             ->where('fiscal_year', $year)
                             ->first();
-    
         if ($month == 'apr') {
             
             return !empty($sales_data->apr_amount) ? $sales_data->apr_amount : 0;

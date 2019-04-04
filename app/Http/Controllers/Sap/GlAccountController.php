@@ -54,7 +54,7 @@ class GlAccountController extends Controller
     public function getData()
     {
 
-    	$gl_account = SapGlAccount::get();
+    	$gl_account = SapGlAccount::orderBy('id','DESC')->get();
     	
     	return DataTables::of($gl_account)
     	->rawColumns(['options'])

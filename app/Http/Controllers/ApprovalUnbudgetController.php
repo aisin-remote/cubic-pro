@@ -147,6 +147,10 @@ class ApprovalUnbudgetController extends Controller
         $sap_asset = SapAsset::find($id);
         return response()->json($sap_asset);
     }
+	public function ListApprovalUnvalidated()
+	{
+		return view('pages.approval.unbudget.list-approval');
+	}
 	 public function ListApproval()
     {
 
@@ -203,7 +207,8 @@ class ApprovalUnbudgetController extends Controller
                 }
             }else{
                 // return "else";
-                return "<div id='$approvalub->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ub/'.$approvalub->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a  href='#' onclick='javascript:validateApproval(&#39;$approvalub->approval_number&#39;);return false;'class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approvalub->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                // return "<div id='$approvalub->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ub/'.$approvalub->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a  href='#' onclick='javascript:validateApproval(&#39;$approvalub->approval_number&#39;);return false;'class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approvalub->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+				return "<div id='$approvalub->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ub/'.$approvalub->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approvalub->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
             }
         })
 
@@ -336,7 +341,7 @@ class ApprovalUnbudgetController extends Controller
                     // $approval->price_remaining       = $details->options->price_actual;
                     $approval->budget_remaining_log  = $details->options->budget_remaining_log;
                     $approval->price_to_download     = $details->options->price_to_download==""?0:$details->options->price_to_download;
-                    $approval->actual_gr             = $details->options->plan_gr;
+                    $approval->actual_gr             = date('Y-m-d',strtotime($details->options->plan_gr));
                     $approval->fyear                 = date('Y');
                     $approval->budget_reserved       = $details->options->budget_remaining_log;
                     $capex->details()->save($approval);

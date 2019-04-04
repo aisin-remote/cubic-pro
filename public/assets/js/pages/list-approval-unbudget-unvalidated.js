@@ -1,7 +1,7 @@
-var tApprovalExpense;
+var tApprovalUnbudget;
 $(document).ready(function(){
-	tApprovalExpense = $('#table-list-approval-expense').DataTable({
-		ajax: SITE_URL + '/approval-expense/approval_expense/need_approval',
+	tApprovalUnbudget = $('#table-list-approval-unbudget').DataTable({
+		ajax: SITE_URL + '/approval-unbudget/approval_unbudget/need_approval',
         columns: [
             { data: 'departments.department_name', name: 'departments.department_name'},
             { data: 'approval_number', name: 'approval_number'},
@@ -17,9 +17,9 @@ $(document).ready(function(){
 	});
 
 
-    $('#table-approval-expense tbody').on('click', 'td.details-control', function () {
+    $('#table-approval-unbudget tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
-        var row = tApprovalExpense.row(tr);
+        var row = tApprovalUnbudget.row(tr);
         var tableId = 'posts-' + row.data().id;
 
         if (row.child.isShown()) {
@@ -194,7 +194,7 @@ function validateApproval(approval_number)
 				return false;
 			}else{
 				show_notification('Success','success',data.success);
-				window.location.href=SITE_URL+"/approval/ex/unvalidated";
+				window.location.href=SITE_URL+"/approval/ub/unvalidated";
 			}
 			
 		});
@@ -218,7 +218,7 @@ function cancelApproval(approval_number)
 				return false;
 			}else{
 					show_notification('Success','success',data.success);
-					window.location.href=SITE_URL+"/approval/ex/unvalidated";
+					window.location.href=SITE_URL+"/approval/ub/unvalidated";
 				}
 			tApprovalCapex.ajax.reload( null, false );
 		});

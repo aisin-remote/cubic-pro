@@ -221,13 +221,11 @@ function getGroupMaterialTable() {
     datas = '';
     child = {};
 
-    console.log(MaterialSales);
-
     $.each(MaterialSales, function(i){        
-
+		var temp = "";
         $.each(MaterialSales[i], function(j,v){
 
-            child[i] += `<tr>
+            temp += `<tr>
                         <td>${v.product_name}</td>
                         <td>${v.product_code}</td>
                         <td style="text-align:right">${v.apr_amount}</td>
@@ -245,7 +243,7 @@ function getGroupMaterialTable() {
                         <td style="text-align:right">${v.total}</td>
                     </tr>`;
         });
-
+		// console.log(child[i]);
 
         datas += `<div class="col-md-12 table-responsive">
                     <table class="table table-bordered">
@@ -269,7 +267,7 @@ function getGroupMaterialTable() {
                             </tr>
                         </thead>
                         <tbody>
-                           ${child[i]}
+                           ${temp}
                         </tbody>
                         <tfoot>
                             <tr style="text-align:right">
@@ -308,19 +306,19 @@ function getGroupMaterialTable() {
                     <table>
                 </div>`;
 
-                // console.log(i);
     });
 
     
 
     table = datas;
     
-    // console.log(datas);
-    
     $('#group-wrapper').html('');
     $('#group-wrapper').html(table);
 }
-
+function unduh_excel(){
+	var fiscal_year = $('#tanggal').val();
+	window.location.href=SITE_URL+"/output_master/download?fiscal_year="+fiscal_year;
+}
 $(document).ready(function(){
     getSalesDataTable();
     getMaterialTable();

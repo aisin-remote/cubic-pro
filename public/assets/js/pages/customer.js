@@ -2,6 +2,7 @@ var tType;
 $(document).ready(function(){
 
 	tType = $('#table-customer').DataTable({
+		aaSorting: [],
 		ajax: SITE_URL + '/customer/get_data',
 		headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         columns: [

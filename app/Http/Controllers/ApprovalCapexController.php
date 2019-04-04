@@ -187,8 +187,8 @@ class ApprovalCapexController extends Controller
                 $approval->price_to_download     = $details->options->price_to_download ==""?0:$details->options->price_to_download;
 				// $approval->price_to_download	 = 1000;
 				$approval->pr_specs 			 = $details->options->pr_specs;
-                $approval->actual_gr             = $details->options->plan_gr;
-                $approval->settlement_date       = $details->options->settlement_date;
+                $approval->actual_gr             = date('Y-m-d',strtotime($details->options->plan_gr));
+                $approval->settlement_date       = date('Y-m-d',strtotime($details->options->settlement_date));
                 $approval->fyear                 = date('Y');
                 $approval->budget_reserved       = $details->options->budget_remaining_log;
 				// $approval->save();

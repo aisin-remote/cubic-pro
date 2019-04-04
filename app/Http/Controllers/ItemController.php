@@ -190,7 +190,8 @@ class ItemController extends Controller
 
     public function getData(Request $request)
     {
-        $item = Item::with(['item_category','uom','supplier','tags'])->get();
+        $item = Item::with(['item_category','uom','supplier','tags'])->orderBy('id','DESC')->get();
+		
         return DataTables::of($item)
         ->rawColumns(['options', 'tags'])
 

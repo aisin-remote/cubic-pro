@@ -54,7 +54,7 @@ class VendorController extends Controller
     public function getData()
     {
 
-    	$vendor = SapVendor::get();
+    	$vendor = SapVendor::orderBy('id','DESC')->get();
     	
     	return DataTables::of($vendor)
     	->rawColumns(['options'])

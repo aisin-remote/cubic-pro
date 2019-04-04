@@ -12,7 +12,7 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="page-title-box">
-					<h4 class="page-title"> List of Capex For Open / Close Action</h4>
+					<h4 class="page-title"> List of Expense For Open / Close Action</h4>
 					<ol class="breadcrumb p-0 m-0">
 						<li class="active">
 							 <div class="btn-group pull-right">

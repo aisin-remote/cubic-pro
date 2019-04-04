@@ -132,6 +132,9 @@ class ExpenseController extends Controller
         ->editColumn("budget_remaining", function ($expense) {
                 return number_format($expense->budget_remaining);
         })
+		 ->editColumn("plan_gr", function ($expense) {
+                return date('d-M-Y',strtotime($expense->plan_gr));
+        })
         ->toJson();
     }
 
@@ -308,7 +311,7 @@ class ExpenseController extends Controller
 	}
 	public function getArchiveAjaxSource()
     {
-        $expenses = Expense::where('budget_used', '<=', 0 )->get();
+        $expenses = Expense::where('budget_used', '<=', 0 )->orderBy('id','DESC')->get();
 		
          return DataTables::of($expenses)
 		  ->editColumn("status", function ($expense) {
@@ -317,6 +320,9 @@ class ExpenseController extends Controller
 				}else{
 					return "Overbudget";
 				}
+		  })
+		   ->editColumn("plan_gr", function ($expense) {
+				return date('d-M-Y',strtotime($expense->plan_gr));
 		  })
 		  ->editColumn("is_closed", function ($expense) {
             if ($expense->is_closed=='0'){
@@ -329,7 +335,7 @@ class ExpenseController extends Controller
     }
 	public function getArchiveAjaxDestination()
 	{
-		$expensesarchive = ExpenseArchive::all();
+		$expensesarchive = ExpenseArchive::orderBy('id','DESC')->get();
 		return DataTables::of($expensesarchive)
 		  ->editColumn("status", function ($expense) {
 				if ($expense->status=='0'){
@@ -442,7 +448,7 @@ class ExpenseController extends Controller
         if (\Entrust::hasRole('director')) {
             $expenses->where('dir', $user->dir);
         }
-		
+		$expenses->orderBy('id','DESC');
         if($page_name=="current"){
             return Datatables::of($expenses)
 					->addColumn("action", function ($expenses) {
@@ -463,6 +469,9 @@ class ExpenseController extends Controller
 						})
 					->editColumn("budget_remaining", function ($expenses) {
 							return number_format($expenses->budget_remaining);
+						})
+					->editColumn("plan_gr", function ($expenses) {
+							return date('d-M-Y',strtotime($expenses->plan_gr));
 						})
 					->editColumn("status", function ($expenses) {
 							if ($expenses->status=='0'){
@@ -501,6 +510,9 @@ class ExpenseController extends Controller
 				->editColumn("budget_remaining", function ($expenses) {
 					return number_format($expenses->budget_remaining);
 				})
+				->editColumn("plan_gr", function ($expenses) {
+						return date('d-M-Y',strtotime($expenses->plan_gr));
+					})
 				->editColumn("status", function ($expenses) {
 					if ($expenses->status=='0'){
 						return "Underbudget";

@@ -173,7 +173,7 @@
                            </div> 
                            <div class="form-group">
                                 <label class="control-label">Actual GR <span class="text-danger">*</span></label>
-                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}"></input>
+                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}"></input>
                                 <span class="help-block"></span>
                            </div>  
                            

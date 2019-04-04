@@ -186,7 +186,7 @@ class ApprovalExpenseController extends Controller
                     // $approval->price_remaining       = $details->options->price_actual;
                     $approval->budget_remaining_log  = $details->options->budget_remaining_log;
                     $approval->price_to_download     = $details->options->price_to_download==""?0:$details->options->price_to_download;
-                    $approval->actual_gr             = $details->options->plan_gr;
+                    $approval->actual_gr             = date('Y-m-d',strtotime($details->options->plan_gr));
                     $approval->fyear                 = date('Y');
                     $approval->budget_reserved       = $details->options->budget_remaining_log;
                     $capex->details()->save($approval);

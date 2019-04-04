@@ -53,7 +53,7 @@ class UomController extends Controller
     public function getData()
     {
 
-    	$uom = SapUom::get();
+    	$uom = SapUom::orderBy('id','DESC')->get();
     	
     	return DataTables::of($uom)
     	->rawColumns(['options'])

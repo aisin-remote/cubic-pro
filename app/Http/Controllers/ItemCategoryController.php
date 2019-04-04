@@ -151,7 +151,7 @@ class ItemCategoryController extends Controller
 
     public function getData(Request $request)
     {
-        $item_category = ItemCategory::get();
+        $item_category = ItemCategory::orderBy('id','DESC')->get();
         return DataTables::of($item_category)
         ->rawColumns(['options'])
 

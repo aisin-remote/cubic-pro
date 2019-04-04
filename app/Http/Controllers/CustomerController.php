@@ -166,7 +166,7 @@ class CustomerController extends Controller
 
     public function getData(Request $request)
     {
-        $customer = Customer::get();
+        $customer = Customer::orderBy('id','DESC')->get();
         return DataTables::of($customer)
         ->rawColumns(['options'])
 

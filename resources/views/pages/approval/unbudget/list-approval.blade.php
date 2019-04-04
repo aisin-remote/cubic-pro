@@ -21,6 +21,9 @@
                 <div class="clearfix"></div>
             </div>
         </div>
+		<div class="col-md-12">
+			<div id="chart1" style="height:140px;margin:0 auto"></div>
+		</div>
     </div>
     <!-- end row -->
 
@@ -71,7 +74,8 @@
         show_notification("{{ session('title') }}","{{ session('type') }}","{{ session('message') }}");
     </script>
 @endif
-
-<script src="{{ url('assets/js/pages/approval-unbudget.js') }}"></script>
-
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="{{ url('assets/js/pages/list-approval-unbudget-unvalidated.js') }}"></script>
 @endpush

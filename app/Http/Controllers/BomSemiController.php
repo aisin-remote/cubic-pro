@@ -458,7 +458,7 @@ class BomSemiController extends Controller
         $array = [];
         if ($request->hasFile('file')) {
             Excel::load(public_path('storage/uploads/'.$name), function($reader) use ($array){
-
+				$array_datas = [];
                 foreach ($reader->all() as $data) {
 
                     $part_id = Part::where('part_number', $data->part_number)->first();

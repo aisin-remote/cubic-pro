@@ -37,26 +37,20 @@
 							@endforeach
 						</select>
 						@elseif($group_type=='all')
-						
-							 <!--<div class="dropdown">
-								<a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-warning" data-target="#">
-									Choose Divisions <span class="caret"></span>
-								</a>
-								<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-								  @foreach ($divisions as $div)
-								  <li><a href="{{ url('dashboard/view/'.$group_type.'?division=').strtolower($div->division_code) }}">{{ $div->division_name }}</a></li>
-								  @endforeach
-								  <li class="divider"></li>
-								  <li class="dropdown-submenu">
-									<a href="#" class="btn-info">ALL Departments</a>									
-								  </li>
-								  <li class="divider"></li>
-								  @foreach ($departments as $dept)
-									  <li><a href="{{ url('dashboard/view/'.$group_type.'?department=').$dept->department_code}}">{{ $dept->department_name }}</a></li>
-									
-								  @endforeach
-								</ul>
-							</div> -->
+							<select class="form-control" name="{{isset($_GET['division']) && $_GET['division'] != ""?'division':'department'}}">
+								 <optgroup label="Division">
+									<option value="x">Please Select Division...</option>
+									@foreach($divisions as $div)
+										<option value="{{$div->division_code}}" {{isset($_GET['division']) && $_GET['division'] == $div->division_code?'selected="selected"':''}}>{{$div->division_name}}</option>
+									@endforeach
+								</optgroup>
+								<optgroup label="Department">
+									<option value="x">Please Select Department...</option>
+									@foreach($departments as $dept)
+										<option value="{{$dept->department_code}}" {{isset($_GET['department']) && $_GET['department'] == $dept->department_code?'selected="selected"':''}} >{{$dept->department_name}}</option>
+									@endforeach
+								</optgroup>
+							</select>
 						@endif
 					</div>
 					<div class="form-group m-r-10">
@@ -132,8 +126,27 @@
 <script src="{{ url('assets/js/pages/division-add-edit.js') }}"></script>
 <script src="{{ url('assets/plugins/morris/morris.min.js')}}"></script>
 <script type="text/javascript">
+	$('select[name="division"]').change(function(){
+		var label = $(this).find('option:selected').closest('optgroup').prop('label');
+		if(label == 'Division')
+		{
+			$(this).attr('name','division');
+		}else if(label == 'Department'){
+			$(this).attr('name','department');
+		}
+	});
+	$('select[name="department"]').change(function(){
+		var label = $(this).find('option:selected').closest('optgroup').prop('label');
+		if(label == 'Division')
+		{
+			$(this).attr('name','division');
+		}else if(label == 'Department'){
+			$(this).attr('name','department');
+		}
+	});
+	
 	$('#interval').daterangepicker({
-        format: 'MM/DD/YYYY',
+        format: 'DD-MM-YYYY',
         buttonClasses: ['btn', 'btn-sm'],
         applyClass: 'btn-success',
         cancelClass: 'btn-default',
@@ -176,20 +189,22 @@
 	function createBar(chart_id,data,url)
 	{
 		$.getJSON(url,data, function (dataJSON) {
+			var group_name = "";
+			if(data.group_type == 'department')
+			{
+				group_name = $('select[name="department"] option:selected').text();
+			}else if(data.group_type == 'division')
+			{
+				group_name = $('select[name="division"] option:selected').text();
+			}
+			
+			$('#'+chart_id).parent().prev().find('h3').html(data.group_type);
 			Morris.Bar({
-			  element: 'chart4',
-			  data: [
-				{ y: '2006', a: 100, b: 90 },
-				{ y: '2007', a: 75,  b: 65 },
-				{ y: '2008', a: 50,  b: 40 },
-				{ y: '2009', a: 75,  b: 65 },
-				{ y: '2010', a: 50,  b: 40 },
-				{ y: '2011', a: 75,  b: 65 },
-				{ y: '2012', a: 100, b: 90 }
-			  ],
+			  element: chart_id,
+			  data: dataJSON.data,
 			  xkey: 'y',
-			  ykeys: ['a', 'b'],
-			  labels: ['Series A', 'Series B']
+			  ykeys: ['a', 'b','c','d'],
+			  labels: ['Data Plan', 'Data Cum Plan','Data Unbudget','Data Normal']
 			});
 		});
 	}
@@ -202,21 +217,7 @@
 	createPie('chart',{group_type:group_type,type:'pie',budget_type:'cx',department:department,division:division,interval:interval,plan:plan},SITE_URL+"/dashboard/getJSONData");
 	createPie('chart2',{group_type:group_type,type:'pie',budget_type:'ex',department:department,division:division,interval:interval,plan:plan},SITE_URL+"/dashboard/getJSONData");
 	createBar('chart3',{group_type:group_type,type:'bar',budget_type:'cx',department:department,division:division,interval:interval,plan:plan},SITE_URL+"/dashboard/getJSONData");
-	Morris.Bar({
-	  element: 'chart4',
-	  data: [
-		{ y: 'April', a: 100, b: 90 },
-		{ y: 'Mei', a: 75,  b: 65 },
-		{ y: 'Juni', a: 50,  b: 40 },
-		{ y: 'Juli', a: 75,  b: 65 },
-		{ y: 'Aug', a: 50,  b: 40 },
-		{ y: 'Sep', a: 75,  b: 65 },
-		{ y: 'Oct', a: 100, b: 90 }
-	  ],
-	  xkey: 'y',
-	  ykeys: ['a', 'b'],
-	  labels: ['Series A', 'Series B']
-	});
+	createBar('chart4',{group_type:group_type,type:'bar',budget_type:'ex',department:department,division:division,interval:interval,plan:plan},SITE_URL+"/dashboard/getJSONData");
 	function labelFormatter(label, series) {
 		return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
 	}

@@ -1,8 +1,15 @@
 var tType;
 $(document).ready(function(){
-
+	
+	
 	tType = $('#table-upload_po').DataTable({
-		ajax: SITE_URL + '/upload_po/get_data',
+		ajax: {
+				url:SITE_URL + '/upload_po/get_data',
+				data:function(data){
+					data.from = $('#from').val();
+					data.to   = $('#to').val();
+				}
+			},
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         order:[3,'desc'],
         columns: [
@@ -28,7 +35,13 @@ $(document).ready(function(){
         var upload_po_id = $(this).data('value');
         $('#form-delete-' + upload_po_id).submit();
     });
-
+	
+	$('.ndatepicker').datepicker({
+        format: 'dd-M-yyyy'
+    });
+	$('#btn-filter').click(function(){
+		tType.draw();
+	})
 });
 
 function on_delete(upload_po_id)
@@ -83,8 +96,8 @@ function initEditable()
             if (data.error) {
                 return data.error;
             };
-
-            $(this).text(data.value);
+			tType.draw();
+            // $(this).text(data.value);
         }
     });
 }

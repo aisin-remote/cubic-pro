@@ -166,7 +166,7 @@ class SupplierController extends Controller
 
     public function getData(Request $request)
     {
-        $supplier = Supplier::get();
+        $supplier = Supplier::orderBy('id','DESC')->get();
         return DataTables::of($supplier)
         ->rawColumns(['options'])
 

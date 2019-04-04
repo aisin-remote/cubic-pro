@@ -2,6 +2,7 @@ var tGlAccount;
 $(document).ready(function(){
 
 	tGlAccount = $('#table-gl_account').DataTable({
+		aaSorting: [],
 		ajax: SITE_URL + '/gl_account/get_data',
 		headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         columns: [

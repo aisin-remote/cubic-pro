@@ -13,12 +13,13 @@ use App\Setting;
 use App\Department;
 use App\Division;
 use App\Period;
+use App\Notification;
+use App\NotificationUser;
+use DB;
 class DashboardController extends Controller
 {
     public function index(Request $request)
-    {
-
-       
+    {       
 
    //  	$types = Type::get();
    //      $group_locations = GroupLocation::get();
@@ -83,8 +84,8 @@ class DashboardController extends Controller
 		{
 			if(strlen($filter) == 23)
 			{
-				$fyear_open_from = substr($filter,0,10);
-				$fyear_open_to	 = substr($filter,13,23);
+				$fyear_open_from = date('Y-m-d',strtotime(substr($filter,0,10)));
+				$fyear_open_to	 = date('Y-m-d',strtotime(substr($filter,13,23)));
 			}else{			   																				
 				$fyear_open_from = $period[2]->value;																		
 				$fyear_open_to   = $period[3]->value;
@@ -119,19 +120,94 @@ class DashboardController extends Controller
 				list($arrNormalActual, $arrNormalActualCum,$month3) 		=  ApprovalController::sumBudgetActualMonthly($budget_type, array($fyear_open_from,$fyear_open_to),$group_name,$group_type);						
 				
 				$arrActualCum = $this->sumArrays($arrUnbudgetActualCum, $arrNormalActualCum);
+				$temp = array();
+				for($i=0;$i<count($month);$i++){
+					array_push($temp,$month[$i]);
+				}
+				for($i=0;$i<count($month2);$i++){
+					array_push($temp,$month2[$i]);
+				}
+				for($i=0;$i<count($month3);$i++){
+					array_push($temp,$month3[$i]);
+				}
+				$temp = array_unique($temp);
+
+				$data[0]['y'] = $this->toMonth('01');
+				$data[0]['a'] = 0;
+				$data[0]['b'] = 0;
+				$data[0]['c'] = 0;
+				$data[0]['d'] = 0;
 				
-				$arrJSON = array(
-								["dataPlan" => $arrPlan],
-								["dataUnbudget" => $arrUnbudgetActual],
-								["dataNormal" => $arrNormalActual],
-								["dataCumPlan" => $arrPlanCum],
-								["dataCumActual" => $arrActualCum],
-							);
+				for($i=0;$i<count($temp);$i++){
+					$data[$i]['y'] = $this->toMonth($temp[$i]);
+					$idx = array_search($temp[$i],$month);
+					$data[$i]['a'] = $idx?$arrPlan[$idx]:0; // data plan
+					$data[$i]['b'] = $idx?$arrPlanCum[$idx]:0; // data cum plan
+					$idx2 = array_search($temp[$i],$month2);
+					$data[$i]['c'] = $idx2?$arrUnbudgetActual[$idx2]:0; //data unbudget
+					$idx3 = array_search($temp[$i],$month3);
+					$data[$i]['d'] = $idx3?$arrNormalActual[$idx3]:0; // data normal
+					
+				}
+				
+				// $arrJSON = array(
+								// ["dataPlan" => $arrPlan],
+								// ["dataUnbudget" => $arrUnbudgetActual],
+								// ["dataNormal" => $arrNormalActual],
+								// ["dataCumPlan" => $arrPlanCum],
+								// ["dataCumActual" => $arrActualCum],
+							// );
+				$result['data'] = $data;
 			}
 			
 			
 		}
 		return json_encode($result);
+	}
+	private function toMonth($month)
+	{
+		$new_month = "";
+		switch($month){
+			case '01':
+				$new_month = 'January';
+			break;
+			case '02':
+				$new_month = 'February';
+			break;
+			case '03':
+				$new_month = 'Maret';
+			break;
+			case '04':
+				$new_month = 'April';
+			break;
+			case '05':
+				$new_month = 'Mei';
+			break;
+			case '06':
+				$new_month = 'Juni';
+			break;
+			case '07':
+				$new_month = 'July';
+			break;
+			case '08':
+				$new_month = 'Agustus';
+			break;
+			case '09':
+				$new_month = 'September';
+			break;
+			case '10':
+				$new_month = 'Oktober';
+			break;
+			case '11':
+				$new_month = 'November';
+			break;
+			case '12':
+				$new_month = 'Desember';
+			break;
+		}	
+		
+		return $new_month;
+		
 	}
 	private function sumArrays ($array1, $array2) {
         // Sum between arrays cx + uc
@@ -430,4 +506,27 @@ class DashboardController extends Controller
         return redirect()
         		->back();
     }
+	
+	public function getMyNotification(Request $request)
+	{
+		$user = auth()->user();
+		
+		$notification = Notification::select('*',DB::raw("CASE
+														WHEN substr(TIMEDIFF(created_at,now()),5,2) = '00' THEN concat(substr(TIMEDIFF(created_at,now()),8,2),' second ago')
+														WHEN substr(TIMEDIFF(created_at,now()),2,2) = '00' THEN concat(substr(TIMEDIFF(created_at,now()),5,2),' minute ago')
+														WHEN substr(TIMEDIFF(created_at,now()),2,2) < '24' THEN concat(substr(TIMEDIFF(created_at,now()),2,2),' hours ago')
+														WHEN substr(TIMEDIFF(created_at,now()),2,2) < '48' THEN '1 days ago'
+														WHEN substr(TIMEDIFF(created_at,now()),2,2) > '48' THEN created_at
+													end as notifdate"))->join('notification_users','notifications.id','=','notification_users.notification_id')
+									->where(function($query) use ($user){
+										  $query->where('notifications.created_by', $user->id)
+												->orWhere('notification_users.user_id', $user->id);
+									  })->limit(5)->orderBy('notifications.id','DESC')->get();
+		$nNew 		  = NotificationUser::where('is_read','0')->count();
+		
+		$data['notification'] = $notification;
+		$data['nNew']		  = $nNew;
+		
+		return json_encode($data);
+	}
 }

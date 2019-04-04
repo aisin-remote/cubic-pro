@@ -348,8 +348,8 @@ class BomController extends Controller
                         $supplier_details           = Supplier::where('supplier_code', $temp_det->supplier_code)->first();
 
                         $details              = new BomData;
-                        $details->part_id     =   $part_details->id;
-                        $details->supplier_id =   $supplier_details->id;
+                        $details->part_id     =   empty($part_details)?'0':$part_details->id;
+                        $details->supplier_id =   empty($supplier_details)?'0':$supplier_details->id;
                         $details->source      =   $temp_det->source;
                         $details->qty         =   $temp_det->qty;
                         $bom->details()->save($details);

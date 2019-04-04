@@ -123,7 +123,7 @@
                            </div>                   
                            <div class="form-group">
                                 <label class="control-label">Settlement Date (for CIP) <span class="text-danger">*</span></label>
-                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" date="true" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}" rows="5"></input>
+                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" date="true" required="required" value="{{ date('d-M-Y') }}" rows="5"></input>
                                 <span class="help-block"></span><!-- Carbon\Carbon::now()->format('M-D-Y') -->
                            </div>
 
@@ -194,7 +194,7 @@
                            </div>
                            <div class="form-group">
                                 <label class="control-label">Actual GR <span class="text-danger">*</span></label>
-                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}" date="true"></input>
+                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}" date="true"></input>
                                 <span class="help-block"></span>
                            </div>
 

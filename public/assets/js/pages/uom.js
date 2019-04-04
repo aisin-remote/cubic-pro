@@ -2,6 +2,7 @@ var tUom;
 $(document).ready(function(){
 
 	tUom = $('#table-uom').DataTable({
+		aaSorting: [],
 		ajax: SITE_URL + '/uom/get_data',
 		headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         columns: [

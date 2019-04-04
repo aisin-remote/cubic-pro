@@ -2,14 +2,14 @@
 $(document).ready(function(){
 
     $('#new_settlement_date').datepicker({
-        format: "yyyy-mm-dd",
+        format: "dd-M-yyyy",
         todayBtn: "linked",
         todayHighlight: true,
         autoclose: true
     });
 
     $('#convert_settlement_date').datepicker({
-        format: "yyyy-mm-dd",
+        format: "dd-M-yyyy",
         todayBtn: "linked",
         todayHighlight: true,
         autoclose: true

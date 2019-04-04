@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function(){
 	Route::delete('/cart/{id}', 'CartController@delete');
 	Route::get('cart/delete/{id}', 'CartController@deleteCart');
 	Route::get('/cart/checkout', 'CartController@checkout');
-
+	Route::get('/dashboard/getMyNotification','DashboardController@getMyNotification');
 	Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 	Route::get('/dashboard/view/{group_type}','DashboardController@view');
 	Route::get('/dashboard/getJSONData','DashboardController@getJSONData');
@@ -431,6 +431,8 @@ Route::middleware('auth')->group(function(){
 	Route::delete('approval-expense/{id}', 'ApprovalExpenseController@destroy')->name('approval_expense.destroy');
 
 	Route::get('approval/ub/', 'ApprovalUnbudgetController@ListApproval')->name('approval-unbudget.ListApproval');
+	Route::get('approval/ub/unvalidated','ApprovalUnbudgetController@ListApprovalUnvalidated'); // Pending Approval (Unbudget)
+	Route::get('approval-unbudget/approval_unbudget/{status}', 'ApprovalUnbudgetController@getApprovalExpense');
 	Route::get('approval/ub/{id}','ApprovalUnbudgetController@DetailApproval');
 	Route::get('approval-unbudget/get_data', 'ApprovalUnbudgetController@getData');
 	Route::get('approval/create/ub', 'ApprovalController@createApprovalUnbudget')->name('approval-unbudget.index'); // Create Approval Unbudget

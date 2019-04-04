@@ -152,7 +152,7 @@ class DivisionController extends Controller
 
     public function getData(Request $request)
     {
-        $division = Division::get();
+        $division = Division::orderBy('id','DESC')->get();
         return DataTables::of($division)
         ->rawColumns(['options'])
 

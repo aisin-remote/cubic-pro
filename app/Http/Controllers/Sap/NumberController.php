@@ -53,7 +53,7 @@ class NumberController extends Controller
     public function getData()
     {
 
-    	$number = SapNumber::get();
+    	$number = SapNumber::orderBy('id','DESC')->get();
     	
     	return DataTables::of($number)
     	->rawColumns(['options'])

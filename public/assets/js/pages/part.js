@@ -2,6 +2,7 @@ var tDepartment;
 $(document).ready(function(){
 
 	tRate = $('#table-part').DataTable({
+		aaSorting: [],
 		ajax: SITE_URL + '/part/get_data',
 		headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         columns: [

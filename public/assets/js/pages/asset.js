@@ -2,6 +2,7 @@ var tAsset;
 $(document).ready(function(){
 
 	tAsset = $('#table-asset').DataTable({
+		aaSorting: [],
 		ajax: SITE_URL + '/asset/get_data',
 		headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         columns: [

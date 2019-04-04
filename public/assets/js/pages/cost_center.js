@@ -2,6 +2,7 @@ var tCostCenter;
 $(document).ready(function(){
 
 	tCostCenter = $('#table-cost-center').DataTable({
+		aaSorting: [],
 		ajax: SITE_URL + '/cost_center/get_data',
 		headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         columns: [

@@ -56,7 +56,7 @@ class AssetController extends Controller
     public function getData()
     {
 
-    	$asset = SapAsset::get();
+    	$asset = SapAsset::orderBy('id','DESC')->get();
     	
     	return DataTables::of($asset)
     	->rawColumns(['options'])
