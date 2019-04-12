@@ -247,8 +247,9 @@ class ApprovalUnbudgetController extends Controller
     }
 	public function DetailApproval($approval_number)
 	{
-		$master = ApprovalMaster::getSelf($approval_number);
-		return view('pages.approval.unbudget.view',compact('master'));
+		$approver   = $this->can_approve($approval_number);
+		$master 	= ApprovalMaster::getSelf($approval_number);
+		return view('pages.approval.unbudget.view',compact('master','approver'));
 	}
 	public function AjaxDetailApproval($approval_number)
 	{

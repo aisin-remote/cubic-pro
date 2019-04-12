@@ -44,6 +44,14 @@ class ApprovalDetail extends Model
     {
         return self::query()->where('budget_no', $budget_no)->first();
     }
+	public function items()
+	{
+		return $this->belongsTo('App\Item', 'item_id', 'id');
+	}
+	public function sap_gl_accounts()
+    {
+        return $this->belongsTo('App\SapModel\SapGlAccount', 'sap_account_code', 'gl_gcode');
+    }
     public function departments()
     {
         return $this->belongsTo('App\Department', 'department_id', 'id');

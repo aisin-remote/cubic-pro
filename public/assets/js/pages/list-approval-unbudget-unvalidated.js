@@ -78,10 +78,106 @@ $(document).ready(function(){
         var approval_expense_id = $(this).data('value');
         $('#form-delete-' + approval_expense_id).submit();
     });
-
-    $.getJSON(SITE_URL+"/statistic", function (dataJSON) {
+	$.getJSON(SITE_URL+"/statistic/uc", function (dataJSON) {
 
             Highcharts.chart('chart1', {
+                chart: {
+                    type: 'bar',
+                    zoomType: 'y'
+                },
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: null,
+                },
+                xAxis: {
+                    categories: ['% Used'],
+                },
+                yAxis: {
+                    min: 0,
+                    tickInterval: dataJSON[5].attrTick,
+                    title: {
+                        text: null
+                    }
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>IDR {point.y:,.0f} Million</b> ({point.percentage:,.0f}%)<br/>'
+                },
+                legend: {
+                    reversed: true,
+                    y: 5
+                },
+                plotOptions: {
+                    bar: {
+                        grouping: false,
+                        shadow: false,
+                        borderWidth: 1,
+                        events: {
+                            legendItemClick: function () {
+                                return false; 
+                            }
+                        }
+                    },
+                },
+                series: [{
+                    stack: 0,
+                    stacking: 'normal',
+                    name: dataJSON[5].attrPlanTitle,
+                    dataLabels: {
+                        enabled: true,
+                        align: 'right',
+                        color: '#FFFFFF',
+                        format: 'IDR {point.y:,.0f} Mio'
+                    },
+                    data: dataJSON[0].totPlan,
+                    // color: .getOptions().colors[dataJSON[5].attrPlanColor]
+                }, {
+                    name: 'Dummy',
+                    data: dataJSON[3].totDummy,
+                    color: 'blue',
+                    pointPadding: 2,
+                    showInLegend: false,
+                    stacking: dataJSON[5].attrStack
+                }, {
+                    name: 'Outlook',
+                    data: dataJSON[4].totOutlook,
+                    dataLabels: {
+                        enabled: true,
+                        format: 'IDR {point.y:,.0f} Mio'
+                    },
+                    // color: .getOptions().colors[3],
+                    pointPadding: 0.3,
+                    pointPlacement: -0.0,
+                    stacking: dataJSON[5].attrStack
+                }, {
+                    name: 'Unbudget',
+                    data: dataJSON[2].totUnbudget,
+                    dataLabels: {
+                        enabled: true,
+                        format: 'IDR {point.y:,.0f} Mio'
+                    },
+                    // color: .getOptions().colors[1],
+                    pointPadding: 0.3,
+                    pointPlacement: -0.0,
+                    stacking: dataJSON[5].attrStack
+                }, {
+                    name: 'Used',
+                    data: dataJSON[1].totUsed,
+                    dataLabels: {
+                        enabled: true,
+                        format: 'IDR {point.y:,.0f} Mio'
+                    },
+                    // color: .getOptions().colors[2],
+                    pointPadding: 0.3,
+                    pointPlacement: -0.0,
+                    stacking: dataJSON[5].attrStack
+                }]
+            });
+	});
+    $.getJSON(SITE_URL+"/statistic/ue", function (dataJSON) {
+
+            Highcharts.chart('chart2', {
                 chart: {
                     type: 'bar',
                     zoomType: 'y'
@@ -194,7 +290,7 @@ function validateApproval(approval_number)
 				return false;
 			}else{
 				show_notification('Success','success',data.success);
-				window.location.href=SITE_URL+"/approval/ub/unvalidated";
+				tApprovalUnbudget.draw();
 			}
 			
 		});
@@ -207,7 +303,6 @@ function cancelApproval(approval_number)
 	var confirmed = confirm('Are you sure to cancel Approval: '+approval_number+'?');
 
 	if (confirmed == true) {
-		$('#'+approval_number).hide();
 		var data = {
 			approval_number: approval_number
 		};
@@ -215,12 +310,11 @@ function cancelApproval(approval_number)
 		$.getJSON( SITE_URL+"/approval/cancel_approval", data, function( data ) {
 			if (data.error) {
 				 show_notification('Error','error',data.error);
-				return false;
 			}else{
-					show_notification('Success','success',data.success);
-					window.location.href=SITE_URL+"/approval/ub/unvalidated";
-				}
-			tApprovalCapex.ajax.reload( null, false );
+				show_notification('Success','success',data.success);
+				tApprovalUnbudget.draw();
+			}
+			
 		});
 	};
 

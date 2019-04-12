@@ -813,51 +813,55 @@ class ApprovalController extends Controller
 			
 			 DB::transaction(function() use ($request){
 				 $user = auth()->user();
-				 $approvals 	= Approval::where('department',$user->department->department_code)->first();
-				 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
-				 $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
-				 if(!empty($approverLevel)){
-					 
-					 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
-					 $approval_master->status = $approverLevel->level;
-					 $approval_master->save();
-					 
-					 $approver_user   = ApproverUser::where('approval_master_id',$approvals->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
-					 
-					 if ($approval_master->budget_type != 'ub' && $approval_master->budget_type != 'uc' && $approval_master->budget_type != 'ue' && $approverLevel->level == $highestLevel->level) {
+				 $can_approve   = $this->can_approve($request->approval_number);	
+				 if($can_approve > 0){
+					 $approvals 	= Approval::where('department',$user->department->department_code)->first();
+					 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
+					 $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
+					 if(!empty($approverLevel)){
 						 
-						 foreach($approval_master->details as $detail)
-						 {
-							 $budget = $approval_master->budget_type == 'cx'?Capex::where('budget_no',$detail->budget_no)->first():Expense::where('budget_no',$detail->budget_no)->first();
-							 
-							 if(is_null($detail)){
-								$data['error']	="Master Budget No: ".$detail->budget_no." is Deleted by Finance.\nPlease Contact Finance Department";
-								return $data;
+						 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
+						 $approval_master->status = $approverLevel->level;
+						 $approval_master->save();
+						 
+						 $approver_user   = ApproverUser::where('approval_master_id',$approvals->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
+						 
+						 if ($approval_master->budget_type != 'ub' && $approval_master->budget_type != 'uc' && $approval_master->budget_type != 'ue' && $approval_master->status == 3) {
+						
+							 foreach($approval_master->details as $detail)
+							 {
+								 $budget = $approval_master->budget_type == 'cx'?Capex::where('budget_no',$detail->budget_no)->first():Expense::where('budget_no',$detail->budget_no)->first();
+								 
+								 if(is_null($detail)){
+									$data['error']	="Master Budget No: ".$detail->budget_no." is Deleted by Finance.\nPlease Contact Finance Department";
+									return $data;
+								 }
+								 
+								 $budget->budget_remaining 	-= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+
+								 $budget->budget_used 		+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+
+								 if ($approval_master->budget_type == 'ex') {
+									
+									$budget->qty_remaining 	-= $detail->actual_qty;
+
+									$budget->qty_used 		+= $detail->actual_qty;
+								 }
+
+								 $budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
+								 
+								 $budget->is_closed = $budget->budget_remaining > 0 ? 0 : 1;
+								 
+								 $budget->save();
 							 }
 							 
-							 $budget->budget_remaining 	-= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
-
-							 $budget->budget_used 		+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
-
-							 if ($approval_master->budget_type == 'ex') {
-								
-								$budget->qty_remaining 	-= $detail->actual_qty;
-
-								$budget->qty_used 		+= $detail->actual_qty;
-							 }
-
-							 $budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
-							 
-							 $budget->is_closed = $budget->budget_remaining > 0 ? 0 : 1;
-							 
-							 $budget->save();
 						 }
-						 
-					 }
 					 
+					 }else{
+						 throw new \Exception('Cannot make approval, Approver level in approval is undefined');
+					 }
 				 }else{
-					$data['error']	="Cannot make approval, Approver level in approval is undefined";
-					return $data; 
+					 throw new \Exception("You can not approve this data because of this approval must be sequential or you have no priviledge"); 
 				 }
 				 
 			 });
@@ -874,43 +878,55 @@ class ApprovalController extends Controller
 	{
 		try{
 			
-			 DB::transaction(function() use ($request){
+			$ret =  DB::transaction(function() use ($request){
 				 $user = auth()->user();
-				 $approvals 	= Approval::where('department',$user->department->department_code)->first();
-				 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
-				 $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
-				 if(!empty($approverLevel)){
-					 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
-					
-					 if ($approval_master->status == $highestLevel->level) {
-						foreach ($approval_master->details as $detail) {
-							$budget = $approval_master->budget_type == 'cx'?Capex::where('budget_no',$detail->budget_no)->first():Expense::where('budget_no',$detail->budget_no)->first();
-
-							$budget->budget_remaining 	+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
-
-							$budget->budget_used 		-= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
-
-							if ($approval_master->budget_type == 'ex') {
-								$budget->qty_remaining 	+= $detail->actual_qty;
-
-								$budget->qty_used 		-= $detail->actual_qty;
-							}
-
-							$budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
-
-							$budget->is_closed 	= $budget->status == 0 ? 0 : 1;
-
-							$budget->save();
-						}
+				 $can_approve   = $this->can_approve($request->approval_number);	
+				 
+				 if($can_approve > 0){
+					 
+					 $approvals 	= Approval::where('department',$user->department->department_code)->first();
+					 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
+					 $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
+					 if(!empty($approverLevel)){
+						 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
 						
-					}
-					
-					 $approval_master->status = '-'.$approverLevel->level;
-					 $approval_master->save();
-					 $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)->where('user_id',$user->id)->update(array('is_approve'=>'-1','created_at'=>date('Y-m-d H:i:s')));
+						 if ($approval_master->status > 2) {
+							foreach ($approval_master->details as $detail) {
+								$budget = $approval_master->budget_type == 'cx'?Capex::where('budget_no',$detail->budget_no)->first():Expense::where('budget_no',$detail->budget_no)->first();
+								
+								$budget->budget_reserved -= $detail->budget_reserved;
+								
+								$detail->budget_reserved = 0;
+								$detail->save();
+								
+
+								$budget->budget_remaining 	+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+
+								$budget->budget_used 		-= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+
+								if ($approval_master->budget_type == 'ex') {
+									$budget->qty_remaining 	+= $detail->actual_qty;
+
+									$budget->qty_used 		-= $detail->actual_qty;
+								}
+
+								$budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
+
+								$budget->is_closed 	= $budget->status == 0 ? 0 : 1;
+
+								$budget->save();
+							}
+							
+						 }
+						
+						 $approval_master->status = '-'.$approverLevel->level;
+						 $approval_master->save();
+						 $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)->where('user_id',$user->id)->update(array('is_approve'=>'-1','created_at'=>date('Y-m-d H:i:s')));
+					 }else{
+						 throw new \Exception('Cannot cancel approval, Approver level in approval is undefined');
+					 }
 				 }else{
-					$data['error']	="Cannot cancel approval, Approver level in approval is undefined";
-					return $data;  
+					throw new \Exception("You can not approve this data because of this approval must be sequential or you have no priviledge");
 				 }
 			 });
 			 
@@ -1028,24 +1044,24 @@ class ApprovalController extends Controller
                     ->with($res);
         }
 
-       // if ($approval->status < 3) {
-			// $res = [
-                    // 'title' => 'Error',
-                    // 'type' => 'error',
-                    // 'message' => 'Could not print Approval ['.$approval_number.']: GM Approval required.'
-                // ];
+       if ($approval->status < 3) {
+			$res = [
+                    'title' => 'Error',
+                    'type' => 'error',
+                    'message' => 'Could not print Approval ['.$approval_number.']: GM Approval required.'
+                ];
 
 			
-			// if(strtolower($approval->budget_type)=="cx"){
-				// return redirect()
-                    // ->route('approval-capex.ListApproval')
-                    // ->with($res);
-			// }else if(strtolower($approval->budget_type) == "ex"){
-				// return redirect()
-                    // ->route('approval-expense.ListApproval')
-                    // ->with($res);
-			// }
-        // }
+			if(strtolower($approval->budget_type)=="cx"){
+				return redirect()
+                    ->route('approval-capex.ListApproval')
+                    ->with($res);
+			}else if(strtolower($approval->budget_type) == "ex"){
+				return redirect()
+                    ->route('approval-expense.ListApproval')
+                    ->with($res);
+			}
+        }
 
         $user = auth()->user();
       
@@ -1104,7 +1120,6 @@ class ApprovalController extends Controller
         $appVersion= 'App version = 4.3.0/ Printed by = '.\Auth::user()->name.' '.Carbon::now();
 
         $data  = [];
-		$data2 = [];
 		foreach($print as $prints) {
 			 $newDate = date("M-y", strtotime($prints->budget_type == "cx" ? $prints->settlement_date : $prints->actual_gr));
 			 $data[] = array(
@@ -1125,12 +1140,12 @@ class ApprovalController extends Controller
 				$appVersion,
 				$overbudget_info
 			);
-			$data2[] = array();
 		}
 		$excel = \PHPExcel_IOFactory::load(storage_path('template\pr_output.xlsm'));
         $excel->setActiveSheetIndex(2);
-        $objWorksheet 	= $excel->getActiveSheet();
-        $objWorksheet->fromArray($data,null,'A1',false,false);
+        $objWorksheet2 	= $excel->getActiveSheet();
+        $objWorksheet2->fromArray($data,null,'A1',false,false);
+		
 		$writer = new \PHPExcel_Writer_Excel2007($excel);
 
         // Save the file.
@@ -1199,5 +1214,70 @@ class ApprovalController extends Controller
             return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="#" onclick="printApproval(&#39;'.$approvals->approval_number.'&#39;);return false;" class="btn btn-primary"><span class="glyphicon glyphicon-print"></span></a></div>';
         })
         ->make(true);  
+	}
+	
+	/*statistic*/
+	public function buildJSONApprovalStatus($budget_type)
+	{
+		// $budget_type="cx";
+        $user = auth()->user();
+
+        if ($user->hasRole('department_head')) {
+            $group_type = 'department';
+            $group_name = $user->department->department_code;
+        }
+        elseif ($user->hasRole('gm')) {
+            $group_type ='division';
+            $group_name = $user->division->division_code;
+        }
+        elseif ($user->hasRole('director')) {
+        	$group_type ='dir';
+            $group_name = $user->dir;
+        }
+        elseif ($user->hasRole('admin') || $user->hasRole('budget')) {	// v3.5 by Ferry, 20151113, add budget role
+            $group_type ='division';
+            $group_name = $user->division->division_code;
+        }
+        else {
+        	$group_type = 'department';
+            $group_name = $user->department->department_code;
+        }
+
+		$budget_type_ori = $budget_type;
+        if (($budget_type == 'uc') || ($budget_type == 'ue')) {
+        	$budget_type = substr($budget_type, 1, 1). 'x';
+        }
+
+        $totPlan = ApprovalController::sumBudgetGroupPlan($budget_type, $group_type, $group_name);
+        $totUsed = ApprovalController::sumBudgetGroupActual(array($budget_type), $group_type, $group_name);
+        $totUnbudget = ApprovalController::sumBudgetGroupActual(array('u'.substr($budget_type, 0, 1)), $group_type, $group_name);
+		$totDummy = ($totPlan - ($totUsed + $totUnbudget)) <= 0 ? 0 : ($totPlan - ($totUsed + $totUnbudget));
+		
+        
+        if (($budget_type_ori == 'uc') || ($budget_type_ori == 'ue')) {
+        	$totOutlook = ApprovalMaster::get_pending_sum($budget_type_ori, $group_type, $group_name);
+        }
+        else {
+        	$totOutlook = ApprovalMaster::get_pending_sum($budget_type, $group_type, $group_name);
+        }
+        
+        $attrStack = (($totUsed + $totUnbudget) <= $totPlan) ? "percent" : "normal";
+        $attrTick = (($totUsed + $totUnbudget) <= $totPlan) ? 20 : null;
+        $attrPlanTitle = (($totUsed + $totUnbudget) <= $totPlan) ? "Plan" : "Plan (Overbudget)";
+        $attrPlanColor = (($totUsed + $totUnbudget) <= $totPlan) ? 0 : 5;
+		
+		$arrJSON = array(
+							["totPlan"		=> array($totPlan)],
+							["totUsed"		=> array($totUsed)],
+							["totUnbudget"	=> array($totUnbudget)],
+							["totDummy"		=> array($totDummy)],
+							["totOutlook"	=> array($totOutlook)],
+							["attrStack"	=> $attrStack, 
+							 "attrTick"		=> $attrTick,
+							 "attrPlanTitle"	=> $attrPlanTitle,
+							 "attrPlanColor"	=> $attrPlanColor]
+			    		);
+
+		return $arrJSON;
 	}
 }

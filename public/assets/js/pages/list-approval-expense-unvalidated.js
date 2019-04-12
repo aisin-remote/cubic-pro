@@ -79,7 +79,7 @@ $(document).ready(function(){
         $('#form-delete-' + approval_expense_id).submit();
     });
 
-    $.getJSON(SITE_URL+"/statistic", function (dataJSON) {
+    $.getJSON(SITE_URL+"/statistic/ex", function (dataJSON) {
 
             Highcharts.chart('chart1', {
                 chart: {
@@ -194,7 +194,7 @@ function validateApproval(approval_number)
 				return false;
 			}else{
 				show_notification('Success','success',data.success);
-				window.location.href=SITE_URL+"/approval/ex/unvalidated";
+				tApprovalExpense.draw();
 			}
 			
 		});
@@ -207,7 +207,6 @@ function cancelApproval(approval_number)
 	var confirmed = confirm('Are you sure to cancel Approval: '+approval_number+'?');
 
 	if (confirmed == true) {
-		$('#'+approval_number).hide();
 		var data = {
 			approval_number: approval_number
 		};
@@ -215,12 +214,11 @@ function cancelApproval(approval_number)
 		$.getJSON( SITE_URL+"/approval/cancel_approval", data, function( data ) {
 			if (data.error) {
 				 show_notification('Error','error',data.error);
-				return false;
 			}else{
-					show_notification('Success','success',data.success);
-					window.location.href=SITE_URL+"/approval/ex/unvalidated";
-				}
-			tApprovalCapex.ajax.reload( null, false );
+				show_notification('Success','success',data.success);
+				tApprovalExpense.draw();
+			}
+			
 		});
 	};
 

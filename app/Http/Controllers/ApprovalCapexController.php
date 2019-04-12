@@ -309,70 +309,7 @@ class ApprovalCapexController extends Controller
                     ->route('approval-capex.ListApproval')
                     ->with($res);
     }
-	/*statistic*/
-	public function buildJSONApprovalStatus()
-	{
-		$budget_type="cx";
-        $user = auth()->user();
-
-        if ($user->hasRole('department_head')) {
-            $group_type = 'department';
-            $group_name = $user->department->department_code;
-        }
-        elseif ($user->hasRole('gm')) {
-            $group_type ='division';
-            $group_name = $user->division->division_code;
-        }
-        elseif ($user->hasRole('director')) {
-        	$group_type ='dir';
-            $group_name = $user->dir;
-        }
-        elseif ($user->hasRole('admin') || $user->hasRole('budget')) {	// v3.5 by Ferry, 20151113, add budget role
-            $group_type ='division';
-            $group_name = $user->division->division_code;
-        }
-        else {
-        	$group_type = 'department';
-            $group_name = $user->department->department_code;
-        }
-
-		$budget_type_ori = $budget_type;
-        if (($budget_type == 'uc') || ($budget_type == 'ue')) {
-        	$budget_type = substr($budget_type, 1, 1). 'x';
-        }
-
-        $totPlan = ApprovalController::sumBudgetGroupPlan($budget_type, $group_type, $group_name);
-        $totUsed = ApprovalController::sumBudgetGroupActual(array($budget_type), $group_type, $group_name);
-        $totUnbudget = ApprovalController::sumBudgetGroupActual(array('u'.substr($budget_type, 0, 1)), $group_type, $group_name);
-		$totDummy = ($totPlan - ($totUsed + $totUnbudget)) <= 0 ? 0 : ($totPlan - ($totUsed + $totUnbudget));
-		
-        
-        if (($budget_type_ori == 'uc') || ($budget_type_ori == 'ue')) {
-        	$totOutlook = ApprovalMaster::get_pending_sum($budget_type_ori, $group_type, $group_name);
-        }
-        else {
-        	$totOutlook = ApprovalMaster::get_pending_sum($budget_type, $group_type, $group_name);
-        }
-        
-        $attrStack = (($totUsed + $totUnbudget) <= $totPlan) ? "percent" : "normal";
-        $attrTick = (($totUsed + $totUnbudget) <= $totPlan) ? 20 : null;
-        $attrPlanTitle = (($totUsed + $totUnbudget) <= $totPlan) ? "Plan" : "Plan (Overbudget)";
-        $attrPlanColor = (($totUsed + $totUnbudget) <= $totPlan) ? 0 : 5;
-		
-		$arrJSON = array(
-							["totPlan"		=> array($totPlan)],
-							["totUsed"		=> array($totUsed)],
-							["totUnbudget"	=> array($totUnbudget)],
-							["totDummy"		=> array($totDummy)],
-							["totOutlook"	=> array($totOutlook)],
-							["attrStack"	=> $attrStack, 
-							 "attrTick"		=> $attrTick,
-							 "attrPlanTitle"	=> $attrPlanTitle,
-							 "attrPlanColor"	=> $attrPlanColor]
-			    		);
-
-		return $arrJSON;
-	}
+	
     public function getApprovalCapex($status){
         $type = 'cx';
         $user = auth()->user();
@@ -462,8 +399,9 @@ class ApprovalCapexController extends Controller
     }
 	public function DetailApproval($approval_number)
 	{
-		$master = ApprovalMaster::getSelf($approval_number);
-		return view('pages.approval.capex.view',compact('master'));
+		$approver   = $this->can_approve($approval_number);
+		$master 	= ApprovalMaster::getSelf($approval_number);
+		return view('pages.approval.capex.view',compact('master','approver'));
 	}
 	public function AjaxDetailApproval($approval_number)
 	{

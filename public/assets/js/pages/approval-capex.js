@@ -25,7 +25,11 @@ $(document).ready(function(){
     });
   
   $('#btn-submit').click(function(){
-	$('#formSubmitApproval').submit(); 
+	if($('.checklist').length >0){
+		$('#formSubmitApproval').submit();
+	}else{
+		show_notification('Error','error','You have to add item minimal 1 data');
+	}
   }); 
   
   $('#btn-save').click(function(){

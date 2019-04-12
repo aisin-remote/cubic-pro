@@ -14,7 +14,7 @@
             <div class="page-title-box">
                 <h4 class="page-title"> Detail Information of Capex Approval Sheet</h4>
                 <ol class="breadcrumb p-0 m-0">
-                    @if ((\Entrust::can('validate_quotation') && ($master->status === 0)) || (\Entrust::can('dept_head_approve') && ($master->status === 1)) || (\Entrust::can('gm_approve') && ($master->status === 2)) || (\Entrust::can('dir_approve') && ($master->status === 3)))
+                    @if ($approver)
 						<li class="active">
 							<a href="{{ url('approval/ex/unvalidated')}}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" id="back">Back</a>
 						</li>

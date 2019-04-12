@@ -22,7 +22,7 @@
             </div>
         </div>
 		<div class="col-md-12">
-			<div id="chart1" style="height:140px;margin:0 auto"></div>
+			<div id="chart1" style="height:400px;margin:0 auto"></div>
 		</div>
     </div>
     <!-- end row -->
