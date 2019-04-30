@@ -66,10 +66,10 @@ Route::middleware('auth')->group(function(){
 	});
 	
 	// Master Period ARK. Ipan Herdiansyah
-	Route::group(['middleware' => ['permission:periode','auth']], function() {
+	// Route::group(['middleware' => ['permission:periode','auth']], function() {
 		Route::get('period/get_data', 'PeriodController@getData');
 		Route::resource('period', 'PeriodController');
-	});
+	// });
 	
 	// Master Section ARK. Ipan Herdiansyah
 	Route::get('section/get_data', 'SectionController@getData');
@@ -461,19 +461,19 @@ Route::middleware('auth')->group(function(){
 			});
 			
 			// CIP Administrator
-			Route::group(['middleware' => ['permission:cip-admin-capex','auth']], function() {
+			// Route::group(['middleware' => ['permission:cip-admin-capex','auth']], function() {
 				Route::get('/cip/admin/list', 'ApprovalController@getCIPAdminList');
 				Route::get('/cip/admin/convert','ApprovalController@convertToCIP');
 				Route::get('/cip/admin/resettle','ApprovalController@extendResettle');
-			});
+			// });
 			
 			// CIP Settlement
-			Route::group(['middleware' => ['permission:cip-settlement-capex','auth']], function() {
+			// Route::group(['middleware' => ['permission:cip-settlement-capex','auth']], function() {
 				Route::get('/cip/settlement/list', 'ApprovalController@getCipSettlementList');
 				Route::get('/cip/settlement/ajaxlist/{control}/{status}/{filter}', 'ApprovalController@getCIPSettlementAjaxList');
 				Route::get('/cip/settlement/get_approval_detail/{budget_no}','ApprovalController@getApprovalDetail');
 				Route::get('/cip/settlement/finish','ApprovalController@finishCIP');
-			});
+			// });
 	
 	/******* END OF ROUTE CAPEX *******/
 	
