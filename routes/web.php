@@ -161,7 +161,7 @@ Route::middleware('auth')->group(function(){
 	
 	Route::resource('/media', 'MediaController');
 	
-	Route::group(['middleware' => ['permission:budget_upload','auth']], function() {
+	// Route::group(['middleware' => ['permission:budget_upload','auth']], function() {
 		// Upload Sales Data
 		Route::get('salesdata/get_data', 'SalesDataController@getData');
 		Route::get('salesdata/get_data_temporary', 'SalesDataController@getData_temporary');
@@ -188,6 +188,8 @@ Route::middleware('auth')->group(function(){
 		Route::get('bom/temporary/cancel', 'BomController@cancel')->name('bom.temporary.cancel');
 		Route::get('bom/temporary/save', 'BomController@save')->name('bom.temporary.save');
 		Route::get('bom/details-data-session', 'BomController@getDataBom');
+		Route::get('bom/get_data', 'BomController@getData');
+		Route::get('/bom/export', 'BomController@export')->name('bom.export');
 		Route::resource('bom', 'BomController');
 
 		// Get Data Bom Detail
@@ -234,7 +236,7 @@ Route::middleware('auth')->group(function(){
 		Route::get('output_master/get_group_material/{fiscal_year}', 'OutputMasterController@getGroupMaterial');
 		Route::get('output_master/download', 'OutputMasterController@download')->name('output_master.download');
 		Route::resource('output_master', 'OutputMasterController');
-	});
+	// });
 	
 	// Upload Price Catalog
 	Route::get('price_catalogue/get_data', 'MasterPriceCatalogController@getData');
@@ -276,12 +278,6 @@ Route::middleware('auth')->group(function(){
 		Route::get('permission/get_data', 'PermissionController@getData');
 		Route::resource('permission', 'PermissionController')->middleware('permission:user-role','auth');
 	});
-	
-	Route::get('bom/get_data', 'BomController@getData');
-	Route::get('/bom/export', 'BomController@export')->name('bom.export');
-	Route::post('/bom/import', 'BomController@import')->name('bom.import');
-	Route::resource('bom', 'BomController');
-	
 	
 	Route::resource('/settings', 'SettingController');
 
