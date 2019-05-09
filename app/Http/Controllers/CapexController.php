@@ -314,13 +314,13 @@ class CapexController extends Controller
 	{
 		$src_dest = 'src';
         $title = 'List of Capex Moving (Used <= 0) To Archive For Revision';
-		return view('pages.capex.archive',compact('src_dest','title','table_ajax'));
+		return view('pages.capex.archive',compact('src_dest','title'));
 	}
 	public function viewArchive()
 	{
 		$src_dest = 'nsrc';
         $title = 'List of Capex Achive Data';
-		return view('pages.capex.archive',compact('src_dest','title','table_ajax'));
+		return view('pages.capex.archive',compact('src_dest','title'));
 	}
 	public function getArchiveAjaxSource()
     {

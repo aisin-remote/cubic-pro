@@ -556,7 +556,7 @@ Route::middleware('auth')->group(function(){
 			Route::delete('approval-expense/delete/{id}','ApprovalExpenseController@delete')->name('approval_expense.delete');
 			
 			//ARCHIVE EXPENSE
-			Route::group(['middleware' => ['permission:archive-expense','auth']], function() {
+			// Route::group(['middleware' => ['permission:archive-expense','auth']], function() {
 				
 				Route::get('expense/archive','ExpenseController@archive');
 				Route::get('expense/get_archive','ExpenseController@execArchive');
@@ -564,7 +564,7 @@ Route::middleware('auth')->group(function(){
 				Route::get('expense/archive/ajaxsource','ExpenseController@getArchiveAjaxSource');
 				Route::get('expense/archive/ajaxdest','ExpenseController@getArchiveAjaxDestination');
 				Route::get('expense/archive/list','ExpenseController@viewArchive');
-			});
+			// });
 	
 	/******* END OF ROUTE EXPENSE *******/
 	

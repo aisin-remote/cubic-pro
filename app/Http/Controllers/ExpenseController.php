@@ -301,13 +301,13 @@ class ExpenseController extends Controller
 	{
 		$src_dest = 'src';
         $title = 'List of Expense Moving (Used <= 0) To Archive For Revision';
-		return view('pages.expense.archive',compact('src_dest','title','table_ajax'));
+		return view('pages.expense.archive',compact('src_dest','title'));
 	}
 	public function viewArchive()
 	{
 		$src_dest = 'nsrc';
         $title = 'List of Expense Achive Data';
-		return view('pages.expense.archive',compact('src_dest','title','table_ajax'));
+		return view('pages.expense.archive',compact('src_dest','title'));
 	}
 	public function getArchiveAjaxSource()
     {
