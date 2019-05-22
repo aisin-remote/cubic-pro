@@ -24,16 +24,16 @@
 					<div class="form-group m-r-10">
 						@if($group_type=='department')
 						<select class="form-control" id="department" name="department">
-							<option value="x">Please Select Department...</option>
-							@foreach($departments as $dept)
-								<option value="{{$dept->department_code}}" {{isset($_GET['department']) && $_GET['department'] == $dept->department_code?'selected="selected"':''}} >{{$dept->department_name}}</option>
+							<option value="x">Please Select Division...</option>							
+							@foreach($divisions as $div)
+								<option value="{{$div->division_code}}" {{isset($_GET['division']) && $_GET['division'] == $div->division_code?'selected="selected"':''}}>{{$div->division_name}}</option>
 							@endforeach
 						</select>
 						@elseif($group_type=='division')
 						<select class="form-control" id="division" name="division">
-							<option value="x">Please Select Division...</option>
-							@foreach($divisions as $div)
-								<option value="{{$div->division_code}}" {{isset($_GET['division']) && $_GET['division'] == $div->division_code?'selected="selected"':''}}>{{$div->division_name}}</option>
+							<option value="x">Please Select Department...</option>
+							@foreach($departments as $dept)
+								<option value="{{$dept->department_code}}" {{isset($_GET['department']) && $_GET['department'] == $dept->department_code?'selected="selected"':''}} >{{$dept->department_name}}</option>
 							@endforeach
 						</select>
 						@elseif($group_type=='all')

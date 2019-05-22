@@ -161,19 +161,21 @@ Route::middleware('auth')->group(function(){
 	
 	Route::resource('/media', 'MediaController');
 	
-	// Route::group(['middleware' => ['permission:budget_upload','auth']], function() {
-		// Upload Sales Data
-		Route::get('salesdata/get_data', 'SalesDataController@getData');
-		Route::get('salesdata/get_data_temporary', 'SalesDataController@getData_temporary');
-		Route::get('/salesdata/export', 'SalesDataController@export')->name('salesdata.export');
-		Route::post('/salesdata/import', 'SalesDataController@import')->name('salesdata.import');
-		Route::get('salesdata/temporary', 'SalesDataController@temporary')->name('salesdata.temporary');
-		Route::get('/salesdata/export/template', 'SalesDataController@templateSalesData')->name('salesdata.template');
+	Route::group(['middleware' => ['permission:budget_upload','auth']], function() {		
 
-		Route::get('salesdata/temporary/cancel', 'SalesDataController@cancel')->name('salesdata.temporary.cancel');
-		Route::get('salesdata/temporary/save', 'SalesDataController@save')->name('salesdata.temporary.save');
-		Route::resource('salesdata', 'SalesDataController');
+		// Get Data Bom Detail
+		Route::get('bom_datas/get_data', 'BomDatasController@getData');
+		Route::post('bom_datas/store', 'BomDatasController@store')->name('bom_datas.store');
+		Route::delete('bom_datas/{id}', 'BomDatasController@destroy')->name('bom_datas.destroy');
 		
+		// Get Data Bom Semi Detail
+		Route::get('bom_semi_datas/get_data', 'BomSemiDatasController@getData');
+		Route::post('bom_semi_datas/store', 'BomSemiDatasController@store')->name('bom_semi_datas.store');
+		Route::delete('bom_semi_datas/{id}', 'BomSemiDatasController@destroy')->name('bom_semi_datas.destroy');
+
+		
+	});
+	Route::group(['middleware' => ['permission:upload-bom-finish-good','auth']], function() {
 		// Upload Bom Finish Good
 		Route::get('bom/get_data', 'BomController@getData');
 		Route::get('bom/details-data/{id}', 'BomController@getDetailsData');
@@ -188,21 +190,26 @@ Route::middleware('auth')->group(function(){
 		Route::get('bom/temporary/cancel', 'BomController@cancel')->name('bom.temporary.cancel');
 		Route::get('bom/temporary/save', 'BomController@save')->name('bom.temporary.save');
 		Route::get('bom/details-data-session', 'BomController@getDataBom');
+		
 		Route::get('bom/get_data', 'BomController@getData');
 		Route::get('/bom/export', 'BomController@export')->name('bom.export');
+		Route::post('/bom/import', 'BomController@import')->name('bom.import');
 		Route::resource('bom', 'BomController');
+	});
+	Route::group(['middleware' => ['permission:uppload-sales-data','auth']], function() {
+		// Upload Sales Data
+		Route::get('salesdata/get_data', 'SalesDataController@getData');
+		Route::get('salesdata/get_data_temporary', 'SalesDataController@getData_temporary');
+		Route::get('/salesdata/export', 'SalesDataController@export')->name('salesdata.export');
+		Route::post('/salesdata/import', 'SalesDataController@import')->name('salesdata.import');
+		Route::get('salesdata/temporary', 'SalesDataController@temporary')->name('salesdata.temporary');
+		Route::get('/salesdata/export/template', 'SalesDataController@templateSalesData')->name('salesdata.template');
 
-		// Get Data Bom Detail
-		Route::get('bom_datas/get_data', 'BomDatasController@getData');
-		Route::post('bom_datas/store', 'BomDatasController@store')->name('bom_datas.store');
-		Route::delete('bom_datas/{id}', 'BomDatasController@destroy')->name('bom_datas.destroy');
-		
-		// Get Data Bom Semi Detail
-		Route::get('bom_semi_datas/get_data', 'BomSemiDatasController@getData');
-		Route::post('bom_semi_datas/store', 'BomSemiDatasController@store')->name('bom_semi_datas.store');
-		Route::delete('bom_semi_datas/{id}', 'BomSemiDatasController@destroy')->name('bom_semi_datas.destroy');
-
-		
+		Route::get('salesdata/temporary/cancel', 'SalesDataController@cancel')->name('salesdata.temporary.cancel');
+		Route::get('salesdata/temporary/save', 'SalesDataController@save')->name('salesdata.temporary.save');
+		Route::resource('salesdata', 'SalesDataController');
+	});
+	Route::group(['middleware' => ['permission:upload-bom-semi-finish-good','auth']], function() {
 		// Upload Bom Semi Finish Good
 		Route::get('bom_semi/get_data', 'BomSemiController@getData');
 		Route::get('bom_semi/details-data/{id}', 'BomSemiController@getDetailsData');
@@ -216,7 +223,8 @@ Route::middleware('auth')->group(function(){
 		Route::post('/bom_semi/import', 'BomSemiController@import')->name('bom_semi.import');
 		Route::post('/bom_semi/update{}', 'BomSemiController@update')->name('bom_semi.update');
 		Route::resource('bom_semi', 'BomSemiController');
-		
+	});
+	Route::group(['middleware' => ['permission:upload-master-price-part','auth']], function() {
 		// Upload  Master Price
 		Route::get('masterprice/get_data', 'MasterPriceController@getData');
 		Route::get('masterprice/get_data_temporary', 'MasterPriceController@getData_temporary');
@@ -227,7 +235,9 @@ Route::middleware('auth')->group(function(){
 		Route::get('masterprice/temporary/cancel', 'MasterPriceController@cancel')->name('masterprice.temporary.cancel');
 		Route::get('masterprice/temporary/save', 'MasterPriceController@save')->name('masterprice.temporary.save');
 		Route::resource('masterprice', 'MasterPriceController');
-		
+	});
+	
+	Route::group(['middleware' => ['permission:output-master','auth']], function() {
 		// Output Master
 		Route::get('output_master/get_data', 'OutputMasterController@getData');
 		Route::get('output_master/get_sales_data/{fiscal_year}', 'OutputMasterController@getSalesData');
@@ -236,7 +246,7 @@ Route::middleware('auth')->group(function(){
 		Route::get('output_master/get_group_material/{fiscal_year}', 'OutputMasterController@getGroupMaterial');
 		Route::get('output_master/download', 'OutputMasterController@download')->name('output_master.download');
 		Route::resource('output_master', 'OutputMasterController');
-	// });
+	});
 	
 	// Upload Price Catalog
 	Route::get('price_catalogue/get_data', 'MasterPriceCatalogController@getData');
@@ -277,7 +287,8 @@ Route::middleware('auth')->group(function(){
 
 		Route::get('permission/get_data', 'PermissionController@getData');
 		Route::resource('permission', 'PermissionController')->middleware('permission:user-role','auth');
-	});
+		
+	});	
 	
 	Route::resource('/settings', 'SettingController');
 

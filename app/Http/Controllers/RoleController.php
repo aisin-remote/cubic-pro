@@ -209,7 +209,6 @@ class RoleController extends Controller
     {
         $permissions = Permission::where('parent_id', 0)
                                 ->get();
-
         $role = Role::find($id);
 
         return view('pages.role.edit', compact(['permissions', 'role']));

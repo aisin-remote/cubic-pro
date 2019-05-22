@@ -55,7 +55,6 @@
                             <h3 class="panel-title">Izin</h3>
                             <hr>
                         </div>
-
                        @foreach ($permissions as $permission)
                         <div class="col-md-3">
                             <ul class="no-list">

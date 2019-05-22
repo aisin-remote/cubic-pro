@@ -824,7 +824,7 @@ class ApprovalController extends Controller
 						 $approval_master->status = $approverLevel->level;
 						 $approval_master->save();
 						 
-						 $approver_user   = ApproverUser::where('approval_master_id',$approvals->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
+						 $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
 						 
 						 if ($approval_master->budget_type != 'ub' && $approval_master->budget_type != 'uc' && $approval_master->budget_type != 'ue' && $approval_master->status == 3) {
 						

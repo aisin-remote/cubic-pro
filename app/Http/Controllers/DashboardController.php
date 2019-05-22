@@ -45,10 +45,15 @@ class DashboardController extends Controller
 		$departments =[];
 		$divisions 	 =[];
 		if($group_type == 'department')
-		{
+		{		
 			$departments = Department::all();
 		}elseif($group_type == 'division'){
-			$divisions   = Division::all();
+			
+			if(isset($request->division) && $request->division != ""){
+				$departments   = Department::where('division_id',$request->division)->get();
+			}else{
+				$departments   = array();
+			}
 		}elseif($group_type == 'all'){
 			$divisions   = Division::all();
 			$departments = Department::all();
