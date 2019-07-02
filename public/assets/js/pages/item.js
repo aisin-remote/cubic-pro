@@ -9,7 +9,7 @@ $(document).ready(function(){
             { data: 'item_category.category_name', name: 'item_category.category_name'},
             { data: 'item_code', name: 'item_code'},
             { data: 'item_description', name: 'item_description'},
-            { data: 'item_spesification', name: 'item_spesification'},
+            { data: 'item_specification', name: 'item_specification'},
             { data: 'item_brand', name: 'item_brand'},
             { data: 'item_price', name: 'item_price', class: 'autonumeric text-right'},
             { data: 'uom.uom_fname', name: 'uom.uom_fname'},

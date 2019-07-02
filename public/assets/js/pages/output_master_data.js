@@ -65,6 +65,7 @@ function getSalesDataTable() {
     `;
     
     $('#sales_data').find('tbody').remove();
+    $('#sales_data').find('tfoot').remove();
     $('#sales_data').append(table);
 }
 
@@ -131,6 +132,7 @@ function getMaterialTable() {
     `;
     
     $('#material').find('tbody').remove();
+    $('#material').find('tfoot').remove();
     $('#material').append(table);
 }
 
@@ -199,6 +201,7 @@ function getSalesMaterialTable() {
     `;
     
     $('#material_sales_data').find('tbody').remove();
+    $('#material_sales_data').find('tfoot').remove();
     $('#material_sales_data').append(table);
 }
 
@@ -325,3 +328,10 @@ $(document).ready(function(){
     getSalesMaterialTable();
     getGroupMaterialTable();
 });
+
+function filter() {
+    getSalesDataTable();
+    getMaterialTable();
+    getSalesMaterialTable();
+    getGroupMaterialTable();
+}

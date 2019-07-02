@@ -39,9 +39,9 @@
                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Department <span class="text-danger">*</span></label>
-								<select class="form-control select2" name="department">
+								<select class="form-control" name="department">
 										@foreach($department as $dept)
-											<option value="{{$dept->department_code}}">{{'('.$dept->department_code.') - '.$dept->department_name}}</option>
+                                            <option value="{{$dept->id}}" {{ $dept->department_code == $approval->department? 'selected=selected' : '' }}>{{$dept->department_name}}</option>
 										@endforeach
 								</select>
                                 <span class="help-block"></span>
@@ -119,18 +119,13 @@
                                         <th style="width: 250px">User</th>
                                     </tr>
                                 </thead>
-                                <!-- <tbody>
-                                    <tr class="text-center" id="empty-row">
-                                        <td colspan="4">No data available.</td>
-                                    </tr>
-                                </tbody> -->
                                 <tbody>
 									@foreach($approval_dtl as $i => $app_dtl)
                                     <tr>
-										<td>
-										@if($i > 2)
-											<button class="btn btn-danger btn-xs" onclick="del(this)"><i class="fa fa-times"></i></button>
-										@endif
+										<td style="width:50px" class="text-center">
+										
+                                            <button type="button" class="btn btn-danger btn-xs removeRow"><i class="fa fa-times"></i></button>
+										
 										</td>
                                         <td>
                                             <div class="form-group">

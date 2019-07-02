@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="col-md-1">
-                    <button class="btn btn-primary btn-bordered waves-effect waves-light" type="button" onclick="getSalesDataTable()">Filter</button>
+                    <button class="btn btn-primary btn-bordered waves-effect waves-light" type="button" onclick="filter()">Filter</button>
                 </div>
 
                 <div class="col-md-1">
@@ -73,10 +73,11 @@
                     </li>
                 </ul>
 
+                <div id="loading" style="display:none" class="text-muted">Loading...</div>
                 <div class="tab-content">
-                    <div class="row">
-                        <div class="col-sm-12 table-responsive">
-                            <div class="tab-pane active" id="sales_amount">
+                    <div class="tab-pane active" id="sales_amount">
+                        <div class="row">
+                            <div class="col-sm-12 table-responsive">
                                 <table class="table  table-bordered" id="sales_data">
                                     <thead>
                                         <tr style="text-align:center">

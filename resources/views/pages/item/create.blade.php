@@ -67,7 +67,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="control-label">Spesification<span class="text-danger">*</span></label>
+                                <label class="control-label">Specification<span class="text-danger">*</span></label>
                                 <input type="text" name="item_specification" class="form-control" placeholder="Item Specification" required="required">
                                 <span class="help-block"></span>
                             </div>

@@ -235,15 +235,15 @@ class SupplierController extends Controller
     {
        return Excel::create('Template Supplier', function($excel){
             $excel->sheet('mysheet', function($sheet){
-                $sheet->cell('A1', function($cell) {$cell->setValue('supplier_code');});
-                $sheet->cell('B1', function($cell) {$cell->setValue('supplier_name');});
-                $sheet->cell('C1', function($cell) {$cell->setValue('supplier_address');});
-                $sheet->cell('D1', function($cell) {$cell->setValue('supplier_phone');});
-                $sheet->cell('E1', function($cell) {$cell->setValue('supplier_email');});
-                $sheet->cell('F1', function($cell) {$cell->setValue('supplier_website');});
-                $sheet->cell('G1', function($cell) {$cell->setValue('supplier_pic_name');});
-                $sheet->cell('H1', function($cell) {$cell->setValue('supplier_pic_phone');});
-                $sheet->cell('I1', function($cell) {$cell->setValue('supplier_pic_email');});
+                $sheet->cell('A1', function($cell) {$cell->setValue('supplier code');});
+                $sheet->cell('B1', function($cell) {$cell->setValue('supplier name');});
+                $sheet->cell('C1', function($cell) {$cell->setValue('supplier address');});
+                $sheet->cell('D1', function($cell) {$cell->setValue('supplier phone');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('supplier email');});
+                $sheet->cell('F1', function($cell) {$cell->setValue('supplier website');});
+                $sheet->cell('G1', function($cell) {$cell->setValue('supplier pic_name');});
+                $sheet->cell('H1', function($cell) {$cell->setValue('supplier pic_phone');});
+                $sheet->cell('I1', function($cell) {$cell->setValue('supplier pic_email');});
             });
 
         })->download('csv');

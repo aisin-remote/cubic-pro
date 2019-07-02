@@ -137,44 +137,46 @@ class ManageApprovalController extends Controller
 
     public function update(Request $request)
     {
+
 		$ret = DB::transaction(function() use ($request){
-					try{
+					// try{
 						$res = [
 								'title' => 'Succses',
 								'type' => 'success',
 								'message' => 'Data Saved Success!'
 							];
+						$level = !empty($request->level_approval) ? array_merge($request->level, $request->level_approval) : $request->level;
 						$approval = Approval::find($request->approval_id);
 
 						if (empty($approval)) {
 							return response()->json('Type not found', 500);
 						}
 						
-						$approval->department 	= $request->department;
+						// $approval->department 	= $request->department;
 						$approval->is_seq 		= $request->is_seq;
 						$approval->is_must_all 	= $request->is_must_all;
-						$approval->total_approval = count($request->level);
+						$approval->total_approval = count($level);
 						$approval->save();
 						
 						ApprovalDtl::where('approval_id',$approval->id)->delete();
 
-						for($i=0; $i < count($request->level); $i++)
-						{
+
+						foreach ($request->user as $i => $value){
 							$approval_dtl = new ApprovalDtl();
 							$approval_dtl->approval_id 	= $approval->id; 
 							$approval_dtl->user_id 		= $request->user[$i];
-							$approval_dtl->level 		= $request->level[$i];
+							$approval_dtl->level 		= $level[$i];
 							
 							$approval_dtl->save();
 						}
-					}catch(\Exception $e){
-						 DB::rollback();
-						 $res = [
-							'title' => 'Error',
-							'type' => 'error',
-							'message' => $e->getMessage(),
-						]; 
-					}
+					// }catch(\Exception $e){
+					// 	 DB::rollback();
+					// 	 $res = [
+					// 		'title' => 'Error',
+					// 		'type' => 'error',
+					// 		'message' => $e->getMessage(),
+					// 	]; 
+					// }
 			
 				});
 		

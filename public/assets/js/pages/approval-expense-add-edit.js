@@ -6,7 +6,7 @@ $(document).ready(function(){
 
     if (budget_no  !== '' && budget_no !== null && budget_no !== undefined ) {
       var arr_expense = getData(budget_no);
-	  if(arr_expense.is_closed){
+	  if(parseInt(arr_expense.is_closed)){
 		  show_notification("Error",'error','Budget ['+arr_expense.budget_no+'] already fully reserved, please contact Accounting/Finance Dept. for further assistance');
 		  $('[name="budget_no"]').val('').trigger('change');
 	  }else if(parseInt(arr_expense.budget_plan) - parseInt(arr_expense.budget_reserved) <=0){

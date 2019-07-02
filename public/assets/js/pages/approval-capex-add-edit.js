@@ -5,7 +5,7 @@ $(document).ready(function(){
   	var budget_no = $(this).val();
     if (budget_no  !== '' && budget_no !== null && budget_no !== undefined ) {
       var arr_capex = getData(budget_no);
-	  if(arr_capex.is_closed){
+	  if(parseInt(arr_capex.is_closed)){
 		  show_notification("Error",'error','Budget ['+arr_capex.budget_no+'] already closed, please contact Accounting/Finance Dept. for further assistance');
 		  $('[name="budget_no"]').val('').trigger('change');
 	  }else if(parseInt(arr_capex.budget_plan) - parseInt(arr_capex.budget_reserved) <=0){

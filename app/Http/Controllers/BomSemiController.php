@@ -393,7 +393,7 @@ class BomSemiController extends Controller
     {
         $boms = BomSemi::select('parts_bom.part_number as part_number', 'parts_bom.part_name as part_name', 'model','parts_bom_semi_datas.part_number as part_number_details','suppliers.supplier_code','suppliers.supplier_name', 'bom_semi_datas.source','bom_semi_datas.qty')
                     ->join('parts as parts_bom', 'bom_semis.part_id', '=', 'parts_bom.id')
-                    ->join('bom_semi_datas', 'bom_semi_datas.part_id_head', '=', 'bom_semis.part_id')
+                    ->join('bom_semi_datas', 'bom_semi_datas.bom_semi_id', '=', 'bom_semis.part_id')
                     ->join('parts as parts_bom_semi_datas', 'bom_semi_datas.part_id', '=', 'parts_bom_semi_datas.id')
                     ->join('suppliers', 'bom_semis.supplier_id', '=', 'suppliers.id')
                     ->get();
