@@ -328,7 +328,7 @@ class ApprovalCapexController extends Controller
 
             $approval_capex->where('status','1');
 
-        }elseif($level->level==3){
+        }elseif($level->level>=3){
 
             $approval_capex->where('status','2');
 
