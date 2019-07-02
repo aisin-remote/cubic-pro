@@ -315,26 +315,53 @@ class ApprovalCapexController extends Controller
         $user = auth()->user();
         $approval_capex = ApprovalMaster::with('departments')
                                 ->where('budget_type', 'like', 'cx%');
-		if(\Entrust::hasRole('user')) {
-			$approval_capex->where('created_by',$user->id);
-		}
 
-        if (\Entrust::hasRole('department_head')) {
-            $approval_capex->whereIn('department', [$user->department->department_code]);
-        }
+        $level = ApprovalDtl::where('user_id', $user->id)->first();
 
-        if (\Entrust::hasRole('gm')) {
-            $approval_capex->where('division', $user->division->division_code);
-        }
+        // $level_app = 1;
 
-        if (\Entrust::hasRole('director')) {
-            $approval_capex->where('dir', $user->dir);
+        if($level->level==1){
+
+            $approval_capex->where('status','0');
+
+        }elseif($level->level==2){
+
+            $approval_capex->where('status','1');
+
+        }elseif($level->level==3){
+
+            $approval_capex->where('status','2');
+
+        }elseif($level->level==4){
+
+            $approval_capex->where('status','3');
+
         }
+        
+        // dd($level->level);
+        
+		// if(\Entrust::hasRole('user')) {
+		// 	$approval_capex->where('created_by',$user->id);
+		// }
+
+        // if (\Entrust::hasRole('department_head')) {
+        //     $approval_capex->whereIn('department', [$user->department->department_code]);
+        // }
+
+        // if (\Entrust::hasRole('gm')) {
+        //     $approval_capex->where('division', $user->division->division_code);
+        // }
+
+        // if (\Entrust::hasRole('director')) {
+        //     $approval_capex->where('dir', $user->dir);
+        // }
 		
-		if($status == 'need_approval'){
-			$approval_capex->where('status','0');
-		}
+		// if($status == 'need_approval'){
+		// 	$approval_capex->where('status','0');
+		// }
         $approval_capex = $approval_capex->get();
+
+        
 		
         return DataTables::of($approval_capex)
         ->rawColumns(['action'])
