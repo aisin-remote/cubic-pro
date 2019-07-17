@@ -159,8 +159,8 @@ function xeditClasser()
         
         // set qty_receive anchor
         qty_receive.html('<a href="#" class="editable" data-pk="'+id+'" data-name="qty_receive" data-title="Enter qty receive">'+qty_receive.text()+'</a>');
-        gr_no.html('<a href="#" class="editable" data-pk="'+id+'" data-name="gr_no" data-title="Enter gr number">'+gr_no.text()+'</a>');
-        notes.html('<a href="#" class="editable" data-pk="'+id+'" data-name="notes" data-title="Enter notes">'+notes.text()+'</a>');
+        gr_no.html('<a href="#" class="editable" data-pk="'+id+'" data-name="gr_no" data-title="Enter GR Number">'+gr_no.text()+'</a>');
+        notes.html('<a href="#" class="editable" data-pk="'+id+'" data-name="notes" data-title="Enter Notes">'+notes.text()+'</a>');
         
        
     });

@@ -38,6 +38,7 @@ class Capex extends Model
 
         return $data;
     }
+    
 	public static function ability()
 	{
 		$user = auth()->user();
@@ -55,7 +56,8 @@ class Capex extends Model
 		}
 		
 		return $capexs;
-	}
+    }
+    
 	public function toArray($flag = '', $source_id = '', $time = '')
     {
         $user = auth()->user();

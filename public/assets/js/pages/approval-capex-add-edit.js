@@ -13,8 +13,8 @@ $(document).ready(function(){
 		   $('[name="budget_no"]').val('').trigger('change');
 	  }else{
 		  $('[name="budget_description"]').val(arr_capex.equipment_name);
-		  $('[name="price_remaining"]').val(arr_capex.budget_plan);
-		  $('[name="budget_remaining_log"]').val(arr_capex.budget_remaining);
+		  $('[name="price_remaining"]').autoNumeric('set', arr_capex.budget_plan);
+		  $('[name="budget_remaining_log"]').autoNumeric('set', arr_capex.budget_remaining);
 	  }
     }
   });
@@ -22,13 +22,13 @@ $(document).ready(function(){
   $('[name="sap_asset_id"]').change(function(){
 
   	var sap_asset_id = $(this).val();
-
-    if (sap_asset_id !== '' && sap_asset_id !== null && sap_asset_id !== undefined) {
-      var arr_asset = getAsset(sap_asset_id);
-      $('[name="asset_code"]').val(arr_asset.asset_code);
-    }
-  	
+    var arr_asset = getAsset(sap_asset_id);
+      $('[name="sap_code_id"]').find('option').remove(); 
+      $('[name="sap_code_id"]').select2({
+        data: arr_asset
+      });  	
   });
+  
   $('select[name="remarks"]').select2().change(function(){
 	 var actual_qty = $(this).find('option:selected').attr('actual_qty');
 	 var uom_id 	= $(this).find('option:selected').attr('uom_id');
@@ -37,7 +37,7 @@ $(document).ready(function(){
 	 $('input[name="actual_qty"]').val(actual_qty);
 	 $('select[name="sap_uom_id"]').select2("val", uom_id);
 	 $('input[name="pr_specs"]').val(item_spec);
-	 $('input[name="price_actual"]').val(total);
+	 $('input[name="price_actual"]').autoNumeric('set', total);
   });
 });
 

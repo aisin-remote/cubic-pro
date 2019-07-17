@@ -52,19 +52,19 @@
                         <div class="col-md-6">
                            <div class="form-group">
                                 <label class="control-label">Equipment Name<span class="text-danger">*</span></label>
-                                <input type="text" name="equipment_name" placeholder="Equipment Name" class="form-control tinymce" required="required" rows="5"></input>
+                                <input type="text" name="equipment_name" placeholder="Equipment Name" class="form-control tinymce" required="required" rows="5">
                                 <span class="help-block"></span>
                            </div>
                            <div class="form-group">
                                 <label class="control-label">Budget Plan<span class="text-danger">*</span></label>
-                                <input type="number" name="budget_plan" placeholder="Budget Plan" class="form-control tinymce" required="required" rows="5"></input>
+                                <input type="number" name="budget_plan" placeholder="Budget Plan" class="form-control tinymce" required="required" rows="5">
                                 <span class="help-block"></span>
                            </div>
                         </div>
                         <div class="col-md-6">
                            <div class="form-group">
                                 <label class="control-label">Plant GR<span class="text-danger">*</span></label>
-                                <input type="text" name="plan_gr" placeholder="Plant GR" class="form-control datepicker" required="required" rows="5"></input>
+                                <input type="text" name="plan_gr" placeholder="Plant GR" class="form-control datepicker" required="required" rows="5">
                                 <span class="help-block"></span>
                            </div>
                         </div>

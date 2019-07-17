@@ -19,26 +19,43 @@
         </div>
     </div>
 	<div class="row">
-			<div class="col-md-12">
+			<div class="col-md-2">
 				<div class="form-group">
-					<label class="control-label">Budget No<span class="text-danger"> : </span></label>
-					{{$capex->budget_no}}
+					<label class="control-label"><b>Budget No</b><span class="text-danger"></span></label>
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
-					<label class="control-label">Budget Description<span class="text-danger"> : </span></label>
-					{{$capex->equipment_name}}
-						
+					<label class="control-label"><b>Budget Description</b><span class="text-danger"></span></label>
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
-					<label class="control-label">Budget Plan | Remaining<span class="text-danger"> : </span></label> 
-					{{number_format($capex->budget_plan).' | '.number_format($capex->budget_remaining)}}
+					<label class="control-label"><b>Budget Plan | Remaining</b><span class="text-danger"></span></label> 
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
-					<label class="control-label">Budget Reserved | Used<span class="text-danger"> : </span></label>
-					{{number_format($capex->budget_reserved).' | '.number_format($capex->budget_used)}}
+					<label class="control-label"><b>Budget Reserved | Used</b><span class="text-danger"></span></label>
+					<span class="help-block"></span>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="form-group">
+					<label class="control-label"><b><span class="text-danger"> : </span></label>
+					{{$capex->budget_no}}</b>
+					<span class="help-block"></span>
+				</div>
+				<div class="form-group">
+					<label class="control-label"><b><span class="text-danger"> : </span></label>
+					{{$capex->description}}</b>
+					<span class="help-block"></span>
+				</div>
+				<div class="form-group">
+					<label class="control-label"><b><span class="text-danger"> : </span></label> 
+					{{number_format($capex->budget_plan).' | '.number_format($capex->budget_remaining)}}</b>
+					<span class="help-block"></span>
+				</div>
+				<div class="form-group">
+					<label class="control-label"><b><span class="text-danger"> : </span></label>
+					{{number_format($capex->budget_reserved).' | '.number_format($capex->budget_used)}}</b>
 					<span class="help-block"></span>
 				</div>
 			</div>
@@ -60,12 +77,12 @@
 					</thead>
 					@foreach($approval_details as $ap)
 					<tr>
-						<td>{{$ap->approval_number}}</td>
+						<td><a href= "{{ url('approval/ex/'.$ap->approval_number) }}" >{{$ap->approval_number}}</a></td>
 						<td>{{$ap->project_name}}</td>
-						<td>{{$ap->budget_reserved}}</td>
-						<td>{{$ap->actual_price_user}}</td>
+						<td>{{number_format($ap->budget_reserved)}}</td>
+						<td>{{number_format($ap->actual_price_user)}}</td>
 						<td>{{$ap->actual_qty}}</td>
-						<td>{{$capex->status == 0?'Available':'not Available'}}</td>
+						<td>{{$capex->status == 0?'Underbudget':'Over Budget'}}</td>
 						@if($ap->status == 0)
 						<td>User Created</td>
 						@elseif($ap->status == 1)
@@ -83,7 +100,7 @@
 						@else
 						<td>Canceled on Group Manager Approval</td>	
 						@endif
-						<td>{{$ap->actual_gr}}</td>
+						<td>{{date('d-M-Y',strtotime($ap->actual_gr))}}</td>
 					</tr>
 					@endforeach
 				</table>

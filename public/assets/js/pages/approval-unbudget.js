@@ -11,6 +11,7 @@ $(document).ready(function(){
 			{ data: 'qty_actual', name: 'qty_actual' },
 			{ data: 'price_remaining', name: 'price_remaining' },
 			{ data: 'plan_gr', name: 'plan_gr' },
+			{ data: 'type', name: 'type'},
 			{ data: 'option', name: 'option' },
 
 		  ],

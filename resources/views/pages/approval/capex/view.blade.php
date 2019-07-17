@@ -38,7 +38,7 @@
 				<table id="example" class="table display nowrap table-bordered responsive-utilities jambo_table">
 					<thead>
 						<tr>
-							<!--<th>No<br>&nbsp;</th> --> 
+							<!-- <th>No<br>&nbsp;</th>  -->
 							<th>Budget<br>Number</th>
 							<th>Equipment<br>Number</th> 
 							<th>SAP<br>Track No</th>  
@@ -90,8 +90,8 @@
 			{ data: 'actual_price_user', name: 'actual_price_user'},
 			{ data: 'price_to_download', name: 'price_to_download'},
 			{ data: 'currency', name: 'currency'},
-			{ data: 'budget_remaining', name: 'budget_remaining'},
-			{ data: 'status', name: 'status'},
+			{ data: 'actual_qty', name: 'actual_qty'},
+			{ data: 'overbudget_info', name: 'overbudget_info'},
 			{ data: 'actual_gr', name: 'actual_gr'},
 			{ data: 'sap_vendor_code', name: 'sap_vendor_code'},
 			{ data: 'po_number', name: 'po_number'},

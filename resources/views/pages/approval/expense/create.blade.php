@@ -54,7 +54,7 @@
                                
                            <div class="form-group">
                                 <label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
-                                <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5"></input>
+                                <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5">
                                 <span class="help-block"></span>
                            </div> 
 
@@ -63,7 +63,7 @@
                                 <select name="sap_cos_center_id" class="select2" data-placeholder="Select SAP Cost Center" required="required">
                                     <option></option>
                                         @foreach ($sap_costs as $sap_cost)
-                                        <option value="{{ $sap_cost->cc_code }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
+                                        <option value="{{ $sap_cost->id }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -85,17 +85,17 @@
                                 <div class="row">
                                     <div class="form-group">
                                         <div class="col-sm-6">
-                                            <input type="number" class="form-control tinymce"name="qty_remaining" placeholder="QTy Remaining" required="required" readonly="readonly">
+                                            <input type="number" class="form-control text-right"name="qty_remaining" placeholder="QTy Remaining" required="required" readonly="readonly">
                                         </div>
                                         <div class="col-sm-6">
-                                            <input type="number" class="form-control tinymce"name="qty_actual" placeholder="Qty Actual" required="required">
+                                            <input type="text" class="form-control autonumeric text-right"name="qty_actual" placeholder="Qty Actual" required="required">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                            <div class="form-group">
                                 <label class="control-label">Item Specs <span class="text-danger">*</span></label>
-                                <input type="text" name="pr_specs" placeholder="Item Specs" class="form-control tinymce" required="required" rows="5"></input>
+                                <input type="text" name="pr_specs" placeholder="Item Specs" class="form-control tinymce" required="required" rows="5">
                                 <span class="help-block"></span>
                            </div>
 
@@ -118,7 +118,7 @@
 
                            <div class="form-group">
                                 <label class="control-label">Amount on Quotation (IDR) <span class="text-danger">*</span></label>
-                                <input type="number" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+                                <input type="text" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control autonumeric text-right" required="required" rows="5" readonly="readonly">
                                 <span class="help-block"></span>
                            </div>  
 							<div class="form-group">
@@ -148,7 +148,7 @@
                                 <select name="sap_gl_account_id" class="select2" data-placeholder="Select G/L Group" required="required">
                                     <option></option>
                                         @foreach ($sap_gl_account as $sap_gl_account)
-                                        <option value="{{ $sap_gl_account->gl_gcode }}">{{ $sap_gl_account->gl_gname }}</option>
+                                        <option value="{{ $sap_gl_account->gl_gname }}">{{ $sap_gl_account->gl_gname }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
@@ -156,24 +156,27 @@
 
                            <div class="form-group">
                                 <label class="control-label">G/L Account<span class="text-danger">*</span></label>
-                                <input type="text" name="gl_fname" placeholder="Sap GL Name" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+                                <select name="gl_fname" class="select2" data-placeholder="Select G/L Group" required="required">
+                                    
+                                </select>
+                                <!-- <input type="text" name="gl_fname" placeholder="Sap GL Name" class="form-control tinymce" required="required" rows="5" readonly="readonly"> -->
                                 <span class="help-block"></span>
                            </div> 
 
                            <div class="form-group">
                                 <label class="control-label">Last Budget Remains <span class="text-danger">*</span></label>
-                                <input type="number" name="budget_remaining_log" placeholder="Last Budget Remains" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+                                <input type="text" name="budget_remaining_log" placeholder="Last Budget Remains" class="form-control autonumeric text-right" required="required" rows="5" readonly="readonly">
                                 <span class="help-block"></span>
                            </div>
                             
                            <div class="form-group">
                                 <label class="control-label">Max Budget Reservation <span class="text-danger">*</span></label>
-                                <input type="number" name="price_remaining" placeholder="Max Budget Reservation" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+                                <input type="text" name="price_remaining" placeholder="Max Budget Reservation" class="form-control autonumeric text-right" required="required" rows="5" readonly="readonly">
                                 <span class="help-block"></span>
                            </div> 
                            <div class="form-group">
                                 <label class="control-label">Actual GR <span class="text-danger">*</span></label>
-                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}"></input>
+                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}">
                                 <span class="help-block"></span>
                            </div>  
                            

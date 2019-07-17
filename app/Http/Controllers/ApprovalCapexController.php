@@ -21,12 +21,15 @@ use App\Item;
 
 use Cart;         
 use App\Cart as Carts;
+use Carbon\Carbon;
 
 class ApprovalCapexController extends Controller
 {
     public function getData()
     {
        $capexs = Cart::instance('capex')->content();
+    //    dd($capexs);
+    //    die;
         if (Cart::count() > 0) {
 
             $result = [];
@@ -46,11 +49,11 @@ class ApprovalCapexController extends Controller
                                         'sap_cost_center_id' => $capex->options->sap_cost_center_id,
                                         'project_name' => $capex->name,
                                         'pr_specs' => $capex->pr_specs,
-										'actual_qty' => $capex->qty,
-                                        'price_actual' => $capex->price,
+										'actual_qty' => $capex->options->actual_qty,
+                                        'price_actual' => number_format($capex->price),
                                         'asset_kind' => $capex->options->asset_kind,
-                                        'plan_gr' => $capex->options->plan_gr,
-                                        'settlement_date'=> $capex->options->settlement_date,
+                                        'plan_gr' => Carbon::parse($capex->options->plan_gr)->format('d M Y'),
+                                        'settlement_date'=> Carbon::parse($capex->options->settlement_date)->format('d M Y'),
                                         'option' => ' 
                                             <button class="btn btn-danger btn-xs btn-bordered" onclick="onDelete(\''.$capex->rowId.'\')" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-close"></i></button>'
                                     ];
@@ -70,36 +73,48 @@ class ApprovalCapexController extends Controller
 
     public function store(Request $request)
     {
+
         $capex              = Capex::find($request->budget_no);
-        $sap_assets         = SapAsset::find($request->sap_asset_id);
+        $sap_assets         = SapAsset::where('asset_type',$request->sap_asset_id)->where('asset_code', $request->sap_code_id)->first();
         $sap_costs          = SapCostCenter::find($request->sap_cost_center_id); 
         $sap_uoms           = SapUom::find($request->sap_uom_id);
-		$item 				= Item::find($request->remarks);
+        $item 				= Item::firstOrNew(['item_description' => $request->remarks]);
+        $item->item_description = $request->remarks;
+        $item->item_category_id = '99';
+        $item->item_code = 'XXX';
+        $item->item_price = str_replace(',','',$request->price_remaining);
+        $item->uom_id = $sap_uoms->id;
+        $item->save();
 
 	    Cart::instance('capex')->add([
 
 					'id'    => $request->budget_no,
 					'name'  => $request->project_name,
-					'price' => $request->price_actual,
-					'qty' 	=> $request->actual_qty,// default satu
+					'price' => str_replace(',','',$request->price_actual),
+					'qty' 	=> 1,// default satu
 					'options' => [
-						'budget_no'             => $capex->budget_no,
-						'budget_description'    => $request->budget_description,
+                        'budget_no'             => $capex->budget_no,
+                        'budget_description'    => $request->budget_description,
+                        'asset_code'            => $request->sap_code_id,
 						'asset_kind'            => $request->asset_kind,
 						'asset_category'        => $request->asset_category,
 						'sap_cost_center_id'    => $sap_costs->cc_code,//$request->sap_cost_center_id,
-						'sap_asset_id'          => $sap_assets->asset_code,//$request->sap_asset_id,
-						'asset_code'			=> $request->asset_code,
+                        'sap_asset_class'       => $sap_assets->asset_class,
+                        'sap_account_code'      => $sap_assets->asset_account,
+                        'sap_account_text'      => $sap_assets->asset_name,
+                        'sap_cc_code'           => $sap_costs->cc_code,
+                        'sap_cc_fname'          => $sap_costs->cc_fname,
 						'remarks'               => $item->item_description,//$request->remarks,
 						'item_id'				=> $item->id,
-						'sap_uom_id'            => $sap_uoms->uom_sname,//$request->sap_uom_id,					
-						'budget_remaining_log'  => $request->budget_remaining_log,
-						'price_remaining'       => $request->price_remaining,
+						'sap_uom_id'            => $sap_uoms->uom_sname,					
+						'budget_remaining_log'  => str_replace(',','',$request->budget_remaining_log),
+						'price_remaining'       => str_replace(',','',$request->price_remaining),
 						'currency'				=> $request->currency,
-						'price_to_download'     => $request->price_to_download,
-						'plan_gr'               => $request->plan_gr,
+						'price_to_download'     => str_replace(',','',$request->price_to_download),
+						'plan_gr'               => Carbon::parse($request->plan_gr)->format('Y-m-d'),
 						'pr_specs'				=> $request->pr_specs,
-						'settlement_date'       => $request->settlement_date,
+                        'settlement_date'       => Carbon::parse($request->settlement_date)->format('Y-m-d'),
+                        'actual_qty'            => !empty($request->actual_qty) ? $request->actual_qty : 1,
 						'type' => 'capex'
 					]
 				]);
@@ -144,55 +159,74 @@ class ApprovalCapexController extends Controller
 	
     public function getAsset($id)
     {
-        $sap_asset = SapAsset::find($id);
-        return response()->json($sap_asset);
+        $sap_asset = SapAsset::select('asset_code as id', 'asset_code as text')->where('asset_type', $id)->get();
+
+        // dd($sap_asset);
+        // die;
+        $result = [];
+        foreach ($sap_asset as $asset) {
+            $result[] = ['id' => $asset->text, 'text' => $asset->text];
+        }
+
+        return response()->json($result);
     }
 
     public function SubmitApproval(Request $request)
     {
         $res = '';
+
         DB::transaction(function() use ($request, &$res){
+
             // Save data in Tabel Bom
             $user = \Auth::user();
-			
-			$remarks ="";
-            foreach (Cart::instance('capex')->content() as $details) {
-                $approval_no = ApprovalMaster::getNewApprovalNumber('CX', $user->department_id);  
+            $approval_no = ApprovalMaster::getNewApprovalNumber('CX', $user->department->department_code);
             
-                $capex                         = new ApprovalMaster;
-                $capex->approval_number        = $approval_no;
-                $capex->budget_type            = 'cx';
-                $capex->dir                    = $user->direction;
-                $capex->division               = $user->division->division_code;
-                $capex->department             = $user->department->department_code;
-                $capex->total                  = $details->price;
-                $capex->status                 = 0;
-                $capex->created_by             = $user->id;
-				$capex->fyear				   = date('Y');
-                $capex->save();
+			$remarks ="";
+            $capex                         = new ApprovalMaster;
+            $capex->approval_number        = $approval_no;
+            $capex->budget_type            = 'cx';
+            $capex->dir                    = $user->direction;
+            $capex->division               = $user->division->division_code;
+            $capex->department             = $user->department->department_code;
+            $capex->total                  = str_replace(',', '', Cart::instance('capex')->subtotal($formatted = false));
+            $capex->status                 = 0;
+            $capex->created_by             = $user->id;
+            $capex->fyear				   = date('Y');
+            $capex->save();
+            $i = 1;
+            foreach (Cart::instance('capex')->content() as $details) {                  
                 $approval                        = new ApprovalDetail;
                 $approval->budget_no             = $details->options->budget_no;
                 $approval->project_name          = $details->name;
                 $approval->actual_qty            = $details->qty;
                 $approval->actual_price_user     = $details->price;
-                // $approval->asset_kind            = $details->options->asset_kind;
-                $approval->sap_is_chemical        = $details->options->asset_category;
+                $approval->sap_asset_class       = $details->options->sap_asset_class;
+                $approval->sap_account_code      = $details->options->sap_account_code;
+                $approval->sap_account_text      = $details->options->sap_account_text;
+                $approval->sap_cc_code           = $details->options->sap_cc_code;
+                $approval->sap_cc_fname          = $details->options->sap_cc_fname;
+                $approval->sap_is_chemical       = $details->options->asset_category;
                 $approval->sap_cc_code		     = $details->options->sap_cost_center_id;
                 $approval->sap_asset_no          = $details->options->sap_asset_id;
                 $approval->remarks               = $details->options->remarks;
 				$approval->item_id 				 = $details->options->item_id;
-                // $approval->pr_uom            	 = $details->options->sap_uom_id;
-                $approval->pr_uom            	 = $details->options->uom_sname;
+                $approval->pr_uom            	 = $details->options->sap_uom_id;
+                // $approval->pr_uom            	 = $details->options->uom_sname;
                 $approval->budget_remaining_log  = $details->options->budget_remaining_log;
-                $approval->price_to_download     = $details->options->price_to_download ==""?0:$details->options->price_to_download;
+                $approval->price_to_download     = $details->price;
 				// $approval->price_to_download	 = 1000;
 				$approval->pr_specs 			 = $details->options->pr_specs;
                 $approval->actual_gr             = date('Y-m-d',strtotime($details->options->plan_gr));
                 $approval->settlement_date       = date('Y-m-d',strtotime($details->options->settlement_date));
                 $approval->fyear                 = date('Y');
-                $approval->budget_reserved       = $details->options->budget_remaining_log;
+                $approval->budget_reserved       = $details->price;
+                $approval->asset_no              = $details->options->asset_code.'JE'.str_pad($i, 3, '0', STR_PAD_LEFT);
+                $approval->sap_track_no          = ApprovalMaster::getNewSapTrackingNo(1,$user->department_id,$approval_no,$i);
 				// $approval->save();
                 $capex->details()->save($approval);
+                $i++;
+
+                Capex::where('budget_no', $details->options->budget_no)->update(['budget_reserved' => $details->price, 'is_closed' => 1]);
             }
 			// Simpan approver user
 			$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
@@ -278,7 +312,7 @@ class ApprovalCapexController extends Controller
                     'sap_asset_id'          => $detail->sap_asset_id,
                     'remarks'               => $detail->remarks,
                     'sap_uom_id'            => $detail->sap_uom_id,
-                    'budget_remaining_log'  => $detail->budget_remaining_log,
+                    'budget_remaining_log'  => number_format($detail->budget_remaining_log),
                     'price_remaining'       => $detail->price_remaining,
                     'price_to_download'     => $detail->price_to_download,
                     'actual_gr'             => $detail->plan_gr,
@@ -318,51 +352,27 @@ class ApprovalCapexController extends Controller
 
         $level = ApprovalDtl::where('user_id', $user->id)->first();
 
-        // $level_app = 1;
+		if(\Entrust::hasRole('user')) {
+			$approval_capex->where('created_by',$user->id);
+		}
 
-        if($level->level==1){
+        if (!empty($level)) {
 
-            $approval_capex->where('status','0');
-
-        }elseif($level->level==2){
-
-            $approval_capex->where('status','1');
-
-        }elseif($level->level>=3){
-
-            $approval_capex->where('status','2');
-
-        }elseif($level->level==4){
-
-            $approval_capex->where('status','3');
-
+            if($level->level==1){
+                if($status == 'need_approval'){
+                    $approval_capex->where('status','0');
+                }
+            }elseif($level->level==2){
+                if($status == 'need_approval'){
+                    $approval_capex->where('status','1');
+                }
+            }elseif($level->level>=3){
+                if($status == 'need_approval'){
+                    $approval_capex->where('status','2')->orWhere('status','3');
+                }
+            }
         }
-        
-        // dd($level->level);
-        
-		// if(\Entrust::hasRole('user')) {
-		// 	$approval_capex->where('created_by',$user->id);
-		// }
 
-        // if (\Entrust::hasRole('department_head')) {
-        //     $approval_capex->whereIn('department', [$user->department->department_code]);
-        // }
-
-        // if (\Entrust::hasRole('gm')) {
-        //     $approval_capex->where('division', $user->division->division_code);
-        // }
-
-        // if (\Entrust::hasRole('director')) {
-        //     $approval_capex->where('dir', $user->dir);
-        // }
-		
-		// if($status == 'need_approval'){
-		// 	$approval_capex->where('status','0');
-		// }
-        $approval_capex = $approval_capex->get();
-
-        
-		
         return DataTables::of($approval_capex)
         ->rawColumns(['action'])
 
@@ -371,7 +381,7 @@ class ApprovalCapexController extends Controller
 				
                 if(\Entrust::hasRole('user')) {
                     return '
-                        <div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval-capex/'.$approval_capex->id).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+                        <div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/cx/'.$approval_capex->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
 
                         <a href="#" onclick="printApproval(&#39;'.$approval_capex->approval_number.'&#39;)" class="btn btn-primary" ><span class="glyphicon glyphicon-print" aria-hidden="true"></span></a>
 
@@ -424,22 +434,43 @@ class ApprovalCapexController extends Controller
 
         ->toJson();
     }
-	public function DetailApproval($approval_number)
+    
+    public function DetailApproval($approval_number)
 	{
 		$approver   = $this->can_approve($approval_number);
 		$master 	= ApprovalMaster::getSelf($approval_number);
 		return view('pages.approval.capex.view',compact('master','approver'));
 	}
-	public function AjaxDetailApproval($approval_number)
+    
+    public function AjaxDetailApproval($approval_number)
 	{
-		 $approval_master = ApprovalMaster::select('*','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code')->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
+         $approval_master = ApprovalMaster::select('*','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code')
+                        ->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
 						->join('capexes','capexes.budget_no','=','approval_details.budget_no')
 						->where('approval_number',$approval_number);
 		
 		 return DataTables::of($approval_master)
 				->editColumn("asset_no", function ($approval) {
 					return $approval->asset_no.'<input class="approval_data" type="hidden" value="'.$approval->id_ad.'">';
-				})
+                })
+                ->editColumn('budget_remaining_log', function($approval){
+                    return number_format($approval->budget_remaining_log);
+                })
+                ->editColumn('budget_reserved', function($approval){
+                    return number_format($approval->budget_reserved);
+                })
+                ->editColumn('actual_price_user', function($approval){
+                    return number_format($approval->actual_price_user);
+                })
+                ->editColumn('price_to_download', function($approval) {
+                    return number_format($approval->price_to_download);
+                })
+                ->addColumn("overbudget_info", function ($approval) {
+                    return $approval->status < 0 ? 'Canceled' : ($approval->isOverExist() ? 'Overbudget exist' : 'Underbudget');
+                }) 
+                ->addColumn("actual_gr", function ($approval) {
+                    return Carbon::parse($approval->actual_gr)->format('d M Y');
+                }) 
 				->editColumn("status", function ($approval){ 
 					//status approval
 					if ($approval->status == '0') {
@@ -458,9 +489,10 @@ class ApprovalCapexController extends Controller
 						return "Canceled Dept. Head Approval";
 					}else{
 						return "Canceled on Group Manager Approval";
-					}
+                    }
 				})->toJson();
 	}
+    
     public function getDetailsData($id)
     {
         $details = ApprovalMaster::find($id)

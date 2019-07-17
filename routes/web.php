@@ -31,12 +31,14 @@ Route::middleware('auth')->group(function(){
 	Route::get('/cart/checkout', 'CartController@checkout');
 	Route::get('/dashboard/getMyNotification','DashboardController@getMyNotification');
 	Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
-	Route::get('/dashboard/view/{group_type}','DashboardController@view');
+	// Route::get('/dashboard/view/{group_type}','DashboardController@view');
 	Route::get('/dashboard/getJSONData','DashboardController@getJSONData');
-	Route::get('/dashboard/get_chart', 'DashboardController@getChart')->name('dashboard.chart');
-	Route::get('/dashboard/get_data_park', 'DashboardController@getDataPark')->name('dashboard.get_data_park');
-	Route::get('/dashboard/get_data_user', 'DashboardController@getDataUser')->name('dashboard.get_data_user');
-	Route::get('/dashboard/revoke/{user_id}', 'DashboardController@revoke')->name('dashboard.revoke');
+	Route::get('/dashboard/view/{group_type}', 'Dashboard2Controller@view');
+	Route::get('/dashboard/get', 'Dashboard2Controller@get');
+	// Route::get('/dashboard/get_chart', 'DashboardController@getChart')->name('dashboard.chart');
+	// Route::get('/dashboard/get_data_park', 'DashboardController@getDataPark')->name('dashboard.get_data_park');
+	// Route::get('/dashboard/get_data_user', 'DashboardController@getDataUser')->name('dashboard.get_data_user');
+	// Route::get('/dashboard/revoke/{user_id}', 'DashboardController@revoke')->name('dashboard.revoke');
 	// User 
 	Route::group(['middleware' => ['permission:manage-user','auth']], function() {
 		Route::post('/user/validate', 'UserController@validatePost');
@@ -600,7 +602,7 @@ Route::middleware('auth')->group(function(){
 			});
 			
 			//PENDING APPROVAL UNBUDGET
-			Route::group(['middleware' => ['permission:pending-approval-unbudget','auth']], function() {
+			// Route::group(['middleware' => ['permission:pending-approval-unbudget','auth']], function() {
 				Route::get('approval/ub/unvalidated','ApprovalUnbudgetController@ListApprovalUnvalidated'); 
 				
 				//STORE ITEM UNTUK APPROVAL UNBUDGET
@@ -608,7 +610,7 @@ Route::middleware('auth')->group(function(){
 				
 				//SUBMIT APPROVAL
 				Route::post('approval-unbudget/approval', 'ApprovalUnbudgetController@SubmitApproval')->name('approval_unbudget.approval');
-			});
+			// });
 			
 			Route::post('unbudget', 'UnbudgetController@store')->name('unbudget.store');
 			Route::get('unbudget/create','UnbudgetController@create')->name('unbudget.create');
@@ -618,7 +620,7 @@ Route::middleware('auth')->group(function(){
 			Route::put('unbudget/{unbudget}','UnbudgetController@update')->name('unbudget.update');
 			Route::delete('unbudget/{unbudget}','UnbudgetController@destroy')->name('unbudget.destroy');
 			
-			Route::get('approval-unbudget/approval_unbudget/{status}', 'ApprovalUnbudgetController@getApprovalUnbudget');
+			// Route::get('approval-unbudget/approval_unbudget/{status}', 'ApprovalUnbudgetController@getApprovalUnbudget');
 			Route::post('approvalub/getDelete/', 'ApprovalUnbudgetController@getDelete');
 			
 			//DETAIL APPROVAL UNBUDGET

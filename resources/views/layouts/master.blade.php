@@ -30,6 +30,8 @@
         <!-- Sweet Alert -->
         <link href="{{ url('assets/plugins/bootstrap-sweetalert/sweet-alert.css') }}" rel="stylesheet" type="text/css">
 
+        <!-- daterangepicker -->
+        <link rel="stylesheet" href="{{ url('assets/plugins/bootstrap-daterangepicker/daterangepicker.css') }}">
         <!-- DataTables -->
         <link href="{{ url('assets/plugins/datatables/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css"/>
         <!-- <link href="{{ url('assets/plugins/datatables/buttons.bootstrap.min.css') }}" rel="stylesheet" type="text/css"/> -->
@@ -205,6 +207,12 @@
         <script src="{{ url('assets/plugins/moment/moment.js') }}"></script>
         <script src="{{ url('assets/plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
 
+        <!-- date range picker -->
+        <script src="{{ url('assets/plugins/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
+        
+        <!-- chartjs -->
+        <script src="{{ url('assets/plugins/chart.js/Chart.min.js') }}"></script>
+
         <!-- Datepicker -->
         <script src="{{ url('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
         <!-- timepicker -->
@@ -218,7 +226,7 @@
 
         <!-- autoNumeric -->
         <script src="{{ url('assets/plugins/autoNumeric/autoNumeric.js') }}"></script>
-
+        
         <!-- flotchart -->
         <script src="{{ url('assets/plugins/flot-chart/jquery.flot.min.js') }}"></script>
         <script src="{{ url('assets/plugins/flot-chart/jquery.flot.time.js') }}"></script>

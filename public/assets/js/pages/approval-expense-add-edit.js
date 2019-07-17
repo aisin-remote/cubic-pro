@@ -15,8 +15,8 @@ $(document).ready(function(){
 	  }else{
 		  $('[name="budget_description"]').val(arr_expense.description);
 		  $('[name="qty_remaining"]').val(arr_expense.qty_plan);
-		  $('[name="price_remaining"]').val(arr_expense.budget_plan);
-		  $('[name="budget_remaining_log"]').val(arr_expense.budget_remaining);
+		  $('[name="price_remaining"]').autoNumeric('set', arr_expense.budget_plan);
+		  $('[name="budget_remaining_log"]').autoNumeric('set', arr_expense.budget_remaining);
       }
     }
     
@@ -26,12 +26,29 @@ $(document).ready(function(){
 
     var sap_gl_account_id = $(this).val();
 
-    if (sap_gl_account_id !== '' && sap_gl_account_id !== null && sap_gl_account_id !== undefined) {
+    // if (sap_gl_account_id !== '' && sap_gl_account_id !== null && sap_gl_account_id !== undefined) {
       var arr_asset = getGlGroup(sap_gl_account_id);
       
-      $('[name="gl_fname"]').val(arr_asset.gl_acode);
-    }
+      $('[name="gl_fname"]').find('option').remove(); 
+      $('[name="gl_fname"]').select2({
+        data: arr_asset
+      });
+    // }
     
+  });
+
+  $('[name="sap_asset_id"]').change(function(){
+
+  	var sap_asset_id = $(this).val();
+
+    // if (sap_asset_id !== '' && sap_asset_id !== null && sap_asset_id !== undefined) {
+      var arr_asset = getAsset(sap_asset_id);
+      $('[name="sap_code_id"]').find('option').remove(); 
+      $('[name="sap_code_id"]').select2({
+        data: arr_asset
+      });
+    // }
+  	
   });
   
 
@@ -41,12 +58,13 @@ $('select[name="remarks"]').select2().change(function(){
 	 var qty_item = $(this).find('option:selected').attr('qty_item');
 	 var uom_id 	= $(this).find('option:selected').attr('uom_id');
 	 var item_spec  = $(this).find('option:selected').attr('item_spec');
-	 var total 		= $(this).find('option:selected').attr('total');
+   var total 		= $(this).find('option:selected').attr('total');
+   $('input[name="qty_remaining"]').val(1);
 	 $('input[name="qty_item"]').val(qty_item);
 	 $('input[name="qty_actual"]').val(qty_item);
 	 $('select[name="sap_uom_id"]').select2("val", uom_id);
 	 $('input[name="pr_specs"]').val(item_spec);
-	 $('input[name="price_actual"]').val(total);
+	 $('input[name="price_actual"]').autoNumeric('set', total);
   });
 
 function onDelete(rowid)

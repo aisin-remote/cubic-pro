@@ -20,6 +20,7 @@ use App\Capex;
 use App\CapexArchive; 
 use App\Expense;         
 use App\ExpenseArchive;    
+use App\Item;
 
 use App\Cart;
 use App\Approval;
@@ -80,13 +81,21 @@ class ApprovalController extends Controller
     }
     public function create()
     {
-        $sap_assets      = SapAsset::get();
+        $sap_assets      = DB::table('sap_assets')->select('id', 'asset_type')->groupBy('asset_type')->get();
+        $sap_codes       = DB::table('sap_assets')->select('asset_code')->distinct()->get();
         $sap_costs       = SapCostCenter::get(); 
         $sap_gl_group    = SapGlAccount::get();
         $sap_uoms        = SapUom::get();
         $capexs          = Capex::where('department', auth()->user()->department->department_code)->get();
-		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
-    	return view('pages.approval.capex.create', compact(['sap_assets','sap_costs','sap_gl_group', 'sap_uoms', 'capexs', 'carts']));
+        $carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
+        $items           = Item::get();
+
+       if ($carts->count() > 0){
+            $itemcart = 'catalog';
+        } else {
+            $itemcart = 'non-catalog';
+        }
+    	return view('pages.approval.capex.create', compact(['sap_assets','sap_codes','sap_costs','sap_gl_group', 'sap_uoms', 'capexs', 'carts', 'items', 'itemcart']));
     }
     public function approvalExpense()
     {
@@ -101,7 +110,7 @@ class ApprovalController extends Controller
     {
         $sap_assets      = SapAsset::get();
         $sap_costs       = SapCostCenter::get(); 
-        $sap_gl_account  = SapGlAccount::get();
+        $sap_gl_account  = DB::table('sap_gl_accounts')->select('gl_gname')->where('dep_key',auth()->user()->department->department_code)->distinct()->get();
         $sap_uoms        = SapUom::get();
         $expenses        = Expense::where('department', auth()->user()->department->department_code)->get();
 		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
@@ -123,9 +132,10 @@ class ApprovalController extends Controller
     }
     public function createUnbudget()
     {
-        $sap_assets      = SapAsset::get();
+        $sap_assets      = DB::table('sap_assets')->select('id', 'asset_type')->groupBy('asset_type')->get();
+        $sap_codes       = DB::table('sap_assets')->select('asset_code')->distinct()->get();
         $sap_costs       = SapCostCenter::get(); 
-        $sap_gl_account  = SapGlAccount::get();
+        $sap_gl_account  = DB::table('sap_gl_accounts')->select('gl_gname')->where('dep_key',auth()->user()->department->department_code)->distinct()->get();
         $sap_uoms        = SapUom::get();
         $expenses        = Expense::where('department', auth()->user()->department->department_code)->get();
 		$capexs          = Capex::where('department', auth()->user()->department->department_code)->get();
@@ -1050,11 +1060,11 @@ class ApprovalController extends Controller
                     ->with($res);
         }
 
-       if ($approval->status < 3) {
+       if ($approval->status < 2) {
 			$res = [
                     'title' => 'Error',
                     'type' => 'error',
-                    'message' => 'Could not print Approval ['.$approval_number.']: GM Approval required.'
+                    'message' => 'Could not print Approval ['.$approval_number.']: DH Approval required.'
                 ];
 
 			

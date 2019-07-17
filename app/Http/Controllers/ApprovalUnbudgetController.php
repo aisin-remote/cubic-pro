@@ -18,6 +18,8 @@ use DataTables;
 use Cart;
 use App\Item;
 use App\Cart as Carts;
+use Carbon\Carbon;
+
 class ApprovalUnbudgetController extends Controller
 {
     public function getData()
@@ -34,11 +36,12 @@ class ApprovalUnbudgetController extends Controller
             foreach ($unbudgets as $unbudget) {
 
                 $result['data'][] = [
-                                        'budget_no'         => $unbudget->options->budget_no.'<input type="hidden" class="checklist">',
+                                        'budget_no'         => $unbudget->options->token.'<input type="hidden" class="checklist">',
                                         'project_name'      => $unbudget->name,
-                                        'price_remaining'   => $unbudget->price,
-                                        'qty_actual'        => $unbudget->qty,
-                                        'plan_gr'           => $unbudget->options->plan_gr,
+                                        'price_remaining'   => number_format($unbudget->options->actual_price_user),
+                                        'qty_actual'        => $unbudget->options->actual_qty,
+                                        'plan_gr'           => $unbudget->options->actual_gr,
+                                        'type'              => $unbudget->options->type,
                                         'option' => ' 
                                             <button class="btn btn-danger btn-xs btn-bordered" onclick="onDelete(\''.$unbudget->rowId.'\')" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-close"></i></button>'
                                     ];
@@ -57,44 +60,51 @@ class ApprovalUnbudgetController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->);
+        // die;
+        $sap_assets         = SapAsset::where('asset_type',$request->sap_asset_id)->where('asset_code', $request->sap_code_id)->first();
+        $sap_gl_acc         = SapGlAccount::where('gl_gname', $request->sap_gl_account_id)->where('gl_aname', $request->gl_fname)->first();
+        $sap_costs          = SapCostCenter::find($request->sap_cost_center_id); 
 		$sap_uoms           = SapUom::find($request->sap_uom_id);
 		$item 				= Item::find($request->remarks);
-		$cartData 			= [
+        
+        
+        
+        $cartData 			= [
 
 									'id' => "ub",//$budget->budget_no
 									'name' => $request->project_name,
-									'price' => $request->price_actual,
-									'qty' => $request->qty_item,
+									'price' => str_replace(',','',$request->price_actual),
+									'qty' => 1,
 									'options' => [
-										'budget_no' => "",//$budget->budget_no,									
-										'sap_account_code' => $request->sap_gl_account_id,
-										'sap_account_text'	=> $request->gl_fname,
-										// 'budget_description'    => $request->budget_description,
-										'qty_remaining' => "",//$request->qty_remaining,	
-										'qty_actual' => $request->qty_actual,
-										'remarks' => $item->item_description,
-										'item_id' => $item->id,
-										'sap_cost_center_id' => $request->sap_cos_center,//$request->sap_cos_center_id,
-										'sap_uom_id' => $sap_uoms->uom_sname,
-										'price_actual' => $request->price_actual,
-										'budget_remaining_log' => "",//$request->budget_remaining_log,
-										'price_to_download' => $request->price_to_download,
-										'plan_gr' => $request->plan_gr,
-										'pr_specs'	=> $request->pr_specs,
-										'currency'=> $request->currency,
-										'is_chemical' => $request->asset_category,
+                                        'token'             => $request->_token,
+                                        'budget_no'         => "-",
+                                        'asset_code'        => $request->sap_code_id,
+                                        'sap_is_chemical'   => $request->asset_category,
+                                        'sap_cc_code'       => $sap_costs->cc_code,
+                                        'sap_cc_fname'      => $sap_costs->cc_fname,
+                                        'actual_qty'        => $request->qty_actual,
+                                        'actual_price_user' => str_replace(',','',$request->price_actual),
+                                        'currency'          => !empty($request->currency) ? $request->currency : 'IDR' ,
+                                        'actual_gr'         => $request->plan_gr,
+                                        'remarks'           => $item->item_description,
+                                        'item_id'           => $request->remarks,
+                                        'pr_specs'          => $request->pr_specs,
+                                        'pr_uom'            => $sap_uoms->uom_sname,
 									]
 								];
 								
 		if($request->type == "1"){
-			$cartData['id'] = "uc";
-			$cartData['options']['sap_asset'] 		= $request->sap_asset_id;
-			$cartData['options']['asset_code'] 		= $request->asset_code;
+            $cartData['options']['budget_type'] = "uc";
+            $cartData['options']['sap_asset_class']     = $sap_assets->asset_class;                               
+			$cartData['options']['sap_account_code']    = $sap_assets->asset_account;
+            $cartData['options']['sap_account_text']    = $sap_assets->asset_acctext;
+            $cartData['options']['type']                = "Unbudget CAPEX";
 		}else{
-			$cartData['id'] = "ue";
-			$cartData['options']['sap_gl_account'] 	= $request->sap_gl_account_id;
-			$cartData['options']['gl_fname'] 		= $request->gl_fname;
-			
+			$cartData['options']['budget_type'] = "ue";
+			$cartData['options']['sap_account_code'] 	= $sap_gl_acc->gl_acode;
+			$cartData['options']['sap_account_text'] 	= $sap_gl_acc->gl_aname;
+			$cartData['options']['type']                = "Unbudget EXPENSE";
 		}
 		
         Cart::instance('unbudget')->add($cartData);
@@ -113,7 +123,7 @@ class ApprovalUnbudgetController extends Controller
 
     function show($id)
     {
-        dd(Cart::count());
+        // dd(Cart::count());
 
     }
 
@@ -139,13 +149,27 @@ class ApprovalUnbudgetController extends Controller
 
     public function getGlGroup($id)
     {
-        $sap_gl_group = SapGlAccount::find($id);
-        return response()->json($sap_gl_group);
+        $sap_gl_group = SapGlAccount::select('gl_aname as id', 'gl_aname as text')->where('gl_gname',$id)->where('dep_key',auth()->user()->department->department_code)->get();
+        dd($sap_gl_group);
+        die;
+        $result = [];
+        foreach ($sap_gl_group as $group) {
+            $result[]=['id' => $group->text, 'text' => $group->text];
+        }
+
+        return response()->json($result);
     }
     public function getAsset($id)
     {
-        $sap_asset = SapAsset::find($id);
-        return response()->json($sap_asset);
+        $sap_asset = SapAsset::select('asset_code as id', 'sap_assets.asset_name as text')->where('asset_type', $id)->get();
+        dd($sap_asset);
+        die;
+        $result = [];
+        foreach ($sap_asset as $asset) {
+            $result[] = ['id' => $asset->id, 'text' => $asset->text];
+        }
+
+        return response()->json($result);
     }
 	public function ListApprovalUnvalidated()
 	{
@@ -161,7 +185,10 @@ class ApprovalUnbudgetController extends Controller
         $type = 'ub';
         $user = auth()->user();
         $approval_ub = ApprovalMaster::with('departments')
-								->whereIn('budget_type',['ub,uc','ue']);
+                                ->whereIn('budget_type',['ub', 'uc','ue']);
+                                
+        // dd($approval_ub);
+        // die;                        
 		if(\Entrust::hasRole('user')) {
 			$approval_ub->where('created_by',$user->id);
 		}
@@ -245,41 +272,42 @@ class ApprovalUnbudgetController extends Controller
 
         ->toJson();
     }
+
 	public function DetailApproval($approval_number)
 	{
 		$approver   = $this->can_approve($approval_number);
 		$master 	= ApprovalMaster::getSelf($approval_number);
 		return view('pages.approval.unbudget.view',compact('master','approver'));
-	}
+    }
+    
 	public function AjaxDetailApproval($approval_number)
 	{
-		$approval_master = ApprovalMaster::select('*','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code')->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
+        $approval_master = ApprovalMaster::select('*','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code')
+                        ->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
 						->where('approval_number',$approval_number); 
 		
 		 return DataTables::of($approval_master)
 				->editColumn("asset_no", function ($approval) {
 					return $approval->asset_no.'<input class="approval_data" type="hidden" value="'.$approval->id_ad.'">';
-				})
-				->editColumn("status", function ($approval){ 
-					//status approval
-					if ($approval->status == '0') {
-						return "User Created";
-					}elseif ($approval->status == '1') {
-						return "Validasi Budget";
-					}elseif ($approval->status == '2') {
-						return "Approved by Dept. Head";
-					}elseif ($approval->status == '3') {
-						return "Approved by GM";
-					}elseif ($approval->status == '4') {
-						return "Approved by Director";
-					}elseif ($approval->status == '-1') {
-						return "Canceled on Quotation Validation";
-					}elseif ($approval->status == '-2') {
-						return "Canceled Dept. Head Approval";
-					}else{
-						return "Canceled on Group Manager Approval";
-					}
-				})->toJson();
+                })
+                ->editColumn('budget_remaining_log', function($approval){
+                    return number_format($approval->budget_remaining_log);
+                })
+                ->editColumn('budget_reserved', function($approval){
+                    return number_format($approval->budget_reserved);
+                })
+                ->editColumn('actual_price_user', function($approval){
+                    return number_format($approval->actual_price_user);
+                })
+                ->editColumn('price_to_download', function($approval) {
+                    return number_format($approval->price_to_download);
+                })
+                ->addColumn("status", function ($approval) {
+                    return $approval->budget_type = 'uc' ? 'Unbudget Capex' : 'Undbudget Expense';
+                }) 
+                ->addColumn("actual_gr", function ($approval) {
+                    return Carbon::parse($approval->actual_gr)->format('d M Y');
+                })->toJson();
 	}
 	public function delete($id)
     {
@@ -297,55 +325,63 @@ class ApprovalUnbudgetController extends Controller
                     ->route('approval-unbudget.ListApproval')
                     ->with($res);
     }
+
 	public function SubmitApproval(Request $request)
     {      
             $res = '';
-
-
             DB::transaction(function() use ($request, &$res){
-                // Save data in Tabel Bom
-                $user = \Auth::user();
                 
-                foreach (Cart::instance('unbudget')->content() as $details) {
-                    $approval_no = ApprovalMaster::getNewApprovalNumber(strtoupper($details->id), $user->department_id);  
+                $user = \Auth::user();
+                $budget_type = Cart::instance('unbudget')->content()->first()->options->budget_type;
+
+                // dd( $user->department->department_code);
+                // die;
+                $approval_no = ApprovalMaster::getNewApprovalNumber(strtoupper($budget_type), $user->department->department_code); 
                 
                     $capex                         = new ApprovalMaster;
+                    $capex->fyear 				   =  date('Y');
                     $capex->approval_number        = $approval_no;
-                    $capex->budget_type            = $details->id;
+                    $capex->budget_type            = $budget_type;
                     $capex->dir                    = $user->direction;
                     $capex->division               = $user->division->division_code;
                     $capex->department             = $user->department->department_code;
-                    $capex->total                  = $details->price;
+                    $capex->total                  = str_replace(',', '', Cart::instance('unbudget')->subtotal($formatted = false));
                     $capex->status                 = 0;
                     $capex->created_by             = $user->id;
-					$capex->fyear 				   =  date('Y');
+					
                     $capex->save();
-                    $approval                        = new ApprovalDetail;
-                    $approval->budget_no             = $details->options->budget_no;
-                    $approval->project_name          = $details->name;
-                    $approval->actual_qty            = $details->qty;
-                    $approval->actual_price_user     = $details->price;
-					if($details->id == "uc"){
-						
+                    $i = 1;
+                foreach (Cart::instance('unbudget')->content() as $details) {
+                    $approval                           = new ApprovalDetail;
+                    $approval->fyear                    = date('Y');
+                    $approval->budget_no                = $details->options->budget_no;  
+                    $approval->sap_track_no             = ApprovalMaster::getNewSapTrackingNo(2,$user->department_id,$approval_no,$i);
+                    
+                    if($details->options->budget_type == "uc"){
+                        $approval->asset_no             = $details->options->asset_code.'JE'.str_pad($i, 3, '0', STR_PAD_LEFT);
+                        $approval->sap_asset_class      = $details->options->sap_asset_class;
+                        $approval->sap_account_code     = $details->options->sap_account_code;
+                        $approval->sap_account_text     = $details->options->sap_account_text;
 					}else{
-						$approval->sap_account_code      = $details->options->sap_gl_account;
-						$approval->sap_account_text		 = $details->options->gl_fname;
-					}
-                    // $approval->qty_remaining         = $details->options->qty_remaining;
-                    // $approval->qty_actual            = $details->options->qty_actual;
-                     $approval->remarks               = $details->options->remarks;
-					$approval->item_id 				 = $details->options->item_id;
-                    $approval->sap_cc_code     		 = $details->options->sap_cost_center_id;
-                    $approval->pr_uom           	 = $details->options->sap_uom_id;
-					$approval->pr_specs				 = $details->options->pr_specs;
-					$approval->sap_is_chemical        = $details->options->is_chemical;
-                    // $approval->price_remaining       = $details->options->price_actual;
-                    $approval->budget_remaining_log  = $details->options->budget_remaining_log;
-                    $approval->price_to_download     = $details->options->price_to_download==""?0:$details->options->price_to_download;
-                    $approval->actual_gr             = date('Y-m-d',strtotime($details->options->plan_gr));
-                    $approval->fyear                 = date('Y');
-                    $approval->budget_reserved       = $details->options->budget_remaining_log;
+						$approval->sap_account_code     = $details->options->sap_account_code;
+						$approval->sap_account_text		= $details->options->sap_account_text;
+                    }
+                    $approval->sap_is_chemical          = $details->options->sap_is_chemical;
+                    $approval->sap_cc_code     		    = $details->options->sap_cc_code;
+                    $approval->sap_cc_fname             = $details->options->sap_cc_fname;
+                    $approval->project_name             = $details->name;
+                    $approval->actual_qty               = $details->options->actual_qty;
+                    $approval->actual_price_user        = $details->options->actual_price_user;
+                    $approval->price_to_download        = $details->options->actual_price_user;
+                    $approval->currency                 = $details->options->currency;
+                    $approval->actual_gr                = date('Y-m-d',strtotime($details->options->actual_gr));
+                    $approval->remarks                  = $details->options->remarks;
+					$approval->item_id 				    = $details->options->item_id;
+                    $approval->pr_specs				    = $details->options->pr_specs;
+                    $approval->pr_uom           	    = $details->options->pr_uom;                   
+
                     $capex->details()->save($approval);
+                    $i++;
                 }
 				// Simpan approver user
 				$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
