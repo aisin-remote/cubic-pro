@@ -70,12 +70,28 @@
                            </div>
 						   <div class="form-group">
                                 <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
-								<select name="remarks" class="select2" data-placeholder="Item Detail" required="required">
+								<select name="remarks" class="select2" data-tags="true" data-placeholder="Item Detail">
+                                    <option></option>
+                                    @if ($itemcart == 'non-catalog')
+
+                                        @foreach ($items as $item) 
+                                            <option value="{{ $item->item_description }}">{{ $item->item_description }}</option>
+                                        @endforeach
+
+                                    @else
+                    
+                                        @foreach ($carts as $cart)
+                                        <option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_specification}}" total="{{$cart->total}}" >{{ $cart->item->item_description }}</option>
+                                        @endforeach
+
+                                    @endif
+                                </select>
+                                <!-- <select name="remarks" class="select2" data-placeholder="Item Detail" required="required">
                                     <option></option>
                                         @foreach ($carts as $cart)
                                         <option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_spesification}}" total="{{$cart->total}}" >{{ $cart->item->item_description }}</option>
                                         @endforeach
-                                </select>
+                                </select> -->
 								<input type="hidden" name="qty_item">
                                 <span class="help-block"></span>
 								
@@ -118,7 +134,7 @@
 
                            <div class="form-group">
                                 <label class="control-label">Amount on Quotation (IDR) <span class="text-danger">*</span></label>
-                                <input type="text" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control autonumeric text-right" required="required" rows="5" readonly="readonly">
+                                <input type="text" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control autonumeric text-right" required="required" rows="5" {{ $itemcart == 'non-catalog' ?  '' : 'readonly=readonly' }}>
                                 <span class="help-block"></span>
                            </div>  
 							<div class="form-group">

@@ -80,10 +80,11 @@ class ApprovalCapexController extends Controller
         $sap_uoms           = SapUom::find($request->sap_uom_id);
         $item 				= Item::firstOrNew(['item_description' => $request->remarks]);
         $item->item_description = $request->remarks;
-        $item->item_category_id = '99';
+        $item->item_category_id = '0';
         $item->item_code = 'XXX';
         $item->item_price = str_replace(',','',$request->price_remaining);
         $item->uom_id = $sap_uoms->id;
+        $item->supplier_id = '0';
         $item->save();
 
 	    Cart::instance('capex')->add([

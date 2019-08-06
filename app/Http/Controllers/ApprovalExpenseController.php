@@ -69,7 +69,15 @@ class ApprovalExpenseController extends Controller
         $sap_assets         = SapAsset::find($request->sap_asset_id);
         $sap_costs          = SapCostCenter::find($request->sap_cos_center_id); 
         $sap_uoms           = SapUom::find($request->sap_uom_id);
-		$item 				= Item::find($request->remarks);
+        // $item 				= Item::find($request->remarks);
+        $item 				= Item::firstOrNew(['item_description' => $request->remarks]);
+        $item->item_description = $request->remarks;
+        $item->item_category_id = '0';
+        $item->item_code = 'XXX';
+        $item->item_price = str_replace(',','',$request->price_remaining);
+        $item->uom_id = $sap_uoms->id;
+        $item->supplier_id = '0';
+        $item->save();
 
         // dd($sap_gl_account);
         // die;
@@ -86,7 +94,7 @@ class ApprovalExpenseController extends Controller
 						'sap_account_text'		=> $sap_gl_account->gl_aname,
                         'budget_description'    => $request->budget_description,
                         'qty_remaining'         => str_replace(',','',$request->qty_remaining),
-                        'qty_actual'            => str_replace(',','',$request->qty_actual),
+                        'qty_actual'            => !empty($request->qty_actual) ? $request->qty_actual : 1,
                         'remarks'               => $item->item_description,
 						'item_id'				=> $item->id,
                         'sap_cc_code'           => $sap_costs->cc_code,

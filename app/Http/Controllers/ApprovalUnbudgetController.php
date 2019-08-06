@@ -66,7 +66,15 @@ class ApprovalUnbudgetController extends Controller
         $sap_gl_acc         = SapGlAccount::where('gl_gname', $request->sap_gl_account_id)->where('gl_aname', $request->gl_fname)->first();
         $sap_costs          = SapCostCenter::find($request->sap_cost_center_id); 
 		$sap_uoms           = SapUom::find($request->sap_uom_id);
-		$item 				= Item::find($request->remarks);
+        // $item 				= Item::find($request->remarks);
+        $item 				= Item::firstOrNew(['item_description' => $request->remarks]);
+        $item->item_description = $request->remarks;
+        $item->item_category_id = '0';
+        $item->item_code = 'XXX';
+        $item->item_price = str_replace(',','',$request->price_actual);
+        $item->uom_id = $sap_uoms->id;
+        $item->supplier_id = '0';
+        $item->save();
         
         
         
@@ -83,7 +91,7 @@ class ApprovalUnbudgetController extends Controller
                                         'sap_is_chemical'   => $request->asset_category,
                                         'sap_cc_code'       => $sap_costs->cc_code,
                                         'sap_cc_fname'      => $sap_costs->cc_fname,
-                                        'actual_qty'        => $request->qty_actual,
+                                        'actual_qty'        => !empty($request->qty_actual) ? $request->qty_actual : 1,
                                         'actual_price_user' => str_replace(',','',$request->price_actual),
                                         'currency'          => !empty($request->currency) ? $request->currency : 'IDR' ,
                                         'actual_gr'         => $request->plan_gr,

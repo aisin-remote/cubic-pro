@@ -114,7 +114,14 @@ class ApprovalController extends Controller
         $sap_uoms        = SapUom::get();
         $expenses        = Expense::where('department', auth()->user()->department->department_code)->get();
 		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
-        return view('pages.approval.expense.create', compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses','carts']));
+        $items           = Item::get();
+
+       if ($carts->count() > 0){
+            $itemcart = 'catalog';
+        } else {
+            $itemcart = 'non-catalog';
+        }
+        return view('pages.approval.expense.create', compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses','carts', 'items', 'itemcart']));
     }
     public function storeExpense()
     {
@@ -140,7 +147,14 @@ class ApprovalController extends Controller
         $expenses        = Expense::where('department', auth()->user()->department->department_code)->get();
 		$capexs          = Capex::where('department', auth()->user()->department->department_code)->get();
 		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
-        return view('pages.approval.unbudget.create',compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses', 'capexs','carts']));
+        $items           = Item::get();
+
+       if ($carts->count() > 0){
+            $itemcart = 'catalog';
+        } else {
+            $itemcart = 'non-catalog';
+        }
+        return view('pages.approval.unbudget.create',compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses', 'capexs','carts', 'items', 'itemcart']));
     }
     public function storeUnbudget()
     {

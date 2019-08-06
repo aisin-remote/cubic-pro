@@ -147,16 +147,14 @@
                                     <option></option>
                                     @if ($itemcart == 'non-catalog')
 
-                                    @foreach ($items as $item) 
-                                        <option value="{{ $item->item_description }}">{{ $item->item_description }}</option>
-                                    @endforeach
+                                        @foreach ($items as $item) 
+                                            <option value="{{ $item->item_description }}">{{ $item->item_description }}</option>
+                                        @endforeach
 
                                     @else
                                 
-								
-                                
                                         @foreach ($carts as $cart)
-                                        <option value="{{ $cart->item->item_descriptions }}" total="{{$cart->total}}" item_id="{{$cart->item_id}}" item_spec="{{$cart->item->item_spesification}}" actual_qty="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}">{{ $cart->item->item_description }}</option>
+                                        <option value="{{ $cart->item->item_description }}" total="{{$cart->total}}" item_id="{{$cart->item_id}}" item_spec="{{$cart->item->item_specification}}" actual_qty="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}">{{ $cart->item->item_description }}</option>
                                         @endforeach
 
                                     @endif
