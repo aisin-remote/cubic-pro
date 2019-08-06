@@ -20,6 +20,7 @@ use App\Capex;
 use App\CapexArchive; 
 use App\Expense;         
 use App\ExpenseArchive;    
+use App\Item;
 
 use App\Cart;
 use App\Approval;
@@ -80,13 +81,21 @@ class ApprovalController extends Controller
     }
     public function create()
     {
-        $sap_assets      = SapAsset::get();
+        $sap_assets      = DB::table('sap_assets')->select('id', 'asset_type')->groupBy('asset_type')->get();
+        $sap_codes       = DB::table('sap_assets')->select('asset_code')->distinct()->get();
         $sap_costs       = SapCostCenter::get(); 
         $sap_gl_group    = SapGlAccount::get();
         $sap_uoms        = SapUom::get();
         $capexs          = Capex::where('department', auth()->user()->department->department_code)->get();
-		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
-    	return view('pages.approval.capex.create', compact(['sap_assets','sap_costs','sap_gl_group', 'sap_uoms', 'capexs', 'carts']));
+        $carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
+        $items           = Item::get();
+
+       if ($carts->count() > 0){
+            $itemcart = 'catalog';
+        } else {
+            $itemcart = 'non-catalog';
+        }
+    	return view('pages.approval.capex.create', compact(['sap_assets','sap_codes','sap_costs','sap_gl_group', 'sap_uoms', 'capexs', 'carts', 'items', 'itemcart']));
     }
     public function approvalExpense()
     {
@@ -101,11 +110,18 @@ class ApprovalController extends Controller
     {
         $sap_assets      = SapAsset::get();
         $sap_costs       = SapCostCenter::get(); 
-        $sap_gl_account  = SapGlAccount::get();
+        $sap_gl_account  = DB::table('sap_gl_accounts')->select('gl_gname')->where('dep_key',auth()->user()->department->department_code)->distinct()->get();
         $sap_uoms        = SapUom::get();
         $expenses        = Expense::where('department', auth()->user()->department->department_code)->get();
 		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
-        return view('pages.approval.expense.create', compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses','carts']));
+        $items           = Item::get();
+
+       if ($carts->count() > 0){
+            $itemcart = 'catalog';
+        } else {
+            $itemcart = 'non-catalog';
+        }
+        return view('pages.approval.expense.create', compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses','carts', 'items', 'itemcart']));
     }
     public function storeExpense()
     {
@@ -123,14 +139,22 @@ class ApprovalController extends Controller
     }
     public function createUnbudget()
     {
-        $sap_assets      = SapAsset::get();
+        $sap_assets      = DB::table('sap_assets')->select('id', 'asset_type')->groupBy('asset_type')->get();
+        $sap_codes       = DB::table('sap_assets')->select('asset_code')->distinct()->get();
         $sap_costs       = SapCostCenter::get(); 
-        $sap_gl_account  = SapGlAccount::get();
+        $sap_gl_account  = DB::table('sap_gl_accounts')->select('gl_gname')->where('dep_key',auth()->user()->department->department_code)->distinct()->get();
         $sap_uoms        = SapUom::get();
         $expenses        = Expense::where('department', auth()->user()->department->department_code)->get();
 		$capexs          = Capex::where('department', auth()->user()->department->department_code)->get();
 		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
-        return view('pages.approval.unbudget.create',compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses', 'capexs','carts']));
+        $items           = Item::get();
+
+       if ($carts->count() > 0){
+            $itemcart = 'catalog';
+        } else {
+            $itemcart = 'non-catalog';
+        }
+        return view('pages.approval.unbudget.create',compact(['sap_assets','sap_costs','sap_gl_account', 'sap_uoms', 'expenses', 'capexs','carts', 'items', 'itemcart']));
     }
     public function storeUnbudget()
     {
@@ -813,17 +837,23 @@ class ApprovalController extends Controller
 			
 			 DB::transaction(function() use ($request){
 				 $user = auth()->user();
-				 $can_approve   = $this->can_approve($request->approval_number);	
+                 $can_approve   = $this->can_approve($request->approval_number);	
+                 
+                //  dd($request->all());
 				 if($can_approve > 0){
-					 $approvals 	= Approval::where('department',$user->department->department_code)->first();
+                     $dept          = ApprovalMaster::where('approval_number', $request->approval_number)->first();
+                     $approvals 	= Approval::where('department',$dept->department)->first();
 					 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
-					 $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
+                     $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
+                     
+                    //  dd($approvals);
 					 if(!empty($approverLevel)){
-						 
+                         
+                         
 						 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
 						 $approval_master->status = $approverLevel->level;
-						 $approval_master->save();
-						 
+                         $approval_master->save();
+                         
 						 $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
 						 
 						 if ($approval_master->budget_type != 'ub' && $approval_master->budget_type != 'uc' && $approval_master->budget_type != 'ue' && $approval_master->status == 3) {
@@ -1044,11 +1074,11 @@ class ApprovalController extends Controller
                     ->with($res);
         }
 
-       if ($approval->status < 3) {
+       if ($approval->status < 2) {
 			$res = [
                     'title' => 'Error',
                     'type' => 'error',
-                    'message' => 'Could not print Approval ['.$approval_number.']: GM Approval required.'
+                    'message' => 'Could not print Approval ['.$approval_number.']: DH Approval required.'
                 ];
 
 			

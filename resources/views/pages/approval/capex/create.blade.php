@@ -18,7 +18,7 @@
                             
                             <a href="{{ route('approval-capex.create') }}">Create Capex Approval Sheet</a></li>
                         <li class="active">
-                            Add Purchase Request Item.
+                            Add Purchase Request Item.                            
                         </li>
                     </ol>
                     <div class="clearfix"></div>
@@ -55,7 +55,7 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="radio">
-                                                    <input type="radio" name="asset_kind" id=asset_o" value="Immediate Use" checked="" onclick="setReadOnlyInput();">
+                                                    <input type="radio" name="asset_kind" id="asset_o" value="Immediate Use" checked="" onclick="setReadOnlyInput();">
                                                     <label for="asset_kind-1">
                                                         Immediate Use
                                                     </label>
@@ -106,24 +106,27 @@
                                 <select name="sap_asset_id" class="select2" data-placeholder="Select Asset Type" required="required">
                                     <option></option>
                                         @foreach ($sap_assets as $sap_asset)
-                                        <option value="{{ $sap_asset->id }}">{{ $sap_asset->asset_type }}</option>
+                                        <option value="{{ $sap_asset->asset_type }}">{{ $sap_asset->asset_type }}</option>
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
                            </div>
                            <div class="form-group">
                                 <label class="control-label">Asset Code<span class="text-danger">*</span></label>
-                                <input type="text" name="asset_code" placeholder="Asset Code" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+                                <!-- <input type="text" name="asset_code" placeholder="Asset Code" class="form-control" required="required" rows="5" readonly="readonly"> -->
+                                <select name="sap_code_id" class="select2" data-placeholder="Select Asset Code" required="required">
+                                    
+                                </select>
                                 <span class="help-block"></span>
                            </div>       
                            <div class="form-group">
                                 <label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
-                                <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5"></input>
+                                <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control" required="required" rows="5">
                                 <span class="help-block"></span>
                            </div>                   
                            <div class="form-group">
                                 <label class="control-label">Settlement Date (for CIP) <span class="text-danger">*</span></label>
-                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" date="true" required="required" value="{{ date('d-M-Y') }}" rows="5"></input>
+                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" date="true" required="required" value="{{ date('d-M-Y') }}" rows="5">
                                 <span class="help-block"></span><!-- Carbon\Carbon::now()->format('M-D-Y') -->
                            </div>
 
@@ -140,11 +143,21 @@
                             
                             <div class="form-group">
                                 <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
-								<select name="remarks" data-placeholder="Item Detail" required="required">
+                                <select name="remarks" class="select2" data-tags="true" data-placeholder="Item Detail">
                                     <option></option>
-                                        @foreach ($carts as $cart)
-                                        <option value="{{ $cart->item_id }}" total="{{$cart->total}}" item_id="{{$cart->item_id}}" item_spec="{{$cart->item->item_spesification}}" actual_qty="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}">{{ $cart->item->item_description }}</option>
+                                    @if ($itemcart == 'non-catalog')
+
+                                        @foreach ($items as $item) 
+                                            <option value="{{ $item->item_description }}">{{ $item->item_description }}</option>
                                         @endforeach
+
+                                    @else
+                                
+                                        @foreach ($carts as $cart)
+                                        <option value="{{ $cart->item->item_description }}" total="{{$cart->total}}" item_id="{{$cart->item_id}}" item_spec="{{$cart->item->item_specification}}" actual_qty="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}">{{ $cart->item->item_description }}</option>
+                                        @endforeach
+
+                                    @endif
                                 </select>	
 								<input type="hidden" name="actual_qty">
                                 <span class="help-block"></span>
@@ -170,7 +183,7 @@
 
                            <div class="form-group">
                                 <label class="control-label">Budget Description <span class="text-danger">*</span></label>
-                                <textarea type="text" name="budget_description" placeholder="Budget Description" class="form-control tinymce" required="required" rows="5" readonly="readonly"></textarea>
+                                <textarea type="text" name="budget_description" placeholder="Budget Description" class="form-control" required="required" rows="5" readonly="readonly"></textarea>
                                 <span class="help-block"></span>
                            </div>  
                             
@@ -178,32 +191,31 @@
                         
                             <div class="form-group">
                                 <label class="control-label">Item Specs <span class="text-danger">*</span></label>
-                                <input type="text" name="pr_specs" placeholder="Item Specs" class="form-control tinymce" required="required" rows="5"></input>
+                                <input type="text" name="pr_specs" placeholder="Item Specs" class="form-control" required="required" rows="5">
                                 <span class="help-block"></span>
                            </div>
                            <div class="form-group">
                                 <label class="control-label">Max Budget Reservation <span class="text-danger">*</span></label>
-                                <input type="number" name="price_remaining" placeholder="Max Budget Reservation" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+                                <input  type="text" name="price_remaining" placeholder="0.00" class="form-control autonumeric text-right" required="required" rows="5" readonly="readonly">
                                 <span class="help-block"></span>
                            </div>    
                         
                             <div class="form-group">
                                 <label class="control-label">Last Budget Remains <span class="text-danger">*</span></label>
-                                <input type="number" name="budget_remaining_log" placeholder="Last Budget Remains" class="form-control tinymce" required="required" rows="5"></input>
+                                <input type="text" name="budget_remaining_log" placeholder="0.00" class="form-control autonumeric text-right" required="required" rows="5">
                                 <span class="help-block"></span>
                            </div>
                            <div class="form-group">
                                 <label class="control-label">Actual GR <span class="text-danger">*</span></label>
-                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}" date="true"></input>
+                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}" date="true">
                                 <span class="help-block"></span>
                            </div>
 
-                               
-                       
                             <div class="form-group">
-                                <label class="control-label">Amount on Quotation (IDR) <span class="text-danger">*</span></label>
-                                <input type="number" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control tinymce" required="required" number="true" rows="5" readonly="readonly"></input>
-                                <span class="help-block"></span>
+                                <label class="control-label">Amount on Quotation (IDR)<span class="text-danger">*</span></label>
+                                
+                                <input type="text" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control autonumeric text-right" required="required" number="true" rows="5" {{ $itemcart == 'non-catalog' ?  '' : 'readonly=readonly' }} >
+                                <span class="help-block"></span> 
                            </div>
                            
                            <div class="form-group">
@@ -229,7 +241,7 @@
                                             </select>
                                         </div>
                                         <div class="col-sm-6">
-                                            <input type="number" class="form-control tinymce"name="price_to_download" placeholder="Amount Foreign Currency" required="required">
+                                            <input type="number" class="form-control"name="price_to_download" placeholder="Amount Foreign Currency" required="required">
                                         </div>
                                     </div>
                                 </div>

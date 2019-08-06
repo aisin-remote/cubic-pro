@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Approval_detail;
 use App\Capex;
 use App\Expense;        // Added by Ferry, July 10th 2015
+use App\Department;
 use DB;
 use Illuminate\Support\Collection; 
 use App\Period;
@@ -192,6 +193,26 @@ class ApprovalMaster extends Model
 
         return $type.'-'.$dept.'-'.$year.'-'.$iteration;
     }
+
+    public static function getNewSapTrackingNo($type, $dept, $approval, $i)
+    {
+        $sap_key = Department::find($dept);
+        $period = Period::all();
+        
+        if(!empty($period) && count($period) >= 6){
+			$year = $period[0]->value;
+		}else{
+			$year = "xx";
+		}
+        $year = substr($year, -2);
+        
+        return $type.
+                $sap_key->sap_key.
+                $year.
+                substr($approval, -4).
+                str_pad($i, 2, '0', STR_PAD_LEFT);
+    }
+
     public function details()
     {
         return $this->hasMany(\App\ApprovalDetail::class);

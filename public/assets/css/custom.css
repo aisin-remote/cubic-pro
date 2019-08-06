@@ -419,3 +419,20 @@ tr.shown td.details-control:before {
     right:0;
     left:0;
 }
+
+.dropdown-submenu {
+    position: relative;
+}
+  
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+}
+
+.dropdown-menu-scroll {
+    display: block;
+    z-index: 9999 !important;
+    overflow-y: scroll;
+    height: 500px;
+}

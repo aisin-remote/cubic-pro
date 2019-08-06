@@ -37,23 +37,24 @@ $(document).ready(function(){
 
   $('[name="sap_asset_id"]').change(function(){
 
-  	var sap_asset_id = $(this).val();
-
-    if (sap_asset_id !== '' && sap_asset_id !== null && sap_asset_id !== undefined) {
-      var arr_asset = getAsset(sap_asset_id);
-      $('[name="asset_code"]').val(arr_asset.asset_code);
-    }
+    var sap_asset_id = $(this).val();
+    var arr_asset = getAsset(sap_asset_id);
+      $('[name="sap_code_id"]').find('option').remove(); 
+      $('[name="sap_code_id"]').select2({
+        data: arr_asset
+      });  
   	
   });
   
   $('[name="sap_gl_account_id"]').change(function(){
 	
     var sap_gl_account_id = $(this).val();
-    if (sap_gl_account_id !== '' && sap_gl_account_id !== null && sap_gl_account_id !== undefined) {
-      var arr_asset = getGlGroup(sap_gl_account_id);
+    var arr_asset = getGlGroup(sap_gl_account_id);
       
-      $('[name="gl_fname"]').val(arr_asset.gl_acode);
-    }
+      $('[name="gl_fname"]').find('option').remove(); 
+      $('[name="gl_fname"]').select2({
+        data: arr_asset
+      });
     
   });
   
@@ -66,7 +67,7 @@ $(document).ready(function(){
 	 $('input[name="qty_item"]').val(qty_item);
 	 $('select[name="sap_uom_id"]').select2("val", uom_id);
 	 $('input[name="pr_specs"]').val(item_spec);
-	 $('input[name="price_actual"]').val(total);
+	 $('input[name="price_actual"]').autoNumeric('set',total);
   });
 });
 

@@ -44,9 +44,7 @@
                             <th>Actual Qty</th>
                             <th>Actual Price</th>
                             <th>Actual GR</th>
-                            <!-- <th>Asset Kind</th>         
-                            <th>Settlement Date</th>    
-                            <th>Action</th> -->
+                            <th>Type</th>
                             <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>

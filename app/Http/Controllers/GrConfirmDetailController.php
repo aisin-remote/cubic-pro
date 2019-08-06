@@ -33,7 +33,8 @@ class GrConfirmDetailController extends Controller
             } else {
                 
                 $upload = UploadPurchaseOrder::where('po_number', $request->po_number)->first();
-                $new_gr = ApprovalMaster::where('approval_number', $upload->approval_number)->first();
+                $app_detail = ApprovalDetail::where('id', $upload->approval_detail_id)->first();
+                $new_gr = ApprovalMaster::where('id', $app_detail->approval_master_id)->first();
                 
                 DB::transaction(function() use ($new_gr, $request){
 
@@ -85,9 +86,12 @@ class GrConfirmDetailController extends Controller
         
         $gr_detail = GrConfirmDetail::find($request->pk);
 
-        if ($request->value > $gr_detail->qty_order ){
-              throw new \Exception("Value more than Qty Order.", 1);
+        if ($request->name == 'qty_receive') {
+            if ($request->value > $gr_detail->qty_order ){
+                  throw new \Exception("Value more than Qty Order.", 1);
+            }
         }
+
 
         $name = $request->name;
         $gr_detail->$name = $request->value;

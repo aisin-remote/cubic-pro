@@ -87,14 +87,16 @@
 										<select name="sap_asset_id" class="select2" data-placeholder="Select Asset Type" required="required">
 											<option></option>
 												@foreach ($sap_assets as $sap_asset)
-												<option value="{{ $sap_asset->id }}">{{ $sap_asset->asset_type }}</option>
+												<option value="{{ $sap_asset->asset_type }}">{{ $sap_asset->asset_type }}</option>
 												@endforeach
 										</select>
 										<span class="help-block"></span>
 								   </div>
 									<div class="form-group">
 										<label class="control-label">Asset Code<span class="text-danger">*</span></label>
-										<input type="text" name="asset_code" placeholder="Asset Code" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+										<select name="sap_code_id" class="select2" data-placeholder="Select Asset Code" required="required">
+										</select>
+										<!-- <input type="text" name="asset_code" placeholder="Asset Code" class="form-control tinymce" required="required" rows="5" readonly="readonly"> -->
 										<span class="help-block"></span>
 								   </div>
 							   </div>
@@ -104,24 +106,24 @@
 										<select name="sap_gl_account_id" class="select2" data-placeholder="Select G/L Group" required="required">
 											<option></option>
 												@foreach ($sap_gl_account as $sap_gl_account)
-													<option value="{{ $sap_gl_account->gl_gcode }}">{{ $sap_gl_account->gl_gname }}</option>
+													<option value="{{ $sap_gl_account->gl_gname }}">{{ $sap_gl_account->gl_gname }}</option>
 												@endforeach	
 										</select>
 										<span class="help-block"></span>
 								   </div>
 								   <div class="form-group">
 										<label class="control-label">G/L Account<span class="text-danger">*</span></label>
-										<input type="text" name="gl_fname" placeholder="Sap GL Name" class="form-control tinymce" required="required" rows="5" readonly="readonly"></input>
+										<input type="text" name="gl_fname" placeholder="Sap GL Name" class="form-control tinymce" required="required" rows="5" readonly="readonly">
 										<span class="help-block"></span>
 								   </div>
 							   </div>
 							   
 							   <div class="form-group">
 									<label class="control-label">SAP Cost Center<span class="text-danger">*</span></label>
-									<select name="sap_cos_center" class="select2" data-placeholder="Select SAP Cost Center" required="required">
+									<select name="sap_cost_center_id" class="select2" data-placeholder="Select SAP Cost Center" required="required">
 										<option></option>
 											@foreach ($sap_costs as $sap_cost)
-											<option value="{{ $sap_cost->cc_code }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
+											<option value="{{ $sap_cost->id }}">{{ $sap_cost->cc_code }} - {{ $sap_cost->cc_fname }}</option>
 											@endforeach
 									</select>
 									<span class="help-block"></span>
@@ -130,17 +132,30 @@
 							   
 							   <div class="form-group">
 									<label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
-									<input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5"></input>
+									<input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5">
 									<span class="help-block"></span>
 							   </div>      
 								
 								<div class="form-group">
 									<label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
-									<select name="remarks" class="select2" data-placeholder="Item Detail" required="required">
-										<option></option>
-											@foreach ($carts as $cart)
-											<option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_spesification}}" total="{{$cart->total}}">{{ $cart->item->item_description }}</option>
+									<select name="remarks" class="select2" data-tags="true" data-placeholder="Item Detail">
+                                    <option></option>
+										@if ($itemcart == 'non-catalog')
+
+											@foreach ($items as $item) 
+												<option value="{{ $item->item_description }}">{{ $item->item_description }}</option>
 											@endforeach
+
+										@else
+
+											@foreach ($carts as $cart)
+											<option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_specification}}" total="{{$cart->total}}">{{ $cart->item->item_description }}</option>
+											@endforeach
+
+										@endif
+											<!-- @foreach ($carts as $cart)
+											<option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_spesification}}" total="{{$cart->total}}">{{ $cart->item->item_description }}</option>
+											@endforeach -->
 									</select>	  
 									<input type="hidden" name="qty_item">
 									<span class="help-block"></span>
@@ -150,7 +165,7 @@
 							<div class="col-md-6">
 							   <div class="form-group">
 									<label class="control-label">Item Specs <span class="text-danger">*</span></label>
-									<input type="text" name="pr_specs" placeholder="Item Specs" class="form-control tinymce" required="required" rows="5"></input>
+									<input type="text" name="pr_specs" placeholder="Item Specs" class="form-control tinymce" required="required" rows="5">
 									<span class="help-block"></span>
 							   </div>
 							   <div class="form-group">
@@ -166,18 +181,18 @@
 							   </div> 
 							   <div class="form-group">
 									<label class="control-label">Price <span class="text-danger">*</span></label>
-									<input type="number" name="price_actual" placeholder="Price Actual" class="form-control tinymce" required="required"  readonly="readonly" ></input>
+									<input type="text" name="price_actual" placeholder="Price Actual" class="form-control autonumeric text-right" required="required"  {{ $itemcart == 'non-catalog' ?  '' : 'readonly=readonly' }} >
 									<span class="help-block"></span>
 							   </div>
 							   <div class="form-group">
 									<label class="control-label">Quantity <span class="text-danger">*</span></label>
-									<input type="number" name="qty_actual" placeholder="Quantity Actual" class="form-control tinymce" required="required" ></input>
+									<input type="number" name="qty_actual" placeholder="Quantity Actual" class="form-control text-right" required="required" >
 									<span class="help-block"></span>
 							   </div> 
 								
 							   <div class="form-group">
 									<label class="control-label">Actual GR <span class="text-danger">*</span></label>
-									<input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}"></input>
+									<input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}">
 									<span class="help-block"></span>
 							   </div>  
 								<div class="form-group">

@@ -179,7 +179,8 @@ class CapexController extends Controller
 	public function show($budget_no)
 	{
 		$capex = Capex::where('budget_no',$budget_no)->first();
-		$approval_details = ApprovalDetail::join('approval_masters','approval_details.approval_master_id','=','approval_masters.id')->where('approval_details.budget_no',$budget_no)->get();
+		$approval_details = ApprovalDetail::join('approval_masters','approval_details.approval_master_id','=','approval_masters.id')
+											->where('approval_details.budget_no',$budget_no)->get();
 		// dd($approval_details);exit;
 		return view('pages.capex.view',compact('capex','approval_details'));
 	}

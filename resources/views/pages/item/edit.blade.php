@@ -49,7 +49,7 @@
                             
                             <div class="form-group">
                                 <label class="control-label">Item Code<span class="text-danger">*</span></label>
-                                <input type="text" name="item_code" class="form-control" placeholder="Item Code" required="required" value="{{ $item->item_code }}" readonly="readonly">
+                                <input type="text" name="item_code" class="form-control" placeholder="Item Code" required="required" value="{{ $item->item_code }}">
                                 <span class="help-block"></span>
                             </div>
 
@@ -60,8 +60,8 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="control-label">Spesification<span class="text-danger">*</span></label>
-                                <input type="text" name="item_spesification" class="form-control" placeholder="Item Spesification" required="required" value="{{ $item->item_spesification }}">
+                                <label class="control-label">Specification<span class="text-danger">*</span></label>
+                                <input type="text" name="item_specification" class="form-control" placeholder="Item Spesification" required="required" value="{{ $item->item_spesification }}">
                                 <span class="help-block"></span>
                             </div>
 

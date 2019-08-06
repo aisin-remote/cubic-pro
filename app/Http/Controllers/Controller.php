@@ -23,7 +23,7 @@ class Controller extends BaseController
 		$user 		= auth()->user();		
 		$master 	= ApprovalMaster::getSelf($approval_number);
 		
-		if(count($master) > 0){
+		if(!empty($master)){
 			$approvaldtl = ApprovalDtl::where('user_id',$user->id)->orderBy('approval_id','ASC')->get();
 			foreach($approvaldtl as $adtl){
 				$approval   = Approval::where('id',$adtl->approval_id)->first();

@@ -70,37 +70,6 @@
 @endsection
 @push('js')
 <script type="text/javascript">
-    // var table = $('#table').dataTable({
-        // "ajax": "{{ url('approval/detail').'/'.$master->approval_number }}",
-        // "ordering": false,
-        // "scrollX": true,
-        // "paging": false,
-        // "searching": false,
-		// "fnDrawCallback": function (oSettings) {
-			// budgetView();  
-					
-			// budgetStatusStyler();
-			
-			// @if (\Entrust::can('update_actual_price'))
-				// // xeditClasser();
-				// // initEditable();
-				// // initSapVendorEditable();
-				// // initSapTaxEditable();
-				// // initCurrencyEditable();
-
-			// @elseif(\Entrust::hasRole(['budget']))
-				// // xeditClasser();
-				// // initGLAccountEditable();
-				// // initSapCostCenterEditable();
-
-			// @elseif(\Entrust::can('asset_register'))  
-				// // xeditSapAssetNumberClasser();
-				// // initEditable();
-			// @endif
-			
-		// }
-        
-    // });
 	var table = $('#example').DataTable({
         ajax: "{{ url('approval-expense/detail').'/'.$master->approval_number }}",
 
@@ -119,8 +88,8 @@
 			{ data: 'actual_price_user', name: 'actual_price_user'},
 			{ data: 'price_to_download', name: 'price_to_download'},
 			{ data: 'currency', name: 'currency'},
-			{ data: 'budget_remaining', name: 'budget_remaining'},
-			{ data: 'status', name: 'status'},
+			{ data: 'actual_qty', name: 'actual_qty'},
+			{ data: 'overbudget_info', name: 'overbudget_info'},
 			{ data: 'actual_gr', name: 'actual_gr'},
 			{ data: 'sap_vendor_code', name: 'sap_vendor_code'},
 			{ data: 'po_number', name: 'po_number'},

@@ -51,7 +51,7 @@
 						<th class='bg-primary'>Actual<br>Price</th>
 						<th class='bg-primary'>Price<br>Download</th> 
 						<th>Currency</th>  
-						<th>Actual<br>Qty</th>
+                        <th>Actual<br>Qty</th>
 						<th class='bg-primary'>Status<br>(Resv. vs Act.)</th>
 						<th>Actual<br>GR</th>
 						<th>SAP Vendor</th>   
@@ -87,7 +87,7 @@
 			{ data: 'actual_price_user', name: 'actual_price_user'},
 			{ data: 'price_to_download', name: 'price_to_download'},
 			{ data: 'currency', name: 'currency'},
-			{ data: null},//'budget_remaining'
+            { data: 'actual_qty', name: 'actual_qty'},
 			{ data: 'status', name: 'status'},
 			{ data: 'actual_gr', name: 'actual_gr'},
 			{ data: 'sap_vendor_code', name: 'sap_vendor_code'},
@@ -121,7 +121,8 @@
 		paging:false,
 		searching:false,
     });
-	function validateApproval(approval_number)
+    
+    function validateApproval(approval_number)
     {
         var confirmed = confirm('Are you sure to validate Approval: '+approval_number+'?');
 
@@ -137,7 +138,7 @@
                     return false;
                 }else{
 					show_notification('Success','success',data.success);
-					window.location.replace("{{ url('approval').'/cx/unvalidated' }}");
+					window.location.replace("{{ url('approval').'/ub' }}");
 				}
                 
             });
@@ -151,7 +152,7 @@
             var budget_no = $(this).find('td:nth-child(1)');
 			var asset_no = $(this).find('td:nth-child(2)');
 			var budget_desc = $(this).find('td:nth-child(7)');
-			var budget_remaining = $(this).find('td:nth-child(15)');
+			var budget_remaining = $(this).find('td:nth-child(11)');
 			budget_desc.html("");
 			budget_remaining.html("");
 			asset_no.html(asset_no.text());
@@ -172,6 +173,7 @@
             };
         })
     }
+
 	function xeditSapAssetNumberClasser()
     {
         $('tbody tr').each(function(i, e) {
@@ -182,6 +184,7 @@
             sap_asset_no.html('<a href="#" class="editable" data-pk="'+id_ad+'" data-name="sap_asset_no" data-title="Enter SAP Asset Number">'+sap_asset_no.text()+'</a>');
         });
     }
+
 	function xeditClasser()
     {
         $('tbody tr').each(function(i, e) {
@@ -222,6 +225,7 @@
 
         }); 
     }
+
 	function initSapTaxEditable()
 	{
 		function getSource() {
@@ -262,7 +266,8 @@
         }).fail(function() {
 			alert("Error getting Tax from Database!")
 		});
-	}
+    }
+    
 	function initSapVendorEditable()
 	{
 		 function getSource() {
@@ -349,6 +354,7 @@
                 alert("Error getting SAP GL Account from Database!")
 		});
     }
+
 	function initSapCostCenterEditable()
     {
         function getSource() {

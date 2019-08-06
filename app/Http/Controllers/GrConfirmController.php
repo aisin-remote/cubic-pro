@@ -40,7 +40,9 @@ class GrConfirmController extends Controller
     public function getData(Request $request)
     {
         $gr_confirms = GrConfirm::with(['approval_master', 'user.department'])->get();
-		dd($gr_confirms);
+        return response()->json($gr_confirms);
+        die;
+		
         return DataTables::of($gr_confirms)
 
         ->rawColumns(['options'])
@@ -74,10 +76,13 @@ class GrConfirmController extends Controller
     public function getUser($po_number)
     {
         $approval_master = UploadPurchaseOrder::where('po_number', $po_number)->first();
-        $result = ApprovalMaster::where('approval_number', $approval_master->approval_number)->first();
+        $approval_detail = ApprovalDetail::where('id',$approval_master->approval_detail_id)->first();
+        $result = ApprovalMaster::where('id', $approval_detail->approval_master_id )->first();
 
         $result->user_name = $result->user->name;
         $result->department_name = $result->user->department->department_name;
+
+        // dd($approval_number);
 
         return response()->json($result);
 
