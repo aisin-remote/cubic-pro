@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function(){
 	Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 	// Route::get('/dashboard/view/{group_type}','DashboardController@view');
 	Route::get('/dashboard/getJSONData','DashboardController@getJSONData');
-	Route::get('/dashboard/view/{group_type}', 'Dashboard2Controller@view');
+	Route::get('/dashboard/view', 'Dashboard2Controller@view');
 	Route::get('/dashboard/get', 'Dashboard2Controller@get');
 	// Route::get('/dashboard/get_chart', 'DashboardController@getChart')->name('dashboard.chart');
 	// Route::get('/dashboard/get_data_park', 'DashboardController@getDataPark')->name('dashboard.get_data_park');

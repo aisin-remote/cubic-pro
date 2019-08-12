@@ -68,4 +68,19 @@ class ApprovalDetail extends Model
     {
         return $this->belongsTo('App\SapModel\SapUom', 'sap_uom_id', 'id');
     }
+
+    public function approval()
+    {
+        return $this->belongsTo('App\ApprovalMaster', 'approval_master_id');
+    }
+
+    public function capex()
+    {
+        return $this->belongsTo('App\Capex', 'budget_no', 'budget_no');
+    }
+
+    public function expense()
+    {
+        return $this->belongsTo('App\Expense', 'budget_no', 'budget_no');
+    }
 }

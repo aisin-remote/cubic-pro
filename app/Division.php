@@ -13,4 +13,9 @@ class Division extends Model
     {
     	return $this->hasMany('App\Department');
     }
+
+    public function scopeGetDivisionByCode($query, $division)
+    {
+        return $query->where('division_code', $division)->first();
+    }
 }

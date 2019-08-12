@@ -1,6 +1,12 @@
 
 var data = $.ajax({
     url: `${SITE_URL}/dashboard/get`,
+    data: {
+        plan_type: $('[name="plan_type"]').val(),
+        interval: $('[name="interval"]').val(),
+        division: $('[name="division"]').val(),
+        department: $('[name="department"]').val(),
+    },
     type: 'get',
     dataType: 'json',
     async: false
@@ -105,7 +111,7 @@ var stackedBar = new Chart($('#chart3'), {
             data: data3.actual
         }],
         
-        labels: data3.keys
+        labels: formatLabel(data3.keys)
     },
     options: {
         scales: {
@@ -149,7 +155,7 @@ var stackedBar2 = new Chart($('#chart4'), {
             data: data4.actual
         }],
         
-        labels: data4.keys
+        labels: formatLabel(data4.keys)
     },
     options: {
         scales: {
@@ -164,7 +170,9 @@ var stackedBar2 = new Chart($('#chart4'), {
 });
 
 $('#interval').daterangepicker({
-    format: 'DD-MM-YYYY',
+    locale: {
+        format: 'DD/MM/YYYY',
+    },
     buttonClasses: ['btn', 'btn-sm'],
     applyClass: 'btn-success',
     cancelClass: 'btn-default',
@@ -178,3 +186,49 @@ $(document).ready(function(){
         e.preventDefault();
     });
 });
+
+
+function formatLabel(data) {
+    return data.map(function(month) {
+        switch(month){
+            case '01' :
+                return 'Jan';
+            case '02' :
+                return 'Feb';
+            case '03' :
+                return 'Mar';
+            case '04' :
+                return 'Apr';
+            case '05' :
+                return 'May';
+            case '06' :
+                return 'Jun';
+            case '07' :
+                return 'Jul';
+            case '08' :
+                return 'Aug';
+            case '09' :
+                return 'Sep';
+            case '10' :
+                return 'Oct';
+            case '11' :
+                return 'Sep';
+            default :
+                return 'Dec'            
+        }
+    })
+}
+
+$('.change-plan').click(function(e) {
+    e.preventDefault();
+    var value = $(this).data('value');
+
+    if (value === 'ori') {
+        $('#plan-type').text('Original Plan');
+    } else {
+        $('#plan-type').text('Revised Plan');
+    }
+
+    $('[name="plan_type"]').val(value);
+
+})

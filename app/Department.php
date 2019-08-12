@@ -18,5 +18,10 @@ class Department extends Model
     {
         return $this->hasMany('App\User');
     }
+
+    public function scopeGetDepartmentByCode($query, $department)
+    {
+        return $query->where('department_code', $department)->first();
+    }
     
 }
