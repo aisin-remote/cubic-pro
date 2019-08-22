@@ -152,11 +152,9 @@ class UploadPoController extends Controller
 
     public function xedit(Request $request)
     {
-        // dd($request->pk);
         $name = $request->name;
         $upo = UploadPurchaseOrder::firstOrNew(['approval_detail_id' => $request->pk]);
         $upo->approval_detail_id = $request->pk;
-        // $upo->approval_number = $request->approval_number;
         $upo->$name = $request->value;
         $upo->save();
 

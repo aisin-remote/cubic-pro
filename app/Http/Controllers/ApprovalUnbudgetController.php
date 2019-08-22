@@ -60,8 +60,6 @@ class ApprovalUnbudgetController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->);
-        // die;
         $sap_assets         = SapAsset::where('asset_type',$request->sap_asset_id)->where('asset_code', $request->sap_code_id)->first();
         $sap_gl_acc         = SapGlAccount::where('gl_gname', $request->sap_gl_account_id)->where('gl_aname', $request->gl_fname)->first();
         $sap_costs          = SapCostCenter::find($request->sap_cost_center_id); 
@@ -131,7 +129,7 @@ class ApprovalUnbudgetController extends Controller
 
     function show($id)
     {
-        // dd(Cart::count());
+       
 
     }
 
@@ -158,8 +156,7 @@ class ApprovalUnbudgetController extends Controller
     public function getGlGroup($id)
     {
         $sap_gl_group = SapGlAccount::select('gl_aname as id', 'gl_aname as text')->where('gl_gname',$id)->where('dep_key',auth()->user()->department->department_code)->get();
-        dd($sap_gl_group);
-        die;
+       
         $result = [];
         foreach ($sap_gl_group as $group) {
             $result[]=['id' => $group->text, 'text' => $group->text];
@@ -170,8 +167,7 @@ class ApprovalUnbudgetController extends Controller
     public function getAsset($id)
     {
         $sap_asset = SapAsset::select('asset_code as id', 'sap_assets.asset_name as text')->where('asset_type', $id)->get();
-        dd($sap_asset);
-        die;
+       
         $result = [];
         foreach ($sap_asset as $asset) {
             $result[] = ['id' => $asset->id, 'text' => $asset->text];
@@ -194,9 +190,7 @@ class ApprovalUnbudgetController extends Controller
         $user = auth()->user();
         $approval_ub = ApprovalMaster::with('departments')
                                 ->whereIn('budget_type',['ub', 'uc','ue']);
-                                
-        // dd($approval_ub);
-        // die;                        
+                                                      
 		if(\Entrust::hasRole('user')) {
 			$approval_ub->where('created_by',$user->id);
 		}
@@ -342,8 +336,6 @@ class ApprovalUnbudgetController extends Controller
                 $user = \Auth::user();
                 $budget_type = Cart::instance('unbudget')->content()->first()->options->budget_type;
 
-                // dd( $user->department->department_code);
-                // die;
                 $approval_no = ApprovalMaster::getNewApprovalNumber(strtoupper($budget_type), $user->department->department_code); 
                 
                     $capex                         = new ApprovalMaster;

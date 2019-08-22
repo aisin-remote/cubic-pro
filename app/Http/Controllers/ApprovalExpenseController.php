@@ -62,8 +62,7 @@ class ApprovalExpenseController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
-        // die;
+      
         $expenses           = Expense::find($request->budget_no);
         $sap_gl_account     = SapGlAccount::where('gl_gname', $request->sap_gl_account_id)->where('gl_aname', $request->gl_fname)->first();
         $sap_assets         = SapAsset::find($request->sap_asset_id);
@@ -79,8 +78,6 @@ class ApprovalExpenseController extends Controller
         $item->supplier_id = '0';
         $item->save();
 
-        // dd($sap_gl_account);
-        // die;
         Cart::instance('expense')->add([
 
                     'id'        => $request->budget_no,
@@ -124,7 +121,6 @@ class ApprovalExpenseController extends Controller
 
     function show($id)
     {
-        dd(Cart::count());
 
     }
 

@@ -209,7 +209,7 @@ class PartController extends Controller
         $group_material = System::config('group_material');
 
         return view('pages.part.create', compact(['uom','plant','category_part', 'product_code', 'category_fg', 'assy_part', 'group_material']));
-        // dd($dir_keys);
+        
     }
 
     public function edit($id)

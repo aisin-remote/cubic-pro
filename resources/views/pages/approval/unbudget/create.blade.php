@@ -65,7 +65,7 @@
 									<div class="row">
 										<div class="col-md-6">
 											<div class="radio">
-												<input type="radio" name="asset_category" id="asset_category-1" value="Non Chemical" checked="">
+												<input type="radio" name="asset_category" id="asset_category-1" value="Non Chemical" checked>
 												<label for="asset_category-1">
 													Non Chemical
 												</label>
@@ -73,7 +73,7 @@
 										</div>
 										<div class="col-md-6">
 											<div class="radio">
-												<input type="radio" name="asset_category" id="asset_category-0" value="Chemical" checked="">
+												<input type="radio" name="asset_category" id="asset_category-0" value="Chemical">
 												<label for="asset_category-0">
 													Chemical
 												</label>

@@ -27,7 +27,7 @@ class CatalogController extends Controller
             if ($request->has('keyword')) {
                 $where->where('item_description', 'like', '%'.$request->keyword.'%')
                     ->orWhere('item_code', 'like', '%'.$request->keyword.'%')
-                    ->orWhere('item_spesification', 'like', '%'.$request->keyword.'%')
+                    ->orWhere('item_specification', 'like', '%'.$request->keyword.'%')
                     ->orWhereHas('tags', function($where)use($request){
                         $where->where('name', 'like', '%'.$request->keyword.'%');
                     });

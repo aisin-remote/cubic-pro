@@ -155,8 +155,7 @@ class MasterPriceCatalogController extends Controller
     public function getData(Request $request)
     {
         $catalog = MasterPriceCatalog::with(['parts', 'suppliers'])->get();
-        // dd($catalog);
-
+        
         return DataTables::of($catalog)
 
         ->rawColumns(['options'])

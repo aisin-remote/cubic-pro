@@ -300,8 +300,7 @@ class ApprovalController extends Controller
     public function getCIPAdminList() {
 		$budget_nos 	= $this->getCIPAdminListConvert();
 		$budget_nos_cip = $this->getCIPAdminListConvert('cip'); 
-		// dd($budget_nos);
-		// dd($budget_nos_cip);
+		
         return view("pages.capex.cip-admin",compact('budget_nos','budget_nos_cip'));
     }
 	public function getCIPAdminListConvert($mode='one-time',$control="data") {
@@ -839,14 +838,12 @@ class ApprovalController extends Controller
 				 $user = auth()->user();
                  $can_approve   = $this->can_approve($request->approval_number);	
                  
-                //  dd($request->all());
 				 if($can_approve > 0){
                      $dept          = ApprovalMaster::where('approval_number', $request->approval_number)->first();
                      $approvals 	= Approval::where('department',$dept->department)->first();
 					 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
                      $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
                      
-                    //  dd($approvals);
 					 if(!empty($approverLevel)){
                          
                          
@@ -1171,7 +1168,7 @@ class ApprovalController extends Controller
 				$overbudget_info
 			);
 		}
-		$excel = \PHPExcel_IOFactory::load(storage_path('template\pr_output.xlsm'));
+		$excel = \PHPExcel_IOFactory::load(storage_path('template/pr_output.xlsm'));
         $excel->setActiveSheetIndex(2);
         $objWorksheet2 	= $excel->getActiveSheet();
         $objWorksheet2->fromArray($data,null,'A1',false,false);

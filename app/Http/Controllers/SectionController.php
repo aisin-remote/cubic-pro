@@ -193,7 +193,7 @@ class SectionController extends Controller
         $dir_keys = System::config('dir_key');
 
         return view('pages.section.create', compact(['department','division', 'dir_keys']));
-        // dd($dir_keys);
+        
     }
 
     public function edit($id)

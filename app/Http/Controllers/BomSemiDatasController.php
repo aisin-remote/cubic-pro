@@ -80,7 +80,7 @@ class BomSemiDatasController extends Controller
 
     function show($id)
     {
-        dd(Cart::count());
+        
 
     }
 

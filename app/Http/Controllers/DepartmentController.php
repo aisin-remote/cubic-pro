@@ -192,7 +192,6 @@ class DepartmentController extends Controller
         $dir_keys = System::config('dir_key');
 
         return view('pages.department.create', compact(['division', 'dir_keys']));
-        // dd($dir_keys);
     }
 
     public function edit($id)

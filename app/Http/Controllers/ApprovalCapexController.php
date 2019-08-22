@@ -28,8 +28,7 @@ class ApprovalCapexController extends Controller
     public function getData()
     {
        $capexs = Cart::instance('capex')->content();
-    //    dd($capexs);
-    //    die;
+   
         if (Cart::count() > 0) {
 
             $result = [];
@@ -162,8 +161,6 @@ class ApprovalCapexController extends Controller
     {
         $sap_asset = SapAsset::select('asset_code as id', 'asset_code as text')->where('asset_type', $id)->get();
 
-        // dd($sap_asset);
-        // die;
         $result = [];
         foreach ($sap_asset as $asset) {
             $result[] = ['id' => $asset->text, 'text' => $asset->text];
@@ -441,9 +438,8 @@ class ApprovalCapexController extends Controller
 		$approver   = $this->can_approve($approval_number);
         $master 	= ApprovalMaster::getSelf($approval_number);
         $user_app   = ApproverUser::where('approval_master_id',$master->id)->where('user_id',auth()->user()->id)->first();
-        $status     = $user_app->is_approve;
-        // dd($user_app->is_approve);
-        // die;
+        $status     = !empty($user_app) ? $user_app->is_approve : 0;
+      
 		return view('pages.approval.capex.view',compact('master','approver','status'));
 	}
     

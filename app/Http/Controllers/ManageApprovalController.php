@@ -42,9 +42,7 @@ class ManageApprovalController extends Controller
     }
 
     public function store(Request $request)
-    {
-		// dd($request->all());
-		 
+    {		 
     	$ret = DB::transaction(function() use ($request){
 			
 			$res = [
@@ -81,7 +79,7 @@ class ManageApprovalController extends Controller
 
 					}
 				}else{
-					// dd($level);
+					
 					throw new \Exception("There is empty data ---", 1);
 				}
 			

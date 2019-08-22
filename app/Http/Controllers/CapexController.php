@@ -181,7 +181,7 @@ class CapexController extends Controller
 		$capex = Capex::where('budget_no',$budget_no)->first();
 		$approval_details = ApprovalDetail::join('approval_masters','approval_details.approval_master_id','=','approval_masters.id')
 											->where('approval_details.budget_no',$budget_no)->get();
-		// dd($approval_details);exit;
+		
 		return view('pages.capex.view',compact('capex','approval_details'));
 	}
     public function destroy($id)
@@ -219,13 +219,12 @@ class CapexController extends Controller
 
         $is_revision = !is_null($request->revision);
 
-        // dd($is_revision);
+        /
 
         $data = [];
         if ($request->hasFile('file')) {
             $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
-            // dd($datas);
-            // $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader) use ($data){
+            
                 if ($datas->first()->has('budget_no')) {
                     foreach ($datas as $data) {
 

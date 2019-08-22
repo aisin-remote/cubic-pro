@@ -225,7 +225,6 @@ class ItemController extends Controller
         $supplier = Supplier::get();
         $tags=Tag::get();
         
-        // dd($item_category);
         return view('pages.item.create', compact(['item_category','uom','supplier', 'tags']));
         
     }
@@ -274,8 +273,7 @@ class ItemController extends Controller
                     }  
 
                     if (count($data->tags) > 0 || !empty($data->tags)){
-                        // dd($data->tags);
-
+                        
                         foreach (explode(';', $data->tags) as $tag) {
             
                             $tag = Tag::firstOrCreate(['name' => $tag]);

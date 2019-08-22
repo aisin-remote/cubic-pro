@@ -40,9 +40,7 @@ class GrConfirmController extends Controller
     public function getData(Request $request)
     {
         $gr_confirms = GrConfirm::with(['approval_master', 'user.department'])->get();
-        return response()->json($gr_confirms);
-        die;
-		
+        		
         return DataTables::of($gr_confirms)
 
         ->rawColumns(['options'])
@@ -81,8 +79,6 @@ class GrConfirmController extends Controller
 
         $result->user_name = $result->user->name;
         $result->department_name = $result->user->department->department_name;
-
-        // dd($approval_number);
 
         return response()->json($result);
 

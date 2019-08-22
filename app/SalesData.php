@@ -346,7 +346,7 @@ class SalesData extends Model
         $sales_data = DB::table('v_presentage_sum_material_to_sales')
                         ->where('fiscal_year', $year)
                         ->first();
-                        // dd($result);
+                        
         if ($month == 'apr') {
 
             return !empty($sales_data->perc_apr) ? $sales_data->perc_apr : 0;

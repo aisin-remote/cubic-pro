@@ -107,7 +107,6 @@ class MasterPriceController extends Controller
         $masterprice                            = MasterPrice::find($id);
 
         return view('pages.masterprice.edit', compact(['suppliers', 'parts', 'masterprice']));
-    // dd($masterprice);
     }
 
     /**

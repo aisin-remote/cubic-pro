@@ -112,7 +112,6 @@ class UserController extends Controller
             $user->division_id = $request->division_id;
             $user->department_id = $request->department_id;
             $user->direction = $request->direction;
-            // dd($request->dir_key);
 
             if (!empty($request->password)) {
                 $user->password = Hash::make($request->password);
@@ -296,12 +295,4 @@ class UserController extends Controller
 
         
     }
-
-    public function tes()
-    {
-        $file = public_path('storage/uploads/plat.jpg');
-        dd(\Ocr::recognize($file));
-    
-    }
-
 }

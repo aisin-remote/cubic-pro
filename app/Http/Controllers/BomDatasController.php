@@ -109,7 +109,7 @@ class BomDatasController extends Controller
     }
     function show($id)
     {
-        dd(Cart::count());
+        
 
     }
 
