@@ -113,7 +113,7 @@ class ItemController extends Controller
         if (empty($item)) {
             return response()->json('Item not found', 500);
         }
-
+        $item->item_category_id = $request->item_category_id;
         $item->item_code = $request->item_code;
         $item->item_description = $request->item_description;
         $item->item_specification = $request->item_specification;

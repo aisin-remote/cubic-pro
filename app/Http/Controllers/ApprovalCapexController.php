@@ -439,8 +439,12 @@ class ApprovalCapexController extends Controller
     public function DetailApproval($approval_number)
 	{
 		$approver   = $this->can_approve($approval_number);
-		$master 	= ApprovalMaster::getSelf($approval_number);
-		return view('pages.approval.capex.view',compact('master','approver'));
+        $master 	= ApprovalMaster::getSelf($approval_number);
+        $user_app   = ApproverUser::where('approval_master_id',$master->id)->where('user_id',auth()->user()->id)->first();
+        $status     = $user_app->is_approve;
+        // dd($user_app->is_approve);
+        // die;
+		return view('pages.approval.capex.view',compact('master','approver','status'));
 	}
     
     public function AjaxDetailApproval($approval_number)

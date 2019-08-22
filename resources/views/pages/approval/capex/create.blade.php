@@ -55,7 +55,7 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="radio">
-                                                    <input type="radio" name="asset_kind" id="asset_o" value="Immediate Use" checked="" onclick="setReadOnlyInput();">
+                                                    <input type="radio" name="asset_kind" id="asset_o" value="Immediate Use" checked onclick="setReadOnlyInput();">
                                                     <label for="asset_kind-1">
                                                         Immediate Use
                                                     </label>
@@ -63,7 +63,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="radio">
-                                                    <input type="radio" name="asset_kind" id="asset_c" value="CIP" checked="" onclick="setReadOnlyInput();">
+                                                    <input type="radio" name="asset_kind" id="asset_c" value="CIP" onclick="setReadOnlyInput();">
                                                     <label for="asset_kind-0">
                                                         CIP (Construction In Process)
                                                     </label>
@@ -79,7 +79,7 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="radio">
-                                                    <input type="radio" name="asset_category" id="asset_category-1" value="Non Chemical" checked="">
+                                                    <input type="radio" name="asset_category" id="asset_category-1" value="Non Chemical" checked>
                                                     <label for="asset_category-1">
                                                         Non Chemical
                                                     </label>
@@ -87,7 +87,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="radio">
-                                                    <input type="radio" name="asset_category" id="asset_category-0" value="Chemical" checked="">
+                                                    <input type="radio" name="asset_category" id="asset_category-0" value="Chemical" >
                                                     <label for="asset_category-0">
                                                         Chemical
                                                     </label>
@@ -126,7 +126,7 @@
                            </div>                   
                            <div class="form-group">
                                 <label class="control-label">Settlement Date (for CIP) <span class="text-danger">*</span></label>
-                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" date="true" required="required" value="{{ date('d-M-Y') }}" rows="5">
+                                <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" date="true" required="required" value="{{ date('d-M-Y') }}" rows="5" readonly="readonly">
                                 <span class="help-block"></span><!-- Carbon\Carbon::now()->format('M-D-Y') -->
                            </div>
 
@@ -201,7 +201,7 @@
                         
                             <div class="form-group">
                                 <label class="control-label">Last Budget Remains <span class="text-danger">*</span></label>
-                                <input type="text" name="budget_remaining_log" placeholder="0.00" class="form-control autonumeric text-right" required="required" rows="5">
+                                <input type="text" name="budget_remaining_log" placeholder="0.00" class="form-control autonumeric text-right" required="required" rows="5" readonly="readonly">
                                 <span class="help-block"></span>
                            </div>
                            <div class="form-group">
