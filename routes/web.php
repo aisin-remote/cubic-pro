@@ -559,10 +559,9 @@ Route::middleware('auth')->group(function(){
 				Route::get('expense/closing','ExpenseController@listClosing');
 				Route::get('expense/get_closing/{page_name}','ExpenseController@getListClosing');
 				Route::get('expense/closingUpdate','ExpenseController@closingUpdate');	
-				Route::post('approvalex/getDelete/', 'ApprovalExpenseController@getDelete');
 			});
 			
-			
+			Route::post('approvalex/getDelete/', 'ApprovalExpenseController@getDelete');
 			Route::get('approval/ex/{id}','ApprovalExpenseController@DetailApproval');
 			Route::get('approval-expense/get_data', 'ApprovalExpenseController@getData');
 			Route::get('approval-expense/approval_expense/{status}', 'ApprovalExpenseController@getApprovalExpense');
@@ -575,6 +574,7 @@ Route::middleware('auth')->group(function(){
 			//DELETE APPROVAL EXPENSE
 			Route::delete('approval-expense/{id}', 'ApprovalExpenseController@destroy')->name('approval_expense.destroy');
 			Route::delete('approval-expense/delete/{id}','ApprovalExpenseController@delete')->name('approval_expense.delete');
+			
 			
 			//ARCHIVE EXPENSE
 			Route::group(['middleware' => ['permission:archive-expense','auth']], function() {

@@ -82,7 +82,7 @@ function save()
 {
   var formdata = $('#form-details').serializeArray();
   $.ajax({
-    url: SITE_URL + '/bom_datas/store',
+    url: SITE_URL + '/gr_confirm/store',
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },
@@ -113,8 +113,8 @@ function on_details()
     $('#modal-details').modal('show');
 }
 $('#btn-confirm').click(function(){
-    var bom_id= $(this).data('value');
-    $('#form-delete-' + bom_id).submit();
+    var gr_confirm_id= $(this).data('value');
+    $('#form-delete-' + gr_confirm_id).submit();
 });
 $('#btn-details').click(function(){
     $('#form-details').submit();
@@ -124,7 +124,7 @@ $('#btn-details').click(function(){
 function onDelete(rowid)
 {
   $.ajax({
-    url: SITE_URL + '/bom_datas/'+rowid,
+    url: SITE_URL + '/gr_confirm/'+rowid,
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },

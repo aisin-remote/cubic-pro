@@ -20,7 +20,12 @@ $(document).ready(function(){
             { data: 'supplier_name', name: 'supplier_name'},
             { data: 'po_date', name: 'po_date'},
             { data: 'po_number', name: 'po_number'},
-            
+            { data: 'name', name: 'name'},
+            { data: 'gr_no', name: 'gr_no'},
+            { data: 'created_at', name: 'created_at'},
+            { data: 'qty_receive', name: 'qty_receive'},
+            { data: 'qty_outstanding', name: 'qty_outstanding'},
+            { data: 'notes', name: 'notes'},
         ],
         drawCallback: function(){
         	$('[data-toggle="tooltip"]').tooltip();

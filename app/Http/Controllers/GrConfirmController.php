@@ -9,6 +9,7 @@ use App\ApprovalMaster;
 use App\ApprovalDetail;
 use App\UploadPurchaseOrder;
 use App\User;
+use App\Department;
 
 
 use DataTables;
@@ -33,7 +34,6 @@ class GrConfirmController extends Controller
     public function create()
     {
         $po         = UploadPurchaseOrder::get();
-        // return view('pages.bom.create', compact(['parts','suppliers']));
         return view('pages.gr_confirm.create', compact(['po', 'user', 'detail']));
     }
 
@@ -82,6 +82,68 @@ class GrConfirmController extends Controller
 
         return response()->json($result);
 
+    }
+
+    public function store(Request $request)
+    {
+        // $request->validate([
+        //     'po_number' => 'required',
+        //     'approval_id' => 'required'
+        // ]);
+
+        // $gr = new GrConfirm;
+        // $gr->po_number = $request->po_number;
+        // $gr->approval_id = $request->approval_master_id;
+        // $gr->save();
+
+        // if ($request->wantsJson()) {
+        //     return response()->json($gr);
+        // }
+
+        $res = [
+                    'title' => 'Succses',
+                    'type' => 'success',
+                    'message' => 'Data Saved Success!'
+                ];
+
+        return redirect()
+                ->route('gr_confirm.index')
+                ->with($res);
+
+    }
+
+    public function edit($id)
+    {
+        $gr = GrConfirm::find($id);
+        $approval_no = ApprovalMaster::find($gr->approval_id);
+        $user = User::find($gr->user_id);
+        $department = Department::find($user->department_id);
+        return view('pages.gr_confirm.edit', compact(['gr', 'approval_no', 'user', 'department', 'detail']));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\GrConfirm  $bom
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        DB::transaction(function() use ($id){
+            $gr = GrConfirm::find($id);
+            $gr->details()->delete();
+            $gr->delete();
+
+        });
+        $res = [
+                    'title' => 'Sukses',
+                    'type' => 'success',
+                    'message' => 'Data berhasil dihapus!'
+                ];
+
+        return redirect()
+                    ->route('gr_confirm.index')
+                    ->with($res);
     }
    
 }

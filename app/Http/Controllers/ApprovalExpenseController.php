@@ -246,7 +246,7 @@ class ApprovalExpenseController extends Controller
                             ->route('approval-expense.ListApproval')
                             ->with($res);
     }
-	public function ListApprovalUnvalidated()
+	public function ListApprovalUnvalidated() 
 	{
 		return view('pages.approval.expense.list-approval');
 	}

@@ -40,6 +40,12 @@
                             <th rowspan="2" style="vertical-align:middle">Supplier Name</th>
                             <th rowspan="2" style="vertical-align:middle">PO Date</th>
                             <th rowspan="2" style="vertical-align:middle">PO Number</th>
+                            <th rowspan="2" style="vertical-align:middle">User Request</th>
+                            <th rowspan="2" style="vertical-align:middle">GR No</th>
+                            <th rowspan="2" style="vertical-align:middle">GR Date</th>
+                            <th rowspan="2" style="vertical-align:middle">Qty Receive</th>
+                            <th rowspan="2" style="vertical-align:middle">Qty Outstanding</th>
+                            <th rowspan="2" style="vertical-align:middle">Notes</th>
                         </tr>
                         <tr>
                             <th>User Create PR Date</th>

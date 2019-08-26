@@ -219,8 +219,6 @@ class CapexController extends Controller
 
         $is_revision = !is_null($request->revision);
 
-        /
-
         $data = [];
         if ($request->hasFile('file')) {
             $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
