@@ -149,7 +149,7 @@
 										@else
 
 											@foreach ($carts as $cart)
-											<option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_specification}}" total="{{$cart->total}}">{{ $cart->item->item_description }}</option>
+											<option value="{{ $cart->item_description }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_specification}}" total="{{$cart->total}}">{{ $cart->item->item_description }}</option>
 											@endforeach
 
 										@endif

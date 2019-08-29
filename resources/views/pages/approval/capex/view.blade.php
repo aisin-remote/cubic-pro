@@ -14,24 +14,11 @@
             <div class="page-title-box">
                 <h4 class="page-title"> Detail Information of Capex Approval Sheet</h4>
                 <ol class="breadcrumb p-0 m-0">
-                    @if ($approver)
-                        @if ($status == 1)
-                            <li class="active">
-                                <a href="{{ url('approval/cx')}}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" id="back">Back</a>
-                            </li>
-                        @else
-                            <li class="active">
-                                <a href="{{ url('approval/cx/unvalidated')}}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" id="back">Back</a>
-                            </li>
-                            <li>
-                                <a href="#" class="btn btn-success btn-bordered waves-effect waves-light m-b-20" id="validate" onclick="validateApproval(&#39;{{ $master->approval_number }}&#39;)">Approve {{ $master->approval_number }}</a>
-                            </li>
-                        @endif
-					@else
-						<li>
-							<a href="{{ url('approval/cx') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" id="back">Back</a>
-						</li>
-					@endif
+                   
+                    <li class="active">
+                        <a href="{{ url('approval/cx')}}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" id="back">Back</a>
+                    </li>
+                        
                 </ol>
             </div>
         </div>
@@ -110,7 +97,7 @@
 			budgetView();  
 					
 			budgetStatusStyler();
-			@if (\Entrust::can('update_actual_price'))
+			@if (\Entrust::can('update-actual-price'))
 				xeditClasser();
 				initEditable();
 				initSapVendorEditable();
@@ -121,7 +108,7 @@
 				xeditClasser();
 				initGLAccountEditable();
 				initSapCostCenterEditable();
-			@elseif(\Entrust::can('asset_register'))  
+			@elseif(\Entrust::can('asset-register'))  
 			
 				xeditSapAssetNumberClasser();
 				initEditable();

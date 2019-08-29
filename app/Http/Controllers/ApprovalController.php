@@ -907,13 +907,15 @@ class ApprovalController extends Controller
 			
 			$ret =  DB::transaction(function() use ($request){
 				 $user = auth()->user();
-				 $can_approve   = $this->can_approve($request->approval_number);	
-				 
+                 $can_approve   = $this->can_approve($request->approval_number);	
+                 
 				 if($can_approve > 0){
-					 
-					 $approvals 	= Approval::where('department',$user->department->department_code)->first();
-					 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
-					 $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
+                     
+                    $dept           = ApprovalMaster::where('approval_number', $request->approval_number)->first();
+                    $approvals 	    = Approval::where('department',$dept->department)->first();
+                    $highestLevel   = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
+                    $approverLevel  = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
+                     
 					 if(!empty($approverLevel)){
 						 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
 						
@@ -946,7 +948,7 @@ class ApprovalController extends Controller
 							
 						 }
 						
-						 $approval_master->status = '-'.$approverLevel->level;
+                         $approval_master->status = '-'.$approverLevel->level;
 						 $approval_master->save();
 						 $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)->where('user_id',$user->id)->update(array('is_approve'=>'-1','created_at'=>date('Y-m-d H:i:s')));
 					 }else{
@@ -963,8 +965,9 @@ class ApprovalController extends Controller
 			 DB::rollback();
 			 $data['error']	= $e->getMessage();
 		}
-		 
-		return $data;
+        
+        return $data;
+        
 	}
 	
 	public function printApproval($approval_number)

@@ -346,7 +346,10 @@ class ApprovalCapexController extends Controller
         $type = 'cx';
         $user = auth()->user();
         $approval_capex = ApprovalMaster::with('departments')
-                                ->where('budget_type', 'like', 'cx%');
+                                ->where('budget_type', 'like', 'cx%')
+                                ->whereHas('approver_user',function($query) use($user) {
+                                    $query->where('user_id', $user->id );
+                                });
 
         $level = ApprovalDtl::where('user_id', $user->id)->first();
 
@@ -365,6 +368,10 @@ class ApprovalCapexController extends Controller
                     $approval_capex->where('status','1');
                 }
             }elseif($level->level>=3){
+                if($status == 'need_approval'){
+                    $approval_capex->where('status','2')->orWhere('status','3');
+                }
+            }elseif($level->level>=4){
                 if($status == 'need_approval'){
                     $approval_capex->where('status','2')->orWhere('status','3');
                 }
@@ -395,7 +402,7 @@ class ApprovalCapexController extends Controller
                 }
             }else{
                 // return "else"; <a  href='#' onclick='javascript:validateApproval(&#39;$approval_capex->approval_number&#39;);return false;'class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a>
-                return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/unvalidate/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
             }
         })
 
@@ -429,7 +436,6 @@ class ApprovalCapexController extends Controller
         ->addColumn('details_url', function($approval_capex) {
             return url('approval-capex/details-data/' . $approval_capex->id);
         })
-
         ->toJson();
     }
     
@@ -441,7 +447,17 @@ class ApprovalCapexController extends Controller
         $status     = !empty($user_app) ? $user_app->is_approve : 0;
       
 		return view('pages.approval.capex.view',compact('master','approver','status'));
-	}
+    }
+    
+    public function DetailUnvalidateApproval($approval_number)
+    {
+        $approver   = $this->can_approve($approval_number);
+        $master 	= ApprovalMaster::getSelf($approval_number);
+        $user_app   = ApproverUser::where('approval_master_id',$master->id)->where('user_id',auth()->user()->id)->first();
+        $status     = !empty($user_app) ? $user_app->is_approve : 0;
+      
+		return view('pages.approval.capex.unvalidate-view',compact('master','approver','status'));
+    }
     
     public function AjaxDetailApproval($approval_number)
 	{

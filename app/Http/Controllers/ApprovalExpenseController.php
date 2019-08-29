@@ -68,15 +68,15 @@ class ApprovalExpenseController extends Controller
         $sap_assets         = SapAsset::find($request->sap_asset_id);
         $sap_costs          = SapCostCenter::find($request->sap_cos_center_id); 
         $sap_uoms           = SapUom::find($request->sap_uom_id);
-        // $item 				= Item::find($request->remarks);
+        
         $item 				= Item::firstOrNew(['item_description' => $request->remarks]);
-        $item->item_description = $request->remarks;
-        $item->item_category_id = '0';
-        $item->item_code = 'XXX';
-        $item->item_price = str_replace(',','',$request->price_remaining);
-        $item->uom_id = $sap_uoms->id;
-        $item->supplier_id = '0';
-        $item->save();
+        // $item->item_description = $request->remarks;
+        // $item->item_category_id = '0';
+        // $item->item_code = 'XXX';
+        // $item->item_price = str_replace(',','',$request->price_remaining);
+        // $item->uom_id = $sap_uoms->id;
+        // $item->supplier_id = '0';
+        // $item->save();
 
         Cart::instance('expense')->add([
 
@@ -107,7 +107,7 @@ class ApprovalExpenseController extends Controller
                     ]
                 ]);
 		Carts::where('item_id',$item->id)->where('user_id',auth()->user()->id)->delete();
-
+        
         $res = [
 					'title' => 'Success',
                     'type' => 'success',
@@ -266,25 +266,37 @@ class ApprovalExpenseController extends Controller
 
         $user = \Auth::user();
 		$approval_expense = ApprovalMaster::with('departments')
-                                ->where('budget_type', 'like', 'ex%');
-		if(\Entrust::hasRole('user')) {
-			$approval_expense->where('created_by',$user->id);
-		}
+                                ->where('budget_type', 'like', 'ex%')
+                                ->whereHas('approver_user',function($query) use($user) {
+                                    $query->where('user_id', $user->id );
+                                });
+        
+        $level = ApprovalDtl::where('user_id', $user->id)->first();
 
-        if (\Entrust::hasRole('department_head')) {
-            $approval_expense->whereIn('department', [$user->department->department_code]);
+        if(\Entrust::hasRole('user')) {
+            $approval_expense->where('created_by',$user->id);
         }
 
-        if (\Entrust::hasRole('gm')) {
-            $approval_expense->where('division', $user->division->division_code);
-        }
+        if (!empty($level)) {
 
-        if (\Entrust::hasRole('director')) {
-            $approval_expense->where('dir', $user->dir);
+            if($level->level==1){
+                if($status == 'need_approval'){
+                    $approval_expense->where('status','0');
+                }
+            }elseif($level->level==2){
+                if($status == 'need_approval'){
+                    $approval_expense->where('status','1');
+                }
+            }elseif($level->level>=3){
+                if($status == 'need_approval'){
+                    $approval_expense->where('status','2')->orWhere('status','3');
+                }
+            }elseif($level->level>=4){
+                if($status == 'need_approval'){
+                    $approval_expense->where('status','2')->orWhere('status','3');
+                }
+            }
         }
-		if($status == 'need_approval'){
-			$approval_expense->where('status','0');
-		}
 		
         $approval_expense = $approval_expense->get();
         return DataTables::of($approval_expense)
@@ -311,7 +323,7 @@ class ApprovalExpenseController extends Controller
             }else{
                 // return "else";
 				//<a  href='#' onclick='javascript:validateApproval(&#39;$approval_expense->approval_number&#39;);return false;' class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a>
-                return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/unvalidate/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
             }
         })
 
@@ -348,9 +360,21 @@ class ApprovalExpenseController extends Controller
     public function DetailApproval($approval_number)
 	{
 		$approver   = $this->can_approve($approval_number);
-		$master 	= ApprovalMaster::getSelf($approval_number);
-		return view('pages.approval.expense.view',compact('master','approver'));
-	}
+        $master 	= ApprovalMaster::getSelf($approval_number);
+        $user_app   = ApproverUser::where('approval_master_id',$master->id)->where('user_id',auth()->user()->id)->first();
+        $status     = !empty($user_app) ? $user_app->is_approve : 0;
+		return view('pages.approval.expense.view',compact('master','approver','status'));
+    }
+    
+    public function DetailUnvalidateApproval($approval_number)
+    {
+        $approver   = $this->can_approve($approval_number);
+        $master 	= ApprovalMaster::getSelf($approval_number);
+        $user_app   = ApproverUser::where('approval_master_id',$master->id)->where('user_id',auth()->user()->id)->first();
+        $status     = !empty($user_app) ? $user_app->is_approve : 0;
+		return view('pages.approval.expense.unvalidate-view',compact('master','approver','status'));
+    }
+
 	public function AjaxDetailApproval($approval_number)
 	{
 		 $approval_master = ApprovalMaster::select('*','approval_masters.status as am_status','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code')->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')

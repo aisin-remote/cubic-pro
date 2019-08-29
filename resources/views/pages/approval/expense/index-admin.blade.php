@@ -19,7 +19,7 @@
                     </li>
                     <li>
                         <!-- Added by Ferry, July 6th 2015 for special input budget officer to catch up -->
-                        @if (\Entrust::can('approval_create'))
+                        @if (\Entrust::can('approval-create'))
                             <a href="{{ url('approval/create/cx') }}" class="btn btn-primary" id="create">Create Capex Approval</a>
                         @endif
                     </li>

@@ -189,26 +189,38 @@ class ApprovalUnbudgetController extends Controller
         $type = 'ub';
         $user = auth()->user();
         $approval_ub = ApprovalMaster::with('departments')
-                                ->whereIn('budget_type',['ub', 'uc','ue']);
-                                                      
-		if(\Entrust::hasRole('user')) {
-			$approval_ub->where('created_by',$user->id);
-		}
+                                ->whereIn('budget_type',['ub', 'uc','ue'])
+                                ->whereHas('approver_user',function($query) use($user) {
+                                    $query->where('user_id', $user->id );
+                                });
+        
+        $level = ApprovalDtl::where('user_id', $user->id)->first();
 
-        if (\Entrust::hasRole('department_head')) {
-            $approval_ub->whereIn('department', [$user->department->department_code]);
+        if(\Entrust::hasRole('user')) {
+            $approval_ub->where('created_by',$user->id);
         }
 
-        if (\Entrust::hasRole('gm')) {
-            $approval_ub->where('division', $user->division->division_code);
-        }
+        if (!empty($level)) {
 
-        if (\Entrust::hasRole('director')) {
-            $approval_ub->where('dir', $user->dir);
-        }
-		if($status == 'need_approval'){
-			$approval_ub->where('status','0');
-		}
+            if($level->level==1){
+                if($status == 'need_approval'){
+                    $approval_ub->where('status','0');
+                }
+            }elseif($level->level==2){
+                if($status == 'need_approval'){
+                    $approval_ub->where('status','1');
+                }
+            }elseif($level->level>=3){
+                if($status == 'need_approval'){
+                    $approval_ub->where('status','2')->orWhere('status','3');
+                }
+            }elseif($level->level>=4){
+                if($status == 'need_approval'){
+                    $approval_ub->where('status','2')->orWhere('status','3');
+                }
+            }
+        }                      
+		
 		
         $approval_ub = $approval_ub->get();
 		
@@ -237,7 +249,7 @@ class ApprovalUnbudgetController extends Controller
             }else{
                 // return "else";
                 // return "<div id='$approvalub->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ub/'.$approvalub->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a  href='#' onclick='javascript:validateApproval(&#39;$approvalub->approval_number&#39;);return false;'class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approvalub->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
-				return "<div id='$approvalub->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ub/'.$approvalub->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approvalub->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+				return "<div id='$approvalub->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ub/unvalidate/'.$approvalub->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approvalub->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
             }
         })
 
@@ -278,8 +290,19 @@ class ApprovalUnbudgetController extends Controller
 	public function DetailApproval($approval_number)
 	{
 		$approver   = $this->can_approve($approval_number);
-		$master 	= ApprovalMaster::getSelf($approval_number);
-		return view('pages.approval.unbudget.view',compact('master','approver'));
+        $master 	= ApprovalMaster::getSelf($approval_number);
+        $user_app   = ApproverUser::where('approval_master_id',$master->id)->where('user_id',auth()->user()->id)->first();
+        $status     = !empty($user_app) ? $user_app->is_approve : 0;
+		return view('pages.approval.unbudget.view',compact('master','approver','status'));
+    }
+
+    public function DetailUnvalidateApproval($approval_number)
+	{
+		$approver   = $this->can_approve($approval_number);
+        $master 	= ApprovalMaster::getSelf($approval_number);
+        $user_app   = ApproverUser::where('approval_master_id',$master->id)->where('user_id',auth()->user()->id)->first();
+        $status     = !empty($user_app) ? $user_app->is_approve : 0;
+		return view('pages.approval.unbudget.unvalidate-view',compact('master','approver','status'));
     }
     
 	public function AjaxDetailApproval($approval_number)

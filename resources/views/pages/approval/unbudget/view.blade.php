@@ -14,18 +14,11 @@
             <div class="page-title-box">
                 <h4 class="page-title"> Detail Information of Unbudget Approval Sheet</h4>
                 <ol class="breadcrumb p-0 m-0">
-                    @if ($approver)
-						<li class="active">
-							<a href="{{ url('approval/ub/unvalidated')}}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" id="back">Back</a>
-						</li>
-						<li>
-							<a href="#" class="btn btn-success btn-bordered waves-effect waves-light m-b-20" id="validate" onclick="validateApproval(&#39;{{ $master->approval_number }}&#39;)">Approve {{ $master->approval_number }}</a>
-						</li>
-					@else
-						<li>
-							<a href="{{ url('approval/ub') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" id="back">Back</a>
-						</li>
-					@endif
+                    
+                    <li>
+                        <a href="{{ url('approval/ub') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" id="back">Back</a>
+                    </li>
+					
                 </ol>
             </div>
         </div>
@@ -101,7 +94,7 @@
 			budgetView();  
 					
 			budgetStatusStyler();
-			@if (\Entrust::can('update_actual_price'))
+			@if (\Entrust::can('update-actual-price'))
 				xeditClasser();
 				initEditable();
 				initSapVendorEditable();
@@ -113,7 +106,7 @@
 				initGLAccountEditable();
 				initSapCostCenterEditable();
 
-			@elseif(\Entrust::can('asset_register'))  
+			@elseif(\Entrust::can('asset-register'))  
 				xeditSapAssetNumberClasser();
 				initEditable();
 			@endif

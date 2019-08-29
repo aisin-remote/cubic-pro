@@ -282,7 +282,12 @@ class ApprovalMaster extends Model
     {
         return $this->belongsTo('App\User', 'created_by');
     }
-	
+    
+    public function approver_user()
+    {
+        return $this->hasMany('App\ApproverUser', 'approval_master_id');
+    }
+    
 	public static function get_pending_sum ($budget_type, $group_type, $group_name, $thousands = 1000000, $rounded = 2)
 	{
 		$user = auth()->user();
