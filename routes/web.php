@@ -439,6 +439,7 @@ Route::middleware('auth')->group(function(){
 			
 			//DETAIL APPROVAL CAPEX
 			Route::get('approval/cx/{id}','ApprovalCapexController@DetailApproval');
+			Route::get('approval/cx/unvalidate/{id}','ApprovalCapexController@DetailUnvalidateApproval');
 			Route::get('approval/detail/{id}','ApprovalCapexController@AjaxDetailApproval');
 			
 			Route::post('approval-capex/store', 'ApprovalCapexController@store')->name('approval_capex.store');
@@ -563,6 +564,7 @@ Route::middleware('auth')->group(function(){
 			
 			Route::post('approvalex/getDelete/', 'ApprovalExpenseController@getDelete');
 			Route::get('approval/ex/{id}','ApprovalExpenseController@DetailApproval');
+			Route::get('approval/ex/unvalidate/{id}','ApprovalExpenseController@DetailUnvalidateApproval');
 			Route::get('approval-expense/get_data', 'ApprovalExpenseController@getData');
 			Route::get('approval-expense/approval_expense/{status}', 'ApprovalExpenseController@getApprovalExpense');
 			
@@ -633,7 +635,7 @@ Route::middleware('auth')->group(function(){
 			
 			//DETAIL APPROVAL UNBUDGET
 			Route::get('approval/ub/{id}','ApprovalUnbudgetController@DetailApproval');
-			
+			Route::get('approval/ub/unvalidate/{id}','ApprovalUnbudgetController@DetailUnvalidateApproval');
 			Route::get('approval-unbudget/get_data', 'ApprovalUnbudgetController@getData');			
 			Route::get('approval-unbudget/approval_unbudget/{status}', 'ApprovalUnbudgetController@getApprovalUnbudget');	
 			Route::get('approval-unbudget/{id}', 'ApprovalUnbudgetController@show')->name('approval_unbudget.show');
