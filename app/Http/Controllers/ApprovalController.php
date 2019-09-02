@@ -833,33 +833,41 @@ class ApprovalController extends Controller
 	public function approveAjax(Request $request)
 	{
 		try{
-			
+            
 			 DB::transaction(function() use ($request){
 				 $user = auth()->user();
                  $can_approve   = $this->can_approve($request->approval_number);	
                  
 				 if($can_approve > 0){
                      $dept          = ApprovalMaster::where('approval_number', $request->approval_number)->first();
+                     $details       = ApprovalDetail::where('approval_master_id', $dept->id)->first();
                      $approvals 	= Approval::where('department',$dept->department)->first();
 					 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first(); 
                      $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
-                     
+                     $count_approve = DB::table('approver_users')->where('approval_master_id', $approvals->id)->count();
+                    
 					 if(!empty($approverLevel)){
-                         
                          
 						 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
 						 $approval_master->status = $approverLevel->level;
                          $approval_master->save();
                          
 						 $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
-						 
-						 if ($approval_master->budget_type != 'ub' && $approval_master->budget_type != 'uc' && $approval_master->budget_type != 'ue' && $approval_master->status == 3) {
+                         
+                         if($count_approve < 4){
+                             $user_approve = 2; 
+                         } else {
+                             $user_approve = 3;
+                         }
+                        //  dd($approval_master->budget_type);
+                        //  die;
+						 if ($approval_master->budget_type != 'ub' && $approval_master->budget_type != 'uc' && $approval_master->budget_type != 'ue' && $approval_master->status == $user_approve) {
 						
 							 foreach($approval_master->details as $detail)
 							 {
 								 $budget = $approval_master->budget_type == 'cx'?Capex::where('budget_no',$detail->budget_no)->first():Expense::where('budget_no',$detail->budget_no)->first();
 								 
-								 if(is_null($detail)){
+                                 if(is_null($detail)){
 									$data['error']	="Master Budget No: ".$detail->budget_no." is Deleted by Finance.\nPlease Contact Finance Department";
 									return $data;
 								 }
@@ -870,16 +878,26 @@ class ApprovalController extends Controller
 
 								 if ($approval_master->budget_type == 'ex') {
 									
-									$budget->qty_remaining 	-= $detail->actual_qty;
-
-									$budget->qty_used 		+= $detail->actual_qty;
-								 }
-
+                                    $budget->qty_used 		+= $detail->actual_qty;
+                                    $budget->qty_remaining 	= $budget->qty_plan - $budget->qty_used;
+                                 }
+                                 
+                                     
+                                 $budget_plan = $budget->budget_plan;
+                                 $total = $dept->total;
+                                 $budget_remain = $budget_plan - $total;
+                                 $budget->budget_remaining = $budget_remain;
+                                                                  
+                                
 								 $budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
 								 
 								 $budget->is_closed = $budget->budget_remaining > 0 ? 0 : 1;
-								 
-								 $budget->save();
+                                
+
+                                 $budget->save();
+                                 
+                                 $details->budget_remaining_log = $budget_remain;
+                                 $details->save();
 							 }
 							 
 						 }
@@ -891,7 +909,8 @@ class ApprovalController extends Controller
 					 throw new \Exception("You can not approve this data because of this approval must be sequential or you have no priviledge"); 
 				 }
 				 
-			 });
+             });
+             
 			$data['success'] = 'Approval ['.$request->approval_number.'] approved.';
 			
 		}catch(\Exception $e){

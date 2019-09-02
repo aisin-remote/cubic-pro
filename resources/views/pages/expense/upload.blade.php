@@ -65,5 +65,5 @@
 @endsection
 
 @push('js')
-<script src="{{ url('assets/js/pages/expense-add-edit.js') }}"></script>
+<script src="{{ url('assets/js/pages/expense-add-edit.js') }}"></script> 
 @endpush

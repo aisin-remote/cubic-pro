@@ -148,7 +148,7 @@
                                     @if ($itemcart == 'non-catalog')
 
                                         @foreach ($items as $item) 
-                                            <option value="{{ $item->item_description }}">{{ $item->item_description }}</option>
+                                            <option value="{{ $item->item_description }}" total="0" item_id="{{$item->id}}" item_spec="{{$item->item_specification}}" actual_qty="1" uom_id="{{$item->uom_id}}">{{ $item->item_description }}</option>
                                         @endforeach
 
                                     @else

@@ -51,15 +51,12 @@ function setReadOnlyInput ()
 {
     $('input[name=asset_kind]').change(function(){
 
-    	// if ()
-
     	var isChecked =this.value;
     	if (isChecked === 'Immediate Use') {
     		$('[name="settlement_date"]').attr('disabled', 'disabled');
     	} else {
     		$('[name="settlement_date"]').removeAttr('disabled');
     	}
-    	// console.log(isChecked);
     });
 }
 

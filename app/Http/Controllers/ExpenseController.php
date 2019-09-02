@@ -247,6 +247,8 @@ class ExpenseController extends Controller
                             $expense->sap_cc_code       = $data->sap_cc_code;
                             $expense->department        = $data->dep;
                             $expense->description       = $data->equipment_name;
+                            $expense->qty_plan          = $data->qty;
+                            $expense->qty_remaining     = $data->qty;
                             $expense->plan_gr           = $gr_date;
                             $expense->budget_plan       = $data->price;
                             $expense->budget_remaining  = $data->price;
@@ -257,6 +259,8 @@ class ExpenseController extends Controller
                             $expense->sap_cc_code       = $data->sap_cc_code;
                             $expense->department        = $data->dep;
                             $expense->description       = $data->equipment_name;
+                            $expense->qty_plan          = $data->qty;
+                            $expense->qty_remaining     = $data->qty;
                             $expense->plan_gr           = $gr_date;
                             $expense->budget_plan       = $data->price;
                             $expense->budget_remaining  = $data->price;
