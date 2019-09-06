@@ -191,7 +191,7 @@ class ApprovalUnbudgetController extends Controller
         $approval_ub = ApprovalMaster::with('departments')
                                 ->whereIn('budget_type',['ub', 'uc','ue'])
                                 ->whereHas('approver_user',function($query) use($user) {
-                                    $query->where('user_id', $user->id );
+                                    $query->whereOr('user_id', $user->id );
                                 });
         
         $level = ApprovalDtl::where('user_id', $user->id)->first();

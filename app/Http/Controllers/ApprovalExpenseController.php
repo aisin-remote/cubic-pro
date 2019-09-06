@@ -246,10 +246,12 @@ class ApprovalExpenseController extends Controller
                             ->route('approval-expense.ListApproval')
                             ->with($res);
     }
-	public function ListApprovalUnvalidated() 
+    
+    public function ListApprovalUnvalidated() 
 	{
 		return view('pages.approval.expense.list-approval');
 	}
+    
     /**
      * Display the specified resource.
      *
@@ -261,14 +263,14 @@ class ApprovalExpenseController extends Controller
 
         return view('pages.approval.expense.index-admin');
     }
+    
     public function getApprovalExpense($status){
         $type 	= 'ex';
-
-        $user = \Auth::user();
+        $user = auth()->user();
 		$approval_expense = ApprovalMaster::with('departments')
                                 ->where('budget_type', 'like', 'ex%')
                                 ->whereHas('approver_user',function($query) use($user) {
-                                    $query->where('user_id', $user->id );
+                                    $query->whereOr('user_id', $user->id );
                                 });
         
         $level = ApprovalDtl::where('user_id', $user->id)->first();

@@ -854,13 +854,7 @@ class ApprovalController extends Controller
                          
 						 $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
                          
-                         if($count_approve < 4){
-                             $user_approve = 2; 
-                         } else {
-                             $user_approve = 3;
-                         }
-                        //  dd($approval_master->budget_type);
-                        //  die;
+                         $user_approve = 4;
 						 if ($approval_master->budget_type != 'ub' && $approval_master->budget_type != 'uc' && $approval_master->budget_type != 'ue' && $approval_master->status == $user_approve) {
 						
 							 foreach($approval_master->details as $detail)
