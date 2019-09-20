@@ -177,7 +177,7 @@ class ApprovalController extends Controller
             \Entrust::hasRole(['admin', 'gm', 'department_head', 'director', 'user',
                 'budget', 'purchasing', 'accounting'])) {
 
-            $approvals = ApprovalMaster::select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
+            $approvals = ApprovalMaster::select('departments.department','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
         ->join('departments', 'approval_masters.department', '=', 'departments.department_code')
         ->where('budget_type', 'like', 'u%');
 
@@ -206,7 +206,7 @@ class ApprovalController extends Controller
                 'budget', 'purchasing', 'accounting'])) {
 
             //$approvals = self::query()->where('budget_type', $type);
-            $approvals = ApprovalMaster::select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
+            $approvals = ApprovalMaster::select('departments.department','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
         ->join('departments', 'approval_masters.department', '=', 'departments.department_code')
         ->where('budget_type', $type);
         }
@@ -1202,25 +1202,25 @@ class ApprovalController extends Controller
     {
         $user = \Auth::user();
 
-        $approvals = ApprovalMaster::query()->select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
+        $approvals = ApprovalMaster::query()->select('departments.department','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
         ->join('departments', 'approval_masters.department', '=', 'departments.department_code');
 
         if ( \Entrust::hasRole('purchasing') && $status) {
             if ($status == 4) //dir
             {
-                $approvals = ApprovalMaster::query()->select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
+                $approvals = ApprovalMaster::query()->select('departments.department','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
                 ->join('departments', 'approval_masters.department', '=', 'departments.department_code')
                 ->where('status', '=', $status)
                 ->where('is_download', '=', 0);
             }
             else if($status == 1){ // bgt
-                $approvals = ApprovalMaster::query()->select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
+                $approvals = ApprovalMaster::query()->select('departments.department','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
                 ->join('departments', 'approval_masters.department', '=', 'departments.department_code')
                 ->where('is_download', '=', 1);
             }
             else
             {
-                $approvals = ApprovalMaster::query()->select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
+                $approvals = ApprovalMaster::query()->select('departments.department','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
                 ->join('departments', 'approval_masters.department', '=', 'departments.department_code')
                 ->where('status', '<=' , $status);
             }
