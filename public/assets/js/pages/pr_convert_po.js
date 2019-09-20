@@ -6,7 +6,7 @@ var table = $('#data_table').dataTable({
         //     printApproval();
         // },
         columns: [
-            {data: 'department_name', name: 'department_name'},
+            {data: 'department_name', name: 'departments.department_name'},
             {data: 'approval_number', name: 'approval_number'},
             {data: 'total', name: 'total'},
             {data: 'status', name: 'status'},
@@ -14,7 +14,7 @@ var table = $('#data_table').dataTable({
             {data: 'action', name: 'action', orderable: false, searchable: false },
         ],
     });
-	
+
     function printApproval(approval_number)
     {
 		 window.location.href=SITE_URL+"/pr_convert_excel/"+approval_number;
@@ -25,7 +25,7 @@ var table = $('#data_table').dataTable({
             // };
             // table.ajax.reload();
             // window.location.replace(SITE_URL+"/pr_convert_excel/"+approval_number);
-            
+
         // });
 
         // return false;
@@ -35,10 +35,10 @@ var table = $('#data_table').dataTable({
         $("#ready_download").click(function(){
             // table.ajax.url( SITE_URL+"/approvalku/get_print/4").load();
         });
-        $("#already_download").click(function(){       
+        $("#already_download").click(function(){
             // table.ajax.url( SITE_URL+"/approvalku/get_print/1").load();
         });
-        $("#cant_download").click(function(){   	
+        $("#cant_download").click(function(){
             // table.ajax.url( SITE_URL+"/approvalku/get_print/3").load();
         });
     });
