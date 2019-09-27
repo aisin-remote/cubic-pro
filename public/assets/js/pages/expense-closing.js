@@ -16,7 +16,8 @@ var table = $('#data_table').DataTable({
             },
             {
                 "targets": 8,
-                "orderable": false
+                "orderable": false,
+                "searchable" : false
             }
         ],
       columns: [
@@ -28,8 +29,8 @@ var table = $('#data_table').DataTable({
         { data: 'plan_gr', name: 'plan_gr' },
         { data: 'status', name: 'status' },
         { data: 'is_closed', name: 'is_closed' },
-		
-		
+
+
 
       ],
       ordering: false,
@@ -40,7 +41,7 @@ var table = $('#data_table').DataTable({
         $('[data-toggle="tooltip"]').tooltip({html: true, "show": 500, "hide": 100});
 		budgetClosingStyler();
 		budgetStatusStyler();
-		
+
       }
 
   });
@@ -76,7 +77,7 @@ function budgetClosingStyler()
 function checkAll (bx) {
 
     $(':checkbox').each(function() {
-        this.checked = bx.checked;                        
+        this.checked = bx.checked;
     });
 }
 
@@ -114,9 +115,9 @@ function closing(status) {
 			show_notification('Success','success',data.success);
 			table.ajax.reload( null, false );
 			$('button').button('reset');
-			$('#checkall').prop("checked", false); 
+			$('#checkall').prop("checked", false);
 		}
 
-       
+
     });
 }
