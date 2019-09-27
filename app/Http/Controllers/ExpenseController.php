@@ -7,17 +7,18 @@ use DataTables;
 use DB;
 use Storage;
 use App\Capex;
-use App\CapexArchive;      
+use App\CapexArchive;
 use App\Helper;
 use App\User;
 use App\Department;
-use Carbon\Carbon;          
-use App\Period;             
-use App\Expense;            
-use App\ExpenseArchive;    
-use App\ApprovalMaster;    
+use Carbon\Carbon;
+use App\Period;
+use App\Expense;
+use App\ExpenseArchive;
+use App\ApprovalMaster;
 use App\ApprovalDetail;
 use Excel;
+use Config;
 
 class ExpenseController extends Controller
 {
@@ -25,13 +26,13 @@ class ExpenseController extends Controller
     {
 
       	if ($request->wantsJson()) {
-      		
+
       		$capex = Expense::get();
       		return response()->json($capex);
       	}
     	return view('pages.expense.index');
     }
-	
+
     public function create()
     {
     	$expense         = Expense::get();
@@ -72,7 +73,7 @@ class ExpenseController extends Controller
 		$capex = Expense::where('budget_no',$budget_no)->first();
         $approval_details = ApprovalDetail::join('approval_masters','approval_details.approval_master_id','=','approval_masters.id')
                                             ->where('approval_details.budget_no',$budget_no)->get();
-		
+
 		return view('pages.expense.view',compact('capex','approval_details'));
 	}
     public function getData(Request $request)
@@ -80,7 +81,7 @@ class ExpenseController extends Controller
 	   $user = auth()->user();
 	   $expenses = Expense::ability();
 	   $expenses = $expenses->get();
-       
+
         return DataTables::of($expenses)
 
         ->rawColumns(['options', 'is_closed'])
@@ -88,21 +89,21 @@ class ExpenseController extends Controller
         ->addColumn('options', function($expense){
             if(\Entrust::hasRole('user')) {
                     return '
-                        
+
                     ';
 			}elseif(\Entrust::hasRole('budget')) {
 				return '
-					
+
 					<button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$expense->id.')"><i class="mdi mdi-close"></i></button>
 					<form action="'.route('expense.destroy', $expense->id).'" method="POST" id="form-delete-'.$expense->id .'" style="display:none">
 						'.csrf_field().'
 						<input type="hidden" name="_method" value="DELETE">
 					</form>
-					
+
 				';
 			}else{
 				return '
-					
+
 				';
 			}
 
@@ -221,13 +222,13 @@ class ExpenseController extends Controller
 
         $data = [];
         if ($request->hasFile('file')) {
-            $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
-            
+            $datas = $this->getCsvFile(public_path('storage/uploads/'.$name));
+
                 if ($datas->first()->has('budget_no')) {
                     foreach ($datas as $data) {
 
                         $expense = Expense::where('budget_no', $data->budget_no)->first();
-                        
+
                         $gr = strtotime($data->gr);
                         $gr_date = date('Y-m-d',$gr);
 
@@ -252,7 +253,7 @@ class ExpenseController extends Controller
                             $expense->plan_gr           = $gr_date;
                             $expense->budget_plan       = $data->price;
                             $expense->budget_remaining  = $data->price;
-                            $expense->save();  
+                            $expense->save();
                         } else {
                             $expense                    = Expense::firstOrNew(['budget_no' => $data->budget_no]);
                             $expense->budget_no         = $data->budget_no;
@@ -269,8 +270,8 @@ class ExpenseController extends Controller
                             $expense->revised_at        = date('Y-m-d H:i:s');
                             $expense->save();
                         }
-                                        
-                    }  
+
+                    }
 
                 // });
                     $res = [
@@ -278,7 +279,7 @@ class ExpenseController extends Controller
                                 'type'              => 'success',
                                 'message'           => 'Data berhasil di Upload!'
                             ];
-                    Storage::delete('public/uploads/'.$name); 
+                    Storage::delete('public/uploads/'.$name);
                     return redirect()
                             ->route('expense.index')
                             ->with($res);
@@ -300,7 +301,7 @@ class ExpenseController extends Controller
                 }
         }
     }
-	
+
 	public function archive()
 	{
 		$src_dest = 'src';
@@ -316,7 +317,7 @@ class ExpenseController extends Controller
 	public function getArchiveAjaxSource()
     {
         $expenses = Expense::where('budget_used', '<=', 0 )->orderBy('id','DESC')->get();
-		
+
          return DataTables::of($expenses)
 		  ->editColumn("status", function ($expense) {
 				if ($expense->status=='0'){
@@ -375,9 +376,9 @@ class ExpenseController extends Controller
 		   });
 
             $data['success'] = 'Data successfully archived!';
-			
+
         } catch (\Exception $e) {
-			
+
             $data['error'] = $e->getMessage();
         }
 
@@ -420,9 +421,9 @@ class ExpenseController extends Controller
 		   });
 
             $data['success'] = 'Data successfully archived!';
-			
+
         } catch (\Exception $e) {
-			
+
             $data['error'] = $e->getMessage();
         }
 
@@ -437,7 +438,7 @@ class ExpenseController extends Controller
         $user = auth()->user();
         $expenses = Expense::select('budget_no','description','budget_plan','budget_used','budget_remaining','plan_gr','status','is_closed');
 
-        if (\Entrust::hasRole('user')) { 
+        if (\Entrust::hasRole('user')) {
             $expenses->where('department', $user->department->department_code);
         }
 
@@ -484,7 +485,7 @@ class ExpenseController extends Controller
 								return "Overbudget";
 							}
 						})
-					->make(true);   
+					->make(true);
         }
         elseif($page_name == 'approval'){
             return $expenses->get();
@@ -524,12 +525,12 @@ class ExpenseController extends Controller
 						return "Overbudget";
 					}
 				})
-				->make(true);   
+				->make(true);
         }
 	}
 	public function closingUpdate(Request $request)
     {
-		
+
         try {
             DB::transaction(function() use ($request){
 
@@ -541,16 +542,36 @@ class ExpenseController extends Controller
 				Expense::query()
 				->whereIn('budget_no', $budget_numbers)
 				->update(['is_closed' => $request->status]);
-				
+
 			});
-			
+
             $data['success'] = 'Closing updated.';
-			
+
         } catch (\Exception $e) {
-      
+
             $data['error'] = $e->getMessage();
         }
 
         return $data;
+    }
+
+    /**
+     * generate csv file base on delimiter
+     * @param  string $file
+     * @return collection $data
+     */
+    private function getCsvFile($file)
+    {
+        $delimiters = [",", ";", "\t"];
+
+        foreach ($delimiters as $delimiter) {
+            Config::set('excel.csv.delimiter', $delimiter);
+            $datas = Excel::load($file, function($reader){})->get();
+            if ($datas->first()->has('budget_no')) {
+                break;
+            }
+        }
+
+        return $datas;
     }
 }

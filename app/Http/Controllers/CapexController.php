@@ -7,17 +7,18 @@ use DataTables;
 use DB;
 use Storage;
 use App\Capex;
-use App\CapexArchive;      
+use App\CapexArchive;
 use App\Helper;
 use App\User;
 use App\Department;
-use Carbon\Carbon;          
-use App\Period;             
-use App\Expense;            
-use App\ExpenseArchive;    
-use App\ApprovalMaster;    
+use Carbon\Carbon;
+use App\Period;
+use App\Expense;
+use App\ExpenseArchive;
+use App\ApprovalMaster;
 use App\ApprovalDetail;
 use Excel;
+use Config;
 
 class CapexController extends Controller
 {
@@ -25,7 +26,7 @@ class CapexController extends Controller
     {
 
       	if ($request->wantsJson()) {
-      		
+
       		$capex = Capex::get();
       		return response()->json($capex);
       	}
@@ -67,7 +68,7 @@ class CapexController extends Controller
       			->route('capex.index')
       			->with($res);
     }
-	
+
     public function getData(Request $request)
     {
 		$capexs = Capex::ability();
@@ -79,7 +80,7 @@ class CapexController extends Controller
         ->addColumn('options', function($capex){
             if(\Entrust::hasRole('user')) {
                     return '
-                        
+
                     ';
                 }elseif(\Entrust::hasRole('budget')) { //Sebenarnya ini ga bakal dieksekusi
                     return '
@@ -88,16 +89,16 @@ class CapexController extends Controller
                             '.csrf_field().'
                             <input type="hidden" name="_method" value="DELETE">
                         </form>
-                        
+
                     ';
                 }else{
                     return '
-                        
-                        
+
+
                     ';
                 }
-            
-            
+
+
         })
         ->editColumn("status", function ($capex) {
                // $expense->is_closed="ABS";
@@ -181,7 +182,7 @@ class CapexController extends Controller
 		$capex = Capex::where('budget_no',$budget_no)->first();
 		$approval_details = ApprovalDetail::join('approval_masters','approval_details.approval_master_id','=','approval_masters.id')
 											->where('approval_details.budget_no',$budget_no)->get();
-		
+
 		return view('pages.capex.view',compact('capex','approval_details'));
 	}
     public function destroy($id)
@@ -221,15 +222,15 @@ class CapexController extends Controller
 
         $data = [];
         if ($request->hasFile('file')) {
-            $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
-            
+            $datas = $this->getCsvFile(public_path('storage/uploads/'.$name));
+
                 if ($datas->first()->has('budget_no')) {
                     foreach ($datas as $data) {
 
                         $capex = Capex::where('budget_no', $data->budget_no)->first();
                         $gr = strtotime($data->gr);
                         $gr_date = date('Y-m-d',$gr);
-                        
+
                         if ( !empty($capex->budget_no) == $data->budget_no and $is_revision == false){
                             return redirect()
                             ->route('capex.index')
@@ -249,7 +250,7 @@ class CapexController extends Controller
                             $capex->plan_gr           = $gr_date;
                             $capex->budget_plan       = $data->price;
                             $capex->budget_remaining  = $data->price;
-                            $capex->save();  
+                            $capex->save();
                         } else {
                             $capex                    = Capex::firstOrNew(['budget_no' => $data->budget_no]);
                             $capex->budget_no         = $data->budget_no;
@@ -262,11 +263,11 @@ class CapexController extends Controller
                             $capex->is_revised        = $is_revision;
                             $capex->revised_by        = \Auth::user()->id;
                             $capex->revised_at        = date('Y-m-d H:i:s');
-                            $capex->save();  
+                            $capex->save();
 
                         }
-                                        
-                    }  
+
+                    }
 
                     if ($is_revision) {
 
@@ -285,7 +286,7 @@ class CapexController extends Controller
                                 'type'              => 'success',
                                 'message'           => 'Upload Success!'
                             ];
-                    Storage::delete('public/uploads/'.$name); 
+                    Storage::delete('public/uploads/'.$name);
                     return redirect()
                             ->route('capex.index')
                             ->with($res);
@@ -307,7 +308,7 @@ class CapexController extends Controller
                 }
         }
     }
-	
+
 	public function archive()
 	{
 		$src_dest = 'src';
@@ -323,7 +324,7 @@ class CapexController extends Controller
 	public function getArchiveAjaxSource()
     {
         $capexs = Capex::where('budget_used', '<=', 0 )->orderBy('id','DESC')->get();
-		
+
          return DataTables::of($capexs)
 		  ->editColumn("status", function ($capex) {
 				if ($capex->status=='0'){
@@ -382,9 +383,9 @@ class CapexController extends Controller
 		   });
 
             $data['success'] = 'Data successfully archived!';
-			
+
         } catch (\Exception $e) {
-			
+
             $data['error'] = $e->getMessage();
         }
 
@@ -424,9 +425,9 @@ class CapexController extends Controller
 		   });
 
             $data['success'] = 'Data successfully archived!';
-			
+
         } catch (\Exception $e) {
-			
+
             $data['error'] = $e->getMessage();
         }
 
@@ -441,7 +442,7 @@ class CapexController extends Controller
         $user = auth()->user();
         $capexes = Capex::select('budget_no','equipment_name','budget_plan','budget_used','budget_remaining','plan_gr','status','is_closed');
 
-        if (\Entrust::hasRole('user')) { 
+        if (\Entrust::hasRole('user')) {
             $capexes->where('department', $user->department->department_code);
         }
 
@@ -488,7 +489,7 @@ class CapexController extends Controller
 								return "Overbudget";
 							}
 						})
-					->make(true);   
+					->make(true);
         }
         elseif($page_name == 'approval'){
             return $capexes->get();
@@ -528,12 +529,12 @@ class CapexController extends Controller
 						return "Overbudget";
 					}
 				})
-				->make(true);   
+				->make(true);
         }
 	}
 	public function closingUpdate(Request $request)
     {
-		
+
         try {
             DB::transaction(function() use ($request){
 
@@ -545,13 +546,13 @@ class CapexController extends Controller
 				Capex::query()
 				->whereIn('budget_no', $budget_numbers)
 				->update(['is_closed' => $request->status]);
-				
+
 			});
-			
+
             $data['success'] = 'Closing updated.';
-			
+
         } catch (\Exception $e) {
-      
+
             $data['error'] = $e->getMessage();
         }
 
@@ -561,14 +562,14 @@ class CapexController extends Controller
     {
 		$period = Period::all();
 		if(!empty($period) && count($period)>= 6){
-					
-			$fyear_open 		= $period[0]->value; 
+
+			$fyear_open 		= $period[0]->value;
 			$fyear_close 		= $period[1]->value;
 			$fyear_open_from    = $period[2]->value;
 			$fyear_open_to      = $period[3]->value;
 			$fyear_close_from   = $period[4]->value;
 			$fyear_close_to     = $period[5]->value;
-			
+
 		}else{
 			$fyear_open         = "";
 			$fyear_close        = "";
@@ -577,33 +578,33 @@ class CapexController extends Controller
 			$fyear_close_from   = "";
 			$fyear_close_to     = "";
 		}
-       
+
 
         return view('fyear.closing', compact('fyear_open', 'fyear_close','fyear_open_from','fyear_open_to','fyear_close_from','fyear_close_to'));
     }
-	
+
 	public function doFiscalYearClosing(Request $request)
     {
         // \Cache::forget('period');       // Hotfix-3.4.7 forgetting cache of Init Fiscal year
 
         try {
             // start transcact
-						
+
 			DB::transaction(function() use ($request){
 				$period = Period::all();
 				if(!empty($period) && count($period)>= 6){
-					
-					$fyear_open 		= $period[0]->value; 
+
+					$fyear_open 		= $period[0]->value;
 					$fyear_close 		= $period[1]->value;
 					$fyear_open_from    = $period[2]->value;
 					$fyear_open_to      = $period[3]->value;
 					$fyear_close_from   = $period[4]->value;
 					$fyear_close_to     = $period[5]->value;
-					
+
 				}else{
 					$data['error'] = 'Period data is not active';
-					
-					return $data; 
+
+					return $data;
 				}
 
 				if (($fyear_open == '') || ($fyear_close == '')) {
@@ -746,16 +747,36 @@ class CapexController extends Controller
 				$period_revision->save();
 
 			});
-			
+
             // \Cache::forget('period');           // Hotfix-3.4.7 forgetting cache of New Fiscal year
 
             $data['success'] = 'Fiscal Year Successfully Closed!';
-			
+
         } catch (\Exception $e) {
-			
+
             $data['error'] = 'Fiscal Year Closing Error - '.$e->getMessage();
         }
 
         return $data;
+    }
+
+    /**
+     * generate csv file base on delimiter
+     * @param  string $file
+     * @return collection $data
+     */
+    private function getCsvFile($file)
+    {
+        $delimiters = [",", ";", "\t"];
+
+        foreach ($delimiters as $delimiter) {
+            Config::set('excel.csv.delimiter', $delimiter);
+            $datas = Excel::load($file, function($reader){})->get();
+            if ($datas->first()->has('budget_no')) {
+                break;
+            }
+        }
+
+        return $datas;
     }
 }
