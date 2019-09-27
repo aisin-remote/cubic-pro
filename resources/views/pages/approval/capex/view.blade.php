@@ -4,6 +4,14 @@
 	Detail List Approval
 @endsection
 
+@push('css')
+<style>
+    .select2-container {
+        display: block  !important;
+    }
+</style>
+@endpush
+
 @section('content')
 
 @php($active = 'approval_master')
@@ -296,6 +304,7 @@
         }
 		 getSource().done(function(result) {
             $('.cmb_editable').editable({  //to keep track of selected values in single select
+                inputClass:'input-large',
                 type: 'select2',  
                 url: "{{ url('approval/xedit') }}",
 				mode:"inline",
@@ -318,7 +327,7 @@
 
                     $(this).text(data.value);
 					table.ajax.reload( null, false );
-                }
+                },
             });
         }).fail(function() {
 			alert("Error getting SAP Vendor from Database!")
