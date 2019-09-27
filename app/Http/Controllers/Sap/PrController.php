@@ -56,21 +56,21 @@ class PrController extends Controller
     		$approval->is_download = 1;
             $created_by = $approval->created_by;
     		$approval->save();
-
+			
             $departments_query = User::join('departments','departments.id', '=', 'users.department_id')
                                  ->select('departments.department_code', 'departments.department_name as dep_name', 'departments.sap_key','users.name')
                                  ->Where('users.id', '=', $created_by)
                                  ->get();
-
+			
             foreach ($departments_query as $departments_query){
                  $dep_key    = $departments_query->dep_key;
                  $dep_name   = $departments_query->dep_name;
                  $sap_key    = $departments_query->sap_key;
                  $name       = $departments_query->name;
             }
-
+			
              //untuk mengecek vendor code, kemudian di filter array kemudian mengamnil key nya untuk registration key
-            $array_check = DB::table('approval_details')
+            $array_check = DB::table('approval_details') 
                 ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id')
                 ->Select('approval_details.po_number')
                 ->where('approval_masters.approval_number',$approval_number)
@@ -112,15 +112,15 @@ class PrController extends Controller
                  default:
                      # code...
                      break;
-             }
+             } 
 
              //hotfix-4.1.1 by yudo, 20170426, add cc_code untuk responsbility cc_dode
-            $print = DB::select('SELECT a.*, b.*, g.cc_gcode,
+            $print = DB::select('SELECT a.*, b.*, g.cc_gcode, 
 									(SELECT  COUNT(*)FROM approval_details c
 											INNER JOIN approval_masters m ON c.approval_master_id = m.id
-											WHERE   c.po_number = a.po_number AND c.id <= a.id AND m.approval_number = "'.$approval_number.'" ORDER BY c.sap_vendor_code) AS RowNumber
-								FROM approval_details a INNER JOIN approval_masters b ON a.approval_master_id = b.id
-										'.($f == null ? '' : 'INNER JOIN '.$f.' f ON a.budget_no = f.budget_no').'
+											WHERE   c.po_number = a.po_number AND c.id <= a.id AND m.approval_number = "'.$approval_number.'" ORDER BY c.sap_vendor_code) AS RowNumber 
+								FROM approval_details a INNER JOIN approval_masters b ON a.approval_master_id = b.id 
+										'.($f == null ? '' : 'INNER JOIN '.$f.' f ON a.budget_no = f.budget_no').' 
 										INNER JOIN sap_cost_centers g ON g.cc_code = a.sap_cc_code
 								WHERE b.approval_number = "'.$approval_number.'" ORDER BY a.po_number');
 
@@ -133,7 +133,7 @@ class PrController extends Controller
                  //sbstr -> untuk mengambil range beberapa karakter, strpad untuk count replace misalnya 0000 jadi 0001, 0099
                  // $collective_number = $acct_assign_cat.$sap_key.substr($approval_number, 9,1).substr($approval_number, 13,5).str_pad($prints->po_number,3,'0',STR_PAD_LEFT);
                  $collective_number = $sap_key.substr($approval_number, 8,2).substr($approval_number, 12,5).str_pad($prints->po_number,2,'0',STR_PAD_LEFT); //hotfix-4.1.4, by yudo maryanto, 20170703, merubah pattern collective number
-
+                
                  //hotfix-4.1.1, jika cc_gcode 8 = production
                  if ($prints->cc_gcode == "8"){
                     $resp_cc_code = "100000";
@@ -143,17 +143,17 @@ class PrController extends Controller
                  }
 
                  switch($prints->sap_tax_code){
-                    case "V1":
+                    case "V0":
                     $purch_group      = "Z13";
                     $standard_billing = "x";
                     break;
 
-                    case "V2":
+                    case "V1":
                     $purch_group      = "Z11";
                     $standard_billing = "";
                     break;
 
-                    case "": //Bug
+                    case "": //Bug 
                     $purch_group      = "";
                     $standard_billing = "";
                     break;
@@ -163,7 +163,7 @@ class PrController extends Controller
 
                  }
 
-                 //dev-4.0, by yudo, 20170316, menata di excel untuk qty, pr input,
+                 //dev-4.0, by yudo, 20170316, menata di excel untuk qty, pr input, 
                  if(($prints->price_to_download % $prints->actual_qty) == 0)
                  {
                     //hotfix-4.1.1, by yudo, sap allow commas hanya di design untuk mata uang USD
@@ -268,13 +268,13 @@ class PrController extends Controller
                     $prints->sap_tax_code, //AZ
                     "", //BA
                     $standard_billing, //BB
-
+          
                 );
-            }
+            }         
 
         Excel::create('Filename', function($excel) use ($data){
             $excel->sheet('Data', function($sheet) use ($data) {
-
+            
                 $sheet->fromArray($data, null, 'A1', false, false);
             });
         })->setFilename($approval_number)
