@@ -11,7 +11,7 @@
 	 <div class="row">
         <div class="col-xs-12">
             <div class="page-title-box">
-                <h4 class="page-title"> List of Detail Capex Allocation</h4>
+                <h4 class="page-title"> List of Detail Expense Allocation</h4>
                 <ol class="breadcrumb p-0 m-0">
 					<li class="active"></li>
                 </ol>
@@ -29,7 +29,7 @@
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
-					<label class="control-label"><b>Budget Plan | Remaining</b><span class="text-danger"></span></label> 
+					<label class="control-label"><b>Budget Plan | Remaining</b><span class="text-danger"></span></label>
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
@@ -49,7 +49,7 @@
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
-					<label class="control-label"><b><span class="text-danger"> : </span></label> 
+					<label class="control-label"><b><span class="text-danger"> : </span></label>
 					{{number_format($capex->budget_plan).' | '.number_format($capex->budget_remaining)}}</b>
 					<span class="help-block"></span>
 				</div>
@@ -86,7 +86,7 @@
 						@if($ap->status == 0)
 						<td>User Created</td>
 						@elseif($ap->status == 1)
-						<td>Validasi Budget</td>	
+						<td>Validasi Budget</td>
 						@elseif($ap->status == 2)
 						<td>Approved by Dept. Head</td>
 						@elseif($ap->status == 3)
@@ -98,7 +98,7 @@
 						@elseif($ap->status == -2)
 						<td>Canceled Dept. Head Approval</td>
 						@else
-						<td>Canceled on Group Manager Approval</td>	
+						<td>Canceled on Group Manager Approval</td>
 						@endif
 						<td>{{date('d-M-Y',strtotime($ap->actual_gr))}}</td>
 					</tr>

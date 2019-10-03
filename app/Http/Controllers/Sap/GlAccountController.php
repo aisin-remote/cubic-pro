@@ -55,7 +55,7 @@ class GlAccountController extends Controller
     {
 
     	$gl_account = SapGlAccount::orderBy('id','DESC')->get();
-    	
+
     	return DataTables::of($gl_account)
     	->rawColumns(['options'])
 
@@ -92,7 +92,7 @@ class GlAccountController extends Controller
         $gl_account->gl_acode 			= $request->gl_acode;
         $gl_account->gl_aname 			= $request->gl_aname;
         $gl_account->dep_key 			= $request->dep_key;
-        
+
         $gl_account->save();
 
         if ($request->wantsJson()) {
@@ -135,16 +135,16 @@ class GlAccountController extends Controller
                 ->route('gl_account.index')
                 ->with($res);
     }
-	
+
 	public function getCmbGlAccount()
 	{
 		$gl_account = SapGlAccount::all();
 		$data = [];
 		foreach($gl_account as $glc)
 		{
-			$data[] = array('value'=>$glc->gl_acode,'text'=>$glc->gl_aname);
+			$data[] = array('value'=>$glc->gl_acode,'text'=>$glc->gl_acode.'-'.$glc->gl_aname);
 		}
-		
+
 		return response()->json($data, 200);
 	}
 }
