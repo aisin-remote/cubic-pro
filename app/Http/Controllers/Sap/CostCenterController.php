@@ -56,7 +56,7 @@ public function index(Request $request)
     {
 
     	$cost = SapCostCenter::orderBy('id','DESC')->get();
-    	
+
     	return DataTables::of($cost)
     	->rawColumns(['options'])
 
@@ -93,7 +93,7 @@ public function index(Request $request)
         $cost->cc_fname 		= $request->cc_fname;
         $cost->cc_gcode 		= $request->cc_gcode;
         $cost->cc_gtext 		= $request->cc_gtext;
-        
+
         $cost->save();
 
         if ($request->wantsJson()) {
@@ -136,16 +136,16 @@ public function index(Request $request)
                 ->route('cost_center.index')
                 ->with($res);
     }
-	
+
 	public function getCmbCostCenter()
 	{
 		$cost_center = SapCostCenter::all();
 		$data = [];
 		foreach($cost_center as $cc)
 		{
-			$data[] = array('value'=>$cc->cc_code,'text'=>$cc->cc_code);
+			$data[] = array('value'=>$cc->cc_code,'text'=>$cc->cc_code.'-'.$cc->cc_fname);
 		}
-		
+
 		return response()->json($data, 200);
 	}
 }
