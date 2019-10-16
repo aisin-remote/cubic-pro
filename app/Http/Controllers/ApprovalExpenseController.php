@@ -267,11 +267,12 @@ class ApprovalExpenseController extends Controller
     public function getApprovalExpense($status){
         $type 	= 'ex';
         $user = auth()->user();
-		$approval_expense = ApprovalMaster::with('departments')
-                                ->where('budget_type', 'like', 'ex%')
-                                ->whereHas('approver_user',function($query) use($user) {
-                                    $query->whereOr('user_id', $user->id );
-                                });
+        $approval_expense = ApprovalMaster::with('departments')
+                            ->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
+                            ->where('budget_type', 'like', 'ex%')
+                            ->whereHas('approver_user',function($query) use($user) {
+                                $query->whereOr('user_id', $user->id );
+                            });
         
         $level = ApprovalDtl::where('user_id', $user->id)->first();
 
@@ -353,7 +354,8 @@ class ApprovalExpenseController extends Controller
         })
 
         ->addColumn("overbudget_info", function ($approvals) {
-            return $approvals->status < 0 ? 'Canceled' : ($approvals->isOverExist() ? 'Overbudget exist' : 'All underbudget');
+           
+            return $approvals->status < 0 ? 'Canceled' : ($approvals->budget_reserved > $approvals->budget_remaining_log ? 'Overbudget exist' : 'All underbudget');
         }) 
 
         ->toJson();
@@ -399,7 +401,7 @@ class ApprovalExpenseController extends Controller
                     return number_format($approval->price_to_download);
                 })
                 ->addColumn("overbudget_info", function ($approval) {
-                    return $approval->status < 0 ? 'Canceled' : ($approval->isOverExist() ? 'Overbudget exist' : 'Underbudget');
+                    return $approval->status < 0 ? 'Canceled' : ($approval->budget_reserved > $approval->budget_remaining_log ? 'Overbudget exist' : 'Underbudget');
                 }) 
                 ->addColumn("actual_gr", function ($approval) {
                     return Carbon::parse($approval->actual_gr)->format('d M Y');
