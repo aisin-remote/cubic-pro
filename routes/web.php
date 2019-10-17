@@ -314,6 +314,8 @@ Route::middleware('auth')->group(function(){
 	Route::group(['middleware' => ['permission:sap-asset','auth']], function() {
 		Route::get('asset/get_data', 'Sap\AssetController@getData');
 		Route::resource('asset', 'Sap\AssetController');
+
+		Route::get('getCmbAsset','Sap\AssetController@getCmbAsset');
 	});
 	
 	// Route SAP Cost Center

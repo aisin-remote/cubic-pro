@@ -4,6 +4,14 @@
 	Detail List Approval
 @endsection
 
+@push('css')
+<style>
+    .select2-container {
+        display: block  !important;
+    }
+</style>
+@endpush
+
 @section('content')
 
 @php($active = 'approval_master')
@@ -12,7 +20,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="page-title-box">
-                <h4 class="page-title"> Detail Information of Capex Approval Sheet</h4>
+                <h4 class="page-title"> Detail Information of Expense Approval Sheet</h4>
                 <ol class="breadcrumb p-0 m-0">
                     @if ($approver)
 						<li class="active">

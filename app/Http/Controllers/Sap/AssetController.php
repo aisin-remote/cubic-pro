@@ -144,4 +144,16 @@ class AssetController extends Controller
                 ->route('asset.index')
                 ->with($res);
     }
+
+    public function getCmbAsset()
+	{
+		$asset_account = SapAsset::all();
+		$data = [];
+		foreach($asset_account as $asset)
+		{
+			$data[] = array('value'=>$asset->asset_account,'text'=>$asset->asset_type);
+		}
+		
+		return response()->json($data, 200);
+	}
 }

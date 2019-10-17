@@ -4,6 +4,14 @@
 	Detail List Approval
 @endsection
 
+@push('css')
+<style>
+    .select2-container {
+        display: block  !important;
+    }
+</style>
+@endpush
+
 @section('content')
 
 @php($active = 'approval_master')
@@ -343,7 +351,7 @@
 	function initGLAccountEditable()
     {
         function getSource() {
-            var url = SITE_URL+"/getCmbGlAccount";
+            var url = SITE_URL+"/getCmbAsset";
             return $.ajax({
                 type:  'GET',
                 async: true,
