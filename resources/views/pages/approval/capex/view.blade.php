@@ -337,7 +337,7 @@
 	function initGLAccountEditable()
     {
         function getSource() {
-            var url = SITE_URL+"/getCmbGlAccount";
+            var url = SITE_URL+"/getCmbAsset";
             return $.ajax({
                 type:  'GET',
                 async: true,

@@ -147,12 +147,20 @@ class AssetController extends Controller
 
     public function getCmbAsset()
 	{
-		$asset_account = SapAsset::all();
-		$data = [];
-		foreach($asset_account as $asset)
-		{
-			$data[] = array('value'=>$asset->asset_account,'text'=>$asset->asset_type);
-		}
+        $asset_account = SapAsset::all();
+        $data = $asset_account->map(function($asset){
+            $text = $asset->asset_account . " - " . $asset->asset_type;
+            return [
+                'value' => $asset->asset_account,
+                'text' => $text
+            ];
+        });
+
+		// $data = [];
+		// foreach($asset_account as $asset)
+		// {
+		// 	$data[] = array('value'=>$asset->asset_account,'text'=>$asset->asset_account . " - " . $asset->type);
+		// }
 		
 		return response()->json($data, 200);
 	}
