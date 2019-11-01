@@ -356,6 +356,8 @@ class ApprovalCapexController extends Controller
         $user = auth()->user();
         $approval_capex = ApprovalMaster::with('departments')
                             ->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
+                            ->select('approval_masters.*')
+                            ->distinct()
                             ->where('budget_type', 'like', 'cx%')
                             ->whereHas('approver_user',function($query) use($user) {
                                 $query->whereOr('user_id', $user->id );
@@ -387,6 +389,7 @@ class ApprovalCapexController extends Controller
                 }
             }
         }
+        
 
         return DataTables::of($approval_capex)
         ->rawColumns(['action'])
@@ -446,6 +449,7 @@ class ApprovalCapexController extends Controller
         ->addColumn('details_url', function($approval_capex) {
             return url('approval-capex/details-data/' . $approval_capex->id);
         })
+        
         ->toJson();
     }
     

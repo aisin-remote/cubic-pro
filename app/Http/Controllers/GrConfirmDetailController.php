@@ -92,10 +92,14 @@ class GrConfirmDetailController extends Controller
             }
         }
 
+        // dd($request->qty_order);
+        // die;
 
         $name = $request->name;
         $gr_detail->$name = $request->value;
-        $gr_detail->qty_outstanding = $request->qty_outstanding;
+        $qty_order = $gr_detail->qty_order;
+        $qty_receive =$gr_detail->qty_receive;
+        $gr_detail->qty_outstanding = $qty_order - $qty_receive;
         $gr_detail->save();
 
         return response()->json($gr_detail);
