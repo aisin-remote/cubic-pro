@@ -277,6 +277,11 @@ class ApprovalCapexController extends Controller
 	public function ListApprovalUnvalidated()
 	{
 		return view('pages.approval.capex.list-approval');
+    }
+    
+    public function ListApprovalAcc()
+	{
+		return view('pages.approval.capex.index_acc');
 	}
     /**
      * Display the specified resource.

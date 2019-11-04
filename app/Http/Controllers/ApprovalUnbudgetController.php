@@ -328,7 +328,7 @@ class ApprovalUnbudgetController extends Controller
                     return number_format($approval->price_to_download);
                 })
                 ->addColumn("status", function ($approval) {
-                    return $approval->budget_type = 'uc' ? 'Unbudget Capex' : 'Undbudget Expense';
+                    return $approval->budget_type == 'uc' ? 'Unbudget Capex' : 'Undbudget Expense';
                 }) 
                 ->addColumn("actual_gr", function ($approval) {
                     return Carbon::parse($approval->actual_gr)->format('d M Y');
@@ -371,14 +371,20 @@ class ApprovalUnbudgetController extends Controller
                     $capex->total                  = str_replace(',', '', Cart::instance('unbudget')->subtotal($formatted = false));
                     $capex->status                 = 0;
                     $capex->created_by             = $user->id;
-					
+                    
                     $capex->save();
                     $i = 1;
                 foreach (Cart::instance('unbudget')->content() as $details) {
+                    if($budget_type == 'uc'){
+                        $budget_id = '2';
+                    } else {
+                        $budget_id ='4';
+                    }
+                   
                     $approval                           = new ApprovalDetail;
                     $approval->fyear                    = date('Y');
                     $approval->budget_no                = $details->options->budget_no;  
-                    $approval->sap_track_no             = ApprovalMaster::getNewSapTrackingNo(2,$user->department_id,$approval_no,$i);
+                    $approval->sap_track_no             = ApprovalMaster::getNewSapTrackingNo($budget_id,$user->department_id,$approval_no,$i);
                     
                     if($details->options->budget_type == "uc"){
                         $approval->asset_no             = $details->options->asset_code.'JE'.str_pad($i, 3, '0', STR_PAD_LEFT);

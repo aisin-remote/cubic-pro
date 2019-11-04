@@ -382,7 +382,6 @@ Route::middleware('auth')->group(function(){
 			
 			//LIST APPROVAL CAPEX
 			Route::group(['middleware' => ['permission:list-approval-capex','auth']], function() {
-				
 				Route::get('approval/cx/', 'ApprovalCapexController@ListApproval')->name('approval-capex.ListApproval'); 
 			});
 			
@@ -390,8 +389,13 @@ Route::middleware('auth')->group(function(){
 			Route::group(['middleware' => ['permission:pending-approval-capex','auth']], function() {
 				
 				Route::get('approval/cx/unvalidated','ApprovalCapexController@ListApprovalUnvalidated'); 
-			});			
+			});		
 			
+			// PENDING APPROVAL ACC
+			Route::group(['middleware' => ['permission:pending-asset-assign-no-capex','auth']], function() {
+				Route::get('approval/cx/acc', 'ApprovalCapexController@ListApprovalAcc');
+			});
+
 			//CREATE APPROVAL CAPEX	
 			Route::group(['middleware' => ['permission:create-approval-capex','auth']], function() {
 				Route::get('/approval/create/cx', 'ApprovalController@createApproval')->name('approval-capex.index');
