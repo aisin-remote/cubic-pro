@@ -24,13 +24,13 @@ class ItemController extends Controller
     public function index(Request $request)
     {
         $item = Item::with(['item_category','uom','supplier','tags'])->get();
-                
+
         if ($request->wantsJson()) {
             return response()->json($item, 200);
         }
 
         return view('pages.item');
-        
+
     }
 
     /**
@@ -41,7 +41,7 @@ class ItemController extends Controller
      */
 
     public function store(Request $request)
-    {       
+    {
         $item = new Item;
         $item->item_category_id = $request->item_category_id;
         $item->item_code = $request->item_code;
@@ -66,10 +66,10 @@ class ItemController extends Controller
                     $tagIds[] = $tag->id;
                 }
             }
-            
+
             $item->tags()->sync($tagIds);
         }
-        
+
         $res = [
                     'title' => 'Sukses',
                     'type' => 'success',
@@ -91,7 +91,7 @@ class ItemController extends Controller
     public function show($id)
     {
         $item = Item::with(['item_category','uom','supplier'])->find($id);
-        
+
         if (empty($item)) {
             return response()->json('Item not found', 500);
         }
@@ -107,18 +107,25 @@ class ItemController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {       
+    {
         $item = Item::find($id);
 
         if (empty($item)) {
             return response()->json('Item not found', 500);
         }
+
+        $itemPrice = $request->item_price;
+
+        if (is_string($itemPrice)) {
+            $itemPrice = (float) str_replace(',', '', $itemPrice);
+        }
+
         $item->item_category_id = $request->item_category_id;
         $item->item_code = $request->item_code;
         $item->item_description = $request->item_description;
         $item->item_specification = $request->item_specification;
         $item->item_brand = $request->item_brand;
-        $item->item_price = $request->item_price;
+        $item->item_price = $itemPrice;
         $item->uom_id = $request->uom_id;
         $item->supplier_id = $request->supplier_id;
         $item->lead_times = $request->lead_times;
@@ -136,7 +143,7 @@ class ItemController extends Controller
                     $tagIds[] = $tag->id;
                 }
             }
-            
+
             $product->tags()->sync($tagIds);
         }
 
@@ -191,7 +198,7 @@ class ItemController extends Controller
     public function getData(Request $request)
     {
         $item = Item::with(['item_category','uom','supplier','tags'])->orderBy('id','DESC')->get();
-		
+
         return DataTables::of($item)
         ->rawColumns(['options', 'tags'])
 
@@ -210,7 +217,7 @@ class ItemController extends Controller
                 </form>
             ';
         })
-        
+
 
         ->toJson();
     }
@@ -224,9 +231,9 @@ class ItemController extends Controller
         $uom = SapUom::get();
         $supplier = Supplier::get();
         $tags=Tag::get();
-        
+
         return view('pages.item.create', compact(['item_category','uom','supplier', 'tags']));
-        
+
     }
 
     public function edit($id)
@@ -236,7 +243,7 @@ class ItemController extends Controller
         $uom = SapUom::get();
         $supplier = Supplier::get();
         $tags=Tag::get();
-        
+
         return view('pages.item.edit', compact(['item', 'item_category','uom','supplier','tags']));
     }
 
@@ -257,7 +264,7 @@ class ItemController extends Controller
                         $item_category = ItemCategory::where('category_code', $data->category_code)->first();
                         $uom = SapUom::where('uom_sname',$data->uom)->first();
                         $supplier = Supplier::where('supplier_code',$data->supplier_code)->first();
-                        
+
                         $item                       = Item::firstOrNew(['id' => $item_id]);
                         $item->item_category_id     = !empty($item_category) ? $item_category->id : NULL;
                         $item->item_code            = $data->item_code;
@@ -269,19 +276,19 @@ class ItemController extends Controller
                         $item->supplier_id          = !empty($supplier) ? $supplier->id : NULL;
                         $item->lead_times           = $data->lead_times;
                         $item->remarks              = $data->remarks;
-                        $item->save();                  
-                    }  
+                        $item->save();
+                    }
 
                     if (count($data->tags) > 0 || !empty($data->tags)){
-                        
+
                         foreach (explode(';', $data->tags) as $tag) {
-            
+
                             $tag = Tag::firstOrCreate(['name' => $tag]);
                             if ($tag) {
                                 $tagIds[] = $tag->id;
                             }
                         }
-                        
+
                         $item->tags()->sync($tagIds);
                     }
 
@@ -290,14 +297,14 @@ class ItemController extends Controller
                                 'type'              => 'success',
                                 'message'           => 'Upload Data Success!'
                             ];
-                    Storage::delete('public/uploads/'.$name); 
+                    Storage::delete('public/uploads/'.$name);
                     return redirect()
                             ->route('item.index')
                             ->with($res);
         }
     }
 
-    public function export() 
+    public function export()
     {
         $item = Item::all();
 
@@ -310,7 +317,7 @@ class ItemController extends Controller
 
     }
 
-    public function template_item() 
+    public function template_item()
     {
        return Excel::create('Template Items', function($excel){
              $excel->sheet('mysheet', function($sheet){
@@ -328,9 +335,9 @@ class ItemController extends Controller
              });
 
         })->download('csv');
-    } 
+    }
 }
 
 
 
-    
+
