@@ -12,9 +12,10 @@ class MediaController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'role:admin']);
+
+        $this->middleware(['auth', 'role:admin|purchasing']);
     }
-    
+
     public function uploads(Request $request)
     {
     	foreach ($request->file('file') as $file) {
@@ -51,7 +52,7 @@ class MediaController extends Controller
 	        $media->size = $filesize;
 	        $media->save();
 
-	      
+
 	    }
 
 	    $res = [
@@ -76,7 +77,7 @@ class MediaController extends Controller
     	}
 
 	 	if ($request->ajax()) {
-            return view('pages.media.load', ['images' => $images->get()])->render();  
+            return view('pages.media.load', ['images' => $images->get()])->render();
         }
     }
 
