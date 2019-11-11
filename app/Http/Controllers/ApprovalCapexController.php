@@ -79,8 +79,9 @@ class ApprovalCapexController extends Controller
         $sap_uoms           = SapUom::find($request->sap_uom_id);
         $item 				= Item::firstOrNew(['item_description' => $request->remarks]);
         $item->item_description = $request->remarks;
-        $item->item_category_id = '0';
+        $item->item_category_id = '1';
         $item->item_code = 'XXX';
+        $item->item_specification = $request->pr_specs;
         $item->item_price = str_replace(',','',$request->price_remaining);
         $item->uom_id = $sap_uoms->id;
         $item->supplier_id = '0';
@@ -480,7 +481,7 @@ class ApprovalCapexController extends Controller
     
     public function AjaxDetailApproval($approval_number)
 	{
-         $approval_master = ApprovalMaster::select('*','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code')
+         $approval_master = ApprovalMaster::select('*','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code', DB::RAW('CONCAT_WS(" - ", approval_details.sap_account_code, approval_details.sap_account_text) AS sap_account_code1'))
                         ->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
 						->join('capexes','capexes.budget_no','=','approval_details.budget_no')
 						->where('approval_number',$approval_number);

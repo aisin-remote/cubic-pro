@@ -14,7 +14,7 @@ class CatalogController extends Controller
     {
         $categories = ItemCategory::with(['items' => function($query){
             
-                $query->groupBy('item_code');
+                $query->groupBy('id');
             
         }])->whereHas('items')->get();
 
@@ -34,7 +34,7 @@ class CatalogController extends Controller
             }
 
         })
-        ->groupBy('item_code')
+        ->groupBy('id')
         ->when(!empty($request->category), function($query) use ($request){
             $query->where('item_category_id', $request->category);
         })
@@ -46,9 +46,9 @@ class CatalogController extends Controller
         return view('catalog.show', compact(['items', 'categories', 'category']));
     }
 
-    public function details($item_code)
+    public function details($id)
     {
-        $items = Item::where('item_code', $item_code)
+        $items = Item::where('id', $id)
                     ->get();
         
         return view('catalog.details', compact(['items']));

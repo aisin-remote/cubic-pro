@@ -70,7 +70,7 @@
             { data: 'asset_no', name: 'asset_no'},
             { data: 'sap_track_no', name: 'sap_track_no'},
             { data: 'sap_asset_no', name: 'sap_asset_no'},
-            { data: 'sap_account_code', name: 'sap_account_code'},
+            { data: 'sap_account_code1', name: 'sap_account_code'},
             { data: 'ad_sap_cc_code', name: 'ad_sap_cc_code'},
 			{ data:null}, // budget description or equipment name
             { data: 'remarks', name: 'remarks'},
@@ -177,6 +177,33 @@
             sap_asset_no.html('<a href="#" class="editable" data-pk="'+id_ad+'" data-name="sap_asset_no" data-title="Enter SAP Asset Number">'+sap_asset_no.text()+'</a>');
         });
     }
+
+    function initEditable()
+	{
+		$('.editable').editable({
+			type: 'text',
+			url: SITE_URL + '/approval/xedit',
+			params: {				 
+				_token: $('meta[name="csrf-token"]').attr('content'),
+			},
+			mode:'inline',
+			validate: function(value) {
+				if($.trim(value) == '') return 'This field is required';
+			},
+			display: function(value, response) {
+				return false;   //disable this method
+			},
+			success: function(data, config) {
+				console.log(data);
+				if (data.error) {
+					return data.error;
+				};
+
+				$(this).text(data.value);
+				table.ajax.reload( null, false );
+			}
+		});
+	}
 
 	function xeditClasser()
     {

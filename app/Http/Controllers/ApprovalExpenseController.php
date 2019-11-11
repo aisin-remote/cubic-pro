@@ -70,13 +70,14 @@ class ApprovalExpenseController extends Controller
         $sap_uoms           = SapUom::find($request->sap_uom_id);
         
         $item 				= Item::firstOrNew(['item_description' => $request->remarks]);
-        // $item->item_description = $request->remarks;
-        // $item->item_category_id = '0';
-        // $item->item_code = 'XXX';
-        // $item->item_price = str_replace(',','',$request->price_remaining);
-        // $item->uom_id = $sap_uoms->id;
-        // $item->supplier_id = '0';
-        // $item->save();
+        $item->item_description = $request->remarks;
+        $item->item_category_id = '1';
+        $item->item_code = 'XXX';
+        $item->item_specification = $request->pr_specs;
+        $item->item_price = str_replace(',','',$request->price_remaining);
+        $item->uom_id = $sap_uoms->id;
+        $item->supplier_id = '0';
+        $item->save();
 
         Cart::instance('expense')->add([
 
@@ -225,7 +226,8 @@ class ApprovalExpenseController extends Controller
 						
 						foreach($approval_dtl as $app_dtl){
 							$approver_user = new ApproverUser();
-							$approver_user->approval_master_id  = $am->id;
+                            $approver_user->approval_master_id  = $am->id;
+                            $approver_user->approval_detail_id  = $app_dtl->id;
 							$approver_user->user_id  			= $app_dtl->user_id;
 							$approver_user->save();
 						}
@@ -381,7 +383,8 @@ class ApprovalExpenseController extends Controller
 
 	public function AjaxDetailApproval($approval_number)
 	{
-		 $approval_master = ApprovalMaster::select('*','approval_masters.status as am_status','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code')->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
+         $approval_master = ApprovalMaster::select('*','approval_masters.status as am_status','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code', DB::RAW('CONCAT_WS(" - ", approval_details.sap_account_code, approval_details.sap_account_text) AS sap_account_code1'))
+                        ->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
 						->join('expenses','expenses.budget_no','=','approval_details.budget_no')
 						->where('approval_number',$approval_number);
 		 return DataTables::of($approval_master)

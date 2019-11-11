@@ -71,7 +71,7 @@
             { data: 'asset_no', name: 'asset_no'},
             { data: 'sap_track_no', name: 'sap_track_no'},
             { data: 'sap_asset_no', name: 'sap_asset_no'},
-            { data: 'sap_account_code', name: 'sap_account_code'},
+            { data: 'sap_account_code1', name: 'sap_account_code'},
             { data: 'ad_sap_cc_code', name: 'ad_sap_cc_code'},
             { data: 'description', name: 'description'},
             { data: 'remarks', name: 'remarks'},

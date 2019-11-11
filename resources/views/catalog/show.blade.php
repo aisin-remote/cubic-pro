@@ -80,7 +80,7 @@
                             
                             @foreach ($items as $item)
                             <!-- Product Item -->
-                            <a href="{{ url('catalog/'.$item->item_code) }}">
+                            <a href="{{ url('catalog/'.$item->id) }}">
                             <div class="product_item is_new" style="position: absolute; left: 0px; top: 0px;">
                                 <div class="product_border"></div>
                                 <div class="product_image d-flex flex-column align-items-center justify-content-center">
@@ -92,7 +92,7 @@
                                 "></div>
                                 <div class="product_content">
                                 <div class="product_price">Rp. {{ number_format($item->item_price) }}</div>
-                                <div class="product_name"><div><a href="{{ url('catalog/'.$item->item_code) }}" tabindex="0">{{ ucfirst($item->item_description) }}</a></div></div>
+                                <div class="product_name"><div><a href="{{ url('catalog/'.$item->id) }}" tabindex="0">{{ ucfirst($item->item_description) }}</a></div></div>
                                 </div>
                             </div>
                             </a>

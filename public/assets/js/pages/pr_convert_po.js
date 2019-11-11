@@ -6,7 +6,7 @@ var table = $('#data_table').dataTable({
         //     printApproval();
         // },
         columns: [
-            {data: 'department_name', name: 'department_name'},
+            {data: 'department_name', name: 'department'},
             {data: 'approval_number', name: 'approval_number'},
             {data: 'total', name: 'total'},
             {data: 'status', name: 'status'},
