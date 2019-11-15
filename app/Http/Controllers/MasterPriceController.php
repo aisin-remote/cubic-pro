@@ -58,7 +58,18 @@ class MasterPriceController extends Controller
         $masterprice->part_id       = $request->part_id;
         $masterprice->supplier_id   = $request->supplier_id;
         $masterprice->source        = $request->source;
-        $masterprice->price         = $request->price;
+        $masterprice->price_apr     = $request->price_apr;
+        $masterprice->price_may     = $request->price_may;
+        $masterprice->price_jun     = $request->price_jun;
+        $masterprice->price_jul     = $request->price_jul;
+        $masterprice->price_aug     = $request->price_aug;
+        $masterprice->price_sep     = $request->price_sep;
+        $masterprice->price_oct     = $request->price_oct;
+        $masterprice->price_nov     = $request->price_nov;
+        $masterprice->price_dec     = $request->price_dec;
+        $masterprice->price_jan     = $request->price_jan;
+        $masterprice->price_feb     = $request->price_feb;
+        $masterprice->price_mar     = $request->price_mar;
         $masterprice->fiscal_year   = $request->fiscal_year;
         $masterprice->save();
 
@@ -120,12 +131,23 @@ class MasterPriceController extends Controller
     {
         DB::transaction(function() use ($request, $id){
 
-            $masterprice                         = MasterPrice::find($id);
-            $masterprice->part_id                = $request->part_id;
-            $masterprice->supplier_id            = $request->supplier_id;
-            $masterprice->source                 = $request->source;
-            $masterprice->price                  = $request->price;
-            $masterprice->fiscal_year            = $request->fiscal_year;
+            $masterprice                = MasterPrice::find($id);
+            $masterprice->part_id       = $request->part_id;
+            $masterprice->supplier_id   = $request->supplier_id;
+            $masterprice->source        = $request->source;
+            $masterprice->price_apr     = $request->price_apr;
+            $masterprice->price_may     = $request->price_may;
+            $masterprice->price_jun     = $request->price_jun;
+            $masterprice->price_jul     = $request->price_jul;
+            $masterprice->price_aug     = $request->price_aug;
+            $masterprice->price_sep     = $request->price_sep;
+            $masterprice->price_oct     = $request->price_oct;
+            $masterprice->price_nov     = $request->price_nov;
+            $masterprice->price_dec     = $request->price_dec;
+            $masterprice->price_jan     = $request->price_jan;
+            $masterprice->price_feb     = $request->price_feb;
+            $masterprice->price_mar     = $request->price_mar;
+            $masterprice->fiscal_year   = $request->fiscal_year;
 
             $masterprice->save();
          });
@@ -275,7 +297,18 @@ class MasterPriceController extends Controller
                         $price->part_number     = $data->part_number;
                         $price->supplier_code   = $data->supplier_code;
                         $price->source          = $data->source;
-                        $price->price           = $data->price;
+                        $price->price_apr       = $data->price_apr;
+                        $price->price_may       = $data->price_may;
+                        $price->price_jun       = $data->price_jun;
+                        $price->price_jul       = $data->price_jul;
+                        $price->price_aug       = $data->price_aug;
+                        $price->price_sep       = $data->price_sep;
+                        $price->price_oct       = $data->price_oct;
+                        $price->price_nov       = $data->price_nov;
+                        $price->price_dec       = $data->price_dec;
+                        $price->price_jan       = $data->price_jan;
+                        $price->price_feb       = $data->price_feb;
+                        $price->price_mar       = $data->price_mar;
                         $price->fiscal_year     = $data->fiscal_year;
                         $price->save();                  
                     }  
@@ -331,11 +364,22 @@ class MasterPriceController extends Controller
 
             if (!empty($temp->parts) && !empty($temp->suppliers)) {
                 $price = new MasterPrice;
-                $price->part_id     =   $temp->part_id;
-                $price->supplier_id =   $temp->supplier_id;
-                $price->source      =   $temp->source;
-                $price->price       =   $temp->price;
-                $price->fiscal_year =   $temp->fiscal_year;
+                $price->part_id     = $temp->part_id;
+                $price->supplier_id = $temp->supplier_id;
+                $price->source      = $temp->source;
+                $price->price_apr   = $temp->price_apr;
+                $price->price_may   = $temp->price_may;
+                $price->price_jun   = $temp->price_jun;
+                $price->price_jul   = $temp->price_jul;
+                $price->price_aug   = $temp->price_aug;
+                $price->price_sep   = $temp->price_sep;
+                $price->price_oct   = $temp->price_oct;
+                $price->price_nov   = $temp->price_nov;
+                $price->price_dec   = $temp->price_dec;
+                $price->price_jan   = $temp->price_jan;
+                $price->price_feb   = $temp->price_feb;
+                $price->price_mar   = $temp->price_mar;
+                $price->fiscal_year = $temp->fiscal_year;
                 $price->save();
                 $res = [
                     'title' => 'Sukses',
@@ -357,12 +401,36 @@ class MasterPriceController extends Controller
                 $sheet->cell('B1', function($cell) {$cell->setValue('part_number');});
                 $sheet->cell('C1', function($cell) {$cell->setValue('supplier_code');});
                 $sheet->cell('D1', function($cell) {$cell->setValue('source');});
-                $sheet->cell('E1', function($cell) {$cell->setValue('price');});
+                $sheet->cell('E1', function($cell) {$cell->setValue('price_apr');});
+                $sheet->cell('F1', function($cell) {$cell->setValue('price_may');});
+                $sheet->cell('G1', function($cell) {$cell->setValue('price_jun');});
+                $sheet->cell('H1', function($cell) {$cell->setValue('price_jul');});
+                $sheet->cell('I1', function($cell) {$cell->setValue('price_aug');});
+                $sheet->cell('J1', function($cell) {$cell->setValue('price_sep');});
+                $sheet->cell('K1', function($cell) {$cell->setValue('price_oct');});
+                $sheet->cell('L1', function($cell) {$cell->setValue('price_nov');});
+                $sheet->cell('M1', function($cell) {$cell->setValue('price_dec');});
+                $sheet->cell('N1', function($cell) {$cell->setValue('price_jan');});
+                $sheet->cell('O1', function($cell) {$cell->setValue('price_feb');});
+                $sheet->cell('P1', function($cell) {$cell->setValue('price_mar');});
                 $sheet->cell('A2', function($cell) {$cell->setValue('2018');});
                 $sheet->cell('B2', function($cell) {$cell->setValue('423176-10200');});
                 $sheet->cell('C2', function($cell) {$cell->setValue('SUP01');});
                 $sheet->cell('D2', function($cell) {$cell->setValue('Local');});
-                $sheet->cell('E2', function($cell) {$cell->setValue('12.000');});
+                $sheet->cell('E2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('F2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('G2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('H2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('I2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('J2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('K2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('L2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('M2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('N2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('O2', function($cell) {$cell->setValue('0');});
+                $sheet->cell('P2', function($cell) {$cell->setValue('0');});
+
+            
                  
              });
 

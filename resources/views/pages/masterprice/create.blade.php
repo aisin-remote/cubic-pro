@@ -29,7 +29,7 @@
                 <div class="row">
                     <form id="form-add-edit" action="{{ route('masterprice.store') }}" method="post">
                         @csrf
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Fiscal Year<span class="text-danger">*</span></label>
                                 <input type="text" name="fiscal_year" placeholder="Fiscal Year" class="form-control tinymce" required="required">
@@ -52,10 +52,7 @@
                                 <span class="help-block"></span>
                            </div>
 
-                           
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
+                           <div class="form-group">
                                 <label class="control-label">Part Number</label>
                                 <select name="part_id" class="select2" data-placeholder="Select Part Number" required="required">
                                     <option></option>
@@ -65,10 +62,77 @@
                                 </select>
                                 <span class="help-block"></span>
                            </div>
+                           
+                        </div>
+                        <div class="col-md-3">
+                            
+                           <div class="form-group">
+                                <label class="control-label">Price April<span class="text-danger">*</span></label>
+                                <input type="number" name="price_apr" placeholder="Price April" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
 
                            <div class="form-group">
-                                <label class="control-label">Price<span class="text-danger">*</span></label>
-                                <input type="number" name="price" placeholder="Price" class="form-control tinymce" required="required" rows="5"></input>
+                                <label class="control-label">Price May<span class="text-danger">*</span></label>
+                                <input type="number" name="price_may" placeholder="Price May" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+
+                           <div class="form-group">
+                                <label class="control-label">Price June<span class="text-danger">*</span></label>
+                                <input type="number" name="price_jun" placeholder="Price June" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+
+                           <div class="form-group">
+                                <label class="control-label">Price July<span class="text-danger">*</span></label>
+                                <input type="number" name="price_jul" placeholder="Price July" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+                        </div>
+                        <div class="col-md-3">
+                           <div class="form-group">
+                                <label class="control-label">Price August<span class="text-danger">*</span></label>
+                                <input type="number" name="price_aug" placeholder="Price August" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+
+                           <div class="form-group">
+                                <label class="control-label">Price September<span class="text-danger">*</span></label>
+                                <input type="number" name="price_sep" placeholder="Price Sepetember" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+
+                           <div class="form-group">
+                                <label class="control-label">Price October<span class="text-danger">*</span></label>
+                                <input type="number" name="price_oct" placeholder="Price October" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price November<span class="text-danger">*</span></label>
+                                <input type="number" name="price_nov" placeholder="Price November" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+                        </div>
+                        <div class="col-md-3">
+                           <div class="form-group">
+                                <label class="control-label">Price December<span class="text-danger">*</span></label>
+                                <input type="number" name="price_dec" placeholder="Price December" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price January<span class="text-danger">*</span></label>
+                                <input type="number" name="price_jan" placeholder="Price January" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price February<span class="text-danger">*</span></label>
+                                <input type="number" name="price_feb" placeholder="Price February" class="form-control tinymce" required="required" rows="5"></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price March<span class="text-danger">*</span></label>
+                                <input type="number" name="price_mar" placeholder="Price March" class="form-control tinymce" required="required" rows="5"></input>
                                 <span class="help-block"></span>
                            </div>
                         </div>

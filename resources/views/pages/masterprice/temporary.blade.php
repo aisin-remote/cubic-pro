@@ -40,7 +40,18 @@
                             <th>Part Number</th>
                             <th>Supplier Code</th>
                             <th>Source</th>
-                            <th>Price</th>
+                            <th>Price April</th>
+                            <th>Price May</th>
+                            <th>Price June</th>
+                            <th>Price July</th>
+                            <th>Price August</th>
+                            <th>Price September</th>
+                            <th>Price October</th>
+                            <th>Price November</th>
+                            <th>Price December</th>
+                            <th>Price January</th>
+                            <th>Price February</th>
+                            <th>Price March</th>
                             
                         </tr>
                     </thead>

@@ -31,7 +31,7 @@
                      <form id="form-add-edit" action="{{ route('masterprice.update', $masterprice->id) }}" method="post">
                         @csrf
                         @method('PUT')
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Fiscal Year<span class="text-danger">*</span></label>
                                 <input type="text" name="fiscal_year" placeholder="Fiscal Year" class="form-control tinymce" required="required" value="{{$masterprice->fiscal_year}}">
@@ -55,10 +55,7 @@
                                 <span class="help-block"></span>
                            </div>
 
-                           
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
+                           <div class="form-group">
                                 <label class="control-label">Part Number</label>
                                 <select name="part_id" class="select2" data-placeholder="Select Part Number" required="required" value="{{ $masterprice->parts->part_number}}">
                                     <option></option>
@@ -68,14 +65,76 @@
                                 </select>
                                 <span class="help-block"></span>
                            </div>
-                           
 
+                           
+                        </div>
+                        <div class="col-md-3">
                            <div class="form-group">
-                                <label class="control-label">Price<span class="text-danger">*</span></label>
-                                <input type="number" name="price" placeholder="Price" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price}}" ></input>
+                                <label class="control-label">Price April<span class="text-danger">*</span></label>
+                                <input type="number" name="price_apr" placeholder="Price April" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_apr}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price May<span class="text-danger">*</span></label>
+                                <input type="number" name="price_may" placeholder="Price May" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_may}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price June<span class="text-danger">*</span></label>
+                                <input type="number" name="price_jun" placeholder="Price June" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_jun}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price July<span class="text-danger">*</span></label>
+                                <input type="number" name="price_jul" placeholder="Price July" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_jul}}" ></input>
                                 <span class="help-block"></span>
                            </div>
                         </div>
+                        <div class="col-md-3">
+                           <div class="form-group">
+                                <label class="control-label">Price August<span class="text-danger">*</span></label>
+                                <input type="number" name="price_aug" placeholder="Price August" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_aug}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price Sepetember<span class="text-danger">*</span></label>
+                                <input type="number" name="price_sep" placeholder="Price Sepetember" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_sep}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price October<span class="text-danger">*</span></label>
+                                <input type="number" name="price_oct" placeholder="Price October" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_oct}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price November<span class="text-danger">*</span></label>
+                                <input type="number" name="price_nov" placeholder="Price November" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_nov}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                        </div>
+                        <div class="col-md-3">
+                           <div class="form-group">
+                                <label class="control-label">Price December<span class="text-danger">*</span></label>
+                                <input type="number" name="price_dec" placeholder="Price December" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_dec}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price January<span class="text-danger">*</span></label>
+                                <input type="number" name="price_jan" placeholder="Price January" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_jan}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price February<span class="text-danger">*</span></label>
+                                <input type="number" name="price_feb" placeholder="Price February" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_feb}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                           <div class="form-group">
+                                <label class="control-label">Price March<span class="text-danger">*</span></label>
+                                <input type="number" name="price_mar" placeholder="Price March" class="form-control tinymce text-right" required="required" rows="5"  value="{{$masterprice->price_mar}}" ></input>
+                                <span class="help-block"></span>
+                           </div>
+                        </div>
+
                         <div class="col-md-12 text-right">
                             <hr>
 
