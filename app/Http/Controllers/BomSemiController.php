@@ -40,13 +40,13 @@ class BomSemiController extends Controller
         return view('pages.bom_semi.temporary');
     }
 
-   
+
      public function create()
     {
         $parts      = Part::get();
         $suppliers  = Supplier::get();
         return view('pages.bom_semi.create', compact(['parts','suppliers']));
-        
+
     }
 
     /**
@@ -105,7 +105,7 @@ class BomSemiController extends Controller
                         ->route('bom_semi.index')
                         ->with($res);
         }
-        
+
     }
 
     /**
@@ -126,7 +126,7 @@ class BomSemiController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {   
+    {
         $suppliers  = Supplier::get();
         $parts      = Part::get();
         $bom_data   = BomSemiData::get();
@@ -150,7 +150,7 @@ class BomSemiController extends Controller
         }
 
         return view('pages.bom_semi.edit', compact(['suppliers', 'parts', 'bom_semi','bom_data']));
-        
+
     }
 
     /**
@@ -162,7 +162,7 @@ class BomSemiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         $res = '';
 
         DB::transaction(function() use ($request, $id, &$res){
@@ -234,7 +234,7 @@ class BomSemiController extends Controller
             'title' => 'Sukses',
             'type' => 'success',
             'message' => 'Data berhasil di Kosongkan!'
-        ]; 
+        ];
 
         return redirect()
                 ->route('bom_semi.index')
@@ -276,7 +276,7 @@ class BomSemiController extends Controller
 
         return Datatables::of($details)
         ->toJson();
-        
+
     }
 
     public function getData_temporary(Request $request)
@@ -297,8 +297,8 @@ class BomSemiController extends Controller
         //                         'part_number' => !empty($bom_semi->parts) ? $bom_semi->parts->part_number : $bom_semi->part_number.' Tidak Ada',
         //                         'supplier_code' => !empty($bom_semi->suppliers) ? $bom_semi->suppliers->supplier_code : $bom_semi->supplier_code.' Tidak Ada',
         //                         'model' => $bom_semi->model,
-                                
-        //                         'option' => ' 
+
+        //                         'option' => '
         //                             <button class="btn btn-danger btn-xs btn-bordered" onclick="onDelete(\''.$bom_semi->rowId.'\')" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-close"></i></button>'
         //                     ];
 
@@ -320,7 +320,7 @@ class BomSemiController extends Controller
 
         ->addColumn('options', function($bom_semi){
             return '
-                
+
             ';
         })
 
@@ -336,7 +336,7 @@ class BomSemiController extends Controller
         ->setRowId('id')
 
         ->setRowClass(function ($bom_semi) {
-            
+
             return !empty($bom_semi->parts) && !empty($bom_semi->suppliers)? 'alert-success' : 'alert-warning';
         })
         ->setRowData([
@@ -345,7 +345,7 @@ class BomSemiController extends Controller
         ->setRowAttr([
             'color' => 'red',
         ])
-        
+
 
         ->toJson();
     }
@@ -375,7 +375,7 @@ class BomSemiController extends Controller
         ->setRowId('id')
 
         ->setRowClass(function ($bom_semi) {
-            
+
             return !empty($bom_semi->parts) && !empty($bom_semi->suppliers)? 'alert-success' : 'alert-warning';
         })
         ->setRowData([
@@ -384,12 +384,12 @@ class BomSemiController extends Controller
         ->setRowAttr([
             'color' => 'red',
         ])
-        
+
         ->toJson();
 
     }
-    
-    public function export() 
+
+    public function export()
     {
         $boms = BomSemi::select('parts_bom.part_number as part_number', 'parts_bom.part_name as part_name', 'model','parts_bom_semi_datas.part_number as part_number_details','suppliers.supplier_code','suppliers.supplier_name', 'bom_semi_datas.source','bom_semi_datas.qty')
                     ->join('parts as parts_bom', 'bom_semis.part_id', '=', 'parts_bom.id')
@@ -431,9 +431,9 @@ class BomSemiController extends Controller
                         // $details->save();
 		                $bom_semi->details()->save($details);
 	                }
-	                
+
 	            }
-	            
+
 	        }
 
         });
@@ -444,8 +444,8 @@ class BomSemiController extends Controller
                 'title' => 'Sukses',
                 'type' => 'success',
                 'message' => 'Data berhasil di Di Simpan !'
-            ]; 
-        
+            ];
+
         return redirect()
                 ->route('bom_semi.index');
                 // ->with($res);
@@ -481,27 +481,27 @@ class BomSemiController extends Controller
                                         'part_number'    => $data->part_number_details,
                                         'supplier_code'  => $data->supplier_code_details,
                                         'source'         => $data->source,
-                                        'qty'            => $data->qty
+                                        'qty'            => str_replace(',', '.', $data->qty)
                                     ];
                 }
 
                 TemporaryBomSemi::insert($array);
                 TemporaryBomSemiData::insert($array_datas);
-               
+
             });
             $res = [
                         'title'                 => 'Sukses',
                         'type'                  => 'success',
                         'message'               => 'Data berhasil di Upload!'
-                    ]; 
+                    ];
             return redirect()
                     ->route('bom_semi.temporary')
                     ->with($res);
-            
+
         }
-                               
+
     }
-    public function templateBomSemi() 
+    public function templateBomSemi()
     {
        return Excel::create('Format Upload Data BOM Semi', function($excel){
              $excel->sheet('mysheet', function($sheet){
@@ -522,10 +522,10 @@ class BomSemiController extends Controller
                 $sheet->cell('E2', function($cell) {$cell->setValue('SUP01');});
                 $sheet->cell('F2', function($cell) {$cell->setValue('Local');});
                 $sheet->cell('G2', function($cell) {$cell->setValue('12');});
-                 
+
              });
 
         })->download('csv');
     }
-    
+
 }

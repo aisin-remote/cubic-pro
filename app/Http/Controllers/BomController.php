@@ -43,7 +43,7 @@ class BomController extends Controller
         return view('pages.bom.temporary');
     }
 
-   
+
      public function create()
     {
         $parts      = Part::get();
@@ -152,10 +152,10 @@ class BomController extends Controller
                 ]
             ]);
 
-        }         
+        }
 
         return view('pages.bom.edit', compact(['suppliers', 'parts', 'bom','bom_data']));
-        
+
     }
 
     /**
@@ -204,7 +204,7 @@ class BomController extends Controller
                         ->route('bom.index')
                         ->with($res);
         // }
-    
+
     }
 
     /**
@@ -263,8 +263,8 @@ class BomController extends Controller
 
         return Datatables::of($details)->make(true);
     }
-    
-    public function export() 
+
+    public function export()
     {
         $boms = Bom::select('parts_bom.part_number as part_number', 'parts_bom.part_name as part_name', 'model','parts_bom_datas.part_number as part_number_details','suppliers.supplier_code','suppliers.supplier_name', 'bom_datas.source','bom_datas.qty')
                     ->join('parts as parts_bom', 'boms.part_id', '=', 'parts_bom.id')
@@ -282,7 +282,7 @@ class BomController extends Controller
         })->download('csv');
 
     }
-   
+
     public function import(Request $request)
     {
         $file = $request->file('file');
@@ -291,10 +291,7 @@ class BomController extends Controller
         $array = [];
         if ($request->hasFile('file')) {
             Excel::load(public_path('storage/uploads/'.$name), function($reader) use ($array){
-
                 foreach ($reader->all() as $data) {
-
-                    
                     $array[] = [
                         'part_number'           => $data->part_number,
                         'supplier_code'         => $data->supplier_code,
@@ -306,10 +303,10 @@ class BomController extends Controller
                             'part_number'    => $data->part_number_details,
                             'supplier_code'  => $data->supplier_code_details,
                             'source'         => $data->source,
-                            'qty'            => $data->qty
+                            'qty'            => str_replace(',', '.', $data->qty)
                         ];
                 }
-                
+
                 TemporaryBom::insert(collect($array)->unique('part_number')->toArray());
                 TemporaryBomData::insert($array_datas);
             });
@@ -317,13 +314,13 @@ class BomController extends Controller
                         'title'                 => 'Sukses',
                         'type'                  => 'success',
                         'message'               => 'Data berhasil di Upload!'
-                    ]; 
+                    ];
             return redirect()
                     ->route('bom.temporary')
                     ->with($res);
-            
+
         }
-                               
+
     }
 
     public function save(){
@@ -333,7 +330,7 @@ class BomController extends Controller
             foreach ($temps as $temp) {
                 $part_id                    = Part::where('part_number', $temp->part_number)->first();
                 $supplier_id                = Supplier::where('supplier_code', $temp->supplier_code)->first();
-                
+
                 if (!empty($temp->parts) && !empty($temp->suppliers))  {
 
                     $bom              = Bom::firstOrNew(['part_id'=> $temp->part_id]);
@@ -354,9 +351,9 @@ class BomController extends Controller
                         $details->qty         =   $temp_det->qty;
                         $bom->details()->save($details);
                     }
-                    
+
                 }
-                
+
             }
 
         });
@@ -367,8 +364,8 @@ class BomController extends Controller
                 'title' => 'Sukses',
                 'type' => 'success',
                 'message' => 'Data berhasil di Di Simpan !'
-            ]; 
-        
+            ];
+
         return redirect()
                 ->route('bom.index')
                 ->with($res);
@@ -384,7 +381,7 @@ class BomController extends Controller
             'title' => 'Sukses',
             'type' => 'success',
             'message' => 'Data berhasil di Kosongkan!'
-        ]; 
+        ];
 
         return redirect()
                 ->route('bom.index')
@@ -404,7 +401,7 @@ class BomController extends Controller
 
         ->addColumn('options', function($bom){
             return '
-                
+
             ';
         })
 
@@ -420,7 +417,7 @@ class BomController extends Controller
         ->setRowId('id')
 
         ->setRowClass(function ($bom) {
-            
+
             return !empty($bom->parts) && !empty($bom->suppliers)? 'alert-success' : 'alert-warning';
         })
         ->setRowData([
@@ -429,7 +426,7 @@ class BomController extends Controller
         ->setRowAttr([
             'color' => 'red',
         ])
-        
+
 
         ->toJson();
     }
@@ -459,7 +456,7 @@ class BomController extends Controller
         ->setRowId('id')
 
         ->setRowClass(function ($bom) {
-            
+
             return !empty($bom->parts) && !empty($bom->suppliers)? 'alert-success' : 'alert-warning';
         })
         ->setRowData([
@@ -468,11 +465,11 @@ class BomController extends Controller
         ->setRowAttr([
             'color' => 'red',
         ])
-        
+
         ->toJson();
 
     }
-    public function template_bom() 
+    public function template_bom()
     {
        return Excel::create('Format Upload Data BOM', function($excel){
              $excel->sheet('mysheet', function($sheet){
@@ -493,9 +490,9 @@ class BomController extends Controller
                 $sheet->cell('E2', function($cell) {$cell->setValue('SUP01');});
                 $sheet->cell('F2', function($cell) {$cell->setValue('Local');});
                 $sheet->cell('G2', function($cell) {$cell->setValue('12');});
-                 
+
              });
 
         })->download('csv');
-    } 
+    }
 }
