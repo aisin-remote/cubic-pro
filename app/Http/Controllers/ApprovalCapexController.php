@@ -551,7 +551,7 @@ class ApprovalCapexController extends Controller
 
             $dataUpdate = [$request->name => $request->value];
 
-            if ($budgetType == 'ex' || $budgetType == 'ue') {
+            if (($budgetType == 'ex' || $budgetType == 'ue') && $request->name == 'sap_account_code') {
                 $accountText = SapGlAccount::where('gl_acode', $request->value)->first()->gl_aname;
                 $dataUpdate['sap_account_text'] = $accountText;
             }
