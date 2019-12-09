@@ -271,14 +271,15 @@ class PrController extends Controller
           
                 );
             }         
-
+        ob_end_clean(); // this
+        ob_start(); // and this
         Excel::create('Filename', function($excel) use ($data){
             $excel->sheet('Data', function($sheet) use ($data) {
             
                 $sheet->fromArray($data, null, 'A1', false, false);
             });
         })->setFilename($approval_number)
-          ->export('xlsx');
+          ->export('xls');
 
         return $data;
 	}

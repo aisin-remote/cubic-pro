@@ -34,7 +34,7 @@
 							@if (\Entrust::can('approval-create'))
 								<a href="{{ url('approval/create/cx') }}" class="btn btn-primary" id="create">Create Capex Approval</a>
 							@endif
-							<a href="{{ url('approval/create/cx') }}" class="btn btn-primary" id="create">Create Capex Approval</a>
+							
 						</div>
 					</div>
 					<div class="col-md-12">

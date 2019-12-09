@@ -19,26 +19,33 @@ var table = $('#data_table').dataTable({
     {
 		 window.location.href=SITE_URL+"/pr_convert_excel/"+approval_number;
 		// $.getJSON(SITE_URL+"/approval/print/"+approval_number,{},function(data){
-            // if (data.error) {
-                // alert(data.error);
-                // return false;
-            // };
-            // table.ajax.reload();
-            // window.location.replace(SITE_URL+"/pr_convert_excel/"+approval_number);
+        //     if (data.error) {
+        //         alert(data.error);
+        //         return false;
+        //     };
+        //     table.ajax.reload();
+        //     window.location.replace(SITE_URL+"/pr_convert_excel/"+approval_number);
             
         // });
 
         // return false;
     }
 
+    
+
     $(document).ready(function(){
+
+        var data = {
+                _token: '{{ csrf_token() }}',
+            };
+
         $("#ready_download").click(function(){
-            // table.ajax.url( SITE_URL+"/approvalku/get_print/4").load();
+            table.api().ajax.url( SITE_URL+"/approvalku/get_print/4").load();
         });
         $("#already_download").click(function(){       
-            // table.ajax.url( SITE_URL+"/approvalku/get_print/1").load();
+            table.api().ajax.url( SITE_URL+"/approvalku/get_print/1").load();
         });
-        $("#cant_download").click(function(){   	
-            // table.ajax.url( SITE_URL+"/approvalku/get_print/3").load();
+        $("#cant_download").click(function(){       
+            table.api().ajax.url( SITE_URL+"/approvalku/get_print/3").load();
         });
     });
