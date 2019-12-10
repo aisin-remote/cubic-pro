@@ -14,38 +14,33 @@ var table = $('#data_table').dataTable({
             {data: 'action', name: 'action', orderable: false, searchable: false },
         ],
     });
-	
+
     function printApproval(approval_number)
     {
 		 window.location.href=SITE_URL+"/pr_convert_excel/"+approval_number;
 		// $.getJSON(SITE_URL+"/approval/print/"+approval_number,{},function(data){
-        //     if (data.error) {
-        //         alert(data.error);
-        //         return false;
-        //     };
-        //     table.ajax.reload();
-        //     window.location.replace(SITE_URL+"/pr_convert_excel/"+approval_number);
-            
+            // if (data.error) {
+                // alert(data.error);
+                // return false;
+            // };
+            // table.ajax.reload();
+            // window.location.replace(SITE_URL+"/pr_convert_excel/"+approval_number);
+
         // });
 
         // return false;
     }
 
-    
-
     $(document).ready(function(){
+        $('input[type=radio][name=is_downloaded]').on('change', function() {
+            let val = $(this).val();
 
-        var data = {
-                _token: '{{ csrf_token() }}',
-            };
-
-        $("#ready_download").click(function(){
-            table.api().ajax.url( SITE_URL+"/approvalku/get_print/4").load();
-        });
-        $("#already_download").click(function(){       
-            table.api().ajax.url( SITE_URL+"/approvalku/get_print/1").load();
-        });
-        $("#cant_download").click(function(){       
-            table.api().ajax.url( SITE_URL+"/approvalku/get_print/3").load();
-        });
+            if (val == '1') {
+                table.api().ajax.url( SITE_URL+"/approvalku/get_print/4").load();
+            } else if (val == '2') {
+                table.api().ajax.url( SITE_URL+"/approvalku/get_print/1").load();
+            } else if (val == '3') {
+                table.api().ajax.url( SITE_URL+"/approvalku/get_print/3").load();
+            }
+        })
     });

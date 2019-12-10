@@ -30,18 +30,10 @@
             <div class="card-box">
                 <div class="row">
 					<div class="col-md-12">
-						<div class="pull-right">
-							@if (\Entrust::can('approval-create'))
-								<a href="{{ url('approval/create/cx') }}" class="btn btn-primary" id="create">Create Capex Approval</a>
-							@endif
-							
-						</div>
-					</div>
-					<div class="col-md-12">
 						<div>
 							<h5><strong>Select parameters :</strong></h5>
-							
-							<input type="radio" class="is_download" id="ready_download" name="is_downloaded" value="1"/> Ready Download (Approved by Dir) 
+
+							<input type="radio" class="is_download" id="ready_download" name="is_downloaded" value="1"/> Ready Download (Approved by Dir)
 							<br>
 							<input type="radio" class="is_download" id="already_download" name="is_downloaded" value="2"/> Already Download
 							<br>
@@ -67,7 +59,7 @@
             </div>
         </div>
     </div>
-    
+
 </div>
 
 
