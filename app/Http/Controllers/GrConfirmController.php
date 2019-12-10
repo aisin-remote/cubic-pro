@@ -34,7 +34,7 @@ class GrConfirmController extends Controller
     public function create()
     {
         $po         = UploadPurchaseOrder::get();
-        return view('pages.gr_confirm.create', compact(['po', 'user', 'detail']));
+        return view('pages.gr_confirm.create', compact(['po']));
     }
 
     public function getData(Request $request)
@@ -118,7 +118,7 @@ class GrConfirmController extends Controller
         $approval_no = ApprovalMaster::find($gr->approval_id);
         $user = User::find($gr->user_id);
         $department = Department::find($user->department_id);
-        return view('pages.gr_confirm.edit', compact(['gr', 'approval_no', 'user', 'department', 'detail']));
+        return view('pages.gr_confirm.edit', compact(['gr', 'approval_no', 'user', 'department']));
     }
 
     /**
@@ -131,7 +131,9 @@ class GrConfirmController extends Controller
     {
         DB::transaction(function() use ($id){
             $gr = GrConfirm::find($id);
-            $gr->details()->delete();
+            if ($gr->details) {
+                $gr->details()->delete();
+            }
             $gr->delete();
 
         });

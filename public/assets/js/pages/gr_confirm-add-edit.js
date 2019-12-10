@@ -180,7 +180,6 @@ function initEditable()
             return false;   //disable this method
         },
         success: function(data, config) {
-            console.log(data.error);
             if (data.error) {
                 return data.error;
             };
@@ -188,7 +187,6 @@ function initEditable()
             tData.draw();
         },
         error: function(sts) {
-          console.log(sts);
           return sts.responseJSON.message;
         }
     });
