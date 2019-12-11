@@ -12,7 +12,7 @@
     <div class="row">
 		<div class="col-xs-12">
 			<div class="page-title-box">
-                <h4 class="page-title">Realtime Dashboard</h4>	
+                <h4 class="page-title">Realtime Dashboard</h4>
             </div>
 		</div>
 	</div>
@@ -78,13 +78,13 @@
                         <ul class="dropdown-menu dropdown-menu-scroll">
                             @foreach ($departments as $department)
                                 <li><a tabindex="-1" href="{{ url('dashboard/view?department='.$department->department_code) }}">{{ $department->department_name }}</a></li>
-                            @endforeach                            
+                            @endforeach
                         </ul>
                     </li>
                 </ul>
             </div>
         </form>
-		
+
 		<div class="col-md-12">
 			&nbsp;
 		</div>

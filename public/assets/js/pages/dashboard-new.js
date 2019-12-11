@@ -110,7 +110,7 @@ var stackedBar = new Chart($('#chart3'), {
             backgroundColor: 'rgba(75, 192, 192, 1)',
             data: data3.actual
         }],
-        
+
         labels: formatLabel(data3.keys)
     },
     options: {
@@ -154,7 +154,7 @@ var stackedBar2 = new Chart($('#chart4'), {
             backgroundColor: 'rgba(75, 192, 192, 1)',
             data: data4.actual
         }],
-        
+
         labels: formatLabel(data4.keys)
     },
     options: {
@@ -169,10 +169,18 @@ var stackedBar2 = new Chart($('#chart4'), {
     }
 });
 
+let intVal = $('#interval').val();
+let intValArr = intVal.split(' - ');
+
+let intVal1 = intValArr[0];
+let intVal2 = intValArr[1];
+
 $('#interval').daterangepicker({
     locale: {
         format: 'DD/MM/YYYY',
     },
+    startDate: intVal1,
+    endDate: intVal2,
     buttonClasses: ['btn', 'btn-sm'],
     applyClass: 'btn-success',
     cancelClass: 'btn-default',
@@ -214,7 +222,7 @@ function formatLabel(data) {
             case '11' :
                 return 'Sep';
             default :
-                return 'Dec'            
+                return 'Dec'
         }
     })
 }

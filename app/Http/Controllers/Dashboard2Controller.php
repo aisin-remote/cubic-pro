@@ -29,25 +29,25 @@ class Dashboard2Controller extends Controller
             $period_date = $periods->where('name', 'fyear_open_from')->first()->value;
             $period_date_from = $periods->where('name', 'fyear_open_from')->first()->value;
             $period_date_to = $periods->where('name', 'fyear_open_to')->first()->value;
-    
+
             return view('pages.dashboard.view', compact(['departments', 'divisions', 'period_date', 'period_date_from', 'period_date_to']));
         }
     }
 
     public function get(Request $request)
     {
-        
+
         $periods = Period::all();
         $period_date_from = $periods->where('name', 'fyear_open_from')->first()->value;
         $period_date_to = $periods->where('name', 'fyear_open_to')->first()->value;
 
 
         $date = !empty($request->interval) ? explode('-', str_replace(' ', '', $request->interval)) : [$period_date_from, $period_date_to];
-        
-        
+
+
         $date_from = Carbon::createFromFormat('d/m/Y', $date[0])->format('Y-m-d');
         $date_to = Carbon::createFromFormat('d/m/Y', $date[1])->format('Y-m-d');
-        
+
         $cx = ApprovalMaster::where('budget_type', 'cx')
                     ->when($request, function($query, $request){
                         if (!empty($request->division)) {
@@ -60,7 +60,7 @@ class Dashboard2Controller extends Controller
                     })
                     ->whereDate('created_at', '>=', $date_from)
                     ->whereDate('created_at', '<=', $date_to);
-        
+
         $uc = ApprovalMaster::where('budget_type', 'uc')
                     ->when($request, function($query, $request){
                         if (!empty($request->division)) {
@@ -86,7 +86,7 @@ class Dashboard2Controller extends Controller
                     })
                     ->whereDate('created_at', '>=', $date_from)
                     ->whereDate('created_at', '<=', $date_to);
-        
+
         $ue = ApprovalMaster::where('budget_type', 'ue')
                     ->when($request, function($query, $request){
                         if (!empty($request->division)) {
@@ -121,7 +121,7 @@ class Dashboard2Controller extends Controller
                                 $query->where('department', $request->department);
                             }
                         });
-        
+
         $expenses = Expense::whereDate('created_at', '>=', $date_from)
                         ->whereDate('created_at', '<=', $date_to)
                         ->when($request, function($query, $request){
@@ -143,9 +143,9 @@ class Dashboard2Controller extends Controller
                                 $query->where('department', $request->department);
                             }
                         });
-        
 
-        
+
+
         $capex_per_month = $capexes->orderBy('created_at', 'asc')->get()->groupBy(function($val) {
             return Carbon::parse($val->created_at)->format('m');
         });
@@ -185,7 +185,7 @@ class Dashboard2Controller extends Controller
             $i += round($capex->sum('budget_plan') / 1000000000, 2);
         }
 
-        
+
         foreach ($unbudget_capex_per_month as $month => $unbudgetcapex) {
             $capexmonthly['unbudget'][$month] = round($unbudgetcapex->sum('total') / 1000000000, 2);
         }
@@ -203,7 +203,7 @@ class Dashboard2Controller extends Controller
             $k += round($expense->sum('budget_plan') / 1000000000, 2);
         }
 
-        
+
         foreach ($unbudget_expense_per_month as $month => $unbudgetexpense) {
             $expensemonthly['unbudget'][$month] = round($unbudgetexpense->sum('total') / 1000000000, 2);
         }
@@ -217,7 +217,7 @@ class Dashboard2Controller extends Controller
 
 
         $capex_map = !empty($capexmonthly['plan']) ? array_keys($capexmonthly['plan']) : array_keys([]);
-        
+
         foreach ($capex_map as $k)
         {
             if (!isset($capexmonthly['actual'][$k])) $capexmonthly['actual'][$k] = 0;
@@ -230,7 +230,7 @@ class Dashboard2Controller extends Controller
         $capexmonthly['cum_actual'] = !empty($capexmonthly['cum_actual']) ? collect($capexmonthly['cum_actual'])->sortKeys()->flatten() : [];
 
         $expense_map = !empty($expensemonthly['plan']) ? array_keys($expensemonthly['plan']) : array_keys([]);
-        
+
         foreach ($expense_map as $k)
         {
             if (!isset($expensemonthly['actual'][$k])) $expensemonthly['actual'][$k] = 0;
@@ -241,7 +241,7 @@ class Dashboard2Controller extends Controller
         $expensemonthly['actual'] = !empty($expensemonthly['actual']) ? collect($expensemonthly['actual'])->sortKeys()->flatten() : [];
         $expensemonthly['unbudget'] =  !empty($expensemonthly['unbudget']) ? collect($expensemonthly['unbudget'])->sortKeys()->flatten() : [];
         $expensemonthly['cum_actual'] = !empty($expensemonthly['cum_actual']) ? collect($expensemonthly['cum_actual'])->sortKeys()->flatten() : [];
-        
+
         return response()->json([
             'data' => [
                 'capexes' => [
@@ -301,7 +301,6 @@ class Dashboard2Controller extends Controller
                         ->whereDate('created_at', '<=', $date_to)
                         ->get();
 
-
         $approvals = $approvals->map(function($detail) {
 
             if ($detail->approval->budget_type === 'cx') {
@@ -319,7 +318,7 @@ class Dashboard2Controller extends Controller
             }else{
                 $status = "Overbudget";
             }
-            
+
 
             if ($detail->approval->budget_type === 'cx' && !empty($detail->capex) ) {
                 $plan_gr = Carbon::parse($detail->capex->plan_gr)->format('d M \'y');
@@ -355,17 +354,19 @@ class Dashboard2Controller extends Controller
                 'created_at' => Carbon::parse($detail->created_at)->format('d M \'y')
             ];
         });
-        
+
+        ob_end_clean(); // this
+        ob_start(); // and this
+
         Excel::create('CSV2dashboard.'.$date_from.'.'.$date_to, function($excel) use($approvals) {
             $excel->sheet('Sheet 1', function($sheet) use($approvals) {
-                $sheet->fromArray($approvals);
+                $sheet->fromArray($approvals->toArray());
             });
         })->export('csv');
     }
 
     protected function download(Request $request)
     {
-
         $periods = Period::all();
         $period_date_from = $periods->where('name', 'fyear_open_from')->first()->value;
         $period_date_to = $periods->where('name', 'fyear_open_to')->first()->value;
@@ -431,9 +432,12 @@ class Dashboard2Controller extends Controller
             ];
         });
 
+        ob_end_clean(); // this
+        ob_start(); // and this
+
         Excel::create('CSVdashboard.'.$date_from.'.'.$date_to, function($excel) use($capex_expenses) {
             $excel->sheet('Sheet 1', function($sheet) use($capex_expenses) {
-                $sheet->fromArray($capex_expenses);
+                $sheet->fromArray($capex_expenses->toArray());
             });
         })->export('csv');
 

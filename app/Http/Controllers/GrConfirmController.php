@@ -30,17 +30,17 @@ class GrConfirmController extends Controller
 
         return view('pages.gr_confirm.index');
     }
-  
+
     public function create()
     {
         $po         = UploadPurchaseOrder::get();
-        return view('pages.gr_confirm.create', compact(['po', 'user', 'detail']));
+        return view('pages.gr_confirm.create', compact(['po']));
     }
 
     public function getData(Request $request)
     {
         $gr_confirms = GrConfirm::with(['approval_master', 'user.department'])->get();
-        		
+
         return DataTables::of($gr_confirms)
 
         ->rawColumns(['options'])
@@ -145,6 +145,6 @@ class GrConfirmController extends Controller
                     ->route('gr_confirm.index')
                     ->with($res);
     }
-   
+
 }
 
