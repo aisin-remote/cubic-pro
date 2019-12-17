@@ -10,12 +10,14 @@ use App\ApprovalDetail;
 use App\UploadPurchaseOrder;
 use App\User;
 use App\Department;
-
+use App\Mail\GrConfirm as ConfirmMail;
 
 use DataTables;
 use DB;
 use Storage;
 use Cart;
+use Mail;
+
 
 class GrConfirmController extends Controller
 {
@@ -30,17 +32,17 @@ class GrConfirmController extends Controller
 
         return view('pages.gr_confirm.index');
     }
-
+  
     public function create()
     {
         $po         = UploadPurchaseOrder::get();
-        return view('pages.gr_confirm.create', compact(['po']));
+        return view('pages.gr_confirm.create', compact(['po', 'user', 'detail']));
     }
 
     public function getData(Request $request)
     {
         $gr_confirms = GrConfirm::with(['approval_master', 'user.department'])->get();
-
+        		
         return DataTables::of($gr_confirms)
 
         ->rawColumns(['options'])
@@ -86,25 +88,26 @@ class GrConfirmController extends Controller
 
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'po_number' => 'required',
-        //     'approval_id' => 'required'
-        // ]);
+        $approval_master = ApprovalMaster::where('approval_number', $request->approval_number)->first();
+        $user = User::where('id',$approval_master->created_by)->first();
+        
+        if ($approval_master->budget_type == 'cx') {
+            $url =  url('/approval/cx/'.$approval_master->approval_number);
+        } elseif ($approval_master->budget_type == 'ex') {
+            $url = url('/approval/ex/'.$approval_master->approval_number);
+        } else {
+            $url = url('/approval/ub/'.$approval_master->approval_number);
+        }
 
-        // $gr = new GrConfirm;
-        // $gr->po_number = $request->po_number;
-        // $gr->approval_id = $request->approval_master_id;
-        // $gr->save();
+        $email = Mail::to($user->email)
+                    ->send(new ConfirmMail(['approval' => $approval_master, 'url' => $url]));
 
-        // if ($request->wantsJson()) {
-        //     return response()->json($gr);
-        // }
 
         $res = [
-                    'title' => 'Succses',
-                    'type' => 'success',
-                    'message' => 'Data Saved Success!'
-                ];
+            'title' => 'Succses',
+            'type' => 'success',
+            'message' => 'Data Saved Success!'
+        ];
 
         return redirect()
                 ->route('gr_confirm.index')
@@ -118,7 +121,7 @@ class GrConfirmController extends Controller
         $approval_no = ApprovalMaster::find($gr->approval_id);
         $user = User::find($gr->user_id);
         $department = Department::find($user->department_id);
-        return view('pages.gr_confirm.edit', compact(['gr', 'approval_no', 'user', 'department']));
+        return view('pages.gr_confirm.edit', compact(['gr', 'approval_no', 'user', 'department', 'detail']));
     }
 
     /**
@@ -127,13 +130,12 @@ class GrConfirmController extends Controller
      * @param  \App\GrConfirm  $bom
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    
+     public function destroy($id)
     {
         DB::transaction(function() use ($id){
             $gr = GrConfirm::find($id);
-            if ($gr->details) {
-                $gr->details()->delete();
-            }
+            $gr->details()->delete();
             $gr->delete();
 
         });

@@ -151,6 +151,7 @@ Route::middleware('auth')->group(function(){
 		Route::get('gr_confirm/details-data/{id}', 'GrConfirmController@getDetailsData');
 		Route::get('gr_confirm/details-data-session', 'GrConfirmController@getDataGrConfirm');
 		Route::get('gr_confirm/get_user/{po_number}', 'GrConfirmController@getUser');
+		Route::get('gr_confirm/email','GrConfirmController@sendEmail');
 		Route::resource('gr_confirm', 'GrConfirmController');
 		
 		// GR Confirm Detail ARK. Ipan Herdiansyah
@@ -656,7 +657,5 @@ Route::middleware('auth')->group(function(){
 	/******* END OF ROUTE UNBUDGET *******/
 
 });
-
-
 
 Auth::routes();

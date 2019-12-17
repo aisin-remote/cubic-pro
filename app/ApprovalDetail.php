@@ -83,4 +83,9 @@ class ApprovalDetail extends Model
     {
         return $this->belongsTo('App\Expense', 'budget_no', 'budget_no');
     }
+
+    public function gr()
+    {
+        return $this->hasOne('App\GrConfirmDetail', 'approval_detail_id', 'id');
+    }
 }
