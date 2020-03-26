@@ -78,66 +78,28 @@ class ExpenseController extends Controller
 	}
     public function getData(Request $request)
     {
-	   $user = auth()->user();
-	   $expenses = Expense::ability();
-	   $expenses = $expenses->get();
+        $expenses = Expense::ability();
+        $expenses = $expenses->get();
 
         return DataTables::of($expenses)
+            ->editColumn("status", function ($expense) {
+                // $expense->is_closed="ABS";
+                if ($expense->status=='0'){
+                    return "Underbudget";
+                }else{
+                    return "Overbudget";
+                }
+            })
+            ->editColumn("is_closed", function ($expense) {
+                // $expense->is_closed="ABS";
+                if ($expense->is_closed=='0'){
+                    return "Open";
 
-        ->rawColumns(['options', 'is_closed'])
-
-        ->addColumn('options', function($expense){
-            if(\Entrust::hasRole('user')) {
-                    return '
-
-                    ';
-			}elseif(\Entrust::hasRole('budget')) {
-				return '
-
-					<button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$expense->id.')"><i class="mdi mdi-close"></i></button>
-					<form action="'.route('expense.destroy', $expense->id).'" method="POST" id="form-delete-'.$expense->id .'" style="display:none">
-						'.csrf_field().'
-						<input type="hidden" name="_method" value="DELETE">
-					</form>
-
-				';
-			}else{
-				return '
-
-				';
-			}
-
-        })
-        ->editColumn("status", function ($expense) {
-               // $expense->is_closed="ABS";
-            if ($expense->status=='0'){
-                return "Underbudget";
-            }else{
-                return "Overbudget";
-            }
-        })
-        ->editColumn("is_closed", function ($expense) {
-               // $expense->is_closed="ABS";
-            if ($expense->is_closed=='0'){
-                return "Open";
-
-            }else{
-                return "Closed";
-            }
-        })
-        ->editColumn("budget_plan", function ($expense) {
-                return number_format($expense->budget_plan);
-        })
-        ->editColumn("budget_used", function ($expense) {
-                return number_format($expense->budget_used);
-        })
-        ->editColumn("budget_remaining", function ($expense) {
-                return number_format($expense->budget_remaining);
-        })
-		 ->editColumn("plan_gr", function ($expense) {
-                return date('d-M-Y',strtotime($expense->plan_gr));
-        })
-        ->toJson();
+                }else{
+                    return "Closed";
+                }
+            })
+            ->toJson();
     }
 
     public function xedit(Request $request)

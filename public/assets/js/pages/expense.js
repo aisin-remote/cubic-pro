@@ -1,9 +1,13 @@
 var tExpense;
 $(document).ready(function(){
-	var is_budget = $('#is_budget').val();
+    var is_budget = $('#is_budget').val();
+    var csrfToken = $('#csrf-token').val();
     tExpense = $('#table-expense').DataTable({
-        ajax: SITE_URL + '/expense/get_data',
-        "fnDrawCallback": function (oSettings) {
+        responsive : true,
+        processing : true,
+        serverSide : true,
+        ajax : SITE_URL + '/expense/get_data',
+        fnDrawCallback : function (oSettings) {
             budgetStatusStyler();
             budgetClosingStyler();
             budgetView();
@@ -11,24 +15,75 @@ $(document).ready(function(){
 				xeditClasser();
 				initEditable();
 				initSelectable();
-				// initDatepickerable();
 			}
-			
-            
         },
-        columns: [
+        columns : [
             { data: 'budget_no', name: 'budget_no'},
             { data: 'description', name: 'description'},
             { data: 'qty_plan', name: 'qty_plan'},
             { data: 'qty_used', name: 'qty_used'},
             { data: 'qty_remaining', name: 'qty_remaining'},
-            { data: 'budget_plan', name: 'budget_plan'},
-            { data: 'budget_used', name: 'budget_used'},
-            { data: 'budget_remaining', name: 'budget_remaining'},
-            { data: 'plan_gr', name: 'plan_gr'},
-            { data: 'status', name: 'status'},
-            { data: 'is_closed', name: 'is_closed'},
-            { data: 'options', name: 'options', searching: false, sorting: false, class: 'text-center' }
+            {
+                data: 'budget_plan',
+                name: 'budget_plan',
+                className: "center",
+                orderable: true,
+                searchable: true,
+                render: function(data){
+                    return parseInt(data).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+            },
+            {
+                data: 'budget_used',
+                name: 'budget_used',
+                className: "center",
+                orderable: true,
+                searchable: true,
+                render: function(data){
+                    return parseInt(data).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+            },
+            {
+                data: 'budget_remaining',
+                name: 'budget_remaining',
+                className: "center",
+                orderable: true,
+                searchable: true,
+                render: function(data){
+                    return parseInt(data).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+            },
+            {
+                data: 'plan_gr',
+                name: 'plan_gr',
+                className: "center",
+                orderable: true,
+                searchable: true,
+                render: function(data){
+                    return moment(data).format('DD-MMM-YYYY');
+                }
+            },
+            {
+                data: 'status',
+                name: 'status'
+            },
+            {
+                data: 'is_closed',
+                name: 'is_closed'
+            },
+            {
+                data: null,
+                className: "center",
+                orderable: false,
+                searchable: false,
+                render: function(data){
+                    if (is_budget == 1) {
+                        return '<button class="btn btn-danger btn-xs" data-toggle="tooltip"  title="Hapus" onclick="on_delete('+data.id+')"><i class="mdi mdi-close"></i></button> <form action="/expense/'+data.id+'" method="POST" id="form-delete-'+data.id+'" style="display:none"><input type="hidden" name="_token" value="'+csrfToken+'"><input type="hidden" name="_method" value="DELETE"></form>'
+                    } else {
+                        return '';
+                    }
+                }
+            }
         ],
         drawCallback: function(d) {
         	$('[data-toggle="popover"]').popover();
@@ -155,7 +210,7 @@ function initSelectable () {
         params: {
             _token: $('meta[name="csrf-token"]').attr('content'),
         },
-        
+
         display: function(value, sourceData) {
              var colors = {"Closed": "warning", "Open": "info"},
                  elem = $.grep(sourceData, function(o){return o.value == value;});
