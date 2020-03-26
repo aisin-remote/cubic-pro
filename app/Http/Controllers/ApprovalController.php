@@ -871,7 +871,6 @@ class ApprovalController extends Controller
 								 $budget->budget_used 		+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
 
 								 if ($approval_master->budget_type == 'ex') {
-
                                     $budget->qty_used 		+= $detail->actual_qty;
                                     $budget->qty_remaining 	= $budget->qty_plan - $budget->qty_used;
                                  }
@@ -886,8 +885,6 @@ class ApprovalController extends Controller
 								 $budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
 
 								 $budget->is_closed = $budget->budget_remaining > 0 ? 0 : 1;
-
-
                                  $budget->save();
 
                                  $details->budget_remaining_log = $budget_remain;

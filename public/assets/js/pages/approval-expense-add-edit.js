@@ -15,11 +15,11 @@ $(document).ready(function(){
 	  }else{
 		  $('[name="budget_description"]').val(arr_expense.description);
 		  $('[name="qty_remaining"]').val(arr_expense.qty_plan);
-		  $('[name="price_remaining"]').autoNumeric('set', arr_expense.budget_plan);
+		  $('[name="price_remaining"]').autoNumeric('set', arr_expense.budget_remaining);
 		  $('[name="budget_remaining_log"]').autoNumeric('set', arr_expense.budget_remaining);
       }
     }
-    
+
   });
 
   $('[name="sap_gl_account_id"]').change(function(){
@@ -28,13 +28,13 @@ $(document).ready(function(){
 
     // if (sap_gl_account_id !== '' && sap_gl_account_id !== null && sap_gl_account_id !== undefined) {
       var arr_asset = getGlGroup(sap_gl_account_id);
-      
-      $('[name="gl_fname"]').find('option').remove(); 
+
+      $('[name="gl_fname"]').find('option').remove();
       $('[name="gl_fname"]').select2({
         data: arr_asset
       });
     // }
-    
+
   });
 
   $('[name="sap_asset_id"]').change(function(){
@@ -43,14 +43,14 @@ $(document).ready(function(){
 
     // if (sap_asset_id !== '' && sap_asset_id !== null && sap_asset_id !== undefined) {
       var arr_asset = getAsset(sap_asset_id);
-      $('[name="sap_code_id"]').find('option').remove(); 
+      $('[name="sap_code_id"]').find('option').remove();
       $('[name="sap_code_id"]').select2({
         data: arr_asset
       });
     // }
-  	
+
   });
-  
+
 
 });
 
@@ -122,7 +122,7 @@ function foreignCurrency(elem) {
   }
   else{
       $('#hide12').hide();
-      $('#currency').val('').trigger('chosen:updated'); 
-      $('#price_to_download').val(''); 
+      $('#currency').val('').trigger('chosen:updated');
+      $('#price_to_download').val('');
   }
 }

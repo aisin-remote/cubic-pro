@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Expense;
 use App\SapModel\SapAsset;
-use App\SapModel\SapGlAccount;           
-use App\SapModel\SapCostCenter;           
+use App\SapModel\SapGlAccount;
+use App\SapModel\SapCostCenter;
 use App\SapModel\SapUom;
 use App\ApprovalMaster;
 use App\ApprovalDetail;
@@ -33,7 +33,7 @@ class ApprovalExpenseController extends Controller
             $result['draw'] = 0;
             $result['recordsTotal'] = Cart::count();
             $result['recordsFiltered'] = Cart::count();
-			
+
             foreach ($expenses as $expense) {
 
                 $result['data'][] = [
@@ -42,11 +42,11 @@ class ApprovalExpenseController extends Controller
                                     'price_remaining'   => number_format($expense->price),
                                     'pr_specs'          => $expense->options->qty_actual,
                                     'plan_gr'           => Carbon::parse($expense->options->plan_gr)->format('d M Y'),
-                                    'option' => ' 
+                                    'option' => '
                                         <button class="btn btn-danger btn-xs btn-bordered" onclick="onDelete(\''.$expense->rowId.'\')" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-close"></i></button>'
                                 ];
 
-                
+
             }
 
         } else {
@@ -62,13 +62,13 @@ class ApprovalExpenseController extends Controller
 
     public function store(Request $request)
     {
-      
+
         $expenses           = Expense::find($request->budget_no);
         $sap_gl_account     = SapGlAccount::where('gl_gname', $request->sap_gl_account_id)->where('gl_aname', $request->gl_fname)->first();
         $sap_assets         = SapAsset::find($request->sap_asset_id);
-        $sap_costs          = SapCostCenter::find($request->sap_cos_center_id); 
+        $sap_costs          = SapCostCenter::find($request->sap_cos_center_id);
         $sap_uoms           = SapUom::find($request->sap_uom_id);
-        
+
         $item 				= Item::firstOrNew(['item_description' => $request->remarks]);
         $item->item_description = $request->remarks;
         $item->item_category_id = '1';
@@ -108,7 +108,7 @@ class ApprovalExpenseController extends Controller
                     ]
                 ]);
 		Carts::where('item_id',$item->id)->where('user_id',auth()->user()->id)->delete();
-        
+
         $res = [
 					'title' => 'Success',
                     'type' => 'success',
@@ -131,7 +131,7 @@ class ApprovalExpenseController extends Controller
 
         $res = [
 					'title' => 'Success',
-                    'type' => 'success',  
+                    'type' => 'success',
                     'message' => 'Data has been removed'
                 ];
 
@@ -166,9 +166,9 @@ class ApprovalExpenseController extends Controller
             DB::transaction(function() use ($request, &$res){
                 // Save data in Tabel Bom
                 $user = \Auth::user();
-                
-                $approval_no = ApprovalMaster::getNewApprovalNumber('EX', $user->department->department_code);  
-                
+
+                $approval_no = ApprovalMaster::getNewApprovalNumber('EX', $user->department->department_code);
+
                     $capex                         = new ApprovalMaster;
                     $capex->approval_number        = $approval_no;
                     $capex->budget_type            = 'ex';
@@ -183,7 +183,7 @@ class ApprovalExpenseController extends Controller
 
                 $i = 1;
                 foreach (Cart::instance('expense')->content() as $details) {
-                    
+
                     $approval                        = new ApprovalDetail;
                     $approval->budget_no             = $details->options->budget_no;
                     $approval->project_name          = $details->name;
@@ -221,9 +221,9 @@ class ApprovalExpenseController extends Controller
                         ];
 				}else{
 					foreach($approval_master as $am){
-						
+
 						$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
-						
+
 						foreach($approval_dtl as $app_dtl){
 							$approver_user = new ApproverUser();
                             $approver_user->approval_master_id  = $am->id;
@@ -239,21 +239,21 @@ class ApprovalExpenseController extends Controller
                         ];
 				   Cart::instance('expense')->destroy();
 				}
-                
 
-              
-               
+
+
+
             });
          return redirect()
                             ->route('approval-expense.ListApproval')
                             ->with($res);
     }
-    
-    public function ListApprovalUnvalidated() 
+
+    public function ListApprovalUnvalidated()
 	{
 		return view('pages.approval.expense.list-approval');
 	}
-    
+
     /**
      * Display the specified resource.
      *
@@ -265,7 +265,7 @@ class ApprovalExpenseController extends Controller
 
         return view('pages.approval.expense.index-admin');
     }
-    
+
     public function getApprovalExpense($status){
         $type 	= 'ex';
         $user = auth()->user();
@@ -275,7 +275,7 @@ class ApprovalExpenseController extends Controller
                             ->whereHas('approver_user',function($query) use($user) {
                                 $query->whereOr('user_id', $user->id );
                             });
-        
+
         $level = ApprovalDtl::where('user_id', $user->id)->first();
 
         if(\Entrust::hasRole('user')) {
@@ -302,12 +302,12 @@ class ApprovalExpenseController extends Controller
                 }
             }
         }
-		
+
         $approval_expense = $approval_expense->get();
         return DataTables::of($approval_expense)
         ->rawColumns(['action'])
 
-        ->addColumn("action", function ($approval_expense) use ($type, $status){ 
+        ->addColumn("action", function ($approval_expense) use ($type, $status){
             if($status!='need_approval'){
 
                 if(\Entrust::hasRole('user')) {
@@ -328,7 +328,11 @@ class ApprovalExpenseController extends Controller
             }else{
                 // return "else";
 				//<a  href='#' onclick='javascript:validateApproval(&#39;$approval_expense->approval_number&#39;);return false;' class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a>
-                return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/unvalidate/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                if(\Entrust::hasRole('user')) {
+                    return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/unvalidate/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                } else {
+                    return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/unvalidate/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"validateApproval('$approval_expense->approval_number');return false;\" class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                }
             }
         })
 
@@ -356,9 +360,9 @@ class ApprovalExpenseController extends Controller
         })
 
         ->addColumn("overbudget_info", function ($approvals) {
-           
+
             return $approvals->status < 0 ? 'Canceled' : ($approvals->budget_reserved > $approvals->budget_remaining_log ? 'Overbudget exist' : 'All underbudget');
-        }) 
+        })
 
         ->toJson();
     }
@@ -371,7 +375,7 @@ class ApprovalExpenseController extends Controller
         $status     = !empty($user_app) ? $user_app->is_approve : 0;
 		return view('pages.approval.expense.view',compact('master','approver','status'));
     }
-    
+
     public function DetailUnvalidateApproval($approval_number)
     {
         $approver   = $this->can_approve($approval_number);
@@ -394,6 +398,9 @@ class ApprovalExpenseController extends Controller
                 ->editColumn('budget_remaining_log', function($approval){
                     return number_format($approval->budget_remaining_log);
                 })
+                ->editColumn('sap_account_code', function($approval){
+                    return $approval->sap_account_code."-".$approval->sap_account_text;
+                })
                 ->editColumn('budget_reserved', function($approval){
                     return number_format($approval->budget_reserved);
                 })
@@ -405,10 +412,10 @@ class ApprovalExpenseController extends Controller
                 })
                 ->addColumn("overbudget_info", function ($approval) {
                     return $approval->status < 0 ? 'Canceled' : ($approval->budget_reserved > $approval->budget_remaining_log ? 'Overbudget exist' : 'Underbudget');
-                }) 
+                })
                 ->addColumn("actual_gr", function ($approval) {
                     return Carbon::parse($approval->actual_gr)->format('d M Y');
-                }) 
+                })
 				->editColumn("status", function ($approval) {
 					if ($approval->am_status == '0') {
 						return "User Created";
@@ -427,7 +434,7 @@ class ApprovalExpenseController extends Controller
 					}else{
 						return "Canceled on Group Manager Approval";
 					}
-					
+
 				})->toJson();
 	}
     public function delete($id)
@@ -450,7 +457,7 @@ class ApprovalExpenseController extends Controller
 	public function getDelete(Request $request)
 	{
 		Cart::instance('expense')->remove($request->rowid);
-		
+
 		 $res = [
                     'title' => 'Success',
                     'type' => 'success',

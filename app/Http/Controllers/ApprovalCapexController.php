@@ -421,7 +421,11 @@ class ApprovalCapexController extends Controller
                 }
             }else{
                 // return "else"; <a  href='#' onclick='javascript:validateApproval(&#39;$approval_capex->approval_number&#39;);return false;'class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a>
-                return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/unvalidate/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                if(\Entrust::hasRole('user')) {
+                    return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/unvalidate/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                } else {
+                    return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/unvalidate/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"validateApproval('$approval_capex->approval_number');return false;\" class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                }
             }
         })
 
@@ -494,9 +498,10 @@ class ApprovalCapexController extends Controller
                     return number_format($approval->budget_remaining_log);
                 })
                 ->editColumn('budget_reserved', function($approval){
-                    // dd($approval);
-                    // die;
                     return number_format($approval->budget_reserved);
+                })
+                ->editColumn('sap_account_code', function($approval){
+                    return $approval->sap_account_code."-".$approval->sap_account_text;
                 })
                 ->editColumn('actual_price_user', function($approval){
                     return number_format($approval->actual_price_user);

@@ -5,6 +5,7 @@ $(document).ready(function(){
   	var budget_no = $(this).val();
     if (budget_no  !== '' && budget_no !== null && budget_no !== undefined ) {
       var arr_capex = getData(budget_no);
+      console.log(arr_capex);
 	  if(parseInt(arr_capex.is_closed)){
 		  show_notification("Error",'error','Budget ['+arr_capex.budget_no+'] already closed, please contact Accounting/Finance Dept. for further assistance');
 		  $('[name="budget_no"]').val('').trigger('change');
@@ -23,12 +24,12 @@ $(document).ready(function(){
 
   	var sap_asset_id = $(this).val();
     var arr_asset = getAsset(sap_asset_id);
-      $('[name="sap_code_id"]').find('option').remove(); 
+      $('[name="sap_code_id"]').find('option').remove();
       $('[name="sap_code_id"]').select2({
         data: arr_asset
-      });  	
+      });
   });
-  
+
   $('select[name="remarks"]').select2().change(function(){
 	 var actual_qty = $(this).find('option:selected').attr('actual_qty');
 	 var uom_id 	= $(this).find('option:selected').attr('uom_id');
@@ -44,7 +45,7 @@ $(document).ready(function(){
 function maxAmountQuotation()
 {
 	var maxBudget = $('input[name="price_remaining"]').val();
-	
+
 }
 
 function setReadOnlyInput ()
@@ -90,8 +91,8 @@ function foreignCurrency(elem) {
   }
   else{
       $('#hide12').hide();
-      $('#currency').val('').trigger('chosen:updated'); 
-      $('#price_to_download').val(''); 
+      $('#currency').val('').trigger('chosen:updated');
+      $('#price_to_download').val('');
   }
 }
 
@@ -142,9 +143,9 @@ $(document).ready(function(){
     var form = $('#form-add-edit').validate();
 
     if (form.form()) {
-      $('#form-add-edit').submit();  
+      $('#form-add-edit').submit();
     }
-    
+
   });
 
   $('#btn-reset').click(function(){
