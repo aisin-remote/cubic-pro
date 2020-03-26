@@ -51,7 +51,7 @@ class ExpenseController extends Controller
         $capex->budget_plan     = $request->budget_plan;
         $capex->qty_plan     	= $request->qty_plan;
         $capex->description  	= $request->description;
-        $capex->plan_gr         = $request->plan_gr;
+        $capex->plan_gr         = date('Y-m-d H:i:s', strtotime($request->plan_gr));
         // $capex->budget_remaining= $request->budget_plan;
         // $capex->is_closed       = $request->is_closed;
         $capex->qty_remaining= $request->qty_plan;

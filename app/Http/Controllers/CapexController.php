@@ -50,7 +50,7 @@ class CapexController extends Controller
         $capex->budget_no       = $request->budget_no;
         $capex->budget_plan     = $request->budget_plan;
         $capex->equipment_name  = $request->equipment_name;
-        $capex->plan_gr         = $request->plan_gr;
+        $capex->plan_gr         = date('Y-m-d H:i:s', strtotime($request->plan_gr));
         // $capex->budget_remaining= $request->budget_plan;
         // $capex->is_closed       = $request->is_closed;
         $capex->budget_remaining= $request->budget_plan;
@@ -74,62 +74,24 @@ class CapexController extends Controller
 		$capexs = Capex::ability();
 	    $capexs = $capexs->get();
         return DataTables::of($capexs)
+			->editColumn("status", function ($capex) {
+				// $expense->is_closed="ABS";
+				if ($capex->status=='0'){
+					return "Underbudget";
+				}else{
+					return "Overbudget";
+				}
+			})
+			->editColumn("is_closed", function ($capex) {
+				// $expense->is_closed="ABS";
+				if ($capex->is_closed=='0'){
+					return "Open";
 
-        ->rawColumns(['options', 'is_closed'])
-
-        ->addColumn('options', function($capex){
-            if(\Entrust::hasRole('user')) {
-                    return '
-
-                    ';
-                }elseif(\Entrust::hasRole('budget')) { //Sebenarnya ini ga bakal dieksekusi
-                    return '
-                        <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$capex->id.')"><i class="mdi mdi-close"></i></button>
-                        <form action="'.route('capex.destroy', $capex->id).'" method="POST" id="form-delete-'.$capex->id .'" style="display:none">
-                            '.csrf_field().'
-                            <input type="hidden" name="_method" value="DELETE">
-                        </form>
-
-                    ';
-                }else{
-                    return '
-
-
-                    ';
-                }
-
-
-        })
-        ->editColumn("status", function ($capex) {
-               // $expense->is_closed="ABS";
-            if ($capex->status=='0'){
-                return "Underbudget";
-            }else{
-                return "Overbudget";
-            }
-        })
-        ->editColumn("is_closed", function ($capex) {
-               // $expense->is_closed="ABS";
-            if ($capex->is_closed=='0'){
-                return "Open";
-
-            }else{
-                return "Closed";
-            }
-        })
-        ->editColumn("budget_plan", function ($capex) {
-                return number_format($capex->budget_plan);
-        })
-        ->editColumn("budget_used", function ($capex) {
-                return number_format($capex->budget_used);
-        })
-        ->editColumn("budget_remaining", function ($capex) {
-                return number_format($capex->budget_remaining);
-        })
-		 ->editColumn("plan_gr", function ($capex) {
-                return date('d-M-Y',strtotime($capex->plan_gr));
-        })
-        ->toJson();
+				}else{
+					return "Closed";
+				}
+			})
+			->toJson();
     }
 
     public function xedit(Request $request)

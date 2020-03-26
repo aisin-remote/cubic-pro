@@ -40,14 +40,14 @@
                                     @endforeach
                                 </select>
                                 <span class="help-block"></span>
-                           </div>   
+                           </div>
                            <div class="form-group">
                                 <label class="control-label">Budget Number<span class="text-danger">*</span></label>
                                 <input type="text" name="budget_no" placeholder="Budget Number" class="form-control tinymce" required="required">
                                 <span class="help-block"></span>
                            </div>
 
-                           
+
                         </div>
                         <div class="col-md-6">
                            <div class="form-group">

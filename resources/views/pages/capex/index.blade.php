@@ -25,12 +25,12 @@
     <!-- end row -->
     <div class="row">
         <div class="col-sm-4">
-            @if (\Entrust::hasRole('budget')) 
+            @if (\Entrust::hasRole('budget'))
              <a href="{{ url('capex/create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Capex</a>
+             <input type="hidden" id="csrf-token" value="{{ csrf_token() }}">
             @endif
         </div><!-- end col -->
     </div>
-
     <div class="row">
         <div class="col-md-12">
             <div class="card-box">
@@ -45,7 +45,7 @@
                             <th>Plan GR</th>
                             <th>Status</th>
                             <th>Closing</th>
-                            @if (\Entrust::hasRole('budget'))  
+                            @if (\Entrust::hasRole('budget'))
                                 <th style="width: 100px">Opsi</th>
                             @endif
                         </tr>
@@ -83,7 +83,7 @@
         show_notification("{{ session('title') }}","{{ session('type') }}","{{ session('message') }}");
     </script>
 @endif
-
+<script src="{{ asset('assets/js/moment.min.js') }}"></script>
 <script src="{{ url('assets/js/pages/capex.js') }}"></script>
 
 @endpush
