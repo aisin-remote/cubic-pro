@@ -419,7 +419,7 @@ class ExpenseController extends Controller
         if($page_name=="current"){
             return Datatables::of($expenses)
 					->addColumn("action", function ($expenses) {
-						return "<div class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a class='btn btn-danger' href='javascript:deleteBudget(&#39;$capexes->budget_no&#39;,&#39;$capexes->equipment_name&#39;)'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+						return "<div class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a class='btn btn-danger' href='javascript:deleteBudget(&#39;$expenses->budget_no&#39;,&#39;$expenses->equipment_name&#39;)'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
 					})
 					->editColumn("is_closed", function ($expenses) {
 						if ($expenses->is_closed=='0'){
