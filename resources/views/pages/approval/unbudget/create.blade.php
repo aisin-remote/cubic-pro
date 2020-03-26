@@ -54,7 +54,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                   </div>  
+                                   </div>
 								   <hr/>
                                 </div>
                             </div>
@@ -80,7 +80,7 @@
 											</div>
 										</div>
 									</div>
-							   </div> 
+							   </div>
 							   <div id="capex">
 								   <div class="form-group">
 										<label class="control-label">Asset Type<span class="text-danger">*</span></label>
@@ -107,7 +107,7 @@
 											<option></option>
 												@foreach ($sap_gl_account as $sap_gl_account)
 													<option value="{{ $sap_gl_account->gl_gname }}">{{ $sap_gl_account->gl_gname }}</option>
-												@endforeach	
+												@endforeach
 										</select>
 										<span class="help-block"></span>
 								   </div>
@@ -117,7 +117,7 @@
 										<span class="help-block"></span>
 								   </div>
 							   </div>
-							   
+
 							   <div class="form-group">
 									<label class="control-label">SAP Cost Center<span class="text-danger">*</span></label>
 									<select name="sap_cost_center_id" class="select2" data-placeholder="Select SAP Cost Center" required="required">
@@ -128,21 +128,20 @@
 									</select>
 									<span class="help-block"></span>
 							   </div>
-								
-							   
+
+
 							   <div class="form-group">
 									<label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
 									<input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5">
 									<span class="help-block"></span>
-							   </div>      
-								
+							   </div>
+
 								<div class="form-group">
 									<label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
 									<select name="remarks" class="select2" data-tags="true" data-placeholder="Item Detail">
-                                    <option></option>
 										@if ($itemcart == 'non-catalog')
-
-											@foreach ($items as $item) 
+										<option></option>
+											@foreach ($items as $item)
 												<option value="{{ $item->item_description }}" item_id="{{$item->id}}" qty_item="1" uom_id="{{$item->uom_id}}" item_spec="{{$item->item_specification}}" total="0">{{ $item->item_description }}</option>
 											@endforeach
 
@@ -156,11 +155,11 @@
 											<!-- @foreach ($carts as $cart)
 											<option value="{{ $cart->item_id }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_spesification}}" total="{{$cart->total}}">{{ $cart->item->item_description }}</option>
 											@endforeach -->
-									</select>	  
+									</select>
 									<input type="hidden" name="qty_item">
 									<span class="help-block"></span>
 							   </div>
-							     
+
 							</div>
 							<div class="col-md-6">
 							   <div class="form-group">
@@ -178,7 +177,7 @@
 											@endforeach
 									</select>
 									<span class="help-block"></span>
-							   </div> 
+							   </div>
 							   <div class="form-group">
 									<label class="control-label">Price <span class="text-danger">*</span></label>
 									<input type="text" name="price_actual" placeholder="Price Actual" class="form-control autonumeric text-right" required="required"  {{ $itemcart == 'non-catalog' ?  '' : 'readonly=readonly' }} >
@@ -188,15 +187,15 @@
 									<label class="control-label">Quantity <span class="text-danger">*</span></label>
 									<input type="number" name="qty_actual" placeholder="Quantity Actual" class="form-control text-right" required="required" >
 									<span class="help-block"></span>
-							   </div> 
-								
+							   </div>
+
 							   <div class="form-group">
 									<label class="control-label">Actual GR <span class="text-danger">*</span></label>
 									<input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}">
 									<span class="help-block"></span>
-							   </div>  
+							   </div>
 								<div class="form-group">
-									
+
 									<div class="checkbox">
 										<input id="checkbox0" type="checkbox" name="foreign_currency" onclick="foreignCurrency(this)">
 										<label for="checkbox0">
@@ -205,7 +204,7 @@
 									</div>
 									<div class="row">
 										<div class="form-group" id="hide12" style="display: none">
-											
+
 											<div class="col-sm-6">
 												<select class="select2" name="currency" id="currency" data-placeholder="Select currency">
 													  <option value=""></option>
@@ -219,10 +218,10 @@
 											</div>
 										</div>
 									</div>
-								</div> 
+								</div>
 							</div>
                         <div class="col-md-12 text-right m-t-20">
-                            
+
                              <div class="modal-footer">
                                     <button class="btn btn-default btn-bordered waves-effect waves-light" type="reset">Reset</button>
 
@@ -230,14 +229,14 @@
                             </div>
 
                         </div>
-                         
-                        <div class="clearfix"></div> 
+
+                        <div class="clearfix"></div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    
+
 </div>
 
 
@@ -245,5 +244,19 @@
 
 @push('js')
 <script src="{{ url('assets/js/pages/approval-unbudget-add-edit.js') }}"></script>
-
+@if ($itemcart != 'non-catalog')
+<script>
+    $(function() {
+        var qty_item = $('select[name="remarks"]').find('option:selected').attr('qty_item');
+		var uom_id 	= $('select[name="remarks"]').find('option:selected').attr('uom_id');
+		var item_spec  = $('select[name="remarks"]').find('option:selected').attr('item_spec');
+		var total 		= $('select[name="remarks"]').find('option:selected').attr('total');
+		$('input[name="qty_actual"]').val(qty_item);
+		$('input[name="qty_item"]').val(qty_item);
+		$('select[name="sap_uom_id"]').select2("val", uom_id);
+		$('input[name="pr_specs"]').val(item_spec);
+		$('input[name="price_actual"]').autoNumeric('set',total);
+    });
+</script>
+@endif
 @endpush

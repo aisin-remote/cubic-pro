@@ -90,7 +90,7 @@ class ApprovalController extends Controller
         $carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
         $items           = Item::get();
 
-       if ($carts->count() > 0){
+       if (url()->previous() == route('cart')){
             $itemcart = 'catalog';
         } else {
             $itemcart = 'non-catalog';
@@ -116,7 +116,7 @@ class ApprovalController extends Controller
 		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
         $items           = Item::get();
 
-       if ($carts->count() > 0){
+       if (url()->previous() == route('cart')){
             $itemcart = 'catalog';
         } else {
             $itemcart = 'non-catalog';
@@ -149,7 +149,7 @@ class ApprovalController extends Controller
 		$carts 			 = Cart::select('*')->join('items','items.id','=','carts.item_id')->where('user_id', auth()->user()->id)->get();
         $items           = Item::get();
 
-       if ($carts->count() > 0){
+        if (url()->previous() == route('cart')){
             $itemcart = 'catalog';
         } else {
             $itemcart = 'non-catalog';

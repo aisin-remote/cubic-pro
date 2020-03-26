@@ -31,8 +31,8 @@
                 <div class="row">
                     <form id="form-add-edit" action="{{route('approval_expense.store')}}" enctype="multipart/form-data" method="post">
                         @csrf
-                        
-                               
+
+
                         <div class="col-md-6">
 						    <div class="form-group">
                                 <label class="control-label">Budget No<span class="text-danger">*</span></label>
@@ -43,20 +43,20 @@
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
-                           </div> 
+                           </div>
                             <div class="form-group">
                                 <label class="control-label">Budget Description <span class="text-danger">*</span></label>
                                 <textarea type="text" name="budget_description" placeholder="Budget Description" class="form-control tinymce" required="required" rows="5" readonly="readonly"></textarea>
                                 <span class="help-block"></span>
-                           </div>  
+                           </div>
 
-                            
-                               
+
+
                            <div class="form-group">
                                 <label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
                                 <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control tinymce" required="required" rows="5">
                                 <span class="help-block"></span>
-                           </div> 
+                           </div>
 
                             <div class="form-group">
                                 <label class="control-label">SAP Cost Center<span class="text-danger">*</span></label>
@@ -71,15 +71,12 @@
 						   <div class="form-group">
                                 <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
 								<select name="remarks" class="select2" data-tags="true" data-placeholder="Item Detail">
-                                    <option></option>
                                     @if ($itemcart == 'non-catalog')
-
-                                        @foreach ($items as $item) 
+                                        <option></option>
+                                        @foreach ($items as $item)
                                             <option value="{{ $item->item_description }}" item_id="{{$item->id}}" qty_item="1" uom_id="{{$item->uom_id}}" item_spec="{{$item->item_specification}}" total="0">{{ $item->item_description }}</option>
                                         @endforeach
-
                                     @else
-                    
                                         @foreach ($carts as $cart)
                                             <option value="{{ $cart->item_description }}" item_id="{{$cart->item_id}}" qty_item="{{$cart->qty}}" uom_id="{{$cart->item->uom_id}}" item_spec="{{$cart->item->item_specification}}" total="{{$cart->total}}" >{{ $cart->item->item_description }}</option>
                                         @endforeach
@@ -94,10 +91,10 @@
                                 </select> -->
 								<input type="hidden" name="qty_item">
                                 <span class="help-block"></span>
-								
+
                            </div>
-                           <div class="form-group"> 
-                                <label class="control-label">Qty [Remaining | Actual] <span class="text-danger">*</span></label>    
+                           <div class="form-group">
+                                <label class="control-label">Qty [Remaining | Actual] <span class="text-danger">*</span></label>
                                 <div class="row">
                                     <div class="form-group">
                                         <div class="col-sm-6">
@@ -115,7 +112,7 @@
                                 <span class="help-block"></span>
                            </div>
 
-                            
+
                         </div>
 
 
@@ -130,13 +127,13 @@
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
-                           </div> 
+                           </div>
 
                            <div class="form-group">
                                 <label class="control-label">Amount on Quotation (IDR) <span class="text-danger">*</span></label>
                                 <input type="text" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control autonumeric text-right" required="required" rows="5" {{ $itemcart == 'non-catalog' ?  '' : 'readonly=readonly' }}>
                                 <span class="help-block"></span>
-                           </div>  
+                           </div>
 							<div class="form-group">
 								<label class="control-label">Item Category <span class="text-danger">*</span></label>
 								<div class="row">
@@ -157,8 +154,8 @@
 										</div>
 									</div>
 								</div>
-						   </div>  
-						   
+						   </div>
+
                             <div class="form-group">
                                 <label class="control-label">G/L Group<span class="text-danger">*</span></label>
                                 <select name="sap_gl_account_id" class="select2" data-placeholder="Select G/L Group" required="required">
@@ -173,32 +170,32 @@
                            <div class="form-group">
                                 <label class="control-label">G/L Account<span class="text-danger">*</span></label>
                                 <select name="gl_fname" class="select2" data-placeholder="Select G/L Group" required="required">
-                                    
+
                                 </select>
                                 <!-- <input type="text" name="gl_fname" placeholder="Sap GL Name" class="form-control tinymce" required="required" rows="5" readonly="readonly"> -->
                                 <span class="help-block"></span>
-                           </div> 
+                           </div>
 
                            <div class="form-group">
                                 <label class="control-label">Last Budget Remains <span class="text-danger">*</span></label>
                                 <input type="text" name="budget_remaining_log" placeholder="Last Budget Remains" class="form-control autonumeric text-right" required="required" rows="5" readonly="readonly">
                                 <span class="help-block"></span>
                            </div>
-                            
+
                            <div class="form-group">
                                 <label class="control-label">Max Budget Reservation <span class="text-danger">*</span></label>
                                 <input type="text" name="price_remaining" placeholder="Max Budget Reservation" class="form-control autonumeric text-right" required="required" rows="5" readonly="readonly">
                                 <span class="help-block"></span>
-                           </div> 
+                           </div>
                            <div class="form-group">
                                 <label class="control-label">Actual GR <span class="text-danger">*</span></label>
                                 <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}">
                                 <span class="help-block"></span>
-                           </div>  
-                           
-                      
+                           </div>
+
+
                            <div class="form-group">
-                                
+
                                 <div class="checkbox">
                                     <input id="checkbox0" type="checkbox" name="foreign_currency" onclick="foreignCurrency(this)">
                                     <label for="checkbox0">
@@ -207,7 +204,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group" id="hide12" style="display: none">
-                                        
+
                                         <div class="col-sm-6">
                                             <select class="select2" name="currency" id="currency" data-placeholder="Select currency">
                                                   <option value=""></option>
@@ -221,9 +218,9 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
-                         
+
                         <div class="col-md-12 text-right m-t-20">
                             <div class="modal-footer">
                                     <button class="btn btn-default btn-bordered waves-effect waves-light" type="reset">Reset</button>
@@ -231,13 +228,13 @@
                                 <button class="btn btn-primary btn-bordered waves-effect waves-light" type="submit">Save</button>
                             </div>
                         </div>
-                        <div class="clearfix"></div> 
+                        <div class="clearfix"></div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    
+
 </div>
 
 
@@ -245,5 +242,19 @@
 
 @push('js')
 <script src="{{ url('assets/js/pages/approval-expense-add-edit.js') }}"></script>
-
+@if ($itemcart != 'non-catalog')
+<script>
+    $(function() {
+        var qty_item = $('select[name="remarks"]').find('option:selected').attr('qty_item');
+        var uom_id 	= $('select[name="remarks"]').find('option:selected').attr('uom_id');
+        var item_spec  = $('select[name="remarks"]').find('option:selected').attr('item_spec');
+        var total 		= $('select[name="remarks"]').find('option:selected').attr('total');
+        $('input[name="qty_item"]').val(qty_item);
+        $('input[name="qty_actual"]').val(qty_item);
+        $('select[name="sap_uom_id"]').select2("val", uom_id);
+        $('input[name="pr_specs"]').val(item_spec);
+        $('input[name="price_actual"]').autoNumeric('set', total);
+    });
+</script>
+@endif
 @endpush

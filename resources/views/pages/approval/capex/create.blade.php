@@ -15,10 +15,10 @@
                     <h4 class="page-title">Add Purchase Request Item.</h4>
                     <ol class="breadcrumb p-0 m-0">
                         <li>
-                            
+
                             <a href="{{ route('approval-capex.create') }}">Create Capex Approval Sheet</a></li>
                         <li class="active">
-                            Add Purchase Request Item.                            
+                            Add Purchase Request Item.
                         </li>
                     </ol>
                     <div class="clearfix"></div>
@@ -43,8 +43,8 @@
                                         @endforeach
                                 </select>
                                 <span class="help-block"></span>
-                           </div> 
-                           
+                           </div>
+
                         </div>
 
                         <div class="col-md-6">
@@ -70,7 +70,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                   </div>  
+                                   </div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -94,13 +94,13 @@
                                                 </div>
                                             </div>
                                         </div>
-                                   </div>  
+                                   </div>
                                 </div>
                             </div>
                         </div>
-                               
+
                         <div class="col-md-6">
-                            
+
                             <div class="form-group">
                                 <label class="control-label">Asset Type<span class="text-danger">*</span></label>
                                 <select name="sap_asset_id" class="select2" data-placeholder="Select Asset Type" required="required">
@@ -115,15 +115,15 @@
                                 <label class="control-label">Asset Code<span class="text-danger">*</span></label>
                                 <!-- <input type="text" name="asset_code" placeholder="Asset Code" class="form-control" required="required" rows="5" readonly="readonly"> -->
                                 <select name="sap_code_id" class="select2" data-placeholder="Select Asset Code" required="required">
-                                    
+
                                 </select>
                                 <span class="help-block"></span>
-                           </div>       
+                           </div>
                            <div class="form-group">
                                 <label class="control-label">Project Name/Purpose <span class="text-danger">*</span></label>
                                 <input type="type" name="project_name" placeholder="Project Name/Purpose" class="form-control" required="required" rows="5">
                                 <span class="help-block"></span>
-                           </div>                   
+                           </div>
                            <div class="form-group">
                                 <label class="control-label">Settlement Date (for CIP) <span class="text-danger">*</span></label>
                                 <input name="settlement_date" placeholder="Settlement Date (for CIP)" class="form-control datepicker" date="true" required="required" value="{{ date('d-M-Y') }}" rows="5" readonly="readonly">
@@ -140,14 +140,13 @@
                                 </select>
                                 <span class="help-block"></span>
                            </div>
-                            
+
                             <div class="form-group">
                                 <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
                                 <select name="remarks" class="select2" data-tags="true" data-placeholder="Item Detail">
-                                    <option></option>
                                     @if ($itemcart == 'non-catalog')
-
-                                        @foreach ($items as $item) 
+                                        <option></option>
+                                        @foreach ($items as $item)
                                             <option value="{{ $item->item_description }}" total="0" item_id="{{$item->id}}" item_spec="{{$item->item_specification}}" actual_qty="1" uom_id="{{$item->uom_id}}">{{ $item->item_description }}</option>
                                         @endforeach
 
@@ -157,10 +156,10 @@
                                         @endforeach
 
                                     @endif
-                                </select>	
+                                </select>
 								<input type="hidden" name="actual_qty">
                                 <span class="help-block"></span>
-                           </div> 
+                           </div>
 
                             <div class="form-group">
                                 <label class="control-label">Unit <span class="text-danger">*</span></label>
@@ -173,21 +172,21 @@
                                 </select>
                                 <span class="help-block"></span>
                            </div>
-                        
+
                         </div>
 
-                       
+
                         <div class="col-md-6">
-                           
+
 
                            <div class="form-group">
                                 <label class="control-label">Budget Description <span class="text-danger">*</span></label>
                                 <textarea type="text" name="budget_description" placeholder="Budget Description" class="form-control" required="required" rows="5" readonly="readonly"></textarea>
                                 <span class="help-block"></span>
-                           </div>  
-                            
-                                
-                        
+                           </div>
+
+
+
                             <div class="form-group">
                                 <label class="control-label">Item Specs <span class="text-danger">*</span></label>
                                 <input type="text" name="pr_specs" placeholder="Item Specs" class="form-control" required="required" rows="5">
@@ -197,8 +196,8 @@
                                 <label class="control-label">Max Budget Reservation <span class="text-danger">*</span></label>
                                 <input  type="text" name="price_remaining" placeholder="0.00" class="form-control autonumeric text-right" required="required" rows="5" readonly="readonly">
                                 <span class="help-block"></span>
-                           </div>    
-                        
+                           </div>
+
                             <div class="form-group">
                                 <label class="control-label">Last Budget Remains <span class="text-danger">*</span></label>
                                 <input type="text" name="budget_remaining_log" placeholder="0.00" class="form-control autonumeric text-right" required="required" rows="5" readonly="readonly">
@@ -212,20 +211,20 @@
 
                             <div class="form-group">
                                 <label class="control-label">Amount on Quotation (IDR)<span class="text-danger">*</span></label>
-                                
+
                                 <input type="text" name="price_actual" placeholder="Amount on Quotation (IDR)" class="form-control autonumeric text-right" required="required" number="true" rows="5" {{ $itemcart == 'non-catalog' ?  '' : 'readonly=readonly' }} >
-                                <span class="help-block"></span> 
+                                <span class="help-block"></span>
                            </div>
-                           
+
                            <div class="form-group">
-                                
+
                                 <div class="checkbox">
                                     <input id="checkbox0" type="checkbox" name="foreign_currency" onclick="foreignCurrency(this)">
                                     <label for="checkbox0">
                                         Foreign Currency
                                     </label>
                                 </div>
-								
+
                                 <div class="row">
                                     <div class="form-group" id="hide12" style="display: none;">
 										<div class="col-sm-12">
@@ -244,12 +243,12 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
 
                         </div>
-                         
+
                         <div class="col-md-12 text-right m-t-20">
-                            
+
                              <div class="modal-footer">
                                     <button class="btn btn-default btn-bordered waves-effect waves-light" type="reset">Reset</button>
 
@@ -257,13 +256,13 @@
                             </div>
 
                         </div>
-                        <div class="clearfix"></div> 
+                        <div class="clearfix"></div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    
+
 </div>
 
 
@@ -273,5 +272,18 @@
 
 @push('js')
 <script src="{{ url('assets/js/pages/approval-capex-add-edit.js') }}"></script>
-
+@if ($itemcart != 'non-catalog')
+<script>
+    $(function() {
+        var actual_qty = $('select[name="remarks"]').find('option:selected').attr('actual_qty');
+        var uom_id 	= $('select[name="remarks"]').find('option:selected').attr('uom_id');
+        var item_spec  = $('select[name="remarks"]').find('option:selected').attr('item_spec');
+        var total 		= $('select[name="remarks"]').find('option:selected').attr('total');
+        $('input[name="actual_qty"]').val(actual_qty);
+        $('select[name="sap_uom_id"]').select2("val", uom_id);
+        $('input[name="pr_specs"]').val(item_spec);
+        $('input[name="price_actual"]').autoNumeric('set', total);
+    });
+</script>
+@endif
 @endpush
