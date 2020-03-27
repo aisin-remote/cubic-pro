@@ -9,7 +9,7 @@ use App\Capex;
 use App\Expense;        // Added by Ferry, July 10th 2015
 use App\Department;
 use DB;
-use Illuminate\Support\Collection; 
+use Illuminate\Support\Collection;
 use App\Period;
 use Datatables;
 
@@ -17,7 +17,7 @@ class ApprovalMaster extends Model
 {
 	protected $hidden = ['created_at', 'updated_at'];
 	protected $fillable = ['*'];
-	
+
 	public function get_list()
     {
         // return $status;
@@ -30,36 +30,36 @@ class ApprovalMaster extends Model
     // $approvals = self::select('name','approval_number','total','status','overbudget_info','action');
 
     // v2.12 by Ferry, 20150820, Filter uc / ue
-	if (($type == 'ub') && 
-            \Entrust::hasRole(['admin', 'gm', 'department_head', 'director', 'user', 
+	if (($type == 'ub') &&
+            \Entrust::hasRole(['admin', 'gm', 'department_head', 'director', 'user',
                 'budget', 'purchasing', 'accounting'])) {
 
             $approvals = self::query()->select('departments.name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
         ->join('departments', 'approval_masters.department', '=', 'departments.dep_key')
         ->where('budget_type', 'like', 'u%');
 
-    } 
+    }
 
     //dev-4.0 by yudo,  untuk view pr convert sap po
     elseif (($type == 'all')  && \Entrust::hasRole('purchasing')) {   // bukan type capex, expense, unbudget. Tapi lemparan URI/URL/Querystring utk print
-        if ($status == config('global.status_code.approved.dir')) 
+        if ($status == config('global.status_code.approved.dir'))
         {
             $approvals = self::query()->where('status', '=', $status)
             ->where('is_download', '=', 0);
         }
         else if($status == config('global.status_code.approved.bgt')){
             $approvals = self::query()->where('is_download', '=', 1);
-        }              
+        }
         else
         {
-            $approvals = self::query()->where('status', '<=' , $status);              
+            $approvals = self::query()->where('status', '<=' , $status);
         }
-        
+
     }
 
     // dev-4.0, Ferry, 20161222, Merging
-    elseif (($type != 'ub') && 
-        \Entrust::hasRole(['admin', 'gm', 'department_head', 'director', 'user', 
+    elseif (($type != 'ub') &&
+        \Entrust::hasRole(['admin', 'gm', 'department_head', 'director', 'user',
             'budget', 'purchasing', 'accounting'])) {
 
         //$approvals = self::query()->where('budget_type', $type);
@@ -127,7 +127,7 @@ class ApprovalMaster extends Model
             return "<div id='$approvals->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='$approvals->approval_number' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a  href='javascript:validateApproval(&#39;$approvals->approval_number&#39;);' class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href='$approvals->approval_number' class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
         }
         // return $type;
-        
+
     })
         ->editColumn("total", function ($approvals) {
             return number_format($approvals->total);
@@ -150,7 +150,7 @@ class ApprovalMaster extends Model
             }else{
                 return "Canceled on Group Manager Approval";
             }
-        })           
+        })
         ->make(true);
     }
 
@@ -177,7 +177,7 @@ class ApprovalMaster extends Model
 		}else{
 			$year = "xx";
 		}
-        $year = substr($year, -2);	    
+        $year = substr($year, -2);
         $iteration = 0;
 
         if (!is_null($last = self::getLastCapex($type, $dept))) {
@@ -198,14 +198,14 @@ class ApprovalMaster extends Model
     {
         $sap_key = Department::find($dept);
         $period = Period::all();
-        
+
         if(!empty($period) && count($period) >= 6){
 			$year = $period[0]->value;
 		}else{
 			$year = "xx";
 		}
         $year = substr($year, -2);
-        
+
         return $type.
                 $sap_key->sap_key.
                 $year.
@@ -221,7 +221,7 @@ class ApprovalMaster extends Model
     {
         if ($this->budget_type != 'ub') {
             foreach ($this->details as $detail) {
-                if ($detail->budgetStatus == 'Overbudget') {
+                if ($detail->budget_reserved > $detail->budget_remaining_log ) {
                     return true;
                 }
             }
@@ -275,19 +275,19 @@ class ApprovalMaster extends Model
     public function gr_confirm()
     {
     	return $this->hasOne('App\GrConfirm', 'approval_id');
-    	
+
     }
 
     public function user()
     {
         return $this->belongsTo('App\User', 'created_by');
     }
-    
+
     public function approver_user()
     {
         return $this->hasMany('App\ApproverUser', 'approval_master_id');
     }
-    
+
 	public static function get_pending_sum ($budget_type, $group_type, $group_name, $thousands = 1000000, $rounded = 2)
 	{
 		$user = auth()->user();
@@ -350,31 +350,31 @@ class ApprovalMaster extends Model
         $data['data'] = [];
 
         if (!is_null($master = self::getDetails($approval_number))) {
-            $i = 1;			
+            $i = 1;
             foreach ($master->details as $value) {
                 $data['data'][] = [
-                    str_pad($i, 2, '0', STR_PAD_LEFT),  
+                    str_pad($i, 2, '0', STR_PAD_LEFT),
                     $value->budget_no,
-                    $value->asset_no."<input type='hidden' value='".$value->id."'>",                
-                    $value->sap_track_no,          
-                    $value->sap_asset_no,               
-                    $value->sap_account_code,          
-                    $value->sap_cc_code,               
+                    $value->asset_no."<input type='hidden' value='".$value->id."'>",
+                    $value->sap_track_no,
+                    $value->sap_asset_no,
+                    $value->sap_account_code,
+                    $value->sap_cc_code,
                     "",        //budget description
-                    $value->remarks,            
+                    $value->remarks,
                     $value->project_name,
-                    $value->budget_remaining_log,    
-                    $value->budget_reserved,       
+                    $value->budget_remaining_log,
+                    $value->budget_reserved,
                     $value->actual_price_user, // actual_price_purchasing
-                    $value->price_to_download,      
-                    $value->currency,                      
+                    $value->price_to_download,
+                    $value->currency,
                     $value->pr_specs, // qty remaining
                     "", // budget status
                     $value->actual_gr,
-                    $value->sap_vendor_code,  
+                    $value->sap_vendor_code,
                     $value->po_number,
                     $value->sap_track_no,
-                    $value->sap_tax_code,  
+                    $value->sap_tax_code,
                     ];
                     $i++;
                 }
@@ -385,15 +385,15 @@ class ApprovalMaster extends Model
 	public static function get_budgetInfo($type, $status, $id)
     {
 		$overbudget_info ="-";
-		
+
         if ($type == 'ub') {
             $approvals = self::query()->where('budget_type', 'like', 'u%');
         } else {
             $approvals = self::query()->where('budget_type', '=', $type)->where('approval_number',"=",$id);
         }
-		
+
         $user = auth()->user();
-		
+
         if (\Entrust::hasRole('user')) {
             $approvals->where('department', $user->department->department_code);
         }
@@ -401,11 +401,11 @@ class ApprovalMaster extends Model
         if (count($approvals = $approvals->get()) > 0) {
             foreach ($approvals as $v) {
 
-                $overbudget_info = $v->status < 0 ? 'Canceled' : ($v->isOverExist() ? 'Overbudget exist' : 'Underbudget');            
+                $overbudget_info = $v->status < 0 ? 'Canceled' : ($v->isOverExist() ? 'Overbudget exist' : 'Underbudget');
 
             }
         }
-		
+
         return $overbudget_info;
     }
 }

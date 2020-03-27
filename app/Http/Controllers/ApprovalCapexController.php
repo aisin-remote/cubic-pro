@@ -293,7 +293,6 @@ class ApprovalCapexController extends Controller
 
     public function ListApproval()
     {
-
         return view('pages.approval.capex.index-admin');
     }
 
@@ -396,7 +395,6 @@ class ApprovalCapexController extends Controller
             }
         }
 
-
         return DataTables::of($approval_capex)
         ->rawColumns(['action'])
 
@@ -453,7 +451,7 @@ class ApprovalCapexController extends Controller
         })
 
         ->addColumn("overbudget_info", function ($approval_capex) {
-            return $approval_capex->status < 0 ? 'Canceled' : ($approval_capex->budget_reserved > $approval_capex->budget_remaining_log ? 'Overbudget exist' : 'All underbudget');
+            return $approval_capex->status < 0 ? 'Canceled' : ($approval_capex->isOverExist() ? 'Overbudget exist' : 'All underbudget');
         })
 
         ->addColumn('details_url', function($approval_capex) {
