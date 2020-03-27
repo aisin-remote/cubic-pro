@@ -15,7 +15,7 @@ $(document).ready(function(){
 	  }else{
 		  $('[name="budget_description"]').val(arr_expense.description);
 		  $('[name="qty_remaining"]').val(arr_expense.qty_plan);
-		  $('[name="price_remaining"]').autoNumeric('set', arr_expense.budget_remaining);
+		  $('[name="price_remaining"]').autoNumeric('set', parseInt(arr_expense.budget_plan) - parseInt(arr_expense.budget_reserved));
 		  $('[name="budget_remaining_log"]').autoNumeric('set', arr_expense.budget_remaining);
       }
     }

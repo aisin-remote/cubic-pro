@@ -70,7 +70,12 @@ class Expense extends Model
         }else{
 			$capexs = self::query();
 		}
-		
+
 		return $capexs;
-	}
+    }
+
+    public function approvalDetails()
+    {
+        return $this->hasMany('App\ApprovalDetail', 'budget_no', 'budget_no');
+    }
 }

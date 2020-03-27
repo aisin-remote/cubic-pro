@@ -70,11 +70,13 @@ class ExpenseController extends Controller
     }
 	public function show($budget_no)
 	{
-		$capex = Expense::where('budget_no',$budget_no)->first();
-        $approval_details = ApprovalDetail::join('approval_masters','approval_details.approval_master_id','=','approval_masters.id')
-                                            ->where('approval_details.budget_no',$budget_no)->get();
+		$expense = Expense::where('budget_no',$budget_no)->first();
+        $approval_details = ApprovalDetail::with('approval')
+            ->where('budget_no',$budget_no)
+            ->get();
 
-		return view('pages.expense.view',compact('capex','approval_details'));
+
+		return view('pages.expense.view',compact('expense','approval_details'));
 	}
     public function getData(Request $request)
     {
@@ -85,9 +87,9 @@ class ExpenseController extends Controller
             ->editColumn("status", function ($expense) {
                 // $expense->is_closed="ABS";
                 if ($expense->status=='0'){
-                    return "Underbudget";
+                    return "Under";
                 }else{
-                    return "Overbudget";
+                    return "Over";
                 }
             })
             ->editColumn("is_closed", function ($expense) {

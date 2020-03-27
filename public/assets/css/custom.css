@@ -423,7 +423,7 @@ tr.shown td.details-control:before {
 .dropdown-submenu {
     position: relative;
 }
-  
+
 .dropdown-submenu .dropdown-menu {
     top: 0;
     left: 100%;
@@ -435,4 +435,8 @@ tr.shown td.details-control:before {
     z-index: 9999 !important;
     overflow-y: scroll;
     height: 500px;
+}
+
+#table-expense {
+    font-size: 12px !important;
 }

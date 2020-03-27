@@ -40,22 +40,22 @@
 			<div class="col-md-6">
 				<div class="form-group">
 					<label class="control-label"><b><span class="text-danger"> : </span></label>
-					{{$capex->budget_no}}</b>
+					{{$expense->budget_no}}</b>
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
 					<label class="control-label"><b><span class="text-danger"> : </span></label>
-					{{$capex->description}}</b>
+					{{$expense->description}}</b>
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
 					<label class="control-label"><b><span class="text-danger"> : </span></label>
-					{{number_format($capex->budget_plan).' | '.number_format($capex->budget_remaining)}}</b>
+					{{number_format($expense->budget_plan).' | '.number_format($expense->budget_remaining)}}</b>
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
 					<label class="control-label"><b><span class="text-danger"> : </span></label>
-					{{number_format($capex->budget_reserved).' | '.number_format($capex->budget_used)}}</b>
+					{{number_format($expense->budget_reserved).' | '.number_format($expense->budget_used)}}</b>
 					<span class="help-block"></span>
 				</div>
 			</div>
@@ -77,12 +77,12 @@
 					</thead>
 					@foreach($approval_details as $ap)
 					<tr>
-						<td><a href= "{{ url('approval/ex/'.$ap->approval_number) }}" >{{$ap->approval_number}}</a></td>
+						<td><a href= "{{ url('approval/ex/'.$ap->approval->approval_number) }}" >{{$ap->approval->approval_number}}</a></td>
 						<td>{{$ap->project_name}}</td>
 						<td>{{number_format($ap->budget_reserved)}}</td>
 						<td>{{number_format($ap->actual_price_user)}}</td>
 						<td>{{$ap->actual_qty}}</td>
-						<td>{{$capex->status == 0?'Underbudget':'Over Budget'}}</td>
+						<td @if($ap->isOver) class="bg-danger" @else class="bg-success" @endif style="color:#fff">{{ $ap->isOver ? "Over Budget" : "Under Budget" }}</td>
 						@if($ap->status == 0)
 						<td>User Created</td>
 						@elseif($ap->status == 1)

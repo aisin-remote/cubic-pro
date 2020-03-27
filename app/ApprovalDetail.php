@@ -39,7 +39,7 @@ class ApprovalDetail extends Model
         'pr_specs',
         'pr_uom',
     ];
-	
+
     public static function getByBudgetNo($budget_no)
     {
         return self::query()->where('budget_no', $budget_no)->first();
@@ -87,5 +87,28 @@ class ApprovalDetail extends Model
     public function gr()
     {
         return $this->hasOne('App\GrConfirmDetail', 'approval_detail_id', 'id');
+    }
+
+    public function getIsOverAttribute()
+    {
+        $expense = $this->expense;
+        $budgetReserved = $expense
+            ->approvalDetails()
+            ->select(DB::raw('sum(actual_price_user) as total_reserved'))
+            ->groupBy('budget_no')
+            ->where('id', '<=', $this->id)
+            ->first();
+
+        if (!$budgetReserved) {
+            $budgetReserved = $this->actual_price_user;
+        } else {
+            $budgetReserved = $budgetReserved->total_reserved;
+        }
+
+        if ($budgetReserved > $expense->budget_plan) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -183,6 +183,17 @@ class ApprovalExpenseController extends Controller
 
                 $i = 1;
                 foreach (Cart::instance('expense')->content() as $details) {
+                    $expense = Expense::where('budget_no', $details->options->budget_no)->first();
+
+                    if ($expense->budget_reserved + $details->options->price_actual < $expense->budget_plan) {
+                        $expense->budget_reserved += $details->options->price_actual;
+                        $budget_reserved = $details->options->price_actual;
+                    } else {
+                        $budget_reserved = $expense->budget_plan - $expense->budget_reserved;
+                        $expense->budget_reserved = $expense->budget_plan;
+                    }
+
+                    $expense->update();
 
                     $approval                        = new ApprovalDetail;
                     $approval->budget_no             = $details->options->budget_no;
@@ -202,13 +213,11 @@ class ApprovalExpenseController extends Controller
                     $approval->price_to_download     = $details->options->price_actual;
                     $approval->actual_gr             = date('Y-m-d',strtotime($details->options->plan_gr));
                     $approval->fyear                 = date('Y');
-                    $approval->budget_reserved       = $details->options->price_actual;
+                    $approval->budget_reserved       = $budget_reserved;
                     // $approval->asset_no              = $details->options->asset_code."JE".str_pad($i, 3, '0', STR_PAD_LEFT);
                     $approval->sap_track_no          = ApprovalMaster::getNewSapTrackingNo(3,$user->department_id,$approval_no,$i);
                     $capex->details()->save($approval);
                     $i++;
-
-                    Expense::where('budget_no', $details->options->budget_no)->update(['budget_reserved' => $details->price]);
                 }
 				// Simpan approver user
 				$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
@@ -269,8 +278,7 @@ class ApprovalExpenseController extends Controller
     public function getApprovalExpense($status){
         $type 	= 'ex';
         $user = auth()->user();
-        $approval_expense = ApprovalMaster::with('departments')
-                            ->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
+        $approval_expense = ApprovalMaster::with('departments', 'details')
                             ->where('budget_type', 'like', 'ex%')
                             ->whereHas('approver_user',function($query) use($user) {
                                 $query->whereOr('user_id', $user->id );
@@ -387,10 +395,11 @@ class ApprovalExpenseController extends Controller
 
 	public function AjaxDetailApproval($approval_number)
 	{
-         $approval_master = ApprovalMaster::select('*','approval_masters.status as am_status','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code', DB::RAW('CONCAT_WS(" - ", approval_details.sap_account_code, approval_details.sap_account_text) AS sap_account_code1'))
+         $approval_master = ApprovalMaster::select('*','approval_masters.status as am_status','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code', 'approval_details.budget_reserved as budget_reserved', DB::raw('CONCAT_WS(" - ", approval_details.sap_account_code, approval_details.sap_account_text) AS sap_account_code1'))
                         ->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
 						->join('expenses','expenses.budget_no','=','approval_details.budget_no')
-						->where('approval_number',$approval_number);
+                        ->where('approval_number',$approval_number)->get();
+
 		 return DataTables::of($approval_master)
 				->editColumn("asset_no", function ($approval) {
 					return $approval->asset_no.'<input class="approval_data" type="hidden" value="'.$approval->id_ad.'">';
@@ -411,7 +420,30 @@ class ApprovalExpenseController extends Controller
                     return number_format($approval->price_to_download);
                 })
                 ->addColumn("overbudget_info", function ($approval) {
-                    return $approval->status < 0 ? 'Canceled' : ($approval->budget_reserved > $approval->budget_remaining_log ? 'Overbudget exist' : 'Underbudget');
+                    // id di appoval = id expense karena efek join
+                    if ($approval->status < 0) {
+                        return 'Canceled';
+                    }
+
+                    $expense = Expense::where('id', $approval->id)->first();
+                    $budgetReserved = $expense
+                        ->approvalDetails()
+                        ->select(DB::raw('sum(actual_price_user) as total_reserved'))
+                        ->groupBy('budget_no')
+                        ->where('id', '<=', $approval->id_ad)
+                        ->first();
+
+                    if (!$budgetReserved) {
+                        $budgetReserved = $approval->actual_price_user;
+                    } else {
+                        $budgetReserved = $budgetReserved->total_reserved;
+                    }
+
+                    if ($budgetReserved > $expense->budget_plan) {
+                        return 'Over Budget';
+                    }
+
+                    return 'Under Budget';
                 })
                 ->addColumn("actual_gr", function ($approval) {
                     return Carbon::parse($approval->actual_gr)->format('d M Y');
@@ -441,8 +473,20 @@ class ApprovalExpenseController extends Controller
     {
         DB::transaction(function() use ($id){
             $approval_expense = ApprovalMaster::find($id);
+
+            $expense = $approval_expense->details[0]->expense;
             $approval_expense->details()->delete();
             $approval_expense->delete();
+
+            // update budget reserved di expense
+            $totalActual = $expense->approvalDetails->sum('actual_price_user');
+            if ($totalActual > $expense->budget_plan) {
+                $expense->budget_reserved = $expense->budget_plan;
+            } else {
+                $expense->budget_reserved = $totalActual;
+            }
+
+            $expense->update();
         });
         $res = [
                     'title' => 'Success',
