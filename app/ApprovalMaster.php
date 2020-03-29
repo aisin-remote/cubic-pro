@@ -221,7 +221,7 @@ class ApprovalMaster extends Model
     {
         if ($this->budget_type != 'ub') {
             foreach ($this->details as $detail) {
-                if ($detail->budgetStatus == 'Overbudget') {
+                if ($detail->budget_reserved > $detail->budget_remaining_log ) {
                     return true;
                 }
             }
