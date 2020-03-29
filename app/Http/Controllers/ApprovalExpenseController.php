@@ -279,15 +279,16 @@ class ApprovalExpenseController extends Controller
         $type 	= 'ex';
         $user = auth()->user();
         $approval_expense = ApprovalMaster::with('departments', 'details')
-                            ->where('budget_type', 'like', 'ex%')
-                            ->whereHas('approver_user',function($query) use($user) {
-                                $query->whereOr('user_id', $user->id );
-                            });
+                            ->where('budget_type', 'like', 'ex%');
 
         $level = ApprovalDtl::where('user_id', $user->id)->first();
 
         if(\Entrust::hasRole('user')) {
             $approval_expense->where('created_by',$user->id);
+        } else {
+            $approval_expense->whereHas('approver_user',function($query) use($user) {
+                $query->where('user_id', $user->id );
+            });
         }
 
         if (!empty($level)) {
@@ -368,8 +369,7 @@ class ApprovalExpenseController extends Controller
         })
 
         ->addColumn("overbudget_info", function ($approvals) {
-
-            return $approvals->status < 0 ? 'Canceled' : ($approvals->budget_reserved > $approvals->budget_remaining_log ? 'Overbudget exist' : 'All underbudget');
+            return $approvals->status < 0 ? 'Canceled' : ($approvals->is_over ? 'Overbudget exist' : 'All underbudget');
         })
 
         ->toJson();

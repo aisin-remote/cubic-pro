@@ -44,9 +44,11 @@ class ExpenseController extends Controller
 
     public function store(Request $request)
     {
-		$user = auth()->user();
+        $user = auth()->user();
+        $department = Department::findOrFail($request->department_id);
+        $departmentCode = $department->department_code;
       	$capex 				          = new Expense;
-        $capex->department  	= $user->department->department_code;
+        $capex->department  	= $departmentCode;
         $capex->budget_no       = $request->budget_no;
         $capex->budget_plan     = $request->budget_plan;
         $capex->qty_plan     	= $request->qty_plan;
@@ -74,7 +76,6 @@ class ExpenseController extends Controller
         $approval_details = ApprovalDetail::with('approval')
             ->where('budget_no',$budget_no)
             ->get();
-
 
 		return view('pages.expense.view',compact('expense','approval_details'));
 	}

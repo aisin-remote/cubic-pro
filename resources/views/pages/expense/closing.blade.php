@@ -1,14 +1,14 @@
 @extends('layouts.master')
 
 @section('title')
-   List of Capex For Open / Close Action
+   List of Expense For Open / Close Action
 @endsection
 
 @section('content')
 
-@php($active = 'capex')
+@php($active = 'expense')
 <div class="container">
-	
+
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="page-title-box">
@@ -54,4 +54,4 @@
 @push('js')
 <script src="{{ url('assets/js/pages/expense-closing.js') }}"></script>
 @endpush
-                              
+

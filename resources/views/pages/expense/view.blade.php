@@ -1,12 +1,12 @@
 @extends('layouts.master')
 
 @section('title')
-	Detail Capex
+	Detail Expense
 @endsection
 
 @section('content')
 
-@php($active = 'capex')
+@php($active = 'expense')
 <div class="container">
 	 <div class="row">
         <div class="col-xs-12">
@@ -83,19 +83,19 @@
 						<td>{{number_format($ap->actual_price_user)}}</td>
 						<td>{{$ap->actual_qty}}</td>
 						<td @if($ap->isOver) class="bg-danger" @else class="bg-success" @endif style="color:#fff">{{ $ap->isOver ? "Over Budget" : "Under Budget" }}</td>
-						@if($ap->status == 0)
+						@if($ap->approval->status == 0)
 						<td>User Created</td>
-						@elseif($ap->status == 1)
+						@elseif($ap->approval->status == 1)
 						<td>Validasi Budget</td>
-						@elseif($ap->status == 2)
+						@elseif($ap->approval->status == 2)
 						<td>Approved by Dept. Head</td>
-						@elseif($ap->status == 3)
+						@elseif($ap->approval->status == 3)
 						<td>Approved by GM</td>
-						@elseif($ap->status == 4)
+						@elseif($ap->approval->status == 4)
 						<td>Approved by Director</td>
-						@elseif($ap->status == -1)
+						@elseif($ap->approval->status == -1)
 						<td>Canceled on Quotation Validation</td>
-						@elseif($ap->status == -2)
+						@elseif($ap->approval->status == -2)
 						<td>Canceled Dept. Head Approval</td>
 						@else
 						<td>Canceled on Group Manager Approval</td>

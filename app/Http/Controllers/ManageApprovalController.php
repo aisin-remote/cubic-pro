@@ -42,31 +42,31 @@ class ManageApprovalController extends Controller
     }
 
     public function store(Request $request)
-    {		 
+    {
     	$ret = DB::transaction(function() use ($request){
-			
+
 			$res = [
 					'title' => 'Succses',
 					'type' => 'success',
 					'message' => 'Data Saved Success!'
 				];
-		
+
 			try{
 				$level 						= $request->level_approval;
 				$user 						= $request->user;
-				
+
 				$approval = new Approval;
 				$approval->department       = $request->department;
 				$approval->is_seq       	= $request->is_seq;
 				$approval->is_must_all      = $request->is_must_all;
 				$approval->total_approval   = count($level);
 				$approval->save();
-				
+
 				if (count($level) > 0 && count($user) > 0) {
 					for ($i = 0; $i < count($level); $i++) {
-						
+
 							if ($level[$i] != "" && $user[$i] != "") {
-						
+
 								$approval_d 				= new ApprovalDtl;
 								$approval_d->approval_id	= $approval->id;
 								$approval_d->level       	= $level[$i];
@@ -79,19 +79,19 @@ class ManageApprovalController extends Controller
 
 					}
 				}else{
-					
+
 					throw new \Exception("There is empty data ---", 1);
 				}
-			
+
 			}catch(\Exception $e){
 				 DB::rollback();
 				 $res = [
 					'title' => 'Error',
 					'type' => 'error',
 					'message' => $e->getMessage(),
-				]; 
+				];
 			}
-			
+
 			return $res;
 		 });
 
@@ -99,12 +99,11 @@ class ManageApprovalController extends Controller
                 ->route('manage_approval.index')
                 ->with($ret);
 
-       
+
     }
-	
+
     public function getData()
     {
-
     	$approval = Approval::select('*','approvals.id as approval_id')->join('departments', 'approvals.department','=','departments.department_code')->get();
         return DataTables::of($approval)
         ->rawColumns(['options'])
@@ -149,22 +148,22 @@ class ManageApprovalController extends Controller
 						if (empty($approval)) {
 							return response()->json('Type not found', 500);
 						}
-						
+
 						// $approval->department 	= $request->department;
 						$approval->is_seq 		= $request->is_seq;
 						$approval->is_must_all 	= $request->is_must_all;
 						$approval->total_approval = count($level);
 						$approval->save();
-						
+
 						ApprovalDtl::where('approval_id',$approval->id)->delete();
 
 
 						foreach ($request->user as $i => $value){
 							$approval_dtl = new ApprovalDtl();
-							$approval_dtl->approval_id 	= $approval->id; 
+							$approval_dtl->approval_id 	= $approval->id;
 							$approval_dtl->user_id 		= $request->user[$i];
 							$approval_dtl->level 		= $level[$i];
-							
+
 							$approval_dtl->save();
 						}
 					// }catch(\Exception $e){
@@ -173,11 +172,11 @@ class ManageApprovalController extends Controller
 					// 		'title' => 'Error',
 					// 		'type' => 'error',
 					// 		'message' => $e->getMessage(),
-					// 	]; 
+					// 	];
 					// }
-			
+
 				});
-		
+
 		if ($request->wantsJson()) {
 			return response()->json($approval);
 		}
@@ -225,11 +224,11 @@ class ManageApprovalController extends Controller
 
         return response()->json(array_merge($this->arr_dummy, $data));
 	}
-	
+
 	public function getLevel(Request $request)
     {
         $data = System::ConfigMultiply('level_approval');
-                
+
         return response()->json(array_merge($this->arr_dummy, $data->toArray()));
     }
 
