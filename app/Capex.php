@@ -38,11 +38,11 @@ class Capex extends Model
 
         return $data;
     }
-    
+
 	public static function ability()
 	{
 		$user = auth()->user();
-		
+
 		if(\Entrust::hasRole('user')) {
 			$capexs = self::where('department',$user->department->department_code);
 		}else if (\Entrust::hasRole('department_head')) {
@@ -54,10 +54,10 @@ class Capex extends Model
         }else{
 			$capexs = self::query();
 		}
-		
+
 		return $capexs;
     }
-    
+
 	public function toArray($flag = '', $source_id = '', $time = '')
     {
         $user = auth()->user();
@@ -76,5 +76,10 @@ class Capex extends Model
             $array['updated_at'] 		= Carbon::now()->format('Y-m-d H:i:s');
         }
         return $array;
+    }
+
+    public function approvalDetails()
+    {
+        return $this->hasMany('App\ApprovalDetail', 'budget_no', 'budget_no');
     }
 }

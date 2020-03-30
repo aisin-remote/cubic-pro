@@ -10,7 +10,7 @@ class SapAsset extends Model
         'asset_type',
         'asset_code',
         'asset_name'
-       
+
     ];
 
     public static function getAutoAssetCode($asset_code, $asset_kind='O', $budget_no='') {
@@ -20,7 +20,7 @@ class SapAsset extends Model
             // $result = Approval_detail::getNewAssetNumber($asset_code);
             $result = SapNumber::getNewAssetNumber($asset_code);
         }
-        elseif ($asset_kind == 'C') {
+        elseif ($asset_kind == 'CIP') {
             // CIP
             $result = SapNumber::getNewAssetNumberWithCIP($budget_no);
         }

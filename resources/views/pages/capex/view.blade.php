@@ -29,7 +29,7 @@
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
-					<label class="control-label"><b>Budget Plan | Remaining</b><span class="text-danger"></span></label> 
+					<label class="control-label"><b>Budget Plan | Remaining</b><span class="text-danger"></span></label>
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
@@ -46,11 +46,11 @@
 				<div class="form-group">
 					<label class="control-label"><b><span class="text-danger"> : </span></label>
 					{{$capex->equipment_name}}</b>
-						
+
 					<span class="help-block"></span>
 				</div>
 				<div class="form-group">
-					<label class="control-label"><b><span class="text-danger"> : </span></label> 
+					<label class="control-label"><b><span class="text-danger"> : </span></label>
 					{{number_format($capex->budget_plan).' | '.number_format($capex->budget_remaining)}}</b>
 					<span class="help-block"></span>
 				</div>
@@ -77,32 +77,32 @@
 						</tr>
 					</thead>
 					@foreach($approval_details as $ap)
-					
+
 					<tr>
-						<td><a href= "{{ url('approval/cx/'.$ap->approval_number) }}" >{{$ap->approval_number}}</a></td>
+						<td><a href= "{{ url('approval/cx/'.$ap->approval->approval_number) }}" >{{$ap->approval->approval_number}}</a></td>
 						<td>{{$ap->project_name}}</td>
-						<td>{{number_format($ap->actual_price_user)}}</td>
+						<td>{{number_format($ap->budget_reserved)}}</td>
 						<td>{{number_format($ap->actual_price_user)}}</td>
 						<td>{{$ap->actual_qty}}</td>
-						<td>{{$capex->status == 0?'Underbudget':'Overbudget'}}</td>
-						@if($ap->status == 0)
+						<td @if($ap->isOver) class="bg-danger" @else class="bg-success" @endif style="color:#fff">{{ $ap->isOver ? "Over Budget" : "Under Budget" }}</td>
+						@if($ap->approval->status == 0)
 						<td>User Created</td>
-						@elseif($ap->status == 1)
-						<td>Validasi Budget</td>	
-						@elseif($ap->status == 2)
+						@elseif($ap->approval->status == 1)
+						<td>Validasi Budget</td>
+						@elseif($ap->approval->status == 2)
 						<td>Approved by Dept. Head</td>
-						@elseif($ap->status == 3)
+						@elseif($ap->approval->status == 3)
 						<td>Approved by GM</td>
-						@elseif($ap->status == 4)
+						@elseif($ap->approval->status == 4)
 						<td>Approved by Director</td>
-						@elseif($ap->status == -1)
+						@elseif($ap->approval->status == -1)
 						<td>Canceled on Quotation Validation</td>
-						@elseif($ap->status == -2)
+						@elseif($ap->approval->status == -2)
 						<td>Canceled Dept. Head Approval</td>
 						@else
-						<td>Canceled on Group Manager Approval</td>	
+						<td>Canceled on Group Manager Approval</td>
 						@endif
-						<td>{{date('d-M-Y',strtotime($ap->actual_gr))}}</td>
+						<td>{{date('d-M-Y',strtotime($ap->approval->actual_gr))}}</td>
 					</tr>
 					@endforeach
 				</table>

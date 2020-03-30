@@ -91,8 +91,16 @@ class ApprovalDetail extends Model
 
     public function getIsOverAttribute()
     {
-        $expense = $this->expense;
-        $budgetReserved = $expense
+        $budget = $this->expense;
+        if (!$budget) {
+            $budget = $this->capex;
+        }
+
+        if (!$budget) {
+            abort(404);
+        }
+
+        $budgetReserved = $budget
             ->approvalDetails()
             ->select(DB::raw('sum(actual_price_user) as total_reserved'))
             ->groupBy('budget_no')
@@ -105,10 +113,37 @@ class ApprovalDetail extends Model
             $budgetReserved = $budgetReserved->total_reserved;
         }
 
-        if ($budgetReserved > $expense->budget_plan) {
+        if ($budgetReserved > $budget->budget_plan) {
             return true;
         }
 
         return false;
+    }
+
+    // get last cip
+    public static function getLastCIPNumber($budget_no)
+    {
+        $last_cip = self::query()
+                    ->where('cip_no', 'like', $budget_no.'-%')
+                    ->orderBy('cip_no', 'desc');
+
+        return $last_cip->first();
+    }
+
+    // get new cip
+    public static function getNewCIPNumber($budget_no)
+    {
+        $i = 0;
+
+        if (!is_null($last = self::getLastCIPNumber($budget_no))) {
+
+            list(,,,,,,$last_cip) = explode('-', $last->cip_no);;
+            $i = $last_cip;
+        }
+
+        $i++;
+        $i = str_pad($i, 4, 0, STR_PAD_LEFT);
+
+        return $budget_no.'-'.$i;
     }
 }

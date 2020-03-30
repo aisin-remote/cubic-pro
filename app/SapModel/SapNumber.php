@@ -2,6 +2,7 @@
 
 namespace App\SapModel;
 
+use App\ApprovalDetail;
 use Illuminate\Database\Eloquent\Model;
 
 class SapNumber extends Model
@@ -11,7 +12,7 @@ class SapNumber extends Model
 
 	public static function getNewAssetNumberWithCIP($budget_no)
     {
-        $detail = Approval_detail::where('cip_no', 'like', $budget_no.'-%')
+        $detail = ApprovalDetail::where('cip_no', 'like', $budget_no.'-%')
                     ->orderBy('cip_no', 'asc')
                     ->first();
 

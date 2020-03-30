@@ -72,7 +72,6 @@ class ApprovalCapexController extends Controller
 
     public function store(Request $request)
     {
-
         $capex              = Capex::find($request->budget_no);
         $sap_assets         = SapAsset::where('asset_type',$request->sap_asset_id)->where('asset_code', $request->sap_code_id)->first();
         $sap_costs          = SapCostCenter::find($request->sap_cost_center_id);
@@ -184,7 +183,6 @@ class ApprovalCapexController extends Controller
         $res = '';
 
         DB::transaction(function() use ($request, &$res){
-
             $user = \Auth::user();
             $approval_no = ApprovalMaster::getNewApprovalNumber('CX', $user->department->department_code);
 
@@ -202,6 +200,35 @@ class ApprovalCapexController extends Controller
             $capex->save();
             $i = 1;
             foreach (Cart::instance('capex')->content() as $details) {
+                if ($details->options->asset_kind == 'CIP') {
+                    $cip_no = ApprovalDetail::getNewCIPNumber($details->options->budget_no);
+
+                    if (substr($cip_no, -4) != '0001') {
+                        $asset_no = SapAsset::getAutoAssetCode($details->options->asset_code, 'CIP', $details->options->budget_no);
+                    } else {
+                        $asset_no = SapAsset::getAutoAssetCode($details->options->asset_code);
+                    }
+
+                    $capexStatus = 0;
+                } else {
+                    $cip_no = null;
+                    $capexStatus = 1;
+                    $asset_no = SapAsset::getAutoAssetCode($details->options->asset_code);
+                }
+
+                $capexBudget = Capex::where('budget_no', $details->options->budget_no)->first();
+
+                if ($capexBudget->budget_reserved + $details->price < $capexBudget->budget_plan) {
+                    $capexBudget->budget_reserved += $details->price;
+                    $budget_reserved = $details->price;
+                } else {
+                    $budget_reserved = $capexBudget->budget_plan - $capexBudget->budget_reserved;
+                    $capexBudget->budget_reserved = $capexBudget->budget_plan;
+                }
+
+                $capexBudget->is_closed = $capexStatus;
+                $capexBudget->update();
+
                 $approval                        = new ApprovalDetail;
                 $approval->budget_no             = $details->options->budget_no;
                 $approval->project_name          = $details->name;
@@ -220,21 +247,16 @@ class ApprovalCapexController extends Controller
                 $approval->pr_uom            	 = $details->options->sap_uom_id;
                 $approval->budget_remaining_log  = $details->options->budget_remaining_log;
                 $approval->price_to_download     = $details->price;
-				$approval->pr_specs 			 = $details->options->pr_specs;
+                $approval->pr_specs 			 = $details->options->pr_specs;
+                $approval->cip_no                = $cip_no;
                 $approval->actual_gr             = date('Y-m-d',strtotime($details->options->plan_gr));
-                $approval->settlement_date       = date('Y-m-d',strtotime($details->options->settlement_date));
+                $approval->settlement_date       = $cip_no ? date('Y-m-d',strtotime($details->options->settlement_date)) : null;
                 $approval->fyear                 = date('Y');
-                $approval->budget_reserved       = $details->price;
-                $approval->asset_no              = $details->options->asset_code.'JE'.str_pad($i, 3, '0', STR_PAD_LEFT);
+                $approval->budget_reserved       = $budget_reserved;
+                $approval->asset_no              = $asset_no;
                 $approval->sap_track_no          = ApprovalMaster::getNewSapTrackingNo(1,$user->department_id,$approval_no,$i);
 				$capex->details()->save($approval);
                 $i++;
-
-                $budget_reserved = $details->price;
-                $budget_remain = $details->options->budget_remaining_log - $details->price;
-                Capex::where('budget_no', $details->options->budget_no)->update(['budget_reserved' => $budget_reserved, 'budget_remaining' => $budget_remain, 'is_closed' => 1]);
-                // $budget_reserved = $details->options->budget_remaining_log - $details->price;
-                // Capex::where('budget_no', $details->options->budget_no)->update(['budget_reserved' => $budget_reserved, 'is_closed' => 1]);
             }
 			// Simpan approver user
 			$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
@@ -359,20 +381,18 @@ class ApprovalCapexController extends Controller
     public function getApprovalCapex($status){
         $type = 'cx';
         $user = auth()->user();
-        $approval_capex = ApprovalMaster::with('departments')
-                            ->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
-                            ->select('approval_masters.*')
-                            ->distinct()
-                            ->where('budget_type', 'like', 'cx%')
-                            ->whereHas('approver_user',function($query) use($user) {
-                                $query->whereOr('user_id', $user->id );
-                            });
+        $approval_capex = ApprovalMaster::with('departments', 'details')
+                            ->where('budget_type', 'like', 'cx%');
 
         $level = ApprovalDtl::where('user_id', $user->id)->first();
 
-		if(\Entrust::hasRole('user')) {
-			$approval_capex->where('created_by',$user->id);
-		}
+        if(\Entrust::hasRole('user')) {
+            $approval_capex->where('created_by',$user->id);
+        } else {
+            $approval_capex->whereHas('approver_user',function($query) use($user) {
+                $query->where('user_id', $user->id );
+            });
+        }
 
         if (!empty($level)) {
 
@@ -451,7 +471,7 @@ class ApprovalCapexController extends Controller
         })
 
         ->addColumn("overbudget_info", function ($approval_capex) {
-            return $approval_capex->status < 0 ? 'Canceled' : ($approval_capex->isOverExist() ? 'Overbudget exist' : 'All underbudget');
+            return $approval_capex->status < 0 ? 'Canceled' : ($approval_capex->is_over ? 'Overbudget exist' : 'All underbudget');
         })
 
         ->addColumn('details_url', function($approval_capex) {
@@ -508,7 +528,30 @@ class ApprovalCapexController extends Controller
                     return number_format($approval->price_to_download);
                 })
                 ->addColumn("overbudget_info", function ($approval) {
-                    return $approval->status < 0 ? 'Canceled' : ($approval->budget_reserved > $approval->budget_remaining_log ? 'Overbudget exist' : 'Underbudget');
+                    // id di appoval = id expense karena efek join
+                    if ($approval->status < 0) {
+                        return 'Canceled';
+                    }
+
+                    $capex = Capex::where('id', $approval->id)->first();
+                    $budgetReserved = $capex
+                        ->approvalDetails()
+                        ->select(DB::raw('sum(actual_price_user) as total_reserved'))
+                        ->groupBy('budget_no')
+                        ->where('id', '<=', $approval->id_ad)
+                        ->first();
+
+                    if (!$budgetReserved) {
+                        $budgetReserved = $approval->actual_price_user;
+                    } else {
+                        $budgetReserved = $budgetReserved->total_reserved;
+                    }
+
+                    if ($budgetReserved > $capex->budget_plan) {
+                        return 'Over Budget';
+                    }
+
+                    return 'Under Budget';
                 })
                 ->addColumn("actual_gr", function ($approval) {
                     return Carbon::parse($approval->actual_gr)->format('d M Y');

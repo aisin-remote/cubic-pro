@@ -371,9 +371,9 @@ class ApprovalController extends Controller
 
     public function getCipSettlementList()
     {
-		$budget_nos = $this->getCIPSettlementAjaxList('data');
+        $budget_nos = $this->getCIPSettlementAjaxList('data');
 		// Get first element as init
-		$budgetno 	= count($budget_nos) > 0 ? $budget_nos[0]->budget_no:'';
+        $budgetno 	= count($budget_nos) > 0 ? $budget_nos[0]->budget_no:'';
         return view('pages.capex.cip',compact('budget_nos','budgetno'));
     }
 	public function getApprovalDetail($budget_no)

@@ -14,7 +14,7 @@ $(document).ready(function(){
 		   $('[name="budget_no"]').val('').trigger('change');
 	  }else{
 		  $('[name="budget_description"]').val(arr_capex.equipment_name);
-		  $('[name="price_remaining"]').autoNumeric('set', arr_capex.budget_plan);
+		  $('[name="price_remaining"]').autoNumeric('set', parseInt(arr_capex.budget_plan) - parseInt(arr_capex.budget_reserved));
 		  $('[name="budget_remaining_log"]').autoNumeric('set', arr_capex.budget_remaining);
 	  }
     }
