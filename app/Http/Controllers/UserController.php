@@ -23,11 +23,19 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::with(['division'])
-                        ->with(['department'])
-                        ->get();
+        $keyword = $request->keyword;
 
-        $dir_key = System::configmultiply('dir_key');
+        $users = User::with(['division'])
+                    ->with(['department'])
+                    ->when($keyword, function($q, $key) {
+                        $q->where('name', 'like', '%'.$key.'%')
+                            ->orWhere('email', 'like', '%'.$key.'%')
+                            ->orWhereHas('department', function($q) use($key) {
+                                $q->where('department_code', 'like', '%'.$key.'%')
+                                    ->orWhere('department_name', 'like', '%'.$key.'%');
+                            });
+                    })
+                    ->get();
 
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $itemCollection = $users;
@@ -66,7 +74,7 @@ class UserController extends Controller
                 $name = time() . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('public/uploads', $name);
 
-                $user->photo = $name;   
+                $user->photo = $name;
             }
 
             $user->division_id = $request->division_id;
@@ -122,14 +130,14 @@ class UserController extends Controller
                 $file = $request->file('photo');
                 $name = time() . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('public/uploads', $name);
-                
+
                 if (file_exists(public_path('storage/uploads/'.$user->photo)) && !empty($user->photo)) {
                     unlink(public_path('storage/uploads/'.$user->photo));
                 }
 
-                $user->photo = $name;   
+                $user->photo = $name;
             }
-            
+
             $user->save();
             $user->roles()->sync($request->roles);
 
@@ -189,7 +197,7 @@ class UserController extends Controller
         }
     }
 
-    // public function export() 
+    // public function export()
     // {
     //     $users = User::join('user_datas', 'user_datas.user_id', '=', 'users.id')
     //                 ->whereNull('user_datas.deleted_at')
@@ -211,7 +219,7 @@ class UserController extends Controller
         //     'file' => 'required|mimes:xls'
         // ]);
 
-        $file = $request->file('file'); 
+        $file = $request->file('file');
         $name = time() . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('public/uploads', $name);
 
@@ -221,9 +229,9 @@ class UserController extends Controller
             $datas = Excel::load(public_path('storage/uploads/'.$name), function($reader){})->get();
 
             if ($datas->first()->has('email') && $datas->first()->has('default_group_location_id')) {
-                
+
                 foreach ($datas as $data) {
-                    
+
                     if (!empty($data->email)) {
 
                         DB::transaction(function() use ($data){
@@ -231,7 +239,7 @@ class UserController extends Controller
                             $user = User::firstOrNew(['email' => $data->email]);
                             $user->email = $data->email;
                             $user->deleted_at = null;
-                            
+
                             if (!$user->exists) {
                                 $user->password = Hash::make('secret');
                             }
@@ -260,7 +268,7 @@ class UserController extends Controller
 
                         });
                     }
-                    
+
                 }
 
                 Storage::delete('public/uploads/'.$name);
@@ -289,10 +297,10 @@ class UserController extends Controller
                             ]
                         );
             }
-                
+
 
         }
 
-        
+
     }
 }
