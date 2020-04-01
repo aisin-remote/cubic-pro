@@ -285,7 +285,7 @@ class ApprovalExpenseController extends Controller
 
         if(\Entrust::hasRole('user')) {
             $approval_expense->where('created_by',$user->id);
-        } else {
+        } elseif (\Entrust::hasRole(['department_head', 'budget', 'gm', 'director'])) {
             $approval_expense->whereHas('approver_user',function($query) use($user) {
                 $query->where('user_id', $user->id );
             });
