@@ -2,7 +2,7 @@
     {{-- Header --}}
     @slot('header')
         @component('mail::header', ['url' => config('app.url')])
-            {{ config('app.name') }}
+        <img class="logo" style="width:200px" src="{{ asset('assets/images/cubic-pro-logo/cubic-pro-logo.png') }}" alt="{{ config('app.name') }}">
         @endcomponent
     @endslot
 

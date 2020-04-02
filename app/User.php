@@ -6,7 +6,7 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
-
+use App\Notifications\MailResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -43,12 +43,12 @@ class User extends Authenticatable
 
     public function division()
     {
-        return $this->belongsTo('App\Division');    
+        return $this->belongsTo('App\Division');
     }
 
     public function department()
     {
-        return $this->belongsTo('App\Department');    
+        return $this->belongsTo('App\Department');
     }
 
     public function getPhotoProfileAttribute()
@@ -57,4 +57,11 @@ class User extends Authenticatable
 
     }
 
+    /**
+     * Send a password reset email to the user
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new MailResetPasswordNotification($token));
+    }
 }
