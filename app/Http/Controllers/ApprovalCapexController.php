@@ -388,7 +388,7 @@ class ApprovalCapexController extends Controller
 
         if(\Entrust::hasRole('user')) {
             $approval_capex->where('created_by',$user->id);
-        } else {
+        } elseif(\Entrust::hasRole(['department_head', 'budget', 'gm', 'director'])) {
             $approval_capex->whereHas('approver_user',function($query) use($user) {
                 $query->where('user_id', $user->id );
             });
