@@ -31,7 +31,7 @@
         <div class="col-md-12">
             <div class="card-box">
                 <div class="row">
-                    <form method="post" action="{{ route('uom.store') }}" id="form-add-edit">
+                    <form method="post" action="{{ route('vendor.store') }}" id="form-add-edit">
                         @csrf
                         <div class="col-md-6">
                             <div class="form-group">
