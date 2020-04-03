@@ -616,17 +616,17 @@ Route::middleware('auth')->group(function(){
 
 				//CREATE ITEM UNTUK APPROVAL UNBUDGET
 				Route::get('approval/create/ub/add', 'ApprovalController@createUnbudget')->name('approval-unbudget.create');
-			});
-
-			//PENDING APPROVAL UNBUDGET
-			Route::group(['middleware' => ['permission:pending-approval-unbudget','auth']], function() {
-				Route::get('approval/ub/unvalidated','ApprovalUnbudgetController@ListApprovalUnvalidated');
 
 				//STORE ITEM UNTUK APPROVAL UNBUDGET
 				Route::post('approval-unbudget/store', 'ApprovalUnbudgetController@store')->name('approval_unbudget.store');
 
 				//SUBMIT APPROVAL
 				Route::post('approval-unbudget/approval', 'ApprovalUnbudgetController@SubmitApproval')->name('approval_unbudget.approval');
+			});
+
+			//PENDING APPROVAL UNBUDGET
+			Route::group(['middleware' => ['permission:pending-approval-unbudget','auth']], function() {
+				Route::get('approval/ub/unvalidated','ApprovalUnbudgetController@ListApprovalUnvalidated');
 			});
 
 			Route::post('unbudget', 'UnbudgetController@store')->name('unbudget.store');
