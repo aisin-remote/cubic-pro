@@ -15,7 +15,7 @@
                 <h4 class="page-title">Create SAP Vendor</h4>
                 <ol class="breadcrumb p-0 m-0">
                     <li>
-                        <a href="{{ route('Vendor.index') }}">SAP Vendor</a>
+                        <a href="{{ route('vendor.index') }}">SAP Vendor</a>
                     </li>
                     <li class="active">
                         Create SAP Vendor
@@ -31,7 +31,7 @@
         <div class="col-md-12">
             <div class="card-box">
                 <div class="row">
-                    <form method="post" action="{{ route('uom.store') }}" id="form-add-edit">
+                    <form method="post" action="{{ route('vendor.store') }}" id="form-add-edit">
                         @csrf
                         <div class="col-md-6">
                             <div class="form-group">
