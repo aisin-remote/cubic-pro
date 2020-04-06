@@ -875,19 +875,10 @@ class ApprovalController extends Controller
                                     $budget->qty_remaining 	= $budget->qty_plan - $budget->qty_used;
                                  }
 
-
-                                 $budget_plan = $budget->budget_plan;
-                                 $total = $dept->total;
-                                 $budget_remain = $budget_plan - $total;
-                                 $budget->budget_remaining = $budget_remain;
-
-
 								 $budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
 
 								 $budget->is_closed = $budget->budget_remaining > 0 ? 0 : 1;
                                  $budget->save();
-
-                                 $details->budget_remaining_log = $budget_remain;
                                  $details->save();
 							 }
 
