@@ -82,4 +82,20 @@ class Capex extends Model
     {
         return $this->hasMany('App\ApprovalDetail', 'budget_no', 'budget_no');
     }
+
+    public function getIsHasCipActiveAttribute()
+    {
+        $has = false;
+
+        $details = $this->approvalDetails;
+
+        foreach($details as $detail) {
+            if ($detail->cip_no) {
+                $has = true;
+                break;
+            }
+        }
+
+        return $has;
+    }
 }

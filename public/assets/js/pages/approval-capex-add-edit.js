@@ -5,18 +5,26 @@ $(document).ready(function(){
   	var budget_no = $(this).val();
     if (budget_no  !== '' && budget_no !== null && budget_no !== undefined ) {
       var arr_capex = getData(budget_no);
-      console.log(arr_capex);
-	  if(parseInt(arr_capex.is_closed)){
-		  show_notification("Error",'error','Budget ['+arr_capex.budget_no+'] already closed, please contact Accounting/Finance Dept. for further assistance');
-		  $('[name="budget_no"]').val('').trigger('change');
-	  }else if(parseInt(arr_capex.budget_plan) - parseInt(arr_capex.budget_reserved) <=0){
-		  show_notification("Error",'error', 'Budget ['+arr_capex.budget_no+'] already fully reserved, please contact Accounting/Finance Dept. for further assistance');
-		   $('[name="budget_no"]').val('').trigger('change');
-	  }else{
-		  $('[name="budget_description"]').val(arr_capex.equipment_name);
-		  $('[name="price_remaining"]').autoNumeric('set', parseInt(arr_capex.budget_plan) - parseInt(arr_capex.budget_reserved));
-		  $('[name="budget_remaining_log"]').autoNumeric('set', arr_capex.budget_remaining);
-	  }
+      console.log(arr_capex.has_active_cip);
+      if (arr_capex.has_active_cip) {
+        $('#asset_o').prop('disabled', true).prop('checked', false);
+        $('#asset_c').prop('checked', true);
+      } else {
+        $('#asset_o').prop('disabled', false).prop('checked', true);
+        $('#asset_c').prop('checked', false);
+      }
+
+      if(parseInt(arr_capex.is_closed)){
+        show_notification("Error",'error','Budget ['+arr_capex.budget_no+'] already closed, please contact Accounting/Finance Dept. for further assistance');
+        $('[name="budget_no"]').val('').trigger('change');
+      }else if(parseInt(arr_capex.budget_plan) - parseInt(arr_capex.budget_reserved) <=0){
+        show_notification("Error",'error', 'Budget ['+arr_capex.budget_no+'] already fully reserved, please contact Accounting/Finance Dept. for further assistance');
+        $('[name="budget_no"]').val('').trigger('change');
+      }else{
+        $('[name="budget_description"]').val(arr_capex.equipment_name);
+        $('[name="price_remaining"]').autoNumeric('set', parseInt(arr_capex.budget_plan) - parseInt(arr_capex.budget_reserved));
+        $('[name="budget_remaining_log"]').autoNumeric('set', arr_capex.budget_remaining);
+      }
     }
   });
 

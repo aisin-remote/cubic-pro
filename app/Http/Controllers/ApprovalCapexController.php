@@ -161,7 +161,11 @@ class ApprovalCapexController extends Controller
 
     public function getOne($id)
     {
-        $capex = Capex::find($id);
+        $capex = Capex::findOrFail($id);
+        $hasActiveCIP = $capex->isHasCipActive;
+        $capex = $capex->toArray();
+        $capex['has_active_cip'] = $hasActiveCIP;
+
         return response()->json($capex);
 
     }
