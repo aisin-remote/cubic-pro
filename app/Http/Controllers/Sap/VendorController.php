@@ -33,7 +33,7 @@ class VendorController extends Controller
     	$vendor->vendor_code 		= $request->vendor_code;
         $vendor->vendor_sname 		= $request->vendor_sname;
         $vendor->vendor_fname 		= $request->vendor_fname;
-       
+
     	$vendor->save();
 
     	if ($request->wantsJson()) {
@@ -55,7 +55,7 @@ class VendorController extends Controller
     {
 
     	$vendor = SapVendor::orderBy('id','DESC')->get();
-    	
+
     	return DataTables::of($vendor)
     	->rawColumns(['options'])
 
@@ -132,16 +132,16 @@ class VendorController extends Controller
                 ->route('vendor.index')
                 ->with($res);
     }
-	
+
 	public function getCmbVendor()
 	{
 		$vendor = SapVendor::all();
 		$data = [];
 		foreach($vendor as $v)
 		{
-			$data[] = array('value'=>$v->vendor_code,'text'=>$v->vendor_fname);
+			$data[] = array('value'=>$v->vendor_code,'text'=>$v->vendor_code.' - '.$v->vendor_fname);
 		}
-		
+
 		return response()->json($data, 200);
 	}
 }
