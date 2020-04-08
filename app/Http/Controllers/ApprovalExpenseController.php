@@ -191,6 +191,7 @@ class ApprovalExpenseController extends Controller
                     } else {
                         $budget_reserved = $expense->budget_plan - $expense->budget_reserved;
                         $expense->budget_reserved = $expense->budget_plan;
+                        $expense->is_closed = 1;
                     }
 
                     $expense->update();
