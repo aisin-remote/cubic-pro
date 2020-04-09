@@ -8,6 +8,7 @@ use App\Capex;
 use App\SapModel\SapAsset;
 use App\SapModel\SapGlAccount;
 use App\SapModel\SapCostCenter;
+use App\SapModel\SapNumber;
 use App\SapModel\SapUom;
 use App\Approval;
 use App\ApprovalMaster;
@@ -261,6 +262,12 @@ class ApprovalCapexController extends Controller
                 $approval->sap_track_no          = ApprovalMaster::getNewSapTrackingNo(1,$user->department_id,$approval_no,$i);
 				$capex->details()->save($approval);
                 $i++;
+
+                // dev-4.0, Ferry, 20161115, booking sap numbers
+                SapNumber::postBookAssetNumber($asset_no);
+
+                // dev-4.0, Ferry, 20161115, Update sap numbers dgn equipment no/asset no last number/current number
+                SapNumber::postCurrentAssetNumber($asset_no);
             }
 			// Simpan approver user
 			$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
