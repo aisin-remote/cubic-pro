@@ -62,7 +62,6 @@ class ApprovalExpenseController extends Controller
 
     public function store(Request $request)
     {
-
         $expenses           = Expense::find($request->budget_no);
         $sap_gl_account     = SapGlAccount::where('gl_gname', $request->sap_gl_account_id)->where('gl_aname', $request->gl_fname)->first();
         $sap_assets         = SapAsset::find($request->sap_asset_id);
@@ -92,7 +91,7 @@ class ApprovalExpenseController extends Controller
 						'sap_account_text'		=> $sap_gl_account->gl_aname,
                         'budget_description'    => $request->budget_description,
                         'qty_remaining'         => str_replace(',','',$request->qty_remaining),
-                        'qty_actual'            => !empty($request->qty_actual) ? $request->qty_actual : 1,
+                        'qty_actual'            => !empty($request->qty_actual) ? str_replace(',','', $request->qty_actual) : 1,
                         'remarks'               => $item->item_description,
 						'item_id'				=> $item->id,
                         'sap_cc_code'           => $sap_costs->cc_code,
