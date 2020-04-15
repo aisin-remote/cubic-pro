@@ -1168,9 +1168,9 @@ class ApprovalController extends Controller
 				$appVersion,
 				$overbudget_info
 			);
-		}
+        }
 		$excel = \PHPExcel_IOFactory::load(storage_path('template/pr_output.xlsm'));
-        $excel->setActiveSheetIndex(2);
+        $excel->setActiveSheetIndex(0);
         $objWorksheet2 	= $excel->getActiveSheet();
         $objWorksheet2->fromArray($data,null,'A1',false,false);
 
