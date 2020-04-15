@@ -1170,9 +1170,10 @@ class ApprovalController extends Controller
 			);
         }
 		$excel = \PHPExcel_IOFactory::load(storage_path('template/pr_output.xlsm'));
-        $excel->setActiveSheetIndex(0);
+        $excel->setActiveSheetIndex(2);
         $objWorksheet2 	= $excel->getActiveSheet();
         $objWorksheet2->fromArray($data,null,'A1',false,false);
+        $excel->setActiveSheetIndex(0);
 
 		$writer = new \PHPExcel_Writer_Excel2007($excel);
 
