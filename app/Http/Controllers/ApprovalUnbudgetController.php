@@ -189,17 +189,18 @@ class ApprovalUnbudgetController extends Controller
 
         $type = 'ub';
         $user = auth()->user();
+
         $approval_ub = ApprovalMaster::with('departments')
-                                ->whereIn('budget_type',['ub', 'uc','ue'])
-                                ->whereHas('approver_user',function($query) use($user) {
-                                    $query->where('user_id', $user->id );
-                                });
-        // dd($approval_ub->get());
+                                ->whereIn('budget_type',['ub', 'uc','ue']);
 
         $level = ApprovalDtl::where('user_id', $user->id)->first();
 
         if(\Entrust::hasRole('user')) {
             $approval_ub->where('created_by',$user->id);
+        } elseif(\Entrust::hasRole(['department_head', 'budget', 'gm', 'director'])) {
+            $approval_ub->whereHas('approver_user',function($query) use($user) {
+                $query->where('user_id', $user->id );
+            });
         }
 
         if (!empty($level)) {
