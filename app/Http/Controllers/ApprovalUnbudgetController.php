@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Expense;
 use App\SapModel\SapAsset;
-use App\SapModel\SapGlAccount;           
-use App\SapModel\SapCostCenter;           
+use App\SapModel\SapGlAccount;
+use App\SapModel\SapCostCenter;
 use App\SapModel\SapUom;
 use App\ApprovalMaster;
 use App\ApprovalDetail;
@@ -42,7 +42,7 @@ class ApprovalUnbudgetController extends Controller
                                         'qty_actual'        => $unbudget->options->actual_qty,
                                         'plan_gr'           => $unbudget->options->actual_gr,
                                         'type'              => $unbudget->options->type,
-                                        'option' => ' 
+                                        'option' => '
                                             <button class="btn btn-danger btn-xs btn-bordered" onclick="onDelete(\''.$unbudget->rowId.'\')" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-close"></i></button>'
                                     ];
             }
@@ -62,7 +62,7 @@ class ApprovalUnbudgetController extends Controller
     {
         $sap_assets         = SapAsset::where('asset_type',$request->sap_asset_id)->where('asset_code', $request->sap_code_id)->first();
         $sap_gl_acc         = SapGlAccount::where('gl_gname', $request->sap_gl_account_id)->where('gl_aname', $request->gl_fname)->first();
-        $sap_costs          = SapCostCenter::find($request->sap_cost_center_id); 
+        $sap_costs          = SapCostCenter::find($request->sap_cost_center_id);
 		$sap_uoms           = SapUom::find($request->sap_uom_id);
         // $item 				= Item::find($request->remarks);
         $item 				= Item::firstOrNew(['item_description' => $request->remarks]);
@@ -74,9 +74,9 @@ class ApprovalUnbudgetController extends Controller
         $item->uom_id = $sap_uoms->id;
         $item->supplier_id = '0';
         $item->save();
-        
-        
-        
+
+
+
         $cartData 			= [
 
 									'id' => "ub",//$budget->budget_no
@@ -100,10 +100,10 @@ class ApprovalUnbudgetController extends Controller
                                         'pr_uom'            => $sap_uoms->uom_sname,
 									]
 								];
-								
+
 		if($request->type == "1"){
             $cartData['options']['budget_type'] = "uc";
-            $cartData['options']['sap_asset_class']     = $sap_assets->asset_class;                               
+            $cartData['options']['sap_asset_class']     = $sap_assets->asset_class;
 			$cartData['options']['sap_account_code']    = $sap_assets->asset_account;
             $cartData['options']['sap_account_text']    = $sap_assets->asset_acctext;
             $cartData['options']['type']                = "Unbudget CAPEX";
@@ -113,7 +113,7 @@ class ApprovalUnbudgetController extends Controller
 			$cartData['options']['sap_account_text'] 	= $sap_gl_acc->gl_aname;
 			$cartData['options']['type']                = "Unbudget EXPENSE";
 		}
-		
+
         Cart::instance('unbudget')->add($cartData);
 		Carts::where('item_id',$item->id)->where('user_id',auth()->user()->id)->delete();
 
@@ -122,7 +122,7 @@ class ApprovalUnbudgetController extends Controller
                     'title' => 'Success',
                     'message' => 'Data has been inserted'
                 ];
-		
+
         return redirect()
                         ->route('approval-unbudget.index')
                         ->with($res);
@@ -130,7 +130,7 @@ class ApprovalUnbudgetController extends Controller
 
     function show($id)
     {
-       
+
 
     }
 
@@ -157,7 +157,7 @@ class ApprovalUnbudgetController extends Controller
     public function getGlGroup($id)
     {
         $sap_gl_group = SapGlAccount::select('gl_aname as id', 'gl_aname as text')->where('gl_gname',$id)->where('dep_key',auth()->user()->department->department_code)->get();
-       
+
         $result = [];
         foreach ($sap_gl_group as $group) {
             $result[]=['id' => $group->text, 'text' => $group->text];
@@ -168,7 +168,7 @@ class ApprovalUnbudgetController extends Controller
     public function getAsset($id)
     {
         $sap_asset = SapAsset::select('asset_code as id', 'sap_assets.asset_name as text')->where('asset_type', $id)->get();
-       
+
         $result = [];
         foreach ($sap_asset as $asset) {
             $result[] = ['id' => $asset->id, 'text' => $asset->text];
@@ -186,15 +186,16 @@ class ApprovalUnbudgetController extends Controller
         return view('pages.approval.unbudget.index-admin');
     }
 	public function getApprovalUnbudget($status){
-		
+
         $type = 'ub';
         $user = auth()->user();
         $approval_ub = ApprovalMaster::with('departments')
                                 ->whereIn('budget_type',['ub', 'uc','ue'])
                                 ->whereHas('approver_user',function($query) use($user) {
-                                    $query->whereOr('user_id', $user->id );
+                                    $query->where('user_id', $user->id );
                                 });
-        
+        // dd($approval_ub->get());
+
         $level = ApprovalDtl::where('user_id', $user->id)->first();
 
         if(\Entrust::hasRole('user')) {
@@ -220,17 +221,17 @@ class ApprovalUnbudgetController extends Controller
                     $approval_ub->where('status','2')->orWhere('status','3');
                 }
             }
-        }                      
-		
-		
+        }
+
+
         $approval_ub = $approval_ub->get();
-		
+
         return DataTables::of($approval_ub)
         ->rawColumns(['action'])
-	
+
         ->addColumn("action", function ($approvalub) use ($type, $status){
             if($status!='need_approval'){
-				
+
                 if(\Entrust::hasRole('user')) {
                     return '
                         <div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/ub/'.$approvalub->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
@@ -257,7 +258,7 @@ class ApprovalUnbudgetController extends Controller
         ->editColumn("total", function ($approvalub) {
                 return number_format($approvalub->total);
             })
-        ->editColumn("status", function ($approvalub){ 
+        ->editColumn("status", function ($approvalub){
             if ($approvalub->status == '0') {
                 return "User Created";
             }elseif ($approvalub->status == '1') {
@@ -279,7 +280,7 @@ class ApprovalUnbudgetController extends Controller
 
         ->addColumn("overbudget_info", function ($approvalub) {
             return $approvalub->status < 0 ? 'Canceled' : ($approvalub->isOverExist() ? 'Overbudget exist' : 'All underbudget');
-        }) 
+        })
 
         ->addColumn('details_url', function($approvalub) {
             return url('approval-capex/details-data/' . $approvalub->id);
@@ -305,13 +306,13 @@ class ApprovalUnbudgetController extends Controller
         $status     = !empty($user_app) ? $user_app->is_approve : 0;
 		return view('pages.approval.unbudget.unvalidate-view',compact('master','approver','status'));
     }
-    
+
 	public function AjaxDetailApproval($approval_number)
 	{
         $approval_master = ApprovalMaster::select('*','approval_details.id as id_ad','approval_details.sap_cc_code as ad_sap_cc_code', DB::RAW('CONCAT_WS(" - ", approval_details.sap_account_code, approval_details.sap_account_text) AS sap_account_code1'))
                         ->join('approval_details','approval_masters.id','=','approval_details.approval_master_id')
-						->where('approval_number',$approval_number); 
-		
+						->where('approval_number',$approval_number);
+
 		 return DataTables::of($approval_master)
 				->editColumn("asset_no", function ($approval) {
 					return $approval->asset_no.'<input class="approval_data" type="hidden" value="'.$approval->id_ad.'">';
@@ -330,7 +331,7 @@ class ApprovalUnbudgetController extends Controller
                 })
                 ->addColumn("status", function ($approval) {
                     return $approval->budget_type == 'uc' ? 'Unbudget Capex' : 'Undbudget Expense';
-                }) 
+                })
                 ->addColumn("actual_gr", function ($approval) {
                     return Carbon::parse($approval->actual_gr)->format('d M Y');
                 })->toJson();
@@ -353,15 +354,15 @@ class ApprovalUnbudgetController extends Controller
     }
 
 	public function SubmitApproval(Request $request)
-    {      
+    {
             $res = '';
             DB::transaction(function() use ($request, &$res){
-                
+
                 $user = \Auth::user();
                 $budget_type = Cart::instance('unbudget')->content()->first()->options->budget_type;
 
-                $approval_no = ApprovalMaster::getNewApprovalNumber(strtoupper($budget_type), $user->department->department_code); 
-                
+                $approval_no = ApprovalMaster::getNewApprovalNumber(strtoupper($budget_type), $user->department->department_code);
+
                     $capex                         = new ApprovalMaster;
                     $capex->fyear 				   =  date('Y');
                     $capex->approval_number        = $approval_no;
@@ -372,7 +373,7 @@ class ApprovalUnbudgetController extends Controller
                     $capex->total                  = str_replace(',', '', Cart::instance('unbudget')->subtotal($formatted = false));
                     $capex->status                 = 0;
                     $capex->created_by             = $user->id;
-                    
+
                     $capex->save();
                     $i = 1;
                 foreach (Cart::instance('unbudget')->content() as $details) {
@@ -381,12 +382,12 @@ class ApprovalUnbudgetController extends Controller
                     } else {
                         $budget_id ='4';
                     }
-                   
+
                     $approval                           = new ApprovalDetail;
                     $approval->fyear                    = date('Y');
-                    $approval->budget_no                = $details->options->budget_no;  
+                    $approval->budget_no                = $details->options->budget_no;
                     $approval->sap_track_no             = ApprovalMaster::getNewSapTrackingNo($budget_id,$user->department_id,$approval_no,$i);
-                    
+
                     if($details->options->budget_type == "uc"){
                         $approval->asset_no             = $details->options->asset_code.'JE'.str_pad($i, 3, '0', STR_PAD_LEFT);
                         $approval->sap_asset_class      = $details->options->sap_asset_class;
@@ -408,7 +409,7 @@ class ApprovalUnbudgetController extends Controller
                     $approval->remarks                  = $details->options->remarks;
 					$approval->item_id 				    = $details->options->item_id;
                     $approval->pr_specs				    = $details->options->pr_specs;
-                    $approval->pr_uom           	    = $details->options->pr_uom;                   
+                    $approval->pr_uom           	    = $details->options->pr_uom;
 
                     $capex->details()->save($approval);
                     $i++;
@@ -424,9 +425,9 @@ class ApprovalUnbudgetController extends Controller
 							];
 				}else{
 					foreach($approval_master as $am){
-						
+
 						$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
-						
+
 						foreach($approval_dtl as $app_dtl){
 							$approver_user = new ApproverUser();
                             $approver_user->approval_master_id  = $am->id;
@@ -443,8 +444,8 @@ class ApprovalUnbudgetController extends Controller
 					Cart::instance('unbudget')->destroy();
 				}
 
-                
-               
+
+
             });
          return redirect()
                             ->route('approval-unbudget.ListApproval')
