@@ -22,7 +22,7 @@
 											<a href="#">{{ auth()->user()->name }}<i class="fal fa-chevron-down"></i></a>
 											<ul>
 												<li><a href="{{ url('dashboard') }}">Dashboard</a></li>
-												
+
 												<form action="{{ route('logout') }}" method="POST" id="form-logout" style="display:none">
 												{{ csrf_field() }}
 												</form>
@@ -37,11 +37,11 @@
 									<div><a href="login">Sign in</a></div>
 								</div>
 							@endif
-							
+
 						</div>
 					</div>
 				</div>
-			</div>		
+			</div>
 		</div>
 
 		<!-- Header Main -->
@@ -74,7 +74,7 @@
                                                     @foreach (App\ItemCategory::get() as $category)
                                                     <li><a href="#" data-category-id="{{ $category->id }}">{{ $category->category_code}} ( {{$category->category_name}} )</a></li>
                                                     @endforeach
-													
+
 												</ul>
 											</div>
 										</div>
@@ -84,7 +84,7 @@
 							</div>
 						</div>
 					</div>
-					
+
 					<div class="col-lg-2 col-9 order-lg-3 order-2 text-lg-left text-right">
 						<div class="wishlist_cart d-flex flex-row align-items-center justify-content-end">
 
@@ -107,14 +107,14 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Main Navigation -->
 
 		<nav class="main_nav">
 			<div class="container">
 				<div class="row">
 					<div class="col">
-						
+
 						<div class="main_nav_content d-flex flex-row">
 
 							<!-- Categories Menu -->
@@ -137,7 +137,7 @@
 
 							<div class="main_nav_menu ml-auto">
 								<ul class="standard_dropdown main_nav_dropdown">
-									
+
 								</ul>
 							</div>
 
@@ -157,22 +157,29 @@
 				</div>
 			</div>
 		</nav>
-		
+
 		<!-- Menu -->
 
 		<div class="page_menu">
 			<div class="container">
 				<div class="row">
 					<div class="col">
-						
+
 						<div class="page_menu_content">
-							
+
 							<div class="page_menu_search">
-								<form action="#">
-									<input type="search" required="required" class="page_menu_search_input" placeholder="Search for products...">
+								<form action="{{ url('catalog') }}">
+									<input type="search" name="keyword" required="required" class="page_menu_search_input" placeholder="Search for products..." value="{{ request()->keyword }}">
+									<button type="submit" hidden></button>
 								</form>
 							</div>
-							
+
+							<a href="{{ url('dashboard') }}">
+								<div class="page_menu_search btn" style=" background: #fff; padding: 10px; rounded: 1 px">
+									Dasboard
+								</div>
+							</a>
+
 						</div>
 					</div>
 				</div>
