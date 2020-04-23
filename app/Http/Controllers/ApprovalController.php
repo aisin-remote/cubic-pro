@@ -299,7 +299,7 @@ class ApprovalController extends Controller
 
     public function getCIPAdminList() {
 		$budget_nos 	= $this->getCIPAdminListConvert();
-		$budget_nos_cip = $this->getCIPAdminListConvert('cip');
+        $budget_nos_cip = $this->getCIPAdminListConvert('cip');
 
         return view("pages.capex.cip-admin",compact('budget_nos','budget_nos_cip'));
     }
@@ -308,8 +308,8 @@ class ApprovalController extends Controller
         $user = auth()->user();
 
         if ($user->hasRole('budget')) {
-			$approvals = ApprovalDetail::query();
-            $approvals->whereIn('division', [$user->division->division_code]);
+            $approvals = ApprovalDetail::query();
+            // $approvals->whereIn('division', [$user->division->division_code]);
             if ($mode == 'one-time') {
                 $approvals = $approvals->whereNull('cip_no');
             }
@@ -318,8 +318,9 @@ class ApprovalController extends Controller
             }
 
             $approvals = $approvals->orderBy('budget_no')
-                                    ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id' )
-                                    ->where('budget_type', 'cx')
+                                    ->whereHas('approval', function($q) {
+                                        $q->where('budget_type', 'cx');
+                                    })
                                     ->select('budget_no')
                                     ->distinct()->get();
 
