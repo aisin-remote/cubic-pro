@@ -77,7 +77,6 @@
 						</tr>
 					</thead>
 					@foreach($approval_details as $ap)
-
 					<tr>
 						<td><a href= "{{ url('approval/cx/'.$ap->approval->approval_number) }}" >{{$ap->approval->approval_number}}</a></td>
 						<td>{{$ap->project_name}}</td>
@@ -102,7 +101,7 @@
 						@else
 						<td>Canceled on Group Manager Approval</td>
 						@endif
-						<td>{{date('d-M-Y',strtotime($ap->approval->actual_gr))}}</td>
+						<td>{{ date('d-M-Y',strtotime($ap->actual_gr))}}</td>
 					</tr>
 					@endforeach
 				</table>
