@@ -445,7 +445,7 @@ class ApprovalController extends Controller
             $approvals->where('dir', $user->dir);
         }
         elseif (\Entrust::hasRole('budget')) {
-            $approvals->whereIn('division', [$user->division->division_code]);
+            // $approvals->whereIn('division', [$user->division->division_code]);
         }
         else {  // Common users
             $approvals->where('department', $user->department->department_code);
