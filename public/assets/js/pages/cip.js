@@ -2,16 +2,17 @@ var budget_no = $('#budgetno').val();
 var tCapex;
 $(document).ready(function(){
 	budget_no = budget_no ==""?"none":budget_no;
-	
-	$('select[name="budget_no"]').val(budget_no).change(function(){	
-			getBudgetDetail(budget_no);
-	}).trigger('change');
-	
+    $('select[name="budget_no"]').val(budget_no).trigger('change');
+
+	$('select[name="budget_no"]').change(function(){
+		getBudgetDetail($(this).val());
+	});
+
     tCapex = $('#table-CIP-capex').DataTable({
         ajax: SITE_URL+"/cip/settlement/ajaxlist/tablelist/open/"+budget_no,
         "fnDrawCallback": function (oSettings) {
             budgetClosingStyler();
-            
+
         },
         columns: [
             { data: 'budget_no', name: 'budget_no'},
@@ -25,7 +26,7 @@ $(document).ready(function(){
         drawCallback: function(d) {
             $('[data-toggle="popover"]').popover();
         },
-		
+
     });
 
 });
@@ -50,7 +51,7 @@ $(document).ready(function(){
         $("#div_asset_no").show();
         $("#div_settlement_name").show();
         $("#btn_finish").show();
-        
+
         if (budget_no != "") {
             tCapex.ajax.url( SITE_URL+"/cip/settlement/ajaxlist/tablelist/open/"+budget_no).load();
         }
@@ -111,6 +112,6 @@ function getBudgetDetail(value)
 		$('#asset_no').val(data.asset_no);
 		$('#settlement_name').val(data.settlement_name);
 	}).done(function( data ) {
-	
+
 	});
 }
