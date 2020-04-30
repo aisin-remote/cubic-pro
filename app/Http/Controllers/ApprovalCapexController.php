@@ -375,14 +375,28 @@ class ApprovalCapexController extends Controller
     {
         DB::transaction(function() use ($id){
             $approval_capex = ApprovalMaster::find($id);
+
+            $capex = $approval_capex->details[0]->capex;
             $approval_capex->details()->delete();
             $approval_capex->delete();
+
+            $totalBudget = $capex->approvalDetails->sum('actual_price_user');
+            // update budget reserved di expense
+            if ($totalBudget > $capex->budget_reserved) {
+                $capex->budget_reserved = $capex->budget_plan;
+            } else {
+                $capex->budget_reserved = $totalBudget;
+                $capex->is_closed = 0;
+            }
+
+            $capex->update();
         });
+
         $res = [
-                    'title' => 'Sukses',
-                    'type' => 'success',
-                    'message' => 'Data berhasil dihapus!'
-                ];
+            'title' => 'Sukses',
+            'type' => 'success',
+            'message' => 'Data berhasil dihapus!'
+        ];
 
         return redirect()
                     ->route('approval-capex.ListApproval')
