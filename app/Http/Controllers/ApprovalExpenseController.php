@@ -478,16 +478,19 @@ class ApprovalExpenseController extends Controller
             $approval_expense->details()->delete();
             $approval_expense->delete();
 
+            $totalBudget = $expense->approvalDetails->sum('actual_price_user');
+
             // update budget reserved di expense
-            $totalActual = $expense->approvalDetails->sum('actual_price_user');
-            if ($totalActual > $expense->budget_plan) {
+            if ($totalBudget > $expense->budget_reserved) {
                 $expense->budget_reserved = $expense->budget_plan;
             } else {
-                $expense->budget_reserved = $totalActual;
+                $expense->budget_reserved = $totalBudget;
+                $expense->is_closed = 0;
             }
 
             $expense->update();
         });
+
         $res = [
                     'title' => 'Success',
                     'type' => 'success',
