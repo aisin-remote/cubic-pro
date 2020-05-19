@@ -33,8 +33,20 @@ Route::middleware('auth')->group(function(){
 	Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 	// Route::get('/dashboard/view/{group_type}','DashboardController@view');
 	Route::get('/dashboard/getJSONData','DashboardController@getJSONData');
-	Route::get('/dashboard/view', 'Dashboard2Controller@view');
-	Route::get('/dashboard/get', 'Dashboard2Controller@get');
+
+	Route::group(['middleware' => ['permission:all-divisions','auth']], function() {
+		Route::get('/dashboard/view', 'Dashboard2Controller@view');
+		Route::get('/dashboard/get', 'Dashboard2Controller@get');
+	});
+
+	Route::group(['middleware' => ['permission:dashboard-based-on-role','auth']], function() {
+		Route::get('dashboard/view/based-on-role', 'Dashboard2Controller@viewBasedOnRole');
+		Route::get('dashboard/get/plan', 'Dashboard2Controller@getPlan');
+		Route::get('dashboard/get/summary', 'Dashboard2Controller@getSummary');
+		Route::get('dashboard/download/budget', 'Dashboard2Controller@downloadBudget');
+		Route::get('dashboard/download/approval', 'Dashboard2Controller@downloadApproval');
+	});
+
 	// Route::get('/dashboard/get_chart', 'DashboardController@getChart')->name('dashboard.chart');
 	// Route::get('/dashboard/get_data_park', 'DashboardController@getDataPark')->name('dashboard.get_data_park');
 	// Route::get('/dashboard/get_data_user', 'DashboardController@getDataUser')->name('dashboard.get_data_user');

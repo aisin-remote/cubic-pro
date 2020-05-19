@@ -399,8 +399,8 @@ class ApprovalCapexController extends Controller
         ];
 
         return redirect()
-                    ->route('approval-capex.ListApproval')
-                    ->with($res);
+                ->route('approval-capex.ListApproval')
+                ->with($res);
     }
 
     public function getApprovalCapex($status){

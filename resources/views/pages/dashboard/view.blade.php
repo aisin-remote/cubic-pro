@@ -50,8 +50,8 @@
                     </div>
                     <div class="col-md-4 text-right">
                         <div class="form-group mr-10">
-                            <button name="download" class="btn btn-success" type="submit"><i class="mdi mdi-download"></i>Download CSV</button>
-                            <button name="download2" class="btn btn-success" type="submit"><i class="mdi mdi-download"></i>Download CSV 2</button>
+                            <button name="download" class="btn btn-success" type="submit"><i class="mdi mdi-download"></i>List Budget</button>
+                            <button name="download2" class="btn btn-success" type="submit"><i class="mdi mdi-download"></i>List Approval</button>
                         </div>
                     </div>
                 </div>

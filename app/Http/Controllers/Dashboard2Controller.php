@@ -12,12 +12,12 @@ use App\ApprovalDetail;
 use Carbon\Carbon;
 use App\Period;
 use Excel;
+use Illuminate\Support\Facades\DB;
 
 class Dashboard2Controller extends Controller
 {
     public function view(Request $request)
     {
-
         if ($request->has('download2')) {
             $this->download2($request);
         } else if ($request->has('download')) {
@@ -34,13 +34,33 @@ class Dashboard2Controller extends Controller
         }
     }
 
+    /**
+     * view dashboard department
+     */
+    public function viewBasedOnRole(Request $request)
+    {
+        $periods = new Period;
+        $period_date = $periods->where('name', 'fyear_open')->first()->value;
+        $period_date_from = $periods->where('name', 'fyear_open_from')->first()->value;
+        $period_date_to = $periods->where('name', 'fyear_open_to')->first()->value;
+        $first_period = $periods->where('name', 'fyear_first')->first()->value;
+        $dashboardType = 'department';
+
+        if  (\Entrust::hasRole('gm')) {
+            $dashboardType = 'division';
+        } elseif (\Entrust::hasRole(['budget', 'director', 'admin'])) {
+            return $this->view($request);
+        }
+
+        return view('pages.dashboard.based_on_role', compact(['dashboardType', 'period_date', 'period_date_from', 'period_date_to', 'first_period']));
+    }
+
     public function get(Request $request)
     {
 
         $periods = Period::all();
         $period_date_from = $periods->where('name', 'fyear_open_from')->first()->value;
         $period_date_to = $periods->where('name', 'fyear_open_to')->first()->value;
-
 
         $date = !empty($request->interval) ? explode('-', str_replace(' ', '', $request->interval)) : [$period_date_from, $period_date_to];
 
@@ -275,6 +295,192 @@ class Dashboard2Controller extends Controller
 
     }
 
+    /**
+     * Data for pie chart js in dashboard
+     */
+    public function getPlan(Request $request)
+    {
+        $type = $request->type;
+        $period = $request->period;
+        $startDate = date('Y-m-d', strtotime(str_replace('/', '-', $request->startDate)));
+        $endDate = date('Y-m-d 23:59:59', strtotime(str_replace('/', '-', $request->endDate)));
+        $departments = $request->departments ? $request->departments : [];
+
+        // total capex plan by department
+        $capex = Capex::select('budget_plan')
+            ->whereIn('department', $departments)
+            ->where(DB::raw('SUBSTRING(budget_no, 4, 2)'), substr($period, -2))
+            ->where('is_revised', $type)
+            ->get()
+            ->sum('budget_plan');
+
+        $expense = Expense::select('budget_plan')
+            ->whereIn('department', $departments)
+            ->where(DB::raw('SUBSTRING(budget_no, 4, 2)'), substr($period, -2))
+            ->where('is_revised', $type)
+            ->get()
+            ->sum('budget_plan');
+
+        $totalCx = ApprovalMaster::select('total')
+            ->when($type, function($q, $type) {
+                $q->whereHas('details', function($q) use($type) {
+                    $q->whereHas('capex', function($q) use($type) {
+                        $q->where('is_revised', $type);
+                    });
+                });
+            })
+            ->whereIn('department', $departments)
+            ->where('budget_type', 'cx')
+            ->where('status', '>=', '3')
+            ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->sum('total');
+
+        $totalUc = ApprovalMaster::select('total')
+            ->whereIn('department', $departments)
+            ->where('budget_type', 'uc')
+            ->where('status', '>=', '3')
+            ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->sum('total');
+
+        $totalEx = ApprovalMaster::select('total')
+            ->when($type, function($q, $type) {
+                $q->whereHas('details', function($q) use($type) {
+                    $q->whereHas('expense', function($q) use($type) {
+                        $q->where('is_revised', $type);
+                    });
+                });
+            })
+            ->whereIn('department', $departments)
+            ->where('budget_type', 'ex')
+            ->where('status', '>=', '3')
+            ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->sum('total');
+
+        $totalUe = ApprovalMaster::select('total')
+            ->whereIn('department', $departments)
+            ->where('budget_type', 'ue')
+            ->where('status', '>=', '3')
+            ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->sum('total');
+
+        return response()->json([
+            'data' => [
+                'total_capex' => $capex == 0 ? 0 : $totalCx,
+                'total_expense' => $expense == 0 ? 0 : $totalEx,
+                'total_uc' => $capex == 0 ? 0 : $totalUc,
+                'total_ue' => $expense == 0 ? 0 : $totalUe,
+                'capex' => $capex,
+                'expense' => $expense
+            ],
+            'success' => true,
+            'message' => 'Data retrieved successfully'
+        ]);
+    }
+
+    /**
+     * Data form summary chart in dashboard
+     */
+    public function getSummary(Request $request)
+    {
+        $type = $request->type;
+        $period = $request->period;
+        $startDate = date('Y-m-d', strtotime(str_replace('/', '-', $request->startDate)));
+        $endDate = date('Y-m-d 23:59:59', strtotime(str_replace('/', '-', $request->endDate)));
+        $departments = $request->departments ? $request->departments : [];
+
+        // total capex plan by department
+        $capex = Capex::selectRaw('sum(budget_plan) total, MONTH(plan_gr) month')
+            ->whereIn('department', $departments)
+            ->where(DB::raw('SUBSTRING(budget_no, 4, 2)'), substr($period, -2))
+            ->where('is_revised', $type)
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $expense = Expense::selectRaw('sum(budget_plan) total, MONTH(plan_gr) month')
+            ->whereIn('department', $departments)
+            ->where(DB::raw('SUBSTRING(budget_no, 4, 2)'), substr($period, -2))
+            ->where('is_revised', $type)
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $totalCx = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
+            ->when($type, function($q, $type) {
+                $q->whereHas('details', function($q) use($type) {
+                    $q->whereHas('capex', function($q) use($type) {
+                        $q->where('is_revised', $type);
+                    });
+                });
+            })
+            ->whereIn('department', $departments)
+            ->where('budget_type', 'cx')
+            ->where('status', '>=', '3')
+            ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $totalUc = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
+            ->whereIn('department', $departments)
+            ->where('budget_type', 'uc')
+            ->where('status', '>=', '3')
+            ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $totalEx = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
+            ->when($type, function($q, $type) {
+                $q->whereHas('details', function($q) use($type) {
+                    $q->whereHas('expense', function($q) use($type) {
+                        $q->where('is_revised', $type);
+                    });
+                });
+            })
+            ->whereIn('department', $departments)
+            ->where('budget_type', 'ex')
+            ->where('status', '>=', '3')
+            ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $totalUe = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
+            ->whereIn('department', $departments)
+            ->where('budget_type', 'ue')
+            ->where('status', '>=', '3')
+            ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
+        return response()->json([
+            'data' => [
+                'total_capex_per_month' => $totalCx,
+                'total_expense_per_month' => $totalEx,
+                'total_uc_per_month' => $totalUc,
+                'total_ue_per_month' => $totalUe,
+                'capexes' => $capex,
+                'expenses' => $expense
+            ],
+            'success' => true,
+            'message' => 'Data retrieved successfully'
+        ]);
+    }
+
     protected function download2($request)
     {
         $periods = Period::all();
@@ -284,22 +490,31 @@ class Dashboard2Controller extends Controller
         $date_from = Carbon::createFromFormat('d/m/Y', $date[0])->format('Y-m-d');
         $date_to = Carbon::createFromFormat('d/m/Y', $date[1])->format('Y-m-d');
 
-        $approvals =  ApprovalDetail::with(['approval', 'capex', 'expense'])->when($request, function($query, $request){
-                            if (!empty($request->division)) {
-                                $query->whereHas('approval', function($where) use ($request){
-                                    $where->where('division', $request->division);
-                                });
-                            }
+        $department = null;
+        $division = null;
 
-                            if (!empty($request->department)) {
-                                $query->whereHas('approval', function($where) use ($request){
-                                    $where->where('department', $request->department);
-                                });
-                            }
-                        })
-                        ->whereDate('created_at', '>=', $date_from)
-                        ->whereDate('created_at', '<=', $date_to)
-                        ->get();
+        if(\Entrust::hasRole(['user', 'department_head'])) {
+            $department = auth()->user()->department->department_code;
+        } elseif (\Entrust::hasRole(['budget', 'director', 'admin'])) {
+            $department = $request->department;
+        } elseif (\Entrust::hasRole('gm')) {
+            $division = auth()->user()->division->division_code;
+        }
+
+        $approvals = ApprovalDetail::with(['approval', 'capex', 'expense'])
+            ->when($division, function($query, $division) {
+                $query->whereHas('approval', function($where) use ($division){
+                    $where->where('division', $division);
+                });
+            })
+            ->when($department, function($query, $department) {
+                $query->whereHas('approval', function($where) use ($department){
+                    $where->where('department', $department);
+                });
+            })
+            ->whereDate('created_at', '>=', $date_from)
+            ->whereDate('created_at', '<=', $date_to)
+            ->get();
 
         $approvals = $approvals->map(function($detail) {
 
@@ -318,7 +533,6 @@ class Dashboard2Controller extends Controller
             }else{
                 $status = "Overbudget";
             }
-
 
             if ($detail->approval->budget_type === 'cx' && !empty($detail->capex) ) {
                 $plan_gr = Carbon::parse($detail->capex->plan_gr)->format('d M \'y');
@@ -363,6 +577,177 @@ class Dashboard2Controller extends Controller
                 $sheet->fromArray($approvals->toArray());
             });
         })->export('csv');
+    }
+
+    public function downloadApproval(Request $request)
+    {
+        $type = $request->type;
+        $period = $request->period;
+        $startDate = date('Y-m-d', strtotime(str_replace('/', '-', $request->startDate)));
+        $endDate = date('Y-m-d 23:59:59', strtotime(str_replace('/', '-', $request->endDate)));
+        $departments = $request->departments ? $request->departments : [];
+
+        $approvals = ApprovalDetail::with('approval')
+            ->whereHas('approval', function($q) use($period, $departments) {
+                $q->whereIn('department', $departments)
+                    ->where('approval_number', 'like', '%-'.substr($period, -2).'-%');
+            })
+            ->when($type, function($q, $type) {
+                $q->whereHas('expense', function($q) use($type) {
+                    $q->where('is_revised', $type);
+                })
+                ->orWhereHas('capex', function($q) use($type) {
+                    $q->where('is_revised', $type);
+                });
+            })
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+        $approvals = $approvals->map(function($detail, $key) {
+            $budgetDesc = '-';
+            $status = '-';
+            $planGr = '-';
+            switch ($detail->approval->budget_type) {
+                case 'cx':
+                    $budgetType = 'Capex';
+                    $budgetDesc = $detail->capex->equipment_name;
+                    break;
+                case 'uc':
+                    $budgetType = 'Unbudget Capex';
+                    break;
+                case 'ex':
+                    $budgetDesc = $detail->expense->description;
+                    $budgetType = 'Expense';
+                    break;
+                case 'cx':
+                    $budgetType = 'Unbudget Expense';
+                    break;
+                default:
+                    $budgetType = '-';
+                    break;
+            }
+
+            switch ($detail->approval->status) {
+                case '0':
+                    $statusApproval = 'User Created';
+                    break;
+                case '1':
+                    $statusApproval = 'Validasi Budget';
+                    break;
+                case '2':
+                    $statusApproval = 'Approved by Dept. Head';
+                    break;
+                case '3':
+                    $statusApproval = 'Approved by GM';
+                    break;
+                case '4':
+                    $statusApproval = 'Approved by Director';
+                    break;
+                case '-1':
+                    $statusApproval = 'Canceled on Quotation Validation';
+                    break;
+                case '-2':
+                    $statusApproval = 'Canceled Dept. Head Approval';
+                    break;
+                default:
+                    $statusApproval = '';
+                    break;
+            }
+
+            if ($detail->approval->budget_type == 'cx' || $detail->approval->budget_type == 'ex') {
+                if ($detail->isOver){
+                    $status = "Over Budget";
+                }else{
+                    $status = "Under Budget";
+                }
+
+                $planGr = $detail->planGrDate;
+            }
+
+            return [
+                'No.' => $key + 1,
+                'Department' => $detail->approval->departments->department_name,
+                'Type' => $budgetType,
+                'Approval No.' =>  $detail->approval->approval_number,
+                'Budget No.' => $detail->budget_no,
+                'Asset No.' => $detail->asset_no ? $detail->asset_no : '-',
+                'SAP Track No.' => $detail->sap_track_no,
+                'Budget Description' => $budgetDesc,
+                'Project Name' => $detail->project_name,
+                'Actual Qty' => (int) $detail->actual_qty,
+                'Budget Reserved' => (int) $detail->budget_reserved,
+                'Actual Price User' => (int) $detail->actual_price_user,
+                'Actual Price Purchasing' => (int) $detail->actual_price_purchasing,
+                'Status Approval' => $statusApproval,
+                'Status Budget' => $status,
+                'Plan GR' => $planGr,
+                'Actual GR' => Carbon::parse($detail->actual_gr)->format('d M \'y'),
+                'PO No.' => $detail->po_number,
+                'Remarks' => $detail->remarks,
+                'GL Account' => $detail->sap_account_code,
+                'GL Account Name' => $detail->sap_account_text ? $detail->sap_account_text : '-',
+                'Cost Center' => $detail->sap_cc_code,
+                'Created At' => Carbon::parse($detail->created_at)->format('d M \'y')
+            ];
+        });
+
+        ob_end_clean(); // this
+        ob_start(); // and this
+
+        Excel::create('APPROVAL_LIST_' . date('Ymd', strtotime($startDate)) . '_TO_' . date('Ymd', strtotime($endDate)), function($excel) use($approvals) {
+            $excel->sheet('Sheet 1', function($sheet) use($approvals) {
+                $sheet->fromArray($approvals->toArray(), null, 'A1', true);
+                $sheet->setAutoSize(true);
+                $sheet->setColumnFormat(array(
+                    'J' =>  \PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+                    'K' =>  \PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+                    'L' =>  \PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+                    'M' =>  \PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+                ));
+            });
+        })->export('xlsx');
+    }
+
+    public function downloadBudget(Request $request)
+    {
+        $type = $request->type;
+        $period = $request->period;
+        $departments = $request->departments ? $request->departments : [];
+
+        $capex = Capex::select('budget_no', 'equipment_name as budget_name', 'budget_plan', 'budget_used', 'budget_remaining')
+            ->whereIn('department', $departments)
+            ->where(DB::raw('SUBSTRING(budget_no, 4, 2)'), substr($period, -2))
+            ->where('is_revised', $type);
+
+        $budgets = Expense::select('budget_no', 'description as budget_name', 'budget_plan', 'budget_used', 'budget_remaining')
+            ->whereIn('department', $departments)
+            ->where(DB::raw('SUBSTRING(budget_no, 4, 2)'), substr($period, -2))
+            ->where('is_revised', $type)
+            ->union($capex)
+            ->get()->toArray();
+
+        $budgets = array_map(function($budget) {
+            return [
+                'Budget Number' => $budget['budget_no'],
+                'Budget Name' => $budget['budget_name'],
+                'Budget Plan' => (int) $budget['budget_plan'],
+                'Budget Used' => (int) $budget['budget_used'],
+                'Budget Remain' => (int) $budget['budget_remaining']
+            ];
+        }, $budgets);
+        ob_end_clean(); // this
+        ob_start(); // and this
+
+        Excel::create('BUDGET_LIST_FY_'.$period, function($excel) use($budgets) {
+            $excel->sheet('Sheet 1', function($sheet) use($budgets) {
+                $sheet->fromArray($budgets, null, 'A1', true);
+                $sheet->setAutoSize(true);
+                $sheet->setColumnFormat(array(
+                    'C' =>  \PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+                    'D' =>  \PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+                ));
+            });
+        })->export('xlsx');
     }
 
     protected function download(Request $request)

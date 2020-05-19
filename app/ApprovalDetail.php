@@ -146,4 +146,19 @@ class ApprovalDetail extends Model
 
         return $budget_no.'-'.$i;
     }
+
+    public function getPlanGrDateAttribute()
+    {
+        $budget = $this->expense;
+        if (!$budget) {
+            $budget = $this->capex;
+        }
+
+        if (!$budget) {
+            abort(404);
+        }
+
+        return date('d M Y', strtotime($budget->plan_gr));
+    }
 }
+
