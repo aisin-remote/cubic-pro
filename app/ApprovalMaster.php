@@ -31,7 +31,7 @@ class ApprovalMaster extends Model
 
     // v2.12 by Ferry, 20150820, Filter uc / ue
 	if (($type == 'ub') &&
-            \Entrust::hasRole(['admin', 'gm', 'department_head', 'director', 'user',
+            \Entrust::hasRole(['admin', 'gm', 'department-head', 'director', 'user',
                 'budget', 'purchasing', 'accounting'])) {
 
             $approvals = self::query()->select('departments.name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
@@ -59,7 +59,7 @@ class ApprovalMaster extends Model
 
     // dev-4.0, Ferry, 20161222, Merging
     elseif (($type != 'ub') &&
-        \Entrust::hasRole(['admin', 'gm', 'department_head', 'director', 'user',
+        \Entrust::hasRole(['admin', 'gm', 'department-head', 'director', 'user',
             'budget', 'purchasing', 'accounting'])) {
 
         //$approvals = self::query()->where('budget_type', $type);
@@ -74,8 +74,8 @@ class ApprovalMaster extends Model
 	}
 
 	    // Added by : Ferry, on July 1st 2015
-	    // if level == department_head
-	if (\Entrust::hasRole('department_head')) {
+	    // if level == department-head
+	if (\Entrust::hasRole('department-head')) {
 	        // $approvals->where('department', $user->department);
 	    $approvals->whereIn('department', config('global.department.'.$user->department.'.dep_grp'));
 	}
@@ -97,7 +97,7 @@ class ApprovalMaster extends Model
 	        if(\Entrust::hasRole('budget')) $approvals->needBudgetValidation();  // v3.5 by Ferry, 20151113, prev admin
 
 	        // if dept head
-	        if(\Entrust::hasRole('department_head')) $approvals->needDeptHeadApproval();
+	        if(\Entrust::hasRole('department-head')) $approvals->needDeptHeadApproval();
 
 	        // if group manager
 	        if(\Entrust::hasRole('gm')) $approvals->needGMApproval();
@@ -298,7 +298,7 @@ class ApprovalMaster extends Model
 
         if($user->hasRole('budget')) self::NeedBudgetValidation($approvals);
 
-        if($user->hasRole('department_head')) self::NeedDeptHeadApproval($approvals);
+        if($user->hasRole('department-head')) self::NeedDeptHeadApproval($approvals);
 
         if($user->hasRole('gm')) self::NeedGMApproval($approvals);
 
@@ -313,7 +313,7 @@ class ApprovalMaster extends Model
     {
         if(\Entrust::hasRole('budget')) $this->status = 1;
 
-        if(\Entrust::hasRole('department_head')) $this->status = 2;
+        if(\Entrust::hasRole('department-head')) $this->status = 2;
 
         if(\Entrust::hasRole('gm')) $this->status = 3;
 
@@ -329,7 +329,7 @@ class ApprovalMaster extends Model
 
         if(\Entrust::hasRole('budget')) $this->status = -1;
 
-        if(\Entrust::hasRole('department_head')) $this->status = -2;
+        if(\Entrust::hasRole('department-head')) $this->status = -2;
 
         if(\Entrust::hasRole('gm')) $this->status = -3;
 

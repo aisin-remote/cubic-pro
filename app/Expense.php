@@ -61,7 +61,7 @@ class Expense extends Model
 		$user = auth()->user();
 		if(\Entrust::hasRole('user')) {
 			$capexs = self::where('department',$user->department->department_code);
-		}else if (\Entrust::hasRole('department_head')) {
+		}else if (\Entrust::hasRole('department-head')) {
             $capexs = self::whereIn('department', [$user->department->department_code]);
         }else if (\Entrust::hasRole('gm')) {
             $capexs = self::where('division', $user->division->division_code);

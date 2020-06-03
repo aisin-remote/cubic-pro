@@ -44,7 +44,7 @@ class RoleSeeder extends Seeder
             ),
             array(
                 "id" => 4,
-                "name" => "department_head",
+                "name" => "department-head",
                 "display_name" => "Department Head",
                 "description" => "Level Department Head",
                 "created_at" => "2019-03-28 08:09:48",
@@ -83,7 +83,7 @@ class RoleSeeder extends Seeder
                 "updated_at" => "2019-03-28 09:06:33",
             ),
         ]);
-        
+
             // Activate FOREIGN_KEY_CHECKS again..
             DB::statement("SET FOREIGN_KEY_CHECKS = 1;");
     }

@@ -409,7 +409,7 @@ class CapexController extends Controller
             $capexes->where('department', $user->department->department_code);
         }
 
-        if (\Entrust::hasRole('department_head')) {
+        if (\Entrust::hasRole('department-head')) {
             $capexes->whereIn('department', [$user->department->department_code]);
         }
 

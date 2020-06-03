@@ -275,7 +275,8 @@ class ApprovalExpenseController extends Controller
         return view('pages.approval.expense.index-admin');
     }
 
-    public function getApprovalExpense($status){
+    public function getApprovalExpense($status)
+    {
         $type 	= 'ex';
         $user = auth()->user();
         $approval_expense = ApprovalMaster::with('departments', 'details')
@@ -285,7 +286,7 @@ class ApprovalExpenseController extends Controller
 
         if(\Entrust::hasRole('user')) {
             $approval_expense->where('created_by',$user->id);
-        } elseif (\Entrust::hasRole(['department_head', 'budget', 'gm', 'director'])) {
+        } elseif (\Entrust::hasRole(['department-head', 'budget', 'gm', 'director'])) {
             $approval_expense->whereHas('approver_user',function($query) use($user) {
                 $query->where('user_id', $user->id );
             });

@@ -493,7 +493,7 @@ class Dashboard2Controller extends Controller
         $department = null;
         $division = null;
 
-        if(\Entrust::hasRole(['user', 'department_head'])) {
+        if(\Entrust::hasRole(['user', 'department-head'])) {
             $department = auth()->user()->department->department_code;
         } elseif (\Entrust::hasRole(['budget', 'director', 'admin'])) {
             $department = $request->department;

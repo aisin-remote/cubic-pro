@@ -407,7 +407,7 @@ class ExpenseController extends Controller
             $expenses->where('department', $user->department->department_code);
         }
 
-        if (\Entrust::hasRole('department_head')) {
+        if (\Entrust::hasRole('department-head')) {
             $expenses->whereIn('department', [$user->department->department_code]);
         }
 
