@@ -204,8 +204,8 @@
                                 <span class="help-block"></span>
                            </div>
                            <div class="form-group">
-                                <label class="control-label">Actual GR <span class="text-danger">*</span></label>
-                                <input  name="plan_gr" placeholder="Actual GR" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}" date="true">
+                                <label class="control-label">GR Estimation<span class="text-danger">*</span></label>
+                                <input  name="plan_gr" placeholder="GR Estimation" class="form-control datepicker" required="required" value="{{ date('d-M-Y') }}" date="true">
                                 <span class="help-block"></span>
                            </div>
 

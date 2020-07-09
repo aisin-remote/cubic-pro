@@ -34,33 +34,33 @@
                     <form method="post" id="form-add-edit">
                         @csrf
                         @method('PUT')
-						
+
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Approval Number<span class="text-danger"> : </span></label> {{ $approval_masters->approval_number }}
-                                
+
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Department<span class="text-danger"> : </span></label>
 								{{$approval_masters->departments->department_name}}
-                                    
+
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Division<span class="text-danger"> : </span></label> 
+                                <label class="control-label">Division<span class="text-danger"> : </span></label>
                                 {{$approval_masters->divisions->division_name}}
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Total<span class="text-danger"> : </span></label> {{ $approval_masters->total }}
-                                
+
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Status<span class="text-danger">  : </span></label> 
+                                <label class="control-label">Status<span class="text-danger">  : </span></label>
                                 @if ($approval_masters->status == '0')
-                                   User Created 
+                                   User Created
                                    @elseif ($approval_masters->status  == '1')
                                    Validasi Budget
                                    @elseif ($approval_masters->status  == '2')
@@ -74,7 +74,7 @@
                                    @elseif ($approval_masters->status  == '-2')
                                    Canceled Dept. Head Approval
                                 @endif
-                                
+
                                 <span class="help-block"></span>
                             </div>
 
@@ -104,7 +104,7 @@
                             <th>Last Budget Remains</th>
                             <th>Max Budget Reservation</th>
                             <th>Amount on Quotation (IDR)</th>
-                            <th>Actual GR</th>
+                            <th>GR Estimation</th>
                         </tr>
                     </thead>
                 </table>

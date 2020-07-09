@@ -14,16 +14,16 @@
             <div class="page-title-box">
                 <h4 class="page-title"> Detail Information of Unbudget Approval Sheet</h4>
                 <ol class="breadcrumb p-0 m-0">
-                    
+
                     <li>
                         <a href="{{ url('approval/ub') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20" id="back">Back</a>
                     </li>
-					
+
                 </ol>
             </div>
         </div>
     </div>
-                  
+
    <div class="row">
 	<div class="col-md-12">
 		<div style="width:100%;overflow:scroll;">
@@ -31,33 +31,33 @@
 				<thead>
 					<tr>
 						<th>Budget<br>Number</th>
-						<th>Equipment<br>Number</th> 
-						<th>SAP<br>Track No</th>  
-						<th>SAP<br>Asset No</th> 
-						<th>SAP<br>Acc Code (GL Account)</th> 
-						<th>SAP<br>Cost Center</th> 
-						<th>Budget<br>Desc</th>  
-						<th>PR Item/<br>Specs.</th>   
+						<th>Equipment<br>Number</th>
+						<th>SAP<br>Track No</th>
+						<th>SAP<br>Asset No</th>
+						<th>SAP<br>Acc Code (GL Account)</th>
+						<th>SAP<br>Cost Center</th>
+						<th>Budget<br>Desc</th>
+						<th>PR Item/<br>Specs.</th>
 						<th>Project<br>Name</th>
 						<th>Budget<br>Remain</th>
 						<th class='bg-primary'>Budget<br>Reserved</th>
 						<th class='bg-primary'>Actual<br>Price</th>
-						<th class='bg-primary'>Price<br>Download</th> 
-						<th>Currency</th>  
+						<th class='bg-primary'>Price<br>Download</th>
+						<th>Currency</th>
                         <th>Actual<br>Qty</th>
 						<th class='bg-primary'>Status<br>(Resv. vs Act.)</th>
-						<th>Actual<br>GR</th>
-						<th>SAP Vendor</th>   
+						<th>Estimation<br>GR</th>
+						<th>SAP Vendor</th>
 						<th>Collective<br>Number</th>
-						<th>Requirement No</th> 
-						<th>SAP<br>TaxCode</th> 
+						<th>Requirement No</th>
+						<th>SAP<br>TaxCode</th>
 					</tr>
 				</thead>
 			</table>
 		</div>
 	</div>
    </div>
-</div>                                
+</div>
 
 @endsection
 @push('js')
@@ -91,8 +91,8 @@
         ],
         drawCallback: function(d) {
         	$('[data-toggle="popover"]').popover();
-			budgetView();  
-					
+			budgetView();
+
 			budgetStatusStyler();
 			@if (\Entrust::can('update-actual-price'))
 				xeditClasser();
@@ -106,7 +106,7 @@
 				initGLAccountEditable();
 				initSapCostCenterEditable();
 
-			@elseif(\Entrust::can('asset-register'))  
+			@elseif(\Entrust::can('asset-register'))
 				xeditSapAssetNumberClasser();
 				initEditable();
 			@endif
@@ -114,7 +114,7 @@
 		paging:false,
 		searching:false,
     });
-    
+
     function validateApproval(approval_number)
     {
         var confirmed = confirm('Are you sure to validate Approval: '+approval_number+'?');
@@ -133,7 +133,7 @@
 					show_notification('Success','success',data.success);
 					window.location.replace("{{ url('approval').'/ub' }}");
 				}
-                
+
             });
         };
 
@@ -155,7 +155,7 @@
     }
 	function budgetStatusStyler()
     {
-        $('tr > td:nth-child(17)').each(function(index, element) { 
+        $('tr > td:nth-child(17)').each(function(index, element) {
             var value = $(this).text();
             if (value == 'Underbudget') {
                 $(this).addClass('success');
@@ -172,7 +172,7 @@
         $('tbody tr').each(function(i, e) {
             var id_ad = $(this).find('td:nth-child(2)').find('input:hidden').val();
             var sap_asset_no = $(this).find('td:nth-child(4)');
-            
+
             // set sap asset number
             sap_asset_no.html('<a href="#" class="editable" data-pk="'+id_ad+'" data-name="sap_asset_no" data-title="Enter SAP Asset Number">'+sap_asset_no.text()+'</a>');
         });
@@ -183,7 +183,7 @@
 		$('.editable').editable({
 			type: 'text',
 			url: SITE_URL + '/approval/xedit',
-			params: {				 
+			params: {
 				_token: $('meta[name="csrf-token"]').attr('content'),
 			},
 			mode:'inline',
@@ -209,16 +209,16 @@
     {
         $('tbody tr').each(function(i, e) {
             var id_ad = $(this).find('td:nth-child(2)').find('input:hidden').val();
-            var budget_no = $(this).find('td:nth-child(1)');        
+            var budget_no = $(this).find('td:nth-child(1)');
             var sap_gl_account_capex = $(this).find('td:nth-child(5)');
-            var sap_cost_center = $(this).find('td:nth-child(6)');          
-            var actual_price_purchasing = $(this).find('td:nth-child(12)'); 
-            var price_to_download = $(this).find('td:nth-child(13)'); 
-            var currency = $(this).find('td:nth-child(14)');        
-            var sap_vendor_code = $(this).find('td:nth-child(18)'); 
-            var collective_number = $(this).find('td:nth-child(19)');  
-            var sap_tax_code = $(this).find('td:nth-child(21)'); 
-          
+            var sap_cost_center = $(this).find('td:nth-child(6)');
+            var actual_price_purchasing = $(this).find('td:nth-child(12)');
+            var price_to_download = $(this).find('td:nth-child(13)');
+            var currency = $(this).find('td:nth-child(14)');
+            var sap_vendor_code = $(this).find('td:nth-child(18)');
+            var collective_number = $(this).find('td:nth-child(19)');
+            var sap_tax_code = $(this).find('td:nth-child(21)');
+
             // set actual_price_purchasing anchor
             actual_price_purchasing.html('<a href="#" class="editable" data-pk="'+id_ad+'" data-name="actual_price_user" data-title="Enter Actual Price">'+actual_price_purchasing.text()+'</a>');
 
@@ -233,7 +233,7 @@
 
             //sap gl_account
             sap_gl_account_capex.html('<a href="#" class="cmb_editable_account" data-pk="'+id_ad+'" data-name="sap_account_code" data-value="'+sap_gl_account_capex.text().split(' - ', 1)+'" data-title="Select GL Account">'+sap_gl_account_capex.text()+'</a>');
- 
+
             //sap cost center
             sap_cost_center.html('<a href="#" class="cmb_editable_costcenter" data-pk="'+id_ad+'" data-name="sap_cc_code" data-value="'+sap_cost_center.text().split(' - ', 1)+'" data-title="Select Cost Center">'+sap_cost_center.text()+'</a>');
 
@@ -243,7 +243,7 @@
              //currency
             currency.html('<a href="#" class="editable" data-type="select" data-pk="'+id_ad+'" data-name="currency" data-source="[{value: &#39;IDR&#39;, text: &#39;IDR&#39;}, {value: &#39;USD&#39;, text: &#39;USD&#39;}, {value: &#39;JPY&#39;, text: &#39;JPY&#39;}, {value: &#39;THB&#39;, text: &#39;THB&#39;}]" data-value="'+currency.text().split(' - ', 1)+'" data-title="Select Currency">'+currency.text()+'</a>');
 
-        }); 
+        });
     }
 
 	function initSapTaxEditable()
@@ -259,7 +259,7 @@
         }
 		 getSource().done(function(result) {
             $('.cmb_editable_tax').editable({  //to keep track of selected values in single select
-                type: 'select2',  
+                type: 'select2',
                 url: "{{ url('approval/xedit') }}",
 				mode:'inline',
                 params: {
@@ -287,7 +287,7 @@
 			alert("Error getting Tax from Database!")
 		});
     }
-    
+
 	function initSapVendorEditable()
 	{
 		 function getSource() {
@@ -301,7 +301,7 @@
         }
 		 getSource().done(function(result) {
             $('.cmb_editable').editable({  //to keep track of selected values in single select
-                type: 'select2',  
+                type: 'select2',
                 url: "{{ url('approval/xedit') }}",
 				mode:'inline',
                 params: {
@@ -329,7 +329,7 @@
 			alert("Error getting SAP Vendor from Database!")
 		});
 	}
-	
+
 	function initGLAccountEditable()
     {
         function getSource() {
@@ -341,10 +341,10 @@
                 dataType: "json"
             });
         }
-		
+
         getSource().done(function(result) {
             $('.cmb_editable_account').editable({  //to keep track of selected values in single select
-                type: 'select2',  
+                type: 'select2',
                 url: "{{ url('approval/xedit') }}",
 				mode:'inline',
                 params: {
@@ -388,7 +388,7 @@
         }
         getSource().done(function(result) {
             $('.cmb_editable_costcenter').editable({  //to keep track of selected values in single select
-                type: 'select2',  
+                type: 'select2',
                 url: "{{ url('approval/xedit') }}",
                 params: {
                     _token: "{{ csrf_token() }}",

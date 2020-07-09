@@ -47,7 +47,7 @@
 						<th>Currency</th>
 						<th>Actual<br>Qty</th>
 						<th class='bg-primary'>Status<br>(Resv. vs Act.)</th>
-						<th>Actual<br>GR</th>
+						<th>GR<br>Estimation</th>
 						<th>SAP Vendor</th>
 						<th>Collective<br>Number</th>
 						<th>Requirement No</th>

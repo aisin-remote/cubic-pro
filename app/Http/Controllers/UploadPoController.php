@@ -11,7 +11,7 @@ use Storage;
 use DB;
 
 use DataTables;
-
+use PhpParser\Node\Stmt\Return_;
 
 class UploadPoController extends Controller
 {
@@ -28,7 +28,7 @@ class UploadPoController extends Controller
                     ->leftJoin('upload_purchase_orders', 'approval_details.id', '=', 'upload_purchase_orders.approval_detail_id')
                     ->where('approval_masters.status','4')
                     ->get();
-        
+
 
         if ($request->wantsJson()) {
             return response()->json($po, 200);
@@ -69,7 +69,7 @@ class UploadPoController extends Controller
                 ->with($res);
 
     }
-    
+
     public function show($id)
     {
         $po = UploadPurchaseOrder::find($id);
@@ -87,15 +87,16 @@ class UploadPoController extends Controller
                     ->Join('approval_details', 'approval_details.approval_master_id','=', 'approval_masters.id')
                     ->leftJoin('upload_purchase_orders', 'approval_details.id', '=', 'upload_purchase_orders.approval_detail_id')
                     ->where('approval_masters.status','4');
-					
+
 		if($request->from != "" && $request->to != ""){
 			$from = date('Y-m-d',strtotime($request->from));
 			$to   = date('Y-m-d',strtotime($request->to));
 			$po->whereBetween('approval_masters.created_at', [$from, $to]);
 		}
-        
-		$po = $po->orderBy('approval_masters.id','DESC')->get();
-                    
+
+        $po = $po->orderBy('approval_masters.id','DESC')->get();
+        // dd($po);
+
         return DataTables::of($po)
         ->setRowId(function($po){
             return $po->approval_detail_id;
@@ -104,10 +105,10 @@ class UploadPoController extends Controller
 				return date('d-M-Y H:i:s',strtotime($po->created_at));
 		 })
 		 ->editColumn("pr_receive", function ($po) {
-				return date('d-M-Y',strtotime($po->pr_receive));
+				return $po->pr_receive ? date('d-M-Y',strtotime($po->pr_receive)) : null;
 		 })
 		  ->editColumn("po_date", function ($po) {
-				return date('d-M-Y',strtotime($po->po_date));
+				return $po->po_date ? date('d-M-Y',strtotime($po->po_date)) : null;
 		 })
         ->toJson();
     }
@@ -117,7 +118,7 @@ class UploadPoController extends Controller
         return view('pages.upload_po.create');
     }
 
-    public function export() 
+    public function export()
     {
         $pos = DB::table('approval_masters')
                     ->select('approval_details.id as approval_detail_id','approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date','upload_purchase_orders.quotation','upload_purchase_orders.pr_receive')
@@ -130,8 +131,8 @@ class UploadPoController extends Controller
 
         foreach ($pos as $po) {
             $array[] = [
-                        'Approval Number' => $po->approval_number, 
-                        'Name Of Good' => $po->remarks,   
+                        'Approval Number' => $po->approval_number,
+                        'Name Of Good' => $po->remarks,
                         'User Create PR Date' => $po->created_at,
                         'PR Receive' => $po->pr_receive,
                         'PO Number' => $po->po_number,
@@ -144,7 +145,7 @@ class UploadPoController extends Controller
             $excel->sheet('Sheetname', function($sheet) use ($array) {
 
                 $sheet->fromArray($array);
-        
+
             });
         })->download('csv');
 

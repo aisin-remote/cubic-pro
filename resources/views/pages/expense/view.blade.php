@@ -72,7 +72,7 @@
 							<th>Act. Qty</th>
 							<th>Bdgt. Status</th>
 							<th>Approval Status</th>
-							<th>Act. GR</th>
+							<th>GR Estimation</th>
 						</tr>
 					</thead>
 					@foreach($approval_details as $ap)

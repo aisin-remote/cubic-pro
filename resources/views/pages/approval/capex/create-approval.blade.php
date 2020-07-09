@@ -44,7 +44,7 @@
                             <th>Project Name</th>
                             <th>Actual Qty</th>
                             <th>Actual Price</th>
-                            <th>Actual GR</th>
+                            <th>GR Estimation</th>
                             <th>Asset Kind</th>
                             <th>Settlement Date</th>
                             <th style="width: 100px">Opsi</th>

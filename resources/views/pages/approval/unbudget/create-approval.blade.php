@@ -15,24 +15,24 @@
                 <h4 class="page-title"> Create Unbudget Approval Sheet</h4>
                 <ol class="breadcrumb p-0 m-0">
                     <li class="active">
-						
+
                     </li>
                 </ol>
-               
+
             </div>
         </div>
-    </div>	
+    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="card-box">
-				@if (\Entrust::hasRole('user')) 
+				@if (\Entrust::hasRole('user'))
 				 <div class="btn-group pull-right">
 					<a href="{{ route('approval-unbudget.create') }}" class="btn btn-primary btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Add Item</a>
 					<button type="button" id="btn-submit" class="btn btn-success btn-bordered waves-effect waves-light m-b-20"> Submit Approval</a>
 					<form action="{{route('approval_unbudget.approval')}}" method="post" id="formSubmitApproval">
 						@csrf
 						<input type="hidden" name="approval_id" id="happroval_id"/>
-						
+
 					</form>
 				</div>
 				 @endif
@@ -43,7 +43,7 @@
                             <th>Project Name</th>
                             <th>Actual Qty</th>
                             <th>Actual Price</th>
-                            <th>Actual GR</th>
+                            <th>GR Estimation</th>
                             <th>Type</th>
                             <th style="width: 100px">Opsi</th>
                         </tr>
