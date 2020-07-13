@@ -561,6 +561,9 @@ class ApprovalCapexController extends Controller
                     $capex = Capex::where('id', $approval->id)->first();
                     $budgetReserved = $capex
                         ->approvalDetails()
+                        ->whereHas('approval', function($q) {
+                            $q->where('status', '>', 0);
+                        })
                         ->select(DB::raw('sum(actual_price_user) as total_reserved'))
                         ->groupBy('budget_no')
                         ->where('id', '<=', $approval->id_ad)
