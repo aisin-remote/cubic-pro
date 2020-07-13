@@ -102,6 +102,9 @@ class ApprovalDetail extends Model
 
         $budgetReserved = $budget
             ->approvalDetails()
+            ->whereHas('approval', function($q) {
+                $q->where('status', '>', 0);
+            })
             ->select(DB::raw('sum(actual_price_user) as total_reserved'))
             ->groupBy('budget_no')
             ->where('id', '<=', $this->id)
