@@ -860,10 +860,10 @@ class ApprovalController extends Controller
 
 							 foreach($approval_master->details as $detail)
 							 {
-								 $budget = $approval_master->budget_type == 'cx'?Capex::where('budget_no',$detail->budget_no)->first():Expense::where('budget_no',$detail->budget_no)->first();
+								 $budget = $approval_master->budget_type == 'cx' ? Capex::where('budget_no',$detail->budget_no)->first() : Expense::where('budget_no',$detail->budget_no)->first();
 
-                                 if(is_null($detail)){
-									$data['error']	="Master Budget No: ".$detail->budget_no." is Deleted by Finance.\nPlease Contact Finance Department";
+                                 if(is_null($budget)){
+									$data['error']	="Master Budget No: " . $detail->budget_no." is Deleted by Finance.\nPlease Contact Finance Department";
 									return $data;
 								 }
 
@@ -919,37 +919,39 @@ class ApprovalController extends Controller
                     $approverLevel  = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
 
 					 if(!empty($approverLevel)){
-						 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
+                         $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
+                        if ($approval_master->budget_type == 'cx' || $approval_master->budget_type == 'ex') {
+                            foreach ($approval_master->details as $detail) {
+                                $budget = $approval_master->budget_type == 'cx' ? Capex::where('budget_no',$detail->budget_no)->first() : Expense::where('budget_no',$detail->budget_no)->first();
 
-                        foreach ($approval_master->details as $detail) {
-                            $budget = $approval_master->budget_type == 'cx'?Capex::where('budget_no',$detail->budget_no)->first():Expense::where('budget_no',$detail->budget_no)->first();
+                                $budget->budget_reserved -= $detail->budget_reserved;
 
-                            $budget->budget_reserved -= $detail->budget_reserved;
+                                $detail->budget_reserved = 0;
+                                $detail->save();
 
-                            $detail->budget_reserved = 0;
-                            $detail->save();
+                                if ($approval_master->status > 2) {
+                                    $budget->budget_remaining 	+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
 
-                            if ($approval_master->status > 2) {
-                                $budget->budget_remaining 	+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+                                    $budget->budget_used 		-= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+                                }
+                                if ($approval_master->budget_type == 'ex') {
+                                    $budget->qty_remaining 	+= $detail->actual_qty;
 
-                                $budget->budget_used 		-= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+                                    $budget->qty_used 		-= $detail->actual_qty;
+                                }
+
+                                $budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
+
+                                $budget->is_closed 	= $budget->status == 0 ? 0 : 1;
+
+                                $budget->save();
                             }
-                            if ($approval_master->budget_type == 'ex') {
-                                $budget->qty_remaining 	+= $detail->actual_qty;
-
-                                $budget->qty_used 		-= $detail->actual_qty;
-                            }
-
-                            $budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
-
-                            $budget->is_closed 	= $budget->status == 0 ? 0 : 1;
-
-                            $budget->save();
                         }
-
-                         $approval_master->status = '-'.$approverLevel->level;
-						 $approval_master->save();
-						 $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)->where('user_id',$user->id)->update(array('is_approve'=>'-1','created_at'=>date('Y-m-d H:i:s')));
+                        $approval_master->status = '-'.$approverLevel->level;
+                        $approval_master->save();
+                        $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)
+                            ->where('user_id',$user->id)
+                            ->update(array('is_approve'=>'-1','created_at'=>date('Y-m-d H:i:s')));
 					 }else{
 						 throw new \Exception('Cannot cancel approval, Approver level in approval is undefined');
 					 }
