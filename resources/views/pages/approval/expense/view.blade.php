@@ -4,6 +4,14 @@
 	Detail List Approval
 @endsection
 
+@push('css')
+<!-- <style>
+    .select2-container {
+        display: block  !important;
+    }
+</style>
+@endpush -->
+
 @section('content')
 
 @php($active = 'approval_master')
@@ -26,7 +34,7 @@
 
    <div class="row">
 	<div class="col-md-12">
-		<div style="width:100%;overflow:scroll;">
+		<div id="scroll" style="width:100%;overflow:scroll;">
 			<table id="example" class="table display nowrap table-bordered responsive-utilities jambo_table">
 				<thead>
 					<tr>
@@ -115,6 +123,12 @@
 		paging:false,
 		searching:false,
     });
+    function scrollRight() {
+        let scroll = document.getElementById("scroll");
+        setTimeout(function(){
+            scroll.scrollLeft = scroll.scrollWidth
+            ; }, 1);
+    }
 	function validateApproval(approval_number)
     {
         var confirmed = confirm('Are you sure to validate Approval: '+approval_number+'?');
@@ -222,7 +236,7 @@
             sap_vendor_code.html('<a href="#" class="cmb_editable" data-pk="'+id_ad+'" data-name="sap_vendor_code" data-value="'+sap_vendor_code.text().split(' - ', 1)+'" data-title="Select SAP Vendor">'+sap_vendor_code.text()+'</a>');
 
             // dev-4.0, Ferry, 20170310, Assign SAP Tax code
-            sap_tax_code.html('<a href="#" class="cmb_editable_tax" data-pk="'+id_ad+'" data-name="sap_tax_code" data-value="'+sap_tax_code.text().split(' - ', 1)+'" data-title="Select SAP Tax">'+sap_tax_code.text()+'</a>');
+            sap_tax_code.html('<a href="#" onclick="scrollRight()" class="cmb_editable_tax" data-pk="'+id_ad+'" data-name="sap_tax_code" data-value="'+sap_tax_code.text().split(' - ', 1)+'" data-title="Select SAP Tax">'+sap_tax_code.text()+'</a>');
 
             // set po_number anchor
             collective_number.html('<a href="#" class="editable" data-pk="'+id_ad+'" data-name="po_number" data-title="Enter Collective Number">'+collective_number.text()+'</a>');
@@ -269,7 +283,6 @@
                 },
 
                 success: function(data, config) {
-                    console.log(result);
                     if (data.error) {
                         return data.error;
                     };
@@ -283,7 +296,8 @@
 		});
 	}
 	function initSapVendorEditable()
-	{
+	{   
+
 		 function getSource() {
             var url = SITE_URL+"/getCmbVendor";
             return $.ajax({
