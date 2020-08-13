@@ -5,12 +5,12 @@
 @endsection
 
 @push('css')
-<!-- <style>
+<style>
     .select2-container {
         display: block  !important;
     }
 </style>
-@endpush -->
+@endpush
 
 @section('content')
 
@@ -126,8 +126,8 @@
     function scrollRight() {
         let scroll = document.getElementById("scroll");
         setTimeout(function(){
-            scroll.scrollLeft = scroll.scrollWidth
-            ; }, 1);
+            scroll.scrollLeft = scroll.scrollWidth;
+        }, 10);
     }
 	function validateApproval(approval_number)
     {
@@ -205,7 +205,6 @@
 				return false;   //disable this method
 			},
 			success: function(data, config) {
-				console.log(data);
 				if (data.error) {
 					return data.error;
 				};
@@ -236,7 +235,7 @@
             sap_vendor_code.html('<a href="#" class="cmb_editable" data-pk="'+id_ad+'" data-name="sap_vendor_code" data-value="'+sap_vendor_code.text().split(' - ', 1)+'" data-title="Select SAP Vendor">'+sap_vendor_code.text()+'</a>');
 
             // dev-4.0, Ferry, 20170310, Assign SAP Tax code
-            sap_tax_code.html('<a href="#" onclick="scrollRight()" class="cmb_editable_tax" data-pk="'+id_ad+'" data-name="sap_tax_code" data-value="'+sap_tax_code.text().split(' - ', 1)+'" data-title="Select SAP Tax">'+sap_tax_code.text()+'</a>');
+            sap_tax_code.html('<a href="#" class="cmb_editable_tax" data-pk="'+id_ad+'" data-name="sap_tax_code" data-value="'+sap_tax_code.text().split(' - ', 1)+'" data-title="Select SAP Tax">'+sap_tax_code.text()+'</a>');
 
             // set po_number anchor
             collective_number.html('<a href="#" class="editable" data-pk="'+id_ad+'" data-name="po_number" data-title="Enter Collective Number">'+collective_number.text()+'</a>');
@@ -281,7 +280,6 @@
                 select2: {
                     multiple : false
                 },
-
                 success: function(data, config) {
                     if (data.error) {
                         return data.error;
@@ -291,12 +289,21 @@
 					table.ajax.reload( null, false );
                 }
             });
+
+            $('.cmb_editable_tax').on('shown', function(e, editable) {
+                scrollRight();
+            });
+
+            $('.cmb_editable_tax').closest('td').on('change', 'input', function() {
+                scrollRight();
+            });
+
         }).fail(function() {
 			alert("Error getting Tax from Database!")
 		});
 	}
 	function initSapVendorEditable()
-	{   
+	{
 
 		 function getSource() {
             var url = SITE_URL+"/getCmbVendor";
@@ -336,6 +343,8 @@
         }).fail(function() {
 			alert("Error getting SAP Vendor from Database!")
 		});
+
+        $('.cmb_editable_tax').change('')
 	}
 
 	function initGLAccountEditable()
@@ -376,7 +385,6 @@
                 },
 				selector:2,
             });
-
 
         }).fail(function() {
                 alert("Error getting SAP GL Account from Database!")
