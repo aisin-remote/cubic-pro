@@ -516,56 +516,92 @@ class Dashboard2Controller extends Controller
             ->whereDate('created_at', '<=', $date_to)
             ->get();
 
-        $approvals = $approvals->map(function($detail) {
+        $approvals = $approvals->map(function($detail, $key) {
 
-            if ($detail->approval->budget_type === 'cx') {
-                $budget_type = 'Capex';
-            } else if ($detail->budget_type === 'ex') {
-                $budget_type = 'Expense';
-            } else if ($detail->budget_type === 'uc') {
-                $budget_type = 'Unbudget Capex';
-            } else {
-                $budget_type = 'Unbudget Expense';
+            $budgetDesc = '-';
+            $status = '-';
+            $planGr = '-';
+            switch ($detail->approval->budget_type) {
+                case 'cx':
+                    $budgetType = 'Capex';
+                    $budgetDesc = $detail->capex->equipment_name;
+                    break;
+                case 'uc':
+                    $budgetType = 'Unbudget Capex';
+                    break;
+                case 'ex':
+                    $budgetDesc = $detail->expense->description;
+                    $budgetType = 'Expense';
+                    break;
+                case 'ue':
+                    $budgetType = 'Unbudget Expense';
+                    break;
+                default:
+                    $budgetType = '-';
+                    break;
             }
 
-            if ($detail->approval->status == '0'){
-                $status = "Underbudget";
-            }else{
-                $status = "Overbudget";
+            switch ($detail->approval->status) {
+                case '0':
+                    $statusApproval = 'User Created';
+                    break;
+                case '1':
+                    $statusApproval = 'Validasi Budget';
+                    break;
+                case '2':
+                    $statusApproval = 'Approved by Dept. Head';
+                    break;
+                case '3':
+                    $statusApproval = 'Approved by GM';
+                    break;
+                case '4':
+                    $statusApproval = 'Approved by Director';
+                    break;
+                case '-1':
+                    $statusApproval = 'Canceled on Quotation Validation';
+                    break;
+                case '-2':
+                    $statusApproval = 'Canceled Dept. Head Approval';
+                    break;
+                default:
+                    $statusApproval = '';
+                    break;
             }
 
-            if ($detail->approval->budget_type === 'cx' && !empty($detail->capex) ) {
-                $plan_gr = Carbon::parse($detail->capex->plan_gr)->format('d M \'y');
-            } else if ($detail->approval->budget_type === 'ex' && !empty($detail->expense)) {
-                $plan_gr = Carbon::parse($detail->expense->plan_gr)->format('d M \'y');
-            } else {
-                $plan_gr = '';
+            if ($detail->approval->budget_type == 'cx' || $detail->approval->budget_type == 'ex') {
+                if ($detail->isOver){
+                    $status = "Over Budget";
+                }else{
+                    $status = "Under Budget";
+                }
+
+                $planGr = $detail->planGrDate;
             }
 
             return [
-                'id' => $detail->id,
-                'department' => $detail->approval->departments->department_name,
-                'type' => $budget_type,
-                'approval_number' =>  $detail->approval->approval_number,
-                'budget_number' => $detail->budget_no,
-                'asset_number' => $detail->asset_no,
-                'sap_track_number' => $detail->sap_track_no,
-                'budget_description' => '',
-                'project_name' => $detail->project_name,
-                'actual_qty' => $detail->actual_qty,
-                'budget_reserved' => $detail->budget_reserved,
-                'actual_price_by_user' => $detail->actual_price_user,
-                'actual_price_by_purchasing' => $detail->actual_price_purchasing,
-                'status_approval' => $detail->approval->status,
-                'status' => $status,
-                'plan_gr' => $plan_gr,
-                'actual_gr' => Carbon::parse($detail->actual_gr)->format('d M \'y'),
-                'po_number' => $detail->po_number,
-                'remarks' => $detail->remarks,
-                'gl_account' => $detail->sap_account_code,
-                'gl_account_name' => $detail->sap_account_text,
-                'cost_center' => $detail->sap_cc_code,
-                'created_at' => Carbon::parse($detail->created_at)->format('d M \'y')
+                'No.' => $key + 1,
+                'Department' => $detail->approval->departments->department_name,
+                'Type' => $budgetType,
+                'Approval No.' =>  $detail->approval->approval_number,
+                'Budget No.' => $detail->budget_no,
+                'Asset No.' => $detail->asset_no ? $detail->asset_no : '-',
+                'SAP Track No.' => $detail->sap_track_no,
+                'Budget Description' => $budgetDesc,
+                'Project Name' => $detail->project_name,
+                'Actual Qty' => (int) $detail->actual_qty,
+                'Budget Reserved' => (int) $detail->budget_reserved,
+                'Actual Price User' => (int) $detail->actual_price_user,
+                'Actual Price Purchasing' => (int) $detail->actual_price_purchasing,
+                'Status Approval' => $statusApproval,
+                'Status Budget' => $status,
+                'Plan GR' => $planGr,
+                'Actual GR' => Carbon::parse($detail->actual_gr)->format('d M \'y'),
+                'PO No.' => $detail->po_number,
+                'Remarks' => $detail->remarks,
+                'GL Account' => $detail->sap_account_code,
+                'GL Account Name' => $detail->sap_account_text ? $detail->sap_account_text : '-',
+                'Cost Center' => $detail->sap_cc_code,
+                'Created At' => Carbon::parse($detail->created_at)->format('d M \'y')
             ];
         });
 
@@ -619,7 +655,7 @@ class Dashboard2Controller extends Controller
                     $budgetDesc = $detail->expense->description;
                     $budgetType = 'Expense';
                     break;
-                case 'cx':
+                case 'ue':
                     $budgetType = 'Unbudget Expense';
                     break;
                 default:
