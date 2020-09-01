@@ -28,7 +28,7 @@
         <div class="col-md-12">
             <div class="card-box">
                 <div id="chart1" style="height: 140px; margin: 0 auto"></div>
-            </div>  
+            </div>
         </div>
     </div>
 
@@ -47,7 +47,7 @@
                         </tr>
                     </thead>
                 </table>
-            </div>  
+            </div>
         </div>
     </div>
 

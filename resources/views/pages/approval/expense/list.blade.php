@@ -37,7 +37,7 @@
                             <th>Bdgt. Remaining</th>
                             <th>Plan GR</th>
                             <th>Status</th>
-                            <th>Closing</th>  
+                            <th>Closing</th>
                             <!-- <th style="width: 100px">Opsi</th> -->
                         </tr>
                     </thead>

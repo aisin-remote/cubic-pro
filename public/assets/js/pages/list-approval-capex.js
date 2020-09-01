@@ -11,7 +11,7 @@ $(document).ready(function(){
             { data: 'overbudget_info', name: 'overbudget_info', orderable: false, searchable: false },
             { data: 'action', name: 'action', searching: false, sorting: false, class: 'text-center' }
         ],
-        order: [1, 'asc'],
+        order: [1, 'desc'],
         drawCallback: function(){
         	$('[data-toggle="tooltip"]').tooltip();
         }
@@ -82,7 +82,7 @@ $(document).ready(function(){
         $('#form-delete-' + approval_capex_id).submit();
     });
 
-    
+
 
 });
 
@@ -110,7 +110,7 @@ function cancelApproval(approval_number)
     data: {approval_number:approval_number},
     success: function(res) {
       if(res.error){
-		show_notification('Error', 'error',res.error); 
+		show_notification('Error', 'error',res.error);
 	  }else{
 		show_notification('Success', 'success',res.success);
 	  }

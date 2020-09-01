@@ -28,8 +28,8 @@ $(document).ready(function(){
 	}else{
 		show_notification('Error','error','You have to add item minimal 1 data');
 	}
-  }); 
-  
+  });
+
   $('#btn-save').click(function(){
     save();
   });
@@ -87,4 +87,3 @@ function onDelete(rowid)
     }
   });
 }
-    
