@@ -270,8 +270,6 @@ class ApprovalCapexController extends Controller
                 SapNumber::postCurrentAssetNumber($asset_no);
             }
 			// Simpan approver user
-			$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
-
 			$approvals = Approval::where('department',$user->department->department_code)->first();
 			if(empty($approvals)){
 				$res = [
@@ -280,18 +278,17 @@ class ApprovalCapexController extends Controller
 						'message' => 'There is no approval for your department'
 					];
 			}else{
-				foreach($approval_master as $am){
 
-					$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
+                $approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
 
-					foreach($approval_dtl as $app_dtl){
-						$approver_user = new ApproverUser();
-						$approver_user->approval_master_id  = $am->id;
-                        $approver_user->approval_detail_id  = $app_dtl->id;
-                        $approver_user->user_id  = $app_dtl->user_id;
-						$approver_user->save();
-					}
-				}
+                foreach($approval_dtl as $app_dtl){
+                    $approver_user = new ApproverUser();
+                    $approver_user->approval_master_id  = $capex->id;
+                    $approver_user->approval_detail_id  = $app_dtl->id;
+                    $approver_user->user_id  = $app_dtl->user_id;
+                    $approver_user->save();
+                }
+
 				$res = [
 						'title' => 'Success',
 						'type' => 'success',

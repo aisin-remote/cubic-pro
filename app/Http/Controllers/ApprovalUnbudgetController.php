@@ -364,18 +364,18 @@ class ApprovalUnbudgetController extends Controller
 
                 $approval_no = ApprovalMaster::getNewApprovalNumber(strtoupper($budget_type), $user->department->department_code);
 
-                    $capex                         = new ApprovalMaster;
-                    $capex->fyear 				   =  date('Y');
-                    $capex->approval_number        = $approval_no;
-                    $capex->budget_type            = $budget_type;
-                    $capex->dir                    = $user->direction;
-                    $capex->division               = $user->division->division_code;
-                    $capex->department             = $user->department->department_code;
-                    $capex->total                  = str_replace(',', '', Cart::instance('unbudget')->subtotal($formatted = false));
-                    $capex->status                 = 0;
-                    $capex->created_by             = $user->id;
+                    $am                         = new ApprovalMaster;
+                    $am->fyear 				   =  date('Y');
+                    $am->approval_number        = $approval_no;
+                    $am->budget_type            = $budget_type;
+                    $am->dir                    = $user->direction;
+                    $am->division               = $user->division->division_code;
+                    $am->department             = $user->department->department_code;
+                    $am->total                  = str_replace(',', '', Cart::instance('unbudget')->subtotal($formatted = false));
+                    $am->status                 = 0;
+                    $am->created_by             = $user->id;
 
-                    $capex->save();
+                    $am->save();
                     $i = 1;
                 foreach (Cart::instance('unbudget')->content() as $details) {
                     if($budget_type == 'uc'){
@@ -412,11 +412,10 @@ class ApprovalUnbudgetController extends Controller
                     $approval->pr_specs				    = $details->options->pr_specs;
                     $approval->pr_uom           	    = $details->options->pr_uom;
 
-                    $capex->details()->save($approval);
+                    $am->details()->save($approval);
                     $i++;
                 }
 				// Simpan approver user
-				$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
 				$approvals = Approval::where('department',$user->department->department_code)->first();
 				if(empty($approvals)){
 					$res = [
@@ -425,23 +424,23 @@ class ApprovalUnbudgetController extends Controller
 							'message' => 'There is no approval for your department'
 							];
 				}else{
-					foreach($approval_master as $am){
 
-						$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
+                    $approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
 
-						foreach($approval_dtl as $app_dtl){
-							$approver_user = new ApproverUser();
-                            $approver_user->approval_master_id  = $am->id;
-                            $approver_user->approval_detail_id  = $app_dtl->id;
-							$approver_user->user_id  			= $app_dtl->user_id;
-							$approver_user->save();
-						}
-					}
+                    foreach($approval_dtl as $app_dtl){
+                        $approver_user = new ApproverUser();
+                        $approver_user->approval_master_id  = $am->id;
+                        $approver_user->approval_detail_id  = $app_dtl->id;
+                        $approver_user->user_id  			= $app_dtl->user_id;
+                        $approver_user->save();
+                    }
+
 					$res = [
-							'title' => 'Success',
-							'type' => 'success',
-							'message' => 'Data has been inserted'
-						];
+                        'title' => 'Success',
+                        'type' => 'success',
+                        'message' => 'Data has been inserted'
+                    ];
+
 					Cart::instance('unbudget')->destroy();
 				}
 

@@ -23,37 +23,37 @@
 		</div>
 	</div>
     <!-- end row -->
-            
+
     <div class="row">
         <div class="col-md-12">
             <div class="card-box table-responsive">
-                <table class="table table-colored table-inverse table-responsive" id="table-eps_tracking">
+                <table class="table table-colored table-inverse table-responsive table-small-font" id="table-eps_tracking">
                     <thead>
                         <tr>
-                            <th rowspan="2" style="vertical-align:middle">Approval Number</th>
-                            <th colspan="6" style="text-align:center">Status PR</th>
-                            <th rowspan="2" style="vertical-align:middle">Item Number</th>
-                            <th rowspan="2" style="vertical-align:middle">Name Of Good</th>
-                            <th rowspan="2" style="vertical-align:middle">Quantity</th>
-                            <th rowspan="2" style="vertical-align:middle">UoM</th>
-                            <th rowspan="2" style="vertical-align:middle">Unit Price (Rp.)</th>
-                            <th rowspan="2" style="vertical-align:middle">Supplier Name</th>
-                            <th rowspan="2" style="vertical-align:middle">PO Date</th>
-                            <th rowspan="2" style="vertical-align:middle">PO Number</th>
-                            <th rowspan="2" style="vertical-align:middle">User Request</th>
-                            <th rowspan="2" style="vertical-align:middle">GR No</th>
-                            <th rowspan="2" style="vertical-align:middle">GR Date</th>
-                            <th rowspan="2" style="vertical-align:middle">Qty Receive</th>
-                            <th rowspan="2" style="vertical-align:middle">Qty Outstanding</th>
-                            <th rowspan="2" style="vertical-align:middle">Notes</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">Approval Number</th>
+                            <th colspan="6" class="text-center" style="vertical-align:middle">Status PR</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">Item Number</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">Name Of Good</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">Quantity</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">UoM</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">Unit Price (Rp.)</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">Supplier Name</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">PO Date</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">PO Number</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">User Request</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">GR No</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">GR Date</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">Qty Receive</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">Qty Outstanding</th>
+                            <th rowspan="2" class="text-center" style="vertical-align:middle">Notes</th>
                         </tr>
                         <tr>
-                            <th>User Create PR Date</th>
-                            <th>Validation Budget</th>
-                            <th>Approved By Dept. Head</th>
-                            <th>Approved by GM</th>
-                            <th>Approved By BOD</th>
-                            <th>Receiving Date By Purch.</th>
+                            <th class="text-center">User Create PR Date</th>
+                            <th class="text-center">Validation Budget</th>
+                            <th class="text-center">Approved By Dept. Head</th>
+                            <th class="text-center">Approved by GM</th>
+                            <th class="text-center">Approved By BOD</th>
+                            <th class="text-center">Receiving Date By Purch.</th>
                         </tr>
                     </thead>
                 </table>

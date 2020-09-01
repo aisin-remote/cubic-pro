@@ -3,9 +3,12 @@
 Optional custom style
 
 */
-
 table .checkbox {
 	margin: 0px !important;
+}
+
+.table-small-font {
+    font-size: 13px !important;
 }
 
 tbody .checkbox {

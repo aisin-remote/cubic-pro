@@ -129,10 +129,10 @@ class ApprovalExpenseController extends Controller
         Cart::remove($id);
 
         $res = [
-					'title' => 'Success',
-                    'type' => 'success',
-                    'message' => 'Data has been removed'
-                ];
+            'title' => 'Success',
+            'type' => 'success',
+            'message' => 'Data has been removed'
+        ];
 
         return response()
                 ->json($res);
@@ -168,17 +168,17 @@ class ApprovalExpenseController extends Controller
 
                 $approval_no = ApprovalMaster::getNewApprovalNumber('EX', $user->department->department_code);
 
-                    $capex                         = new ApprovalMaster;
-                    $capex->approval_number        = $approval_no;
-                    $capex->budget_type            = 'ex';
-                    $capex->dir                    = $user->direction;
-                    $capex->division               = $user->division->division_code;
-                    $capex->department             = $user->department->department_code;
-                    $capex->total                  = str_replace(',', '', Cart::instance('expense')->subtotal($formatted = false));
-                    $capex->status                 = 0;
-                    $capex->created_by             = $user->id;
-					$capex->fyear 				   =  date('Y');
-                    $capex->save();
+                $am                         = new ApprovalMaster;
+                $am->approval_number        = $approval_no;
+                $am->budget_type            = 'ex';
+                $am->dir                    = $user->direction;
+                $am->division               = $user->division->division_code;
+                $am->department             = $user->department->department_code;
+                $am->total                  = str_replace(',', '', Cart::instance('expense')->subtotal($formatted = false));
+                $am->status                 = 0;
+                $am->created_by             = $user->id;
+                $am->fyear 				   =  date('Y');
+                $am->save();
 
                 $i = 1;
                 foreach (Cart::instance('expense')->content() as $details) {
@@ -216,12 +216,13 @@ class ApprovalExpenseController extends Controller
                     $approval->budget_reserved       = $budget_reserved;
                     // $approval->asset_no              = $details->options->asset_code."JE".str_pad($i, 3, '0', STR_PAD_LEFT);
                     $approval->sap_track_no          = ApprovalMaster::getNewSapTrackingNo(3,$user->department_id,$approval_no,$i);
-                    $capex->details()->save($approval);
+                    $am->details()->save($approval);
                     $i++;
                 }
+
 				// Simpan approver user
-				$approval_master = ApprovalMaster::where('created_by',$user->id)->where('status',0)->get();
-				$approvals = Approval::where('department',$user->department->department_code)->first();
+                $approvals = Approval::where('department',$user->department->department_code)->first();
+
 				if(empty($approvals)){
 					$res = [
                             'title' => 'Error',
@@ -229,18 +230,15 @@ class ApprovalExpenseController extends Controller
                             'message' => 'There is no approval for your department'
                         ];
 				}else{
-					foreach($approval_master as $am){
+                    $approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
 
-						$approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
-
-						foreach($approval_dtl as $app_dtl){
-							$approver_user = new ApproverUser();
-                            $approver_user->approval_master_id  = $am->id;
-                            $approver_user->approval_detail_id  = $app_dtl->id;
-							$approver_user->user_id  			= $app_dtl->user_id;
-							$approver_user->save();
-						}
-					}
+                    foreach($approval_dtl as $app_dtl){
+                        $approver_user = new ApproverUser();
+                        $approver_user->approval_master_id  = $am->id;
+                        $approver_user->approval_detail_id  = $app_dtl->id;
+                        $approver_user->user_id  			= $app_dtl->user_id;
+                        $approver_user->save();
+                    }
 					$res = [
                             'title' => 'Success',
                             'type' => 'success',
@@ -248,10 +246,6 @@ class ApprovalExpenseController extends Controller
                         ];
 				   Cart::instance('expense')->destroy();
 				}
-
-
-
-
             });
          return redirect()
                             ->route('approval-expense.ListApproval')
