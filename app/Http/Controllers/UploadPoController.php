@@ -88,29 +88,33 @@ class UploadPoController extends Controller
                     ->leftJoin('upload_purchase_orders', 'approval_details.id', '=', 'upload_purchase_orders.approval_detail_id')
                     ->where('approval_masters.status','4');
 
-		if($request->from != "" && $request->to != ""){
-			$from = date('Y-m-d',strtotime($request->from));
-			$to   = date('Y-m-d',strtotime($request->to));
-			$po->whereBetween('approval_masters.created_at', [$from, $to]);
+		if($request->interval){
+            $intervals = explode('-', $request->interval);
+
+            if (count($intervals) > 1) {
+                $from = date('Y-m-d', strtotime(trim($intervals[0])));
+                $to = date('Y-m-d', strtotime(trim($intervals[1])));
+			    $po->whereBetween('upload_purchase_orders.pr_receive', [$from, $to]);
+            }
 		}
 
         $po = $po->orderBy('approval_masters.id','DESC')->get();
         // dd($po);
 
         return DataTables::of($po)
-        ->setRowId(function($po){
-            return $po->approval_detail_id;
-        })
-		 ->editColumn("created_at", function ($po) {
-				return date('d-M-Y H:i:s',strtotime($po->created_at));
-		 })
-		 ->editColumn("pr_receive", function ($po) {
-				return $po->pr_receive ? date('d-M-Y',strtotime($po->pr_receive)) : null;
-		 })
-		  ->editColumn("po_date", function ($po) {
-				return $po->po_date ? date('d-M-Y',strtotime($po->po_date)) : null;
-		 })
-        ->toJson();
+            ->setRowId(function($po){
+                return $po->approval_detail_id;
+            })
+            ->editColumn("created_at", function ($po) {
+                    return date('d-M-Y H:i:s',strtotime($po->created_at));
+            })
+            ->editColumn("pr_receive", function ($po) {
+                    return $po->pr_receive ? date('d-M-Y',strtotime($po->pr_receive)) : null;
+            })
+            ->editColumn("po_date", function ($po) {
+                    return $po->po_date ? date('d-M-Y',strtotime($po->po_date)) : null;
+            })
+            ->toJson();
     }
 
     public function create()
@@ -118,27 +122,37 @@ class UploadPoController extends Controller
         return view('pages.upload_po.create');
     }
 
-    public function export()
+    public function export(Request $request)
     {
         $pos = DB::table('approval_masters')
                     ->select('approval_details.id as approval_detail_id','approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date','upload_purchase_orders.quotation','upload_purchase_orders.pr_receive')
                     ->Join('approval_details', 'approval_details.approval_master_id','=', 'approval_masters.id')
                     ->leftJoin('upload_purchase_orders', 'approval_details.id', '=', 'upload_purchase_orders.approval_detail_id')
-                    ->where('approval_masters.status','4')
-                    // ->take(10)
-                    ->get();
-        $array = [];
+                    ->where('approval_masters.status','4');
 
+        if($request->interval){
+            $intervals = explode('-', $request->interval);
+
+            if (count($intervals) > 1) {
+                $from = date('Y-m-d', strtotime(trim($intervals[0])));
+                $to = date('Y-m-d', strtotime(trim($intervals[1])));
+                $pos->whereBetween('upload_purchase_orders.pr_receive', [$from, $to]);
+            }
+        }
+
+        $pos = $pos->orderBy('approval_masters.id','DESC')->get();
+
+        $array = [];
         foreach ($pos as $po) {
             $array[] = [
-                        'Approval Number' => $po->approval_number,
-                        'Name Of Good' => $po->remarks,
-                        'User Create PR Date' => $po->created_at,
-                        'PR Receive' => $po->pr_receive,
-                        'PO Number' => $po->po_number,
-                        'PO Date' => $po->po_date,
-                        'Quotation' => $po->quotation,
-                        ];
+                'Approval Number' => $po->approval_number,
+                'Name Of Good' => $po->remarks,
+                'User Create PR Date' => $po->created_at,
+                'PR Receive' => $po->pr_receive,
+                'PO Number' => $po->po_number,
+                'PO Date' => $po->po_date,
+                'Quotation' => $po->quotation,
+            ];
         }
 
         return Excel::create('Data Input PO', function($excel) use ($array){

@@ -25,23 +25,22 @@
     <!-- end row -->
 
     <div class="row">
-		<div class="col-xs-8">
-			<form class="form-inline">
-				<div class="form-group m-r-10">
-					<label for="from">From</label>
-					<input type="text" class="form-control ndatepicker" id="from" value="{{'01-'.date('M-Y')}}">
-				</div>
-				<div class="form-group m-r-10">
-					<label for="to">To</label>
-					<input type="text" class="form-control ndatepicker" id="to" value="{{date('d-M-Y')}}">
-				</div>
-				<button type="button" class="btn btn-custom waves-effect waves-light btn-md" id="btn-filter">
-					Filter
-				</button>
-			</form>
-		</div>
-        <div class="col-xs-4 text-right">
-			<a href="{{ route('upload_po.export') }}" class="btn btn-custom btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-download"></i> Download</a>
+        <div class="col-md-9">
+            <form class="form-inline">
+                <div class="form-group m-r-10">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" class="form-control" name="pr_receive" placeholder="Filter PR Receive" id="pr-receive" value="">
+                    </div>
+                </div>
+                <div class="form-group mr-10">
+                    <button class="btn btn-primary" type="button" id="btn-filter">Filter</button>
+                    <button class="btn btn-danger" type="button" id="btn-reset">Reset</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-3 text-right">
+			<a href="{{ route('upload_po.export') }}" class="btn btn-custom btn-bordered waves-effect waves-light m-b-20" id="btn-download"><i class="mdi mdi-download"></i> Download</a>
         </div>
     </div>
 

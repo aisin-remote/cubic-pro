@@ -1,15 +1,12 @@
 var tType;
 $(document).ready(function(){
-	
-	
 	tType = $('#table-upload_po').DataTable({
 		ajax: {
-				url:SITE_URL + '/upload_po/get_data',
-				data:function(data){
-					data.from = $('#from').val();
-					data.to   = $('#to').val();
-				}
-			},
+            url:SITE_URL + '/upload_po/get_data',
+            data:function(data){
+                data.interval = $('#pr-receive').val();
+            }
+        },
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         order:[3,'desc'],
         columns: [
@@ -21,7 +18,7 @@ $(document).ready(function(){
             { data: 'po_number', name: 'po_number'},
             { data: 'po_date', name: 'po_date'},
             { data: 'quotation', name: 'quotation'},
-            
+
         ],
         drawCallback: function(){
             $('[data-toggle="tooltip"]').tooltip();
@@ -35,13 +32,26 @@ $(document).ready(function(){
         var upload_po_id = $(this).data('value');
         $('#form-delete-' + upload_po_id).submit();
     });
-	
-	$('.ndatepicker').datepicker({
-        format: 'dd-M-yyyy'
-    });
+
+    $('#pr-receive').daterangepicker({
+        locale: {
+            format: 'YYYY/MM/DD',
+        },
+        buttonClasses: ['btn', 'btn-sm'],
+        applyClass: 'btn-success',
+        cancelClass: 'btn-default',
+    }).val('').attr("placeholder", "Filter PR Receive");
+
 	$('#btn-filter').click(function(){
+        var urlDownload = $('#btn-download').attr('href') + '?interval=' + encodeURI($('#pr-receive').val());
+        $('#btn-download').attr('href', urlDownload);
 		tType.draw();
-	})
+    });
+
+    $('#btn-reset').click(function(){
+        $('#pr-receive').val('');
+		tType.draw();
+	});
 });
 
 function on_delete(upload_po_id)
@@ -66,16 +76,16 @@ function xeditClasser() {
         var po_number = $(this).find('td:nth-child(5)');
         var po_date = $(this).find('td:nth-child(6)');
         var quotation = $(this).find('td:nth-child(7)');
-        
+
         pr_receive.html('<a href="#" class="editable" data-type="date" data-pk="'+pk+'" data-name="pr_receive" data-title="PR Receive Date">'+pr_receive.text()+'</a>');
         po_number.html('<a href="#" class="editable" data-type="text" data-pk="'+pk+'" data-name="po_number" data-title="Enter PO Number">'+po_number.text()+'</a>');
         po_date.html('<a href="#" class="editable" data-type="date" data-pk="'+pk+'" data-name="po_date" data-title="Enter PO Date">'+po_date.text()+'</a>');
         quotation.html('<a href="#" class="editable" data-type="select" data-pk="'+pk+'" data-name="quotation" data-title="Choose Status Quotation" data-value="'+quotation.text()+'" data-source="[{value: &#39;Multi&#39;, text: &#39;Multi&#39;}, {value: &#39;Single&#39;, text: &#39;Single&#39;}]">'+quotation.text()+'</a>');
-        
+
     });
 
 
-    
+
 }
 
 function initEditable()

@@ -32,17 +32,17 @@ class GrConfirmController extends Controller
 
         return view('pages.gr_confirm.index');
     }
-  
+
     public function create()
     {
         $po         = UploadPurchaseOrder::get();
-        return view('pages.gr_confirm.create', compact(['po', 'user', 'detail']));
+        return view('pages.gr_confirm.create', compact('po'));
     }
 
     public function getData(Request $request)
     {
         $gr_confirms = GrConfirm::with(['approval_master', 'user.department'])->get();
-        		
+
         return DataTables::of($gr_confirms)
 
         ->rawColumns(['options'])
@@ -90,7 +90,7 @@ class GrConfirmController extends Controller
     {
         $approval_master = ApprovalMaster::where('approval_number', $request->approval_number)->first();
         $user = User::where('id',$approval_master->created_by)->first();
-        
+
         if ($approval_master->budget_type == 'cx') {
             $url =  url('/approval/cx/'.$approval_master->approval_number);
         } elseif ($approval_master->budget_type == 'ex') {
@@ -130,7 +130,7 @@ class GrConfirmController extends Controller
      * @param  \App\GrConfirm  $bom
      * @return \Illuminate\Http\Response
      */
-    
+
      public function destroy($id)
     {
         DB::transaction(function() use ($id){
