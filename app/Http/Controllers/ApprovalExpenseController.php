@@ -471,13 +471,16 @@ class ApprovalExpenseController extends Controller
     {
         DB::transaction(function() use ($id){
             $approval_expense = ApprovalMaster::find($id);
+
             foreach ($approval_expense->details as $key => $value) {
                 $expense = $approval_expense->details[$key]->expense;
 
                 $totalBudget = $expense->approvalDetails->sum('actual_price_user');
                 // update budget reserved di expense
+
                 if ($totalBudget > $expense->budget_reserved) {
-                    $expense->budget_reserved = $expense->budget_plan;
+                    $expense->budget_reserved = $expense->budget_reserved - $approval_expense->details[$key]->budget_reserved;
+                    $expense->is_closed = 0;
                 } else {
                     $expense->budget_reserved = $expense->budget_reserved - $approval_expense->details[$key]->budget_reserved;
                     $expense->is_closed = 0;
@@ -485,6 +488,7 @@ class ApprovalExpenseController extends Controller
 
                 $expense->update();
             }
+
 
             $approval_expense->details()->delete();
             $approval_expense->delete();

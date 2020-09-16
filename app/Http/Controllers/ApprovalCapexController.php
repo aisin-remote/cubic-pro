@@ -372,21 +372,25 @@ class ApprovalCapexController extends Controller
     {
         DB::transaction(function() use ($id){
             $approval_capex = ApprovalMaster::find($id);
+            foreach ($approval_capex->details as $key => $value){
+                $capex = $approval_capex->details[$key]->capex;
 
-            $capex = $approval_capex->details[0]->capex;
+                $totalBudget = $capex->approvalDetails->sum('actual_price_user');
+
+                // update budget reserved di expense
+                if ($totalBudget > $capex->budget_reserved) {
+                    $capex->budget_reserved = $capex->budget_reserved - $approval_capex->details[$key]->budget_reserved;
+                    $capex->is_closed = 0;
+                } else {
+                    $capex->budget_reserved = $capex->budget_reserved - $approval_capex->details[$key]->budget_reserved;
+                    $capex->is_closed = 0;
+                }
+                $capex->update();
+            }
+
             $approval_capex->details()->delete();
             $approval_capex->delete();
 
-            $totalBudget = $capex->approvalDetails->sum('actual_price_user');
-            // update budget reserved di expense
-            if ($totalBudget > $capex->budget_reserved) {
-                $capex->budget_reserved = $capex->budget_plan;
-            } else {
-                $capex->budget_reserved = $totalBudget;
-                $capex->is_closed = 0;
-            }
-
-            $capex->update();
         });
 
         $res = [
