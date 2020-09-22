@@ -472,36 +472,32 @@ class ApprovalExpenseController extends Controller
         DB::transaction(function() use ($id){
             $approval_expense = ApprovalMaster::find($id);
 
-            foreach ($approval_expense->details as $key => $value) {
-                $expense = $approval_expense->details[$key]->expense;
+            foreach ($approval_expense->details as $value) {
+                $expense = $value->expense;
 
                 $totalBudget = $expense->approvalDetails->sum('actual_price_user');
                 // update budget reserved di expense
 
                 if ($totalBudget > $expense->budget_reserved) {
-                    $expense->budget_reserved = $expense->budget_reserved - $approval_expense->details[$key]->budget_reserved;
+                    $expense->budget_reserved = $expense->budget_reserved - $value->budget_reserved;
                     $expense->is_closed = 0;
                 } else {
-                    $expense->budget_reserved = $expense->budget_reserved - $approval_expense->details[$key]->budget_reserved;
+                    $expense->budget_reserved = $expense->budget_reserved - $value->budget_reserved;
                     $expense->is_closed = 0;
                 }
 
                 $expense->update();
             }
 
-
             $approval_expense->details()->delete();
             $approval_expense->delete();
-
-
-
         });
 
         $res = [
-                    'title' => 'Success',
-                    'type' => 'success',
-                    'message' => 'Data has been removed'
-                ];
+            'title' => 'Success',
+            'type' => 'success',
+            'message' => 'Data has been removed'
+        ];
 
         return redirect()
                     ->route('approval-expense.ListApproval')

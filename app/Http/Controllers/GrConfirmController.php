@@ -4,19 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\GrConfirm;
-use App\GrConfirmDetail;
 use App\ApprovalMaster;
 use App\ApprovalDetail;
 use App\UploadPurchaseOrder;
 use App\User;
 use App\Department;
-use App\Mail\GrConfirm as ConfirmMail;
 
 use DataTables;
 use DB;
-use Storage;
-use Cart;
-use Mail;
 
 
 class GrConfirmController extends Controller
@@ -88,19 +83,21 @@ class GrConfirmController extends Controller
 
     public function store(Request $request)
     {
-        $approval_master = ApprovalMaster::where('approval_number', $request->approval_number)->first();
-        $user = User::where('id',$approval_master->created_by)->first();
+        // Email Feature Pending (Not Exist)
 
-        if ($approval_master->budget_type == 'cx') {
-            $url =  url('/approval/cx/'.$approval_master->approval_number);
-        } elseif ($approval_master->budget_type == 'ex') {
-            $url = url('/approval/ex/'.$approval_master->approval_number);
-        } else {
-            $url = url('/approval/ub/'.$approval_master->approval_number);
-        }
+        // $approval_master = ApprovalMaster::where('approval_number', $request->approval_number)->first();
+        // $user = User::where('id',$approval_master->created_by)->first();
 
-        $email = Mail::to($user->email)
-                    ->send(new ConfirmMail(['approval' => $approval_master, 'url' => $url]));
+        // if ($approval_master->budget_type == 'cx') {
+        //     $url =  url('/approval/cx/'.$approval_master->approval_number);
+        // } elseif ($approval_master->budget_type == 'ex') {
+        //     $url = url('/approval/ex/'.$approval_master->approval_number);
+        // } else {
+        //     $url = url('/approval/ub/'.$approval_master->approval_number);
+        // }
+
+        // $email = Mail::to($user->email)
+        //             ->send(new ConfirmMail(['approval' => $approval_master, 'url' => $url]));
 
 
         $res = [
