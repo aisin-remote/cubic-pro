@@ -162,7 +162,6 @@ class ApprovalExpenseController extends Controller
         $res = '';
 
         DB::transaction(function() use ($request, &$res){
-            // Save data in Tabel Bom
             $user = \Auth::user();
 
             $approval_no = ApprovalMaster::getNewApprovalNumber('EX', $user->department->department_code);
@@ -272,7 +271,6 @@ class ApprovalExpenseController extends Controller
     {
         $type = "ex";
         $user = auth()->user();
-
         $approval_expense = ApprovalMaster::with('departments', 'details')
                             ->where('budget_type', 'like', 'ex%');
 

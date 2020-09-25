@@ -410,101 +410,117 @@ class ApprovalCapexController extends Controller
         $approval_capex = ApprovalMaster::with('departments', 'details')
                             ->where('budget_type', 'like', 'cx%');
 
-        $level = ApprovalDtl::where('user_id', $user->id)->first();
+        $levels = DB::table('approval_dtls AS ad')->select('ad.status_to_approve', 'a.department')
+            ->leftJoin('approvals AS a', 'a.id', '=', 'ad.approval_id')
+            ->where('ad.user_id', $user->id)
+            ->get();
 
         if(\Entrust::hasRole('user')) {
             $approval_capex->where('created_by',$user->id);
         } elseif(\Entrust::hasRole(['department-head', 'budget', 'gm', 'director'])) {
-            $approval_capex->whereHas('approver_user',function($query) use($user) {
-                $query->where('user_id', $user->id );
+            $approval_capex->whereHas('approverUsers',function($query) use($user) {
+                $query->where('user_id', $user->id )
+                    ->where('is_approve', 0);
+            });
+        } elseif (\Entrust::hasRole('purchasing')) {
+            $approval_capex->whereDoesntHave('approverUsers',function($query) use($user) {
+                $query->where('is_approve', 0);
             });
         }
 
-        if (!empty($level)) {
+        if ($levels->count()) {
+            if($status == 'need_approval'){
+                $query = '';
 
-            if($level->level==1){
-                if($status == 'need_approval'){
-                    $approval_capex->where('status','0');
+                $levels = $levels->reject(function ($value, $key) {
+                    return $value->department == null;
+                })->values();
+
+                foreach($levels as $index => $level) {
+                    if ($index == 0) {
+                        $query .= "(";
+                    }
+
+                    $query .= " (`department` = '$level->department' AND `status` = $level->status_to_approve) ";
+
+                    if ($index == $levels->count() - 1) {
+                        $query .= ")";
+                    } else {
+                        $query .= "OR";
+                    }
                 }
-            }elseif($level->level==2){
-                if($status == 'need_approval'){
-                    $approval_capex->where('status','1');
-                }
-            }elseif($level->level>=3){
-                if($status == 'need_approval'){
-                    $approval_capex->where('status','2')->orWhere('status','3');
-                }
-            }elseif($level->level>=4){
-                if($status == 'need_approval'){
-                    $approval_capex->where('status','2')->orWhere('status','3');
+
+                if ($query != '') {
+                    $approval_capex->whereRaw($query);
                 }
             }
         }
 
+        $approval_capex = $approval_capex->get();
+
         return DataTables::of($approval_capex)
-        ->rawColumns(['action'])
+            ->rawColumns(['action'])
+            ->addColumn("action", function ($approval_capex) use ($type, $status){ // dev-4.2.1 by Fahrul, 20171116
+                if($status!='need_approval'){
 
-        ->addColumn("action", function ($approval_capex) use ($type, $status){ // dev-4.2.1 by Fahrul, 20171116
-            if($status!='need_approval'){
+                    if(\Entrust::hasRole('user')) {
+                        return '
+                            <div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/cx/'.$approval_capex->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
 
-                if(\Entrust::hasRole('user')) {
-                    return '
-                        <div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/cx/'.$approval_capex->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+                            <a href="#" onclick="printApproval(&#39;'.$approval_capex->approval_number.'&#39;)" class="btn btn-primary" ><span class="glyphicon glyphicon-print" aria-hidden="true"></span></a>
 
-                        <a href="#" onclick="printApproval(&#39;'.$approval_capex->approval_number.'&#39;)" class="btn btn-primary" ><span class="glyphicon glyphicon-print" aria-hidden="true"></span></a>
-
-                        <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$approval_capex->id.')"><i class="mdi mdi-close"></i></button>
-                        <form action="'.route('approval_capex.delete', $approval_capex->id).'" method="POST" id="form-delete-'.$approval_capex->id .'" style="display:none">
-                            '.csrf_field().'
-                            <input type="hidden" name="_method" value="DELETE">
-                        </form>';
-                }elseif(\Entrust::hasRole('budget')) { //Sebenarnya ini ga bakal dieksekusi
-					return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/cx/'.$approval_capex->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a><a href="#" class="btn btn-danger" onclick="cancelApproval(&#39;'.$approval_capex->approval_number.'&#39;);return false;"><span class="glyphicon glyphicon-remove"aria-hidden="true"></span></a></div>';
+                            <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$approval_capex->id.')"><i class="mdi mdi-close"></i></button>
+                            <form action="'.route('approval_capex.delete', $approval_capex->id).'" method="POST" id="form-delete-'.$approval_capex->id .'" style="display:none">
+                                '.csrf_field().'
+                                <input type="hidden" name="_method" value="DELETE">
+                            </form>';
+                    }elseif(\Entrust::hasRole('budget')) { //Sebenarnya ini ga bakal dieksekusi
+                        return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/cx/'.$approval_capex->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a><a href="#" class="btn btn-danger" onclick="cancelApproval(&#39;'.$approval_capex->approval_number.'&#39;);return false;"><span class="glyphicon glyphicon-remove"aria-hidden="true"></span></a></div>';
+                    }else{
+                        return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a></div>";
+                    }
                 }else{
-                    return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a></div>";
+                    // return "else"; <a  href='#' onclick='javascript:validateApproval(&#39;$approval_capex->approval_number&#39;);return false;'class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a>
+                    if(\Entrust::hasRole('user')) {
+                        return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/unvalidate/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                    } else {
+                        return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/unvalidate/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"validateApproval('$approval_capex->approval_number');return false;\" class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                    }
                 }
-            }else{
-                // return "else"; <a  href='#' onclick='javascript:validateApproval(&#39;$approval_capex->approval_number&#39;);return false;'class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a>
-                if(\Entrust::hasRole('user')) {
-                    return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/unvalidate/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
-                } else {
-                    return "<div id='$approval_capex->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/cx/unvalidate/'.$approval_capex->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"validateApproval('$approval_capex->approval_number');return false;\" class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href=\"#\" onclick=\"cancelApproval('$approval_capex->approval_number');return false;\" class='btn btn-danger'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
-                }
-            }
-        })
-
-        ->editColumn("total", function ($approval_capex) {
-                return number_format($approval_capex->total);
             })
-        ->editColumn("status", function ($approval_capex){
-            if ($approval_capex->status == '0') {
-                return "User Created";
-            }elseif ($approval_capex->status == '1') {
-                return "Validasi Budget";
-            }elseif ($approval_capex->status == '2') {
-                return "Approved by Dept. Head";
-            }elseif ($approval_capex->status == '3') {
-                return "Approved by GM";
-            }elseif ($approval_capex->status == '4') {
-                return "Approved by Director";
-            }elseif ($approval_capex->status == '-1') {
-                return "Canceled on Quotation Validation";
-            }elseif ($approval_capex->status == '-2') {
-                return "Canceled Dept. Head Approval";
-            }else{
-                return "Canceled on Group Manager Approval";
-            }
-        })
 
-        ->addColumn("overbudget_info", function ($approval_capex) {
-            return $approval_capex->status < 0 ? 'Canceled' : ($approval_capex->is_over ? 'Overbudget exist' : 'All underbudget');
-        })
+            ->editColumn("total", function ($approval_capex) {
+                    return number_format($approval_capex->total);
+                })
+            ->editColumn("status", function ($approval_capex){
+                if ($approval_capex->status == '0') {
+                    return "User Created";
+                }elseif ($approval_capex->status == '1') {
+                    return "Validasi Budget";
+                }elseif ($approval_capex->status == '2') {
+                    return "Approved by Dept. Head";
+                }elseif ($approval_capex->status == '3') {
+                    return "Approved by GM";
+                }elseif ($approval_capex->status == '4') {
+                    return "Approved by Director";
+                }elseif ($approval_capex->status == '-1') {
+                    return "Canceled on Quotation Validation";
+                }elseif ($approval_capex->status == '-2') {
+                    return "Canceled Dept. Head Approval";
+                }else{
+                    return "Canceled on Group Manager Approval";
+                }
+            })
 
-        ->addColumn('details_url', function($approval_capex) {
-            return url('approval-capex/details-data/' . $approval_capex->id);
-        })
+            ->addColumn("overbudget_info", function ($approval_capex) {
+                return $approval_capex->status < 0 ? 'Canceled' : ($approval_capex->is_over ? 'Overbudget exist' : 'All underbudget');
+            })
 
-        ->toJson();
+            ->addColumn('details_url', function($approval_capex) {
+                return url('approval-capex/details-data/' . $approval_capex->id);
+            })
+
+            ->toJson();
     }
 
     public function DetailApproval($approval_number)
