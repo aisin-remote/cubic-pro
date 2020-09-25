@@ -193,37 +193,51 @@ class ApprovalUnbudgetController extends Controller
         $approval_ub = ApprovalMaster::with('departments')
                                 ->whereIn('budget_type',['ub', 'uc','ue']);
 
-        $level = ApprovalDtl::where('user_id', $user->id)->first();
+        $levels = DB::table('approval_dtls AS ad')->select('ad.status_to_approve', 'a.department')
+            ->leftJoin('approvals AS a', 'a.id', '=', 'ad.approval_id')
+            ->where('ad.user_id', $user->id)
+            ->get();
 
         if(\Entrust::hasRole('user')) {
             $approval_ub->where('created_by',$user->id);
-        } elseif(\Entrust::hasRole(['department-head', 'budget', 'gm', 'director'])) {
-            $approval_ub->whereHas('approver_user',function($query) use($user) {
-                $query->where('user_id', $user->id );
+        } elseif (\Entrust::hasRole(['department-head', 'budget', 'gm', 'director'])) {
+            $approval_ub->whereHas('approverUsers',function($query) use($user) {
+                $query->where('user_id', $user->id )
+                    ->where('is_approve', 0);
+            });
+        } elseif (\Entrust::hasRole('purchasing')) {
+            $approval_ub->whereDoesntHave('approverUsers',function($query) use($user) {
+                $query->where('is_approve', 0);
             });
         }
 
-        if (!empty($level)) {
+        if ($levels->count()) {
+            if($status == 'need_approval'){
+                $query = '';
 
-            if($level->level==1){
-                if($status == 'need_approval'){
-                    $approval_ub->where('status','0');
+                $levels = $levels->reject(function ($value, $key) {
+                    return $value->department == null;
+                })->values();
+
+                foreach($levels as $index => $level) {
+                    if ($index == 0) {
+                        $query .= "(";
+                    }
+
+                    $query .= " (`department` = '$level->department' AND `status` = $level->status_to_approve) ";
+
+                    if ($index == $levels->count() - 1) {
+                        $query .= ")";
+                    } else {
+                        $query .= "OR";
+                    }
                 }
-            }elseif($level->level==2){
-                if($status == 'need_approval'){
-                    $approval_ub->where('status','1');
-                }
-            }elseif($level->level>=3){
-                if($status == 'need_approval'){
-                    $approval_ub->where('status','2')->orWhere('status','3');
-                }
-            }elseif($level->level>=4){
-                if($status == 'need_approval'){
-                    $approval_ub->where('status','2')->orWhere('status','3');
+
+                if ($query != '') {
+                    $approval_ub->whereRaw($query);
                 }
             }
         }
-
 
         $approval_ub = $approval_ub->get();
 
