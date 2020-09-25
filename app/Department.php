@@ -11,7 +11,7 @@ class Department extends Model
 
     public function division()
     {
-    	return $this->belongsTo('App\Division');	
+    	return $this->belongsTo('App\Division');
     }
 
     public function user()
@@ -23,5 +23,9 @@ class Department extends Model
     {
         return $query->where('department_code', $department)->first();
     }
-    
+
+    public function approval()
+    {
+        return $this->hasOne('App\Approval', 'department', 'department_code');
+    }
 }

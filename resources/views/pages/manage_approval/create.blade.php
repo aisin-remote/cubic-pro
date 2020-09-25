@@ -6,7 +6,7 @@
 @section('content')
 
 @php($active = 'manage_approval')
-	
+
 	<div class="container">
 
         <div class="row">
@@ -44,7 +44,7 @@
 								</select>
                                 <span class="help-block"></span>
                            </div>
-                           
+
                         </div>
 
                         <div class="col-md-6">
@@ -70,7 +70,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                   </div>  
+                                   </div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -94,11 +94,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                   </div>  
+                                   </div>
                                 </div>
                             </div>
                         </div>
-                       
+
                         <div class="col-md-12 text-right">
                             <hr>
                         </div>
@@ -149,7 +149,7 @@
                                 </tbody>
                             </table>
                         </div>
-					
+
                         <div class="col-md-12">
                             <div class="pull-right">
                                 <input type="submit" name="submit" value="Save" class="btn btn-sm btn-primary">

@@ -11,6 +11,6 @@ class Approval extends Model
 
 	public function details()
 	{
-		return $this->belongsTo('App\ApprovalDtl', 'approval_id');
+		return $this->hasMany('App\ApprovalDtl', 'approval_id');
 	}
 }

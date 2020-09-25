@@ -7,11 +7,8 @@ use App\Approval;
 use App\ApprovalDtl;
 use DataTables;
 use DB;
-
 use App\User;
-use App\UserData;
 use App\Role;
-use App\Division;
 use App\Department;
 use App\System;
 
@@ -125,70 +122,62 @@ class ManageApprovalController extends Controller
     public function edit($id)
     {
         $approval 		= Approval::find($id);
-		$approval_dtl 	= ApprovalDtl::where('approval_id',$id)->orderBy('level','ASC')->get();
+		$approval_dtl 	= ApprovalDtl::where('approval_id',$id)->orderBy('id','ASC')->get();
     	$users 			= User::get();
-    	$role      		= Role::get();
+		$role      		= Role::get();
 		$department 	= Department::get();
-        return view('pages.manage_approval.edit', compact(['approval','approval_dtl','users','role','department']));
+		$level_approval = System::configmultiply('level_approval')->toArray();
+
+        return view('pages.manage_approval.edit', compact(['approval','approval_dtl','users','role','department', 'level_approval']));
     }
 
     public function update(Request $request)
     {
+		DB::transaction(function() use ($request){
+			$requestLevel = $request->level ? $request->level : [];
+			$level = !empty($request->level_approval) ? array_merge($requestLevel, $request->level_approval) : $requestLevel;
+			$approval = Approval::find($request->approval_id);
 
-		$ret = DB::transaction(function() use ($request){
-					// try{
-						$res = [
-								'title' => 'Succses',
-								'type' => 'success',
-								'message' => 'Data Saved Success!'
-							];
-						$level = !empty($request->level_approval) ? array_merge($request->level, $request->level_approval) : $request->level;
-						$approval = Approval::find($request->approval_id);
+			if (empty($approval)) {
+				return response()->json('Type not found', 500);
+			}
 
-						if (empty($approval)) {
-							return response()->json('Type not found', 500);
-						}
+			// $approval->is_seq 		= $request->is_seq;
+			$approval->is_must_all 	= $request->is_must_all;
+			$approval->total_approval = count($level);
+			$approval->update();
 
-						// $approval->department 	= $request->department;
-						$approval->is_seq 		= $request->is_seq;
-						$approval->is_must_all 	= $request->is_must_all;
-						$approval->total_approval = count($level);
-						$approval->save();
+			$approval->details()->delete();
 
-						ApprovalDtl::where('approval_id',$approval->id)->delete();
+			foreach ($request->user as $i => $value){
+				$approval_dtl = new ApprovalDtl();
+				$approval_dtl->approval_id 	= $approval->id;
+				$approval_dtl->user_id 		= $value;
+				$approval_dtl->level 		= $level[$i];
+				$approval_dtl->status_to_approve = $request->status_to_approve[$i];
 
+				$approval_dtl->save();
+			}
 
-						foreach ($request->user as $i => $value){
-							$approval_dtl = new ApprovalDtl();
-							$approval_dtl->approval_id 	= $approval->id;
-							$approval_dtl->user_id 		= $request->user[$i];
-							$approval_dtl->level 		= $level[$i];
-
-							$approval_dtl->save();
-						}
-					// }catch(\Exception $e){
-					// 	 DB::rollback();
-					// 	 $res = [
-					// 		'title' => 'Error',
-					// 		'type' => 'error',
-					// 		'message' => $e->getMessage(),
-					// 	];
-					// }
-
-				});
+		});
 
 		if ($request->wantsJson()) {
-			return response()->json($approval);
+			return response()->json([
+				'title' => 'Succses',
+				'type' => 'success',
+				'message' => 'Data Saved Success!'
+			]);
 		}
+
         $res = [
-                    'title' => 'Sukses',
-                    'type' => 'success',
-                    'message' => 'Data berhasil diubah!'
-                ];
+			'title' => 'Sukses',
+			'type' => 'success',
+			'message' => 'Data berhasil diubah!'
+		];
 
         return redirect()
-                ->route('manage_approval.index')
-                ->with($res);
+			->route('manage_approval.index')
+			->with($res);
 
     }
 

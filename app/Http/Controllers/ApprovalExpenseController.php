@@ -79,33 +79,32 @@ class ApprovalExpenseController extends Controller
         $item->save();
 
         Cart::instance('expense')->add([
-
-                    'id'        => $request->budget_no,
-                    'name'      => $request->project_name,
-                    'price'     => str_replace(',','',$request->price_actual),
-                    'qty'       => 1,
-                    'options'   => [
-                        'budget_no'             => $expenses->budget_no,
-                        'asset_code'            => $request->sap_code_id,
-                        'sap_account_code'      => $sap_gl_account->gl_acode,
-						'sap_account_text'		=> $sap_gl_account->gl_aname,
-                        'budget_description'    => $request->budget_description,
-                        'qty_remaining'         => str_replace(',','',$request->qty_remaining),
-                        'qty_actual'            => !empty($request->qty_actual) ? str_replace(',','', $request->qty_actual) : 1,
-                        'remarks'               => $item->item_description,
-						'item_id'				=> $item->id,
-                        'sap_cc_code'           => $sap_costs->cc_code,
-                        'sap_cc_fname'          => $sap_costs->cc_fname,
-                        'sap_uom_id'            => $sap_uoms->uom_sname,
-                        'price_actual'          => str_replace(',','',$request->price_actual),
-                        'budget_remaining_log'  => str_replace(',','',$request->budget_remaining_log),
-						'currency'				=> $request->currency,
-                        'price_to_download'     => str_replace(',','',$request->price_to_download),
-                        'plan_gr'               => $request->plan_gr,
-						'pr_specs'				=> $request->pr_specs,
-                        'is_chemical'			=> $request->asset_category,
-                    ]
-                ]);
+            'id'        => $request->budget_no,
+            'name'      => $request->project_name,
+            'price'     => str_replace(',','',$request->price_actual),
+            'qty'       => 1,
+            'options'   => [
+                'budget_no'             => $expenses->budget_no,
+                'asset_code'            => $request->sap_code_id,
+                'sap_account_code'      => $sap_gl_account->gl_acode,
+                'sap_account_text'		=> $sap_gl_account->gl_aname,
+                'budget_description'    => $request->budget_description,
+                'qty_remaining'         => str_replace(',','',$request->qty_remaining),
+                'qty_actual'            => !empty($request->qty_actual) ? str_replace(',','', $request->qty_actual) : 1,
+                'remarks'               => $item->item_description,
+                'item_id'				=> $item->id,
+                'sap_cc_code'           => $sap_costs->cc_code,
+                'sap_cc_fname'          => $sap_costs->cc_fname,
+                'sap_uom_id'            => $sap_uoms->uom_sname,
+                'price_actual'          => str_replace(',','',$request->price_actual),
+                'budget_remaining_log'  => str_replace(',','',$request->budget_remaining_log),
+                'currency'				=> $request->currency,
+                'price_to_download'     => str_replace(',','',$request->price_to_download),
+                'plan_gr'               => $request->plan_gr,
+                'pr_specs'				=> $request->pr_specs,
+                'is_chemical'			=> $request->asset_category,
+            ]
+        ]);
 		Carts::where('item_id',$item->id)->where('user_id',auth()->user()->id)->delete();
 
         $res = [
@@ -160,96 +159,96 @@ class ApprovalExpenseController extends Controller
 
     public function SubmitApproval(Request $request)
     {
-            $res = '';
+        $res = '';
 
-            DB::transaction(function() use ($request, &$res){
-                // Save data in Tabel Bom
-                $user = \Auth::user();
+        DB::transaction(function() use ($request, &$res){
+            // Save data in Tabel Bom
+            $user = \Auth::user();
 
-                $approval_no = ApprovalMaster::getNewApprovalNumber('EX', $user->department->department_code);
+            $approval_no = ApprovalMaster::getNewApprovalNumber('EX', $user->department->department_code);
 
-                $am                         = new ApprovalMaster;
-                $am->approval_number        = $approval_no;
-                $am->budget_type            = 'ex';
-                $am->dir                    = $user->direction;
-                $am->division               = $user->division->division_code;
-                $am->department             = $user->department->department_code;
-                $am->total                  = str_replace(',', '', Cart::instance('expense')->subtotal($formatted = false));
-                $am->status                 = 0;
-                $am->created_by             = $user->id;
-                $am->fyear 				   =  date('Y');
-                $am->save();
+            $am                         = new ApprovalMaster;
+            $am->approval_number        = $approval_no;
+            $am->budget_type            = 'ex';
+            $am->dir                    = $user->direction;
+            $am->division               = $user->division->division_code;
+            $am->department             = $user->department->department_code;
+            $am->total                  = str_replace(',', '', Cart::instance('expense')->subtotal($formatted = false));
+            $am->status                 = 0;
+            $am->created_by             = $user->id;
+            $am->fyear 				   =  date('Y');
+            $am->save();
 
-                $i = 1;
-                foreach (Cart::instance('expense')->content() as $details) {
-                    $expense = Expense::where('budget_no', $details->options->budget_no)->first();
+            $i = 1;
+            foreach (Cart::instance('expense')->content() as $details) {
+                $expense = Expense::where('budget_no', $details->options->budget_no)->first();
 
-                    if ($expense->budget_reserved + $details->options->price_actual < $expense->budget_plan) {
-                        $expense->budget_reserved += $details->options->price_actual;
-                        $budget_reserved = $details->options->price_actual;
-                    } else {
-                        $budget_reserved = $expense->budget_plan - $expense->budget_reserved;
-                        $expense->budget_reserved = $expense->budget_plan;
-                        $expense->is_closed = 1;
-                    }
-
-                    $expense->update();
-
-                    $approval                        = new ApprovalDetail;
-                    $approval->budget_no             = $details->options->budget_no;
-                    $approval->project_name          = $details->name;
-                    $approval->actual_qty            = $details->options->qty_actual;
-                    $approval->actual_price_user     = $details->price;
-                    $approval->sap_account_code      = $details->options->sap_account_code;
-					$approval->sap_account_text		 = $details->options->sap_account_text;
-                    $approval->sap_is_chemical        = $details->options->is_chemical;
-                    $approval->remarks               = $details->options->remarks;
-					$approval->item_id 				 = $details->options->item_id;
-					$approval->pr_specs 			 = $details->options->pr_specs;
-                    $approval->sap_cc_code     		 = $details->options->sap_cc_code;
-                    $approval->sap_cc_fname          = $details->options->sap_cc_fname;
-                    $approval->pr_uom            	 = $details->options->sap_uom_id;
-                    $approval->budget_remaining_log  = $details->options->budget_remaining_log;
-                    $approval->price_to_download     = $details->options->price_actual;
-                    $approval->actual_gr             = date('Y-m-d',strtotime($details->options->plan_gr));
-                    $approval->fyear                 = date('Y');
-                    $approval->budget_reserved       = $budget_reserved;
-                    // $approval->asset_no              = $details->options->asset_code."JE".str_pad($i, 3, '0', STR_PAD_LEFT);
-                    $approval->sap_track_no          = ApprovalMaster::getNewSapTrackingNo(3,$user->department_id,$approval_no,$i);
-                    $am->details()->save($approval);
-                    $i++;
+                if ($expense->budget_reserved + $details->options->price_actual < $expense->budget_plan) {
+                    $expense->budget_reserved += $details->options->price_actual;
+                    $budget_reserved = $details->options->price_actual;
+                } else {
+                    $budget_reserved = $expense->budget_plan - $expense->budget_reserved;
+                    $expense->budget_reserved = $expense->budget_plan;
+                    $expense->is_closed = 1;
                 }
 
-				// Simpan approver user
-                $approvals = Approval::where('department',$user->department->department_code)->first();
+                $expense->update();
 
-				if(empty($approvals)){
-					$res = [
-                            'title' => 'Error',
-                            'type' => 'error',
-                            'message' => 'There is no approval for your department'
-                        ];
-				}else{
-                    $approval_dtl 	 = ApprovalDtl::where('approval_id',$approvals->id)->get();
+                $approval                        = new ApprovalDetail;
+                $approval->budget_no             = $details->options->budget_no;
+                $approval->project_name          = $details->name;
+                $approval->actual_qty            = $details->options->qty_actual;
+                $approval->actual_price_user     = $details->price;
+                $approval->sap_account_code      = $details->options->sap_account_code;
+                $approval->sap_account_text		 = $details->options->sap_account_text;
+                $approval->sap_is_chemical        = $details->options->is_chemical;
+                $approval->remarks               = $details->options->remarks;
+                $approval->item_id 				 = $details->options->item_id;
+                $approval->pr_specs 			 = $details->options->pr_specs;
+                $approval->sap_cc_code     		 = $details->options->sap_cc_code;
+                $approval->sap_cc_fname          = $details->options->sap_cc_fname;
+                $approval->pr_uom            	 = $details->options->sap_uom_id;
+                $approval->budget_remaining_log  = $details->options->budget_remaining_log;
+                $approval->price_to_download     = $details->options->price_actual;
+                $approval->actual_gr             = date('Y-m-d',strtotime($details->options->plan_gr));
+                $approval->fyear                 = date('Y');
+                $approval->budget_reserved       = $budget_reserved;
+                // $approval->asset_no              = $details->options->asset_code."JE".str_pad($i, 3, '0', STR_PAD_LEFT);
+                $approval->sap_track_no          = ApprovalMaster::getNewSapTrackingNo(3,$user->department_id,$approval_no,$i);
+                $am->details()->save($approval);
+                $i++;
+            }
 
-                    foreach($approval_dtl as $app_dtl){
-                        $approver_user = new ApproverUser();
-                        $approver_user->approval_master_id  = $am->id;
-                        $approver_user->approval_detail_id  = $app_dtl->id;
-                        $approver_user->user_id  			= $app_dtl->user_id;
-                        $approver_user->save();
-                    }
-					$res = [
-                            'title' => 'Success',
-                            'type' => 'success',
-                            'message' => 'Data has been inserted'
-                        ];
-				   Cart::instance('expense')->destroy();
-				}
-            });
-         return redirect()
-                            ->route('approval-expense.ListApproval')
-                            ->with($res);
+            // Simpan approver user
+            $approvals = Approval::where('department', $user->department->department_code)->first();
+
+            if(empty($approvals)){
+                $res = [
+                    'title' => 'Error',
+                    'type' => 'error',
+                    'message' => 'There is no approval for your department'
+                ];
+            }else{
+                $approval_dtl 	 = $approvals->details;
+
+                foreach($approval_dtl as $app_dtl){
+                    $approver_user = new ApproverUser();
+                    $approver_user->approval_master_id  = $am->id;
+                    $approver_user->approval_detail_id  = $app_dtl->id;
+                    $approver_user->user_id  			= $app_dtl->user_id;
+                    $approver_user->save();
+                }
+                $res = [
+                    'title' => 'Success',
+                    'type' => 'success',
+                    'message' => 'Data has been inserted'
+                ];
+                Cart::instance('expense')->destroy();
+            }
+        });
+
+        return redirect()->route('approval-expense.ListApproval')
+                ->with($res);
     }
 
     public function ListApprovalUnvalidated()
@@ -271,103 +270,120 @@ class ApprovalExpenseController extends Controller
 
     public function getApprovalExpense($status)
     {
-        $type 	= 'ex';
+        $type = "ex";
         $user = auth()->user();
+
         $approval_expense = ApprovalMaster::with('departments', 'details')
                             ->where('budget_type', 'like', 'ex%');
 
-        $level = ApprovalDtl::where('user_id', $user->id)->first();
+        $levels = DB::table('approval_dtls AS ad')->select('ad.status_to_approve', 'a.department')
+            ->leftJoin('approvals AS a', 'a.id', '=', 'ad.approval_id')
+            ->where('ad.user_id', $user->id)
+            ->get();
 
         if(\Entrust::hasRole('user')) {
-            $approval_expense->where('created_by',$user->id);
+            $approval_expense = $approval_expense->where('created_by',$user->id);
         } elseif (\Entrust::hasRole(['department-head', 'budget', 'gm', 'director'])) {
-            $approval_expense->whereHas('approver_user',function($query) use($user) {
-                $query->where('user_id', $user->id );
+            $approval_expense->whereHas('approverUsers',function($query) use($user) {
+                $query->where('user_id', $user->id )
+                    ->where('is_approve', 0);
+            });
+        } elseif (\Entrust::hasRole('purchasing')) {
+            $approval_expense->whereDoesntHave('approverUsers',function($query) use($user) {
+                $query->where('is_approve', 0);
             });
         }
 
-        if (!empty($level)) {
+        if ($levels->count()) {
+            if($status == 'need_approval'){
+                $query = '';
 
-            if($level->level==1){
-                if($status == 'need_approval'){
-                    $approval_expense->where('status','0');
+                $levels = $levels->reject(function ($value, $key) {
+                    return $value->department == null;
+                })->values();
+
+                foreach($levels as $index => $level) {
+                    if ($index == 0) {
+                        $query .= "(";
+                    }
+
+                    $query .= " (`department` = '$level->department' AND `status` = $level->status_to_approve) ";
+
+                    if ($index == $levels->count() - 1) {
+                        $query .= ")";
+                    } else {
+                        $query .= "OR";
+                    }
                 }
-            }elseif($level->level==2){
-                if($status == 'need_approval'){
-                    $approval_expense->where('status','1');
-                }
-            }elseif($level->level>=3){
-                if($status == 'need_approval'){
-                    $approval_expense->where('status','2')->orWhere('status','3');
-                }
-            }elseif($level->level>=4){
-                if($status == 'need_approval'){
-                    $approval_expense->where('status','2')->orWhere('status','3');
+
+                if ($query != '') {
+                    $approval_expense->whereRaw($query);
                 }
             }
         }
 
         $approval_expense = $approval_expense->get();
+
         return DataTables::of($approval_expense)
-        ->rawColumns(['action'])
+            ->rawColumns(['action'])
 
-        ->addColumn("action", function ($approval_expense) use ($type, $status){
-            if($status!='need_approval'){
+            ->addColumn("action", function ($approval_expense) use ($type, $status){
+                if($status!='need_approval'){
 
-                if(\Entrust::hasRole('user')) {
-                    return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/ex/'.$approval_expense->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+                    if(\Entrust::hasRole('user')) {
+                        return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/ex/'.$approval_expense->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
 
-                        <a href="#" onclick="printApproval(&#39;'.$approval_expense->approval_number.'&#39;)" class="btn btn-primary" ><span class="glyphicon glyphicon-print" aria-hidden="true"></span></a>
+                            <a href="#" onclick="printApproval(&#39;'.$approval_expense->approval_number.'&#39;)" class="btn btn-primary" ><span class="glyphicon glyphicon-print" aria-hidden="true"></span></a>
 
-                        <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$approval_expense->id.')"><i class="mdi mdi-close"></i></button>
-                        <form action="'.route('approval_expense.delete', $approval_expense->id).'" method="POST" id="form-delete-'.$approval_expense->id .'" style="display:none">
-                            '.csrf_field().'
-                            <input type="hidden" name="_method" value="DELETE">
-                        </form>';
-                }elseif(\Entrust::hasRole('budget')) {
-                    return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/ex/'.$approval_expense->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a><a href="#" class="btn btn-danger" onclick="cancelApproval(&#39;'.$approval_expense->approval_number.'&#39;);return false;"><span class="glyphicon glyphicon-remove"aria-hidden="true"></span></a></div>';
+                            <button class="btn btn-danger btn-xs" data-toggle="tooltip" title="Hapus" onclick="on_delete('.$approval_expense->id.')"><i class="mdi mdi-close"></i></button>
+                            <form action="'.route('approval_expense.delete', $approval_expense->id).'" method="POST" id="form-delete-'.$approval_expense->id .'" style="display:none">
+                                '.csrf_field().'
+                                <input type="hidden" name="_method" value="DELETE">
+                            </form>';
+                    }elseif(\Entrust::hasRole('budget')) {
+                        return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="'.url('approval/ex/'.$approval_expense->approval_number).'" class="btn btn-info"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a><a href="#" class="btn btn-danger" onclick="cancelApproval(&#39;'.$approval_expense->approval_number.'&#39;);return false;"><span class="glyphicon glyphicon-remove"aria-hidden="true"></span></a></div>';
+                    }else{
+                        return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a></div>";
+                    }
                 }else{
-                    return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a></div>";
+                    // return "else";
+                    //<a  href='#' onclick='javascript:validateApproval(&#39;$approval_expense->approval_number&#39;);return false;' class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a>
+                    if(\Entrust::hasRole('user')) {
+                        return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/unvalidate/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                    } else {
+                        return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/unvalidate/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"validateApproval('$approval_expense->approval_number');return false;\" class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
+                    }
                 }
-            }else{
-                // return "else";
-				//<a  href='#' onclick='javascript:validateApproval(&#39;$approval_expense->approval_number&#39;);return false;' class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a>
-                if(\Entrust::hasRole('user')) {
-                    return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/unvalidate/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
-                } else {
-                    return "<div id='$approval_expense->approval_number' class='btn-group btn-group-xs' role='group' aria-label='Extra-small button group'><a href='".url('approval/ex/unvalidate/'.$approval_expense->approval_number)."' class='btn btn-info'><span class='glyphicon glyphicon-eye-open' aria-hiden='true'></span></a><a href=\"#\" onclick=\"validateApproval('$approval_expense->approval_number');return false;\" class='btn btn-success'><span class='glyphicon glyphicon-ok' aria-hiden='true'></span></a><a href='#' class='btn btn-danger' onclick='cancelApproval(&#39;".$approval_expense->approval_number."&#39;);return false;'><span class='glyphicon glyphicon-remove' aria-hiden='true'></span></a></div>";
-                }
-            }
-        })
-
-        ->editColumn("total", function ($approvals) {
-                return number_format($approvals->total);
             })
-        ->editColumn("status", function ($approvals){
-            if ($approvals->status == '0') {
-                return "User Created";
-            }elseif ($approvals->status == '1') {
-                return "Validasi Budget";
-            }elseif ($approvals->status == '2') {
-                return "Approved by Dept. Head";
-            }elseif ($approvals->status == '3') {
-                return "Approved by GM";
-            }elseif ($approvals->status == '4') {
-                return "Approved by Director";
-            }elseif ($approvals->status == '-1') {
-                return "Canceled on Quotation Validation";
-            }elseif ($approvals->status == '-2') {
-                return "Canceled Dept. Head Approval";
-            }else{
-                return "Canceled on Group Manager Approval";
-            }
-        })
 
-        ->addColumn("overbudget_info", function ($approvals) {
-            return $approvals->status < 0 ? 'Canceled' : ($approvals->is_over ? 'Overbudget exist' : 'All underbudget');
-        })
+            ->editColumn("total", function ($approvals) {
+                    return number_format($approvals->total);
+                })
+            ->editColumn("status", function ($approvals){
+                if ($approvals->status == '0') {
+                    return "User Created";
+                }elseif ($approvals->status == '1') {
+                    return "Validasi Budget";
+                }elseif ($approvals->status == '2') {
+                    return "Approved by Dept. Head";
+                }elseif ($approvals->status == '3') {
+                    return "Approved by GM";
+                }elseif ($approvals->status == '4') {
+                    return "Approved by Director";
+                }elseif ($approvals->status == '-1') {
+                    return "Canceled on Quotation Validation";
+                }elseif ($approvals->status == '-2') {
+                    return "Canceled Dept. Head Approval";
+                }else{
+                    return "Canceled on Group Manager Approval";
+                }
+            })
 
-        ->toJson();
+            ->addColumn("overbudget_info", function ($approvals) {
+                return $approvals->status < 0 ? 'Canceled' : ($approvals->is_over ? 'Overbudget exist' : 'All underbudget');
+            })
+
+            ->toJson();
     }
 
     public function DetailApproval($approval_number)
