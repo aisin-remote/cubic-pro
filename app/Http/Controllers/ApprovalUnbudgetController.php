@@ -201,9 +201,11 @@ class ApprovalUnbudgetController extends Controller
         if(\Entrust::hasRole('user')) {
             $approval_ub->where('created_by',$user->id);
         } elseif (\Entrust::hasRole(['department-head', 'budget', 'gm', 'director'])) {
-            $approval_ub->whereHas('approverUsers',function($query) use($user) {
-                $query->where('user_id', $user->id )
-                    ->where('is_approve', 0);
+            $approval_ub->whereHas('approverUsers',function($query) use($user, $status) {
+                $query->where('user_id', $user->id );
+                if ($status == 'need_approval') {
+                    $query->where('is_approve', 0);
+                }
             });
         } elseif (\Entrust::hasRole('purchasing')) {
             $approval_ub->whereDoesntHave('approverUsers',function($query) use($user) {
