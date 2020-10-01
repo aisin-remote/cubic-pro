@@ -125,9 +125,10 @@ class UploadPoController extends Controller
     public function export(Request $request)
     {
         $pos = DB::table('approval_masters')
-                    ->select('approval_details.id as approval_detail_id','approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date','upload_purchase_orders.quotation','upload_purchase_orders.pr_receive')
+                    ->select('approval_details.id as approval_detail_id','approval_masters.approval_number', 'approval_details.remarks', 'approval_details.sap_vendor_code', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date','upload_purchase_orders.quotation','upload_purchase_orders.pr_receive', 'sap_vendors.vendor_fname')
                     ->Join('approval_details', 'approval_details.approval_master_id','=', 'approval_masters.id')
                     ->leftJoin('upload_purchase_orders', 'approval_details.id', '=', 'upload_purchase_orders.approval_detail_id')
+                    ->leftJoin('sap_vendors', 'approval_details.sap_vendor_code', '=', 'sap_vendors.vendor_code')
                     ->where('approval_masters.status','4');
 
         if($request->interval){
@@ -151,6 +152,8 @@ class UploadPoController extends Controller
                 'PR Receive' => $po->pr_receive,
                 'PO Number' => $po->po_number,
                 'PO Date' => $po->po_date && $po->po_date != '0000-00-00' ? date('Y-m-d', strtotime($po->po_date)) : '',
+                'Vendor Code' => $po->sap_vendor_code,
+                'Vendor Name' => $po->vendor_fname,
                 'Quotation' => $po->quotation,
             ];
         }
