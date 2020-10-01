@@ -397,7 +397,7 @@ class Dashboard2Controller extends Controller
         $departments = $request->departments ? $request->departments : [];
 
         // total capex plan by department
-        $capex = Capex::selectRaw('sum(budget_plan) total, MONTH(plan_gr) month')
+        $capex = Capex::selectRaw('sum(budget_plan) total, SUBSTRING(budget_no, 11, 2) month')
             ->whereIn('department', $departments)
             ->where(DB::raw('SUBSTRING(budget_no, 4, 2)'), substr($period, -2))
             ->where('is_revised', $type)
@@ -405,7 +405,7 @@ class Dashboard2Controller extends Controller
             ->get()
             ->keyBy('month');
 
-        $expense = Expense::selectRaw('sum(budget_plan) total, MONTH(plan_gr) month')
+        $expense = Expense::selectRaw('sum(budget_plan) total, SUBSTRING(budget_no, 11, 2) month')
             ->whereIn('department', $departments)
             ->where(DB::raw('SUBSTRING(budget_no, 4, 2)'), substr($period, -2))
             ->where('is_revised', $type)
