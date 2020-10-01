@@ -112,7 +112,7 @@ class UploadPoController extends Controller
                     return $po->pr_receive ? date('d-M-Y',strtotime($po->pr_receive)) : null;
             })
             ->editColumn("po_date", function ($po) {
-                    return $po->po_date ? date('d-M-Y',strtotime($po->po_date)) : null;
+                return $po->po_date && $po->po_date != '0000-00-00' ? date('d-M-Y',strtotime($po->po_date)) : null;
             })
             ->toJson();
     }
@@ -150,19 +150,20 @@ class UploadPoController extends Controller
                 'User Create PR Date' => $po->created_at,
                 'PR Receive' => $po->pr_receive,
                 'PO Number' => $po->po_number,
-                'PO Date' => $po->po_date,
+                'PO Date' => $po->po_date && $po->po_date != '0000-00-00' ? date('Y-m-d', strtotime($po->po_date)) : '',
                 'Quotation' => $po->quotation,
             ];
         }
 
+        ob_end_clean();
+        ob_start();
         return Excel::create('Data Input PO', function($excel) use ($array){
-            $excel->sheet('Sheetname', function($sheet) use ($array) {
+            $excel->sheet('Sheet 1', function($sheet) use ($array) {
 
                 $sheet->fromArray($array);
 
             });
-        })->download('csv');
-
+        })->export('xlsx');
     }
 
     public function xedit(Request $request)
