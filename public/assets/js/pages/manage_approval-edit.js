@@ -57,7 +57,7 @@ function on_add(){
   $('#empty-row').remove();
   var num = $('#table-details-appr tbody tr').length;
 	  num = parseInt(num) + 1;
-  row_length = row_length + 1; 
+  row_length = row_length + 1;
 	name = checkLevel(num);
   //console.log(row_length);
 
@@ -66,27 +66,36 @@ function on_add(){
         '<td>'+
         '<div class="form-group">' +
         '<select name="level_approval[]" class="input-sm select-level" required="required" data-placeholder="Level" data-allow-clear="true"></select>'+
-        '<span class="help-block"></span>' +
         '</div>'+
         '</td>' +
         '<td>'+
         '<div class="form-group">' +
         '<select name="user[]" class="input-sm select-pos" required="required" data-placeholder="Choose User"></select>'+
-        '<span class="help-block"></span>' +
         '</div>'+
         '</td>' +
+        '<td>' +
+            '<div class="form-group">' +
+                '<select class="input-sm select-pos" name="status_to_approve[]" data-placeholder="Choose Status">' +
+                    '<option value="0">User Created</option>' +
+                    '<option value="1">Validasi Budget</option>' +
+                    '<option value="2">Approved by Dept. Head</option>' +
+                    '<option value="3">Approved by GM</option>' +
+                    '<option value="4">Approved by Director</option>' +
+                '</select>' +
+            '</div>' +
+        '</td>' +
         '</tr>';
-    
+
   $('#table-details-appr').append(table);
 
   $('.select-pos').select2({
     data: arr_pos,
-    
+
   });
 
   $('.select-level').select2({
     data: arr_pos_level,
-    
+
   });
 
   $('.number').autoNumeric();
@@ -106,7 +115,7 @@ function checkLevel(level)
 	}else{
 		name = "";
 	}
-	
+
 	return name;
 }
 $('#table-details-appr').on('click', '.removeRow', function(){

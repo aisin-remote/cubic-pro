@@ -624,11 +624,7 @@ class ApprovalController extends Controller
         return $total;
     }
 
-    public static function sumBudgetActual($budget_type,
-                                            $filter_date,
-                                            $group_name =[],
-                                            $group_type = 'division',
-                                            $thousands = 1000000000, $rounded = 2)
+    public static function sumBudgetActual($budget_type, $filter_date, $group_name =[], $group_type = 'division', $thousands = 1000000000, $rounded = 2)
     {
         $total = 0.0;
         $arr_budget_type = is_array($budget_type) ? $budget_type :
@@ -836,63 +832,90 @@ class ApprovalController extends Controller
 		try{
 
 			 DB::transaction(function() use ($request){
-				 $user = auth()->user();
-                 $can_approve   = $this->can_approve($request->approval_number);
+                $user = auth()->user();
+                $can_approve   = $this->can_approve($request->approval_number);
 
-				 if($can_approve > 0){
-                     $dept          = ApprovalMaster::where('approval_number', $request->approval_number)->first();
-                     $details       = ApprovalDetail::where('approval_master_id', $dept->id)->first();
-                     $approvals 	= Approval::where('department',$dept->department)->first();
-					 $highestLevel  = ApprovalDtl::where('approval_id',$approvals->id)->orderBy('level','DESC')->first();
-                     $approverLevel = ApprovalDtl::where('approval_id',$approvals->id)->where('user_id',$user->id)->first();
-                     $count_approve = DB::table('approver_users')->where('approval_master_id', $approvals->id)->count();
+				if($can_approve > 0){
+                    $approvalMaster          = ApprovalMaster::where('approval_number', $request->approval_number)->first();
+                    $details = $approvalMaster->details;
+                    $approval = Approval::where('department',$approvalMaster->department)->first();
+                    $approverLevel = $approval->details()->where('user_id', $user->id)->first();
 
-					 if(!empty($approverLevel)){
+                    if (!$approverLevel) {
+                        throw new \Exception('Cannot make approval, Approver level in approval is undefined');
+                    }
 
-						 $approval_master = ApprovalMaster::where('approval_number',$request->approval_number)->first();
-						 $approval_master->status = $approverLevel->level;
-                         $approval_master->save();
+                    $status = $approverLevel->level;
+                    $needOtherApprove = false;
 
-						 $approver_user   = ApproverUser::where('approval_master_id',$approval_master->id)->where('user_id',$user->id)->update(array('is_approve'=>'1','created_at'=>date('Y-m-d H:i:s')));
+                    if ($approval->is_must_all == '1') {
+                        // cek di approver user apakah ada orang lain yang perlu approve
+                        $otherApprovers = $approval->details()
+                            ->where('user_id', '!=', $user->id)
+                            ->where('level', $approverLevel->level)
+                            ->get();
 
-                         $user_approve = 4;
-						 if ($approval_master->budget_type != 'ub' && $approval_master->budget_type != 'uc' && $approval_master->budget_type != 'ue' && $approval_master->status == $user_approve) {
+                        if ($otherApprovers->count()) {
+                            foreach ($otherApprovers as $otherApprover) {
+                                $statusOtherApprover = $otherApprover->approverUsers()
+                                    ->where('approval_master_id', $approvalMaster->id)
+                                    ->first();
 
-							 foreach($approval_master->details as $detail)
-							 {
-								 $budget = $approval_master->budget_type == 'cx' ? Capex::where('budget_no',$detail->budget_no)->first() : Expense::where('budget_no',$detail->budget_no)->first();
+                                if ($statusOtherApprover->is_approve == 0) {
+                                    $status = $approvalMaster->status;
+                                    $needOtherApprove = true;
 
-                                 if(is_null($budget)){
-									$data['error']	="Master Budget No: " . $detail->budget_no." is Deleted by Finance.\nPlease Contact Finance Department";
-									return $data;
-								 }
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
-								 $budget->budget_remaining 	-= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+                    $approvalMaster->status = $status;
+                    $approvalMaster->save();
 
-								 $budget->budget_used 		+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+                    $approvalMaster->approverUsers()
+                        ->where('user_id', $user->id)
+                        ->update([
+                            'is_approve' => '1',
+                            'created_at' => date('Y-m-d H:i:s')
+                        ]);
 
-								 if ($approval_master->budget_type == 'ex') {
+                    if (!$needOtherApprove) {
+                        $user_approve = 4;
+                        $type = $approvalMaster->budget_type;
+
+                        if ($type != 'ub' && $type != 'uc' && $type != 'ue' && $approvalMaster->status == $user_approve) {
+                            foreach($approvalMaster->details as $detail) {
+                                $budget = $type == 'cx' ? $detail->capex : $detail->expense;
+
+                                if(is_null($budget)){
+                                    $data['error']	="Master Budget No: " . $detail->budget_no." is Deleted by Finance.\nPlease Contact Finance Department";
+
+                                    return $data;
+                                }
+
+                                $budget->budget_remaining 	-= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+
+                                $budget->budget_used 		+= $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+
+                                if ($approvalMaster->budget_type == 'ex') {
                                     $budget->qty_used 		+= $detail->actual_qty;
                                     $budget->qty_remaining 	= $budget->qty_plan - $budget->qty_used;
-                                 }
+                                }
 
-								 $budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
+                                $budget->status 	= $budget->budget_remaining >= 0 ? 0 : 1;
 
-								 $budget->is_closed = $budget->budget_remaining > 0 ? 0 : 1;
-                                 $budget->save();
-                                 $details->save();
-							 }
+                                $budget->is_closed = $budget->budget_remaining > 0 ? 0 : 1;
+                                $budget->save();
+                            }
 
-						 }
-
-					 }else{
-						 throw new \Exception('Cannot make approval, Approver level in approval is undefined');
-					 }
-				 }else{
+                        }
+                    }
+				} else {
 					 throw new \Exception("You can not approve this data because of this approval must be sequential or you have no priviledge");
-				 }
-
-             });
+				}
+            });
 
 			$data['success'] = 'Approval ['.$request->approval_number.'] approved.';
 
