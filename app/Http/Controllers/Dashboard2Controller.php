@@ -612,7 +612,7 @@ class Dashboard2Controller extends Controller
             $excel->sheet('Sheet 1', function($sheet) use($approvals) {
                 $sheet->fromArray($approvals->toArray());
             });
-        })->export('csv');
+        })->export('xlsx');
     }
 
     public function downloadApproval(Request $request)
@@ -860,7 +860,7 @@ class Dashboard2Controller extends Controller
             $excel->sheet('Sheet 1', function($sheet) use($capex_expenses) {
                 $sheet->fromArray($capex_expenses->toArray());
             });
-        })->export('csv');
+        })->export('xlsx');
 
     }
 }
