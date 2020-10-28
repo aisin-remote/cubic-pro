@@ -29,7 +29,6 @@ use App\ApprovalDtl;
 use App\ApprovalMaster;
 use App\ApprovalDetail;
 use Cart as Carts;
-
 use Excel;
 
 class ApprovalController extends Controller
@@ -934,7 +933,7 @@ class ApprovalController extends Controller
 				 $user = auth()->user();
                  $can_approve   = $this->can_approve($request->approval_number);
 
-				 if($can_approve > 0){
+				 if($can_approve > 0 || \Entrust::hasRole('budget') || \Entrust::hasRole('admin')){
 
                     $dept           = ApprovalMaster::where('approval_number', $request->approval_number)->first();
                     $approvals 	    = Approval::where('department',$dept->department)->first();
