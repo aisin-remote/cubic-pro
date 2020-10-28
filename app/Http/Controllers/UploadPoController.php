@@ -82,11 +82,16 @@ class UploadPoController extends Controller
 
     public function getData(Request $request)
     {
+        $notShownPo = DB::table('approver_users')->select('approval_master_id')
+            ->where('is_approve', '0')
+            ->groupBy('approval_master_id')
+            ->pluck('approval_master_id')->toArray();
+
 		$po = DB::table('approval_masters')
                     ->select('approval_details.id as approval_detail_id','approval_masters.approval_number', 'approval_details.remarks', 'approval_masters.created_at','upload_purchase_orders.po_number','upload_purchase_orders.po_date','upload_purchase_orders.quotation','upload_purchase_orders.pr_receive')
                     ->Join('approval_details', 'approval_details.approval_master_id','=', 'approval_masters.id')
                     ->leftJoin('upload_purchase_orders', 'approval_details.id', '=', 'upload_purchase_orders.approval_detail_id')
-                    ->where('approval_masters.status','4');
+                    ->whereNotIn('approval_masters.id', $notShownPo);
 
 		if($request->interval){
             $intervals = explode('-', $request->interval);
