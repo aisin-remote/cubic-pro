@@ -33,11 +33,11 @@
 						<div>
 							<h5><strong>Select parameters :</strong></h5>
 
-							<input type="radio" class="is_download" id="ready_download" name="is_downloaded" value="1"/> Ready Download (Approved by Dir)
+							<input type="radio" class="is_download" id="ready_download" name="is_downloaded" value="1"/> Ready Download (Approval process has been completed)
 							<br>
 							<input type="radio" class="is_download" id="already_download" name="is_downloaded" value="2"/> Already Download
 							<br>
-							<input type="radio" class="is_download" id="cant_download" name="is_downloaded" value="3"/> Can't Download (Not yet approved by Dir)
+							<input type="radio" class="is_download" id="cant_download" name="is_downloaded" value="3"/> Can't Download (Approval process has not been completed)
 
 							<div class="clearfix"></div>
 							<br>

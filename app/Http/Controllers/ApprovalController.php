@@ -29,6 +29,7 @@ use App\ApprovalDtl;
 use App\ApprovalMaster;
 use App\ApprovalDetail;
 use Cart as Carts;
+
 use Excel;
 
 class ApprovalController extends Controller
@@ -1213,18 +1214,20 @@ class ApprovalController extends Controller
     {
         $user = \Auth::user();
 
-        $approvals = ApprovalMaster::query()->select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
+        $approvals = ApprovalMaster::query()->select('approval_masters.id','departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
         ->join('departments', 'approval_masters.department', '=', 'departments.department_code');
 
         if ((\Entrust::hasRole('purchasing') || \Entrust::hasRole('admin')) && $status) {
-            if ($status == 4) //dir
+            if ($status == 4) //all approve
             {
                 $approvals = ApprovalMaster::query()->select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
                 ->join('departments', 'approval_masters.department', '=', 'departments.department_code')
-                ->where('status', '=', $status)
-                ->where('is_download', '=', 0);
+                ->where('is_download', '=', 0)
+                ->whereDoesntHave('approverUsers', function ($q) {
+                    $q->where('is_approve', '0');
+                });
             }
-            else if($status == 1){ // bgt
+            else if($status == 1){ // already download
                 $approvals = ApprovalMaster::query()->select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
                 ->join('departments', 'approval_masters.department', '=', 'departments.department_code')
                 ->where('is_download', '=', 1);
@@ -1233,7 +1236,9 @@ class ApprovalController extends Controller
             {
                 $approvals = ApprovalMaster::query()->select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
                 ->join('departments', 'approval_masters.department', '=', 'departments.department_code')
-                ->where('status', '<=' , $status);
+                ->whereHas('approverUsers', function ($q) {
+                    $q->where('is_approve', '0');
+                });
             }
 
         }
@@ -1264,8 +1269,14 @@ class ApprovalController extends Controller
         ->addColumn("overbudget_info", function ($approvals) {
             return $approvals->status < 0 ? 'Canceled' : ($approvals->isOverExist() ? 'Overbudget exist' : 'All underbudget');
         })
-        ->addColumn("action", function ($approvals) {
-            if ($approvals->status > 2) {
+        ->addColumn("action", function ($approvals) use($status) {
+            if ($status == '0') {
+                $approverUser = $approvals->approverUsers()->where('is_approve', '0')->first();
+
+                if (!$approverUser && $approvals->status > 0) {
+                    return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="#" onclick="printApproval(&#39;'.$approvals->approval_number.'&#39;);return false;" class="btn btn-primary"><span class="glyphicon glyphicon-print"></span></a></div>';
+                }
+            } elseif (($status == '1' || $status == '4') && $approvals->status > 0) {
                 return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="#" onclick="printApproval(&#39;'.$approvals->approval_number.'&#39;);return false;" class="btn btn-primary"><span class="glyphicon glyphicon-print"></span></a></div>';
             }
 

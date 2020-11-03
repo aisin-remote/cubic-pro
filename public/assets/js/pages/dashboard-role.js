@@ -248,6 +248,8 @@ function generateSummaryChart() {
 
             for (element in elementChartBar) {
                 $('#'+element).replaceWith($('<canvas id="'+element+'"></canvas>'));
+                var label = element == 'chart-summary-capex' ? 'Capex Summary' : 'Expense Summary';
+
                 var ctx = document.getElementById(element).getContext('2d');
 
                 new Chart(ctx, {
@@ -292,7 +294,7 @@ function generateSummaryChart() {
                     options: {
                         title: {
                             display: true,
-                            text: 'Capex Summary'
+                            text: label
                         },
                         tooltips: {
                             mode: 'index',
