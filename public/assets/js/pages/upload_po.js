@@ -43,8 +43,12 @@ $(document).ready(function(){
     }).val('').attr("placeholder", "Filter PR Receive");
 
 	$('#btn-filter').click(function(){
-        var urlDownload = $('#btn-download').attr('href') + '?interval=' + encodeURI($('#pr-receive').val());
-        $('#btn-download').attr('href', urlDownload);
+        var interval = $('#pr-receive').val().replace(/\s/g, '');
+        var urlDownload = $('#btn-download').attr('href');
+        var url = new URL(urlDownload);
+        url.searchParams.set('interval', interval);
+
+        $('#btn-download').attr('href', url.href);
 		tType.draw();
     });
 
@@ -83,9 +87,6 @@ function xeditClasser() {
         quotation.html('<a href="#" class="editable" data-type="select" data-pk="'+pk+'" data-name="quotation" data-title="Choose Status Quotation" data-value="'+quotation.text()+'" data-source="[{value: &#39;Multi&#39;, text: &#39;Multi&#39;}, {value: &#39;Single&#39;, text: &#39;Single&#39;}]">'+quotation.text()+'</a>');
 
     });
-
-
-
 }
 
 function initEditable()
