@@ -413,19 +413,22 @@ class Dashboard2Controller extends Controller
             ->get()
             ->keyBy('month');
 
-        $totalCx = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
-            ->when($type, function($q, $type) {
-                $q->whereHas('details', function($q) use($type) {
-                    $q->whereHas('capex', function($q) use($type) {
-                        $q->where('is_revised', $type);
-                    });
-                });
-            })
-            ->whereIn('department', $departments)
-            ->where('budget_type', 'cx')
-            ->where('status', '>=', '3')
-            ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
-            ->whereBetween('created_at', [$startDate, $endDate])
+        $totalCx = Capex::selectRaw('sum(ad.actual_price_user) total, SUBSTRING(capexes.budget_no, 11, 2) month')
+            ->leftJoin('approval_details as ad', 'ad.budget_no', '=', 'capexes.budget_no')
+            ->leftJoin('approval_masters as am', 'am.id', '=', 'ad.approval_master_id')
+            ->whereIn('capexes.department', $departments)
+            ->where('am.status', '>=', '3')
+            ->where('capexes.is_revised', $type)
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
+        $totalEx = Expense::selectRaw('sum(ad.actual_price_user) total, SUBSTRING(expenses.budget_no, 11, 2) month')
+            ->leftJoin('approval_details as ad', 'ad.budget_no', '=', 'expenses.budget_no')
+            ->leftJoin('approval_masters as am', 'am.id', '=', 'ad.approval_master_id')
+            ->whereIn('expenses.department', $departments)
+            ->where('am.status', '>=', '3')
+            ->where('expenses.is_revised', $type)
             ->groupBy('month')
             ->get()
             ->keyBy('month');
@@ -433,23 +436,6 @@ class Dashboard2Controller extends Controller
         $totalUc = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
             ->whereIn('department', $departments)
             ->where('budget_type', 'uc')
-            ->where('status', '>=', '3')
-            ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->groupBy('month')
-            ->get()
-            ->keyBy('month');
-
-        $totalEx = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
-            ->when($type, function($q, $type) {
-                $q->whereHas('details', function($q) use($type) {
-                    $q->whereHas('expense', function($q) use($type) {
-                        $q->where('is_revised', $type);
-                    });
-                });
-            })
-            ->whereIn('department', $departments)
-            ->where('budget_type', 'ex')
             ->where('status', '>=', '3')
             ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
             ->whereBetween('created_at', [$startDate, $endDate])
