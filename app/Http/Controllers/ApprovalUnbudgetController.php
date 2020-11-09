@@ -199,7 +199,13 @@ class ApprovalUnbudgetController extends Controller
             ->get();
 
         if(\Entrust::hasRole('user')) {
-            $approval_ub->where('created_by',$user->id);
+            $department = $user->department;
+            if ($department->separate_budget_by_user === '1') {
+                $approval_ub->where('created_by',$user->id);
+            } else {
+                $approval_ub->where('department', $department->department_code);
+            }
+
         } elseif (\Entrust::hasRole(['department-head', 'budget', 'gm', 'director'])) {
             $approval_ub->whereHas('approverUsers',function($query) use($user, $status) {
                 $query->where('user_id', $user->id );
@@ -245,7 +251,9 @@ class ApprovalUnbudgetController extends Controller
 
         return DataTables::of($approval_ub)
         ->rawColumns(['action'])
-
+        ->addColumn("created_by", function($approval_ub) {
+            return $approval_ub->user->email;
+        })
         ->addColumn("action", function ($approvalub) use ($type, $status){
             if($status!='need_approval'){
 

@@ -70,7 +70,7 @@
                            </div>
 						   <div class="form-group">
                                 <label class="control-label">Purchase Request Item Detail <span class="text-danger">*</span></label>
-								<select name="remarks" class="select2" data-tags="true" data-placeholder="Item Detail">
+								<select name="remarks" class="select2" data-tags="true" data-placeholder="Item Detail" required="required">
                                     @if ($itemcart == 'non-catalog')
                                         <option></option>
                                         @foreach ($items as $item)

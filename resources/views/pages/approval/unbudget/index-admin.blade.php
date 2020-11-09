@@ -41,11 +41,12 @@
                             <th>Total</th>
                             <th>Status</th>
                             <th>Overbudget Info</th>
+                            <th>Created By</th>
                             <th style="width: 100px">Opsi</th>
                         </tr>
                     </thead>
                 </table>
-            </div>  
+            </div>
         </div>
     </div>
 

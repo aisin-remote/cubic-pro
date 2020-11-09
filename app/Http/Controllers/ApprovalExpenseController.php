@@ -280,7 +280,12 @@ class ApprovalExpenseController extends Controller
             ->get();
 
         if(\Entrust::hasRole('user')) {
-            $approval_expense = $approval_expense->where('created_by',$user->id);
+            $department = $user->department;
+            if ($department->separate_budget_by_user === '1') {
+                $approval_expense->where('created_by',$user->id);
+            } else {
+                $approval_expense->where('department', $department->department_code);
+            }
         } elseif (\Entrust::hasRole(['department-head', 'budget', 'gm', 'director'])) {
             $approval_expense->whereHas('approverUsers',function($query) use($user, $status) {
                 $query->where('user_id', $user->id );
@@ -326,7 +331,9 @@ class ApprovalExpenseController extends Controller
 
         return DataTables::of($approval_expense)
             ->rawColumns(['action'])
-
+            ->addColumn("created_by", function($approval_expense) {
+                return $approval_expense->user->email;
+            })
             ->addColumn("action", function ($approval_expense) use ($type, $status){
                 if($status!='need_approval'){
 

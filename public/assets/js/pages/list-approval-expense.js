@@ -9,6 +9,7 @@ $(document).ready(function(){
             { data: 'total', name: 'total'},
             { data: 'status', name: 'status'},
             { data: 'overbudget_info', name: 'overbudget_info', orderable: false, searchable: false },
+            { data: 'created_by', name: 'created_by', orderable: false, searchable: false },
             { data: 'action', name: 'action', searching: false, sorting: false, class: 'text-center' }
         ],
         order: [1, 'desc'],

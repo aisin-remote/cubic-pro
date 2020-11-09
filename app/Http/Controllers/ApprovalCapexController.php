@@ -416,7 +416,12 @@ class ApprovalCapexController extends Controller
             ->get();
 
         if(\Entrust::hasRole('user')) {
-            $approval_capex->where('created_by',$user->id);
+            $department = $user->department;
+            if ($department->separate_budget_by_user === '1') {
+                $approval_capex->where('created_by',$user->id);
+            } else {
+                $approval_capex->where('department', $department->department_code);
+            }
         } elseif(\Entrust::hasRole(['department-head', 'budget', 'gm', 'director'])) {
             $approval_capex->whereHas('approverUsers',function($query) use($user, $status) {
                 $query->where('user_id', $user->id );
@@ -462,6 +467,9 @@ class ApprovalCapexController extends Controller
 
         return DataTables::of($approval_capex)
             ->rawColumns(['action'])
+            ->addColumn("created_by", function($approval_capex) {
+                return $approval_capex->user->email;
+            })
             ->addColumn("action", function ($approval_capex) use ($type, $status){ // dev-4.2.1 by Fahrul, 20171116
                 if($status!='need_approval'){
 
