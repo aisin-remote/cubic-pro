@@ -83,7 +83,7 @@ class UploadPoController extends Controller
     public function getData(Request $request)
     {
         $notShownPo = DB::table('approver_users')->select('approval_master_id')
-            ->where('is_approve', '0')
+            ->where('is_approve', '!=', '1')
             ->groupBy('approval_master_id')
             ->pluck('approval_master_id')->toArray();
 
@@ -130,7 +130,7 @@ class UploadPoController extends Controller
     public function export(Request $request)
     {
         $notShownPo = DB::table('approver_users')->select('approval_master_id')
-            ->where('is_approve', '0')
+            ->where('is_approve', '!=', '1')
             ->groupBy('approval_master_id')
             ->pluck('approval_master_id')->toArray();
 

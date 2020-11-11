@@ -1224,7 +1224,7 @@ class ApprovalController extends Controller
                 ->join('departments', 'approval_masters.department', '=', 'departments.department_code')
                 ->where('is_download', '=', 0)
                 ->whereDoesntHave('approverUsers', function ($q) {
-                    $q->where('is_approve', '0');
+                    $q->where('is_approve', '!=', '1');
                 });
             }
             else if($status == 1){ // already download
@@ -1237,7 +1237,7 @@ class ApprovalController extends Controller
                 $approvals = ApprovalMaster::query()->select('departments.department_name','approval_masters.approval_number','approval_masters.total','approval_masters.status','budget_type')
                 ->join('departments', 'approval_masters.department', '=', 'departments.department_code')
                 ->whereHas('approverUsers', function ($q) {
-                    $q->where('is_approve', '0');
+                    $q->where('is_approve', '!=', '1');
                 });
             }
 
@@ -1271,7 +1271,7 @@ class ApprovalController extends Controller
         })
         ->addColumn("action", function ($approvals) use($status) {
             if ($status == '0') {
-                $approverUser = $approvals->approverUsers()->where('is_approve', '0')->first();
+                $approverUser = $approvals->approverUsers()->where('is_approve', '!=', '1')->first();
 
                 if (!$approverUser && $approvals->status > 0) {
                     return '<div class="btn-group btn-group-xs" role="group" aria-label="Extra-small button group"><a href="#" onclick="printApproval(&#39;'.$approvals->approval_number.'&#39;);return false;" class="btn btn-primary"><span class="glyphicon glyphicon-print"></span></a></div>';
