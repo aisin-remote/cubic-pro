@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Approval;
 use Illuminate\Http\Request;
 use App\Department;
 use App\Division;
@@ -9,6 +10,7 @@ use App\Capex;
 use App\Expense;
 use App\ApprovalMaster;
 use App\ApprovalDetail;
+use App\ApproverUser;
 use Carbon\Carbon;
 use App\Period;
 use Excel;
@@ -305,6 +307,17 @@ class Dashboard2Controller extends Controller
         $startDate = date('Y-m-d', strtotime(str_replace('/', '-', $request->startDate)));
         $endDate = date('Y-m-d 23:59:59', strtotime(str_replace('/', '-', $request->endDate)));
         $departments = $request->departments ? $request->departments : [];
+        $departmentCode = auth()->user()->department->department_code;
+        $approval = Approval::where('department', $departmentCode)->first();
+        $approvalDtl = $approval->details()->where('level', '>=', 3)
+            ->orderBy('level', 'asc')
+            ->first();
+
+        if (!$approvalDtl) {
+            abort(400);
+        }
+
+        $dirId = $approvalDtl->user_id;
 
         // total capex plan by department
         $capex = Capex::select('budget_plan')
@@ -338,15 +351,22 @@ class Dashboard2Controller extends Controller
             ->sum('total');
 
         $totalUc = ApprovalMaster::select('total')
+            ->whereHas('approverUsers', function ($q) use ($dirId) {
+                $q->where('user_id', $dirId)
+                    ->where('is_approve', 1);
+            })
             ->whereIn('department', $departments)
             ->where('budget_type', 'uc')
-            ->where('status', '>=', '3')
             ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->sum('total');
 
         $totalEx = ApprovalMaster::select('total')
+            ->whereHas('approverUsers', function ($q) use ($dirId) {
+                $q->where('user_id', $dirId)
+                    ->where('is_approve', 1);
+            })
             ->when($type, function($q, $type) {
                 $q->whereHas('details', function($q) use($type) {
                     $q->whereHas('expense', function($q) use($type) {
@@ -356,16 +376,18 @@ class Dashboard2Controller extends Controller
             })
             ->whereIn('department', $departments)
             ->where('budget_type', 'ex')
-            ->where('status', '>=', '3')
             ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->sum('total');
 
         $totalUe = ApprovalMaster::select('total')
+            ->whereHas('approverUsers', function ($q) use ($dirId) {
+                $q->where('user_id', $dirId)
+                    ->where('is_approve', 1);
+            })
             ->whereIn('department', $departments)
             ->where('budget_type', 'ue')
-            ->where('status', '>=', '3')
             ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
@@ -396,6 +418,19 @@ class Dashboard2Controller extends Controller
         $endDate = date('Y-m-d 23:59:59', strtotime(str_replace('/', '-', $request->endDate)));
         $departments = $request->departments ? $request->departments : [];
 
+        $departmentCode = auth()->user()->department->department_code;
+        $approval = Approval::where('department', $departmentCode)->first();
+        $approvalDtl = $approval->details()->where('level', '>=', 3)->orderBy('level', 'asc')->first();
+
+        if (!$approvalDtl) {
+            abort(400);
+        }
+
+        $approverMasterIds = ApproverUser::where('approval_detail_id', $approvalDtl->id)
+            ->get()
+            ->pluck('approval_master_id')
+            ->toArray();
+
         // total capex plan by department
         $capex = Capex::selectRaw('sum(budget_plan) total, SUBSTRING(budget_no, 11, 2) month')
             ->whereIn('department', $departments)
@@ -417,7 +452,7 @@ class Dashboard2Controller extends Controller
             ->leftJoin('approval_details as ad', 'ad.budget_no', '=', 'capexes.budget_no')
             ->leftJoin('approval_masters as am', 'am.id', '=', 'ad.approval_master_id')
             ->whereIn('capexes.department', $departments)
-            ->where('am.status', '>=', '3')
+            ->whereIn('am.id', $approverMasterIds)
             ->where('capexes.is_revised', $type)
             ->groupBy('month')
             ->get()
@@ -427,7 +462,7 @@ class Dashboard2Controller extends Controller
             ->leftJoin('approval_details as ad', 'ad.budget_no', '=', 'expenses.budget_no')
             ->leftJoin('approval_masters as am', 'am.id', '=', 'ad.approval_master_id')
             ->whereIn('expenses.department', $departments)
-            ->where('am.status', '>=', '3')
+            ->whereIn('am.id', $approverMasterIds)
             ->where('expenses.is_revised', $type)
             ->groupBy('month')
             ->get()
@@ -436,7 +471,7 @@ class Dashboard2Controller extends Controller
         $totalUc = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
             ->whereIn('department', $departments)
             ->where('budget_type', 'uc')
-            ->where('status', '>=', '3')
+            ->whereIn('id', $approverMasterIds)
             ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('month')
@@ -446,7 +481,7 @@ class Dashboard2Controller extends Controller
         $totalUe = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
             ->whereIn('department', $departments)
             ->where('budget_type', 'ue')
-            ->where('status', '>=', '3')
+            ->whereIn('id', $approverMasterIds)
             ->where('approval_number', 'like', '%-'.substr($period, -2).'-%')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('month')
