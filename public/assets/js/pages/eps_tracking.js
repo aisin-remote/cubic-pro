@@ -1,8 +1,13 @@
-var tType;
 $(document).ready(function(){
-
-	tType = $('#table-eps_tracking').DataTable({
-		ajax: SITE_URL + '/eps_tracking/get_data',
+	var tType = $('#table-eps_tracking').DataTable({
+        ajax: {
+            url : SITE_URL + '/eps_tracking/get_data',
+            data : {
+                pr_created : function() {
+                    return $('#pr-created').val()
+                }
+            }
+        },
 		headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         columns: [
             {
@@ -160,6 +165,26 @@ $(document).ready(function(){
         drawCallback: function(){
         	$('[data-toggle="tooltip"]').tooltip();
         }
-	});
+    });
 
+    var period = $('#pr-created').val();
+
+    $('#pr-created').daterangepicker({
+        locale: {
+            format: 'YYYY/MM/DD',
+        },
+        buttonClasses: ['btn', 'btn-sm'],
+        applyClass: 'btn-success',
+        cancelClass: 'btn-default',
+    }).attr("placeholder", "Filter PR Created Date");
+
+    $('#btn-filter').on('click', function() {
+        tType.ajax.reload();
+    });
+
+    $('#btn-reset').on('click', function () {
+        $('#pr-created').val(period);
+
+        tType.ajax.reload();
+    });
 });

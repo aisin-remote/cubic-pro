@@ -26,37 +26,61 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="card-box table-responsive">
-                <table class="table table-colored table-inverse table-responsive table-small-font" id="table-eps_tracking">
-                    <thead>
-                        <tr>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">Approval Number</th>
-                            <th colspan="6" class="text-center" style="vertical-align:middle">Status PR</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">Item Number</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">Name Of Good</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">Quantity</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">UoM</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">Unit Price (Rp.)</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">Supplier Name</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">PO Date</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">PO Number</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">User Request</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">GR No</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">GR Date</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">Qty Receive</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">Qty Outstanding</th>
-                            <th rowspan="2" class="text-center" style="vertical-align:middle">Notes</th>
-                        </tr>
-                        <tr>
-                            <th class="text-center">User Create PR Date</th>
-                            <th class="text-center">Validation Budget</th>
-                            <th class="text-center">Approved By Dept. Head</th>
-                            <th class="text-center">Approved by GM</th>
-                            <th class="text-center">Approved By BOD</th>
-                            <th class="text-center">Receiving Date By Purch.</th>
-                        </tr>
-                    </thead>
-                </table>
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <form class="form-inline">
+                            <div class="form-group m-r-10">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input type="text" class="form-control" name="pr_created" placeholder="Filter PR Created Date" id="pr-created" value="{{ $periodFrom . ' - ' . $periodTo }}">
+                                </div>
+                            </div>
+                            <div class="form-group mr-10">
+                                <button class="btn btn-primary" type="button" id="btn-filter">Filter</button>
+                                <button class="btn btn-danger" type="button" id="btn-reset">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+                    {{-- <div class="col-sm-3 text-right">
+                        <a class="btn btn-success">Export To Excel</a>
+                        <br><br>
+                    </div> --}}
+                </div>
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table table-colored table-inverse table-responsive table-small-font" id="table-eps_tracking">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">Approval Number</th>
+                                    <th colspan="6" class="text-center" style="vertical-align:middle">Status PR</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">Item Number</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">Name Of Good</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">Quantity</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">UoM</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">Unit Price (Rp.)</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">Supplier Name</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">PO Date</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">PO Number</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">User Request</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">GR No</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">GR Date</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">Qty Receive</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">Qty Outstanding</th>
+                                    <th rowspan="2" class="text-center" style="vertical-align:middle">Notes</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">User Create PR Date</th>
+                                    <th class="text-center">Validation Budget</th>
+                                    <th class="text-center">Approved By Dept. Head</th>
+                                    <th class="text-center">Approved by GM</th>
+                                    <th class="text-center">Approved By BOD</th>
+                                    <th class="text-center">Receiving Date By Purch.</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
