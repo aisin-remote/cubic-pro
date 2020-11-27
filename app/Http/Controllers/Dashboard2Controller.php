@@ -426,10 +426,10 @@ class Dashboard2Controller extends Controller
             abort(400);
         }
 
-        $approverMasterIds = ApproverUser::where('approval_detail_id', $approvalDtl->id)
-            ->get()
-            ->pluck('approval_master_id')
-            ->toArray();
+        $approverMasterIds = DB::table('approver_users')->select('approval_master_id')
+            ->where('user_id', $approvalDtl->user_id)
+            ->where('is_approve', '1')
+            ->get()->pluck('approval_master_id')->toArray();
 
         // total capex plan by department
         $capex = Capex::selectRaw('sum(budget_plan) total, SUBSTRING(budget_no, 11, 2) month')
