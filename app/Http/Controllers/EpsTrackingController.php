@@ -86,7 +86,7 @@ class EpsTrackingController extends Controller
 
         if ($user->hasRole('department-head') || $user->hasRole('user')) {
             $deptCode = $user->department->department_code;
-            if (!$search) {
+            if (!$search && !$prCreated) {
                 $query .= "WHERE";
             } else {
                 $query .= "AND";
