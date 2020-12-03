@@ -650,11 +650,13 @@ class Dashboard2Controller extends Controller
                     ->where('approval_number', 'like', '%-'.substr($period, -2).'-%');
             })
             ->when($type, function($q, $type) {
-                $q->whereHas('expense', function($q) use($type) {
-                    $q->where('is_revised', $type);
-                })
-                ->orWhereHas('capex', function($q) use($type) {
-                    $q->where('is_revised', $type);
+                $q->where(function ($q) use ($type) {
+                    $q->whereHas('expense', function($q) use($type) {
+                        $q->where('is_revised', $type);
+                    })
+                    ->orWhereHas('capex', function($q) use($type) {
+                        $q->where('is_revised', $type);
+                    });
                 });
             })
             ->whereBetween('created_at', [$startDate, $endDate])
