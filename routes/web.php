@@ -174,6 +174,7 @@ Route::middleware('auth')->group(function(){
 	// EPS Tracking ARK. Ipan Herdiansyah
 	Route::group(['middleware' => 'permission:eps-tracking'], function() {
 		Route::get('eps_tracking/get_data', 'EpsTrackingController@getData');
+		Route::get('eps_tracking/export', 'EpsTrackingController@export')->name('eps_tracking.export');
 		Route::resource('eps_tracking', 'EpsTrackingController');
 	});
 	// media
