@@ -180,6 +180,11 @@ $(document).ready(function(){
 
     $('#btn-filter').on('click', function() {
         tType.ajax.reload();
+        var exportUrl = $('#btn-export').attr('href');
+        var url = new URL(exportUrl);
+        url.searchParams.set('pr_created', $('#pr-created').val());
+
+        $('#btn-export').attr('href', url);
     });
 
     $('#btn-reset').on('click', function () {

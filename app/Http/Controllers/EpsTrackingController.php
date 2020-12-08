@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use App\ApprovalDetail;
 use Illuminate\Http\Request;
-use App\EpsTracking;
-use App\Department;
 use App\Http\DataTables\CollectionCustom;
 use App\Period;
 use DataTables;
 use DB;
-
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Excel;
 
 class EpsTrackingController extends Controller
 {
@@ -116,5 +113,51 @@ class EpsTrackingController extends Controller
         }
 
         return response()->json($result);
+    }
+
+    public function export(Request $request)
+    {
+        $prCreated = $request->pr_created;
+
+        if ($prCreated){
+            $intervals = explode('-', $prCreated);
+
+            if (count($intervals) > 1) {
+                $from = date('Y-m-d', strtotime(trim($intervals[0])));
+                $to = date('Y-m-d', strtotime(trim($intervals[1])));
+            }
+		}
+
+        $user  = auth()->user();
+
+        $query = "SELECT am.approval_number as `APPROVAL NUMBER`, ad.project_name as `PROJECT NAME`, am.created_at as `PR CREATED AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 1 limit 1) LIMIT 1) AS `BUDGET APPROVE AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 2 limit 1) LIMIT 1) AS `DEPT HEAD APPROVE AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 3 limit 1) LIMIT 1) AS `GM APPROVE AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 4 limit 1) LIMIT 1) AS `DIR. APPROVE AT`, upo.pr_receive as `PR RECEIVED AT`, upo.po_date as `PO DATE`, upo.po_number as `PO NUMBER`, i.item_code as `ITEM CODE`, i.item_description as `ITEM DESCRIPTION`, ad.actual_qty as `ACTUAL QTY`, ad.pr_uom as `PR UOM`, ad.actual_price_user as `ACTUAL PRICE USER`, v.vendor_fname as `SUPPLIER NAME`, u.name as `USER NAME`, gcd.gr_no as `GR NO.`, gcd.created_at as `GR DATE`, gcd.qty_receive as `QTY RECEIVE`, gcd.qty_outstanding as `QTY OUTSTANDING`, gcd.notes as `NOTES` FROM approval_details ad LEFT OUTER JOIN approval_masters am ON ad.approval_master_id = am.id LEFT OUTER JOIN upload_purchase_orders upo ON ad.id = upo.approval_detail_id LEFT OUTER JOIN items i on ad.item_id = i.id LEFT OUTER JOIN sap_vendors v ON v.vendor_code = ad.sap_vendor_code LEFT OUTER JOIN users u on am.created_by = u.id LEFT OUTER JOIN gr_confirm_details gcd ON ad.id = gcd.approval_detail_id ";
+
+        if ($prCreated){
+            $intervals = explode('-', $prCreated);
+
+            $query .= "WHERE (am.created_at > '$from' && am.created_at < '$to') ";
+		}
+
+        if ($user->hasRole('department-head') || $user->hasRole('user')) {
+            $deptCode = $user->department->department_code;
+            if (!$prCreated) {
+                $query .= "WHERE";
+            } else {
+                $query .= "AND";
+            }
+
+            $query .= " am.department = '$deptCode' ";
+        }
+
+        $eps_tracking  = DB::select($query);
+        $data = json_decode(json_encode($eps_tracking), true);
+
+        ob_end_clean();
+        ob_start();
+        return Excel::create('EPS Tracking', function($excel) use ($data){
+            $excel->sheet('EPS Tracking', function($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->export('xlsx');
     }
 }

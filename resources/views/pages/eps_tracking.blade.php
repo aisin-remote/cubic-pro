@@ -29,6 +29,7 @@
             <div class="card-box">
                 <div class="row">
                     <div class="col-sm-9">
+                        <label>Filter PR Create Date</label>
                         <form class="form-inline">
                             <div class="form-group m-r-10">
                                 <div class="input-group">
@@ -42,10 +43,13 @@
                             </div>
                         </form>
                     </div>
-                    {{-- <div class="col-sm-3 text-right">
-                        <a class="btn btn-success">Export To Excel</a>
+                    <div class="col-sm-3 text-right">
+                        <div class="row">
+                            <label>&nbsp;</label>
+                        </div>
+                        <a href="{{ route('eps_tracking.export') }}" class="btn btn-success" id="btn-export">Export To Excel</a>
                         <br><br>
-                    </div> --}}
+                    </div>
                 </div>
                 <div class="row">
                     <div class="table-responsive">
