@@ -37,14 +37,14 @@ class ApprovalExpenseController extends Controller
             foreach ($expenses as $expense) {
 
                 $result['data'][] = [
-                                    'budget_no'         => $expense->options->budget_no.'<input type="hidden" class="checklist">',
-                                    'project_name'      => $expense->name,
-                                    'price_remaining'   => number_format($expense->price),
-                                    'pr_specs'          => $expense->options->qty_actual,
-                                    'plan_gr'           => Carbon::parse($expense->options->plan_gr)->format('d M Y'),
-                                    'option' => '
-                                        <button class="btn btn-danger btn-xs btn-bordered" onclick="onDelete(\''.$expense->rowId.'\')" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-close"></i></button>'
-                                ];
+                    'budget_no'         => $expense->options->budget_no.'<input type="hidden" class="checklist">',
+                    'project_name'      => $expense->name,
+                    'price_remaining'   => number_format($expense->price),
+                    'pr_specs'          => $expense->options->qty_actual,
+                    'plan_gr'           => Carbon::parse($expense->options->plan_gr)->format('d M Y'),
+                    'option' => '
+                        <button class="btn btn-danger btn-xs btn-bordered" onclick="onDelete(\''.$expense->rowId.'\')" data-toggle="tooltip" title="Hapus"><i class="mdi mdi-close"></i></button>'
+                ];
 
 
             }
@@ -68,7 +68,7 @@ class ApprovalExpenseController extends Controller
         $sap_costs          = SapCostCenter::find($request->sap_cos_center_id);
         $sap_uoms           = SapUom::find($request->sap_uom_id);
 
-        $item 				= Item::firstOrNew(['item_description' => $request->remarks]);
+        $item 				= new Item();
         $item->item_description = $request->remarks;
         $item->item_category_id = '1';
         $item->item_code = 'XXX';
@@ -105,7 +105,7 @@ class ApprovalExpenseController extends Controller
                 'is_chemical'			=> $request->asset_category,
             ]
         ]);
-		Carts::where('item_id',$item->id)->where('user_id',auth()->user()->id)->delete();
+		// Carts::where('item_id',$item->id)->where('user_id',auth()->user()->id)->delete();
 
         $res = [
 					'title' => 'Success',
