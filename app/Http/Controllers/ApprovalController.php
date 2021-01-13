@@ -1084,113 +1084,113 @@ class ApprovalController extends Controller
                  'title' => 'Error',
                  'type' => 'error',
                  'message' => 'Approval ['.$approval_number.'] doesn\'t exist.'
-             ];
+            ];
 
-             return redirect()
-                 ->route('dashboard')
-                 ->with($res);
-         }
-         $dept = $approval->departments;
-         $appDtl = $dept->approval->details()
-             ->where('level', '2')
-             ->first();
+            return redirect()
+                ->route('dashboard')
+                ->with($res);
+        }
+        $dept = $approval->departments;
+        $appDtl = $dept->approval->details()
+            ->where('level', '2')
+            ->first();
 
-         $approverUser = $approval->approver_user()
-             ->where('user_id', $appDtl->user_id)
-             ->where('is_approve', '1')
-             ->first();
+        $approverUser = $approval->approverUsers()
+            ->where('user_id', $appDtl->user_id)
+            ->where('is_approve', '1')
+            ->first();
 
-         if (!$approverUser) {
-             $res = [
-                 'title' => 'Error',
-                 'type' => 'error',
-                 'message' => 'Could not print Approval ['.$approval_number.']: Dept. Head Approval required.'
-             ];
+        if (!$approverUser) {
+            $res = [
+                'title' => 'Error',
+                'type' => 'error',
+                'message' => 'Could not print Approval ['.$approval_number.']: Dept. Head Approval required.'
+            ];
 
 
-             if(strtolower($approval->budget_type)=="cx") {
-                 return redirect()
-                     ->route('approval-capex.ListApproval')
-                     ->with($res);
-             }else if(strtolower($approval->budget_type) == "ex") {
-                 return redirect()
-                     ->route('approval-expense.ListApproval')
-                     ->with($res);
-             }
-         }
+            if(strtolower($approval->budget_type)=="cx") {
+                return redirect()
+                    ->route('approval-capex.ListApproval')
+                    ->with($res);
+            }else if(strtolower($approval->budget_type) == "ex") {
+                return redirect()
+                    ->route('approval-expense.ListApproval')
+                    ->with($res);
+            }
+        }
 
-         switch ($approval->budget_type) {
-             case 'cx':
-                 $overbudget = ApprovalMaster::get_budgetInfo("cx","all",$approval_number);
-                 $overbudget_info = "Capex ".$overbudget."";
+        switch ($approval->budget_type) {
+            case 'cx':
+                $overbudget = ApprovalMaster::get_budgetInfo("cx","all",$approval_number);
+                $overbudget_info = "Capex ".$overbudget."";
 
-                 $print = ApprovalDetail::selectRaw('approval_masters.*, approval_details.*, capexes.equipment_name')
-                     ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id')
-                     ->join('capexes','approval_details.budget_no','=','capexes.budget_no')
-                     ->where('approval_masters.approval_number',$approval_number)
-                     ->get();
+                $print = ApprovalDetail::selectRaw('approval_masters.*, approval_details.*, capexes.equipment_name')
+                    ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id')
+                    ->join('capexes','approval_details.budget_no','=','capexes.budget_no')
+                    ->where('approval_masters.approval_number',$approval_number)
+                    ->get();
 
-                 break;
+                break;
 
-             case 'ex':
-                 $overbudget = ApprovalMaster::get_budgetInfo("ex","all",$approval_number);
-                 $overbudget_info = "Expense ".$overbudget."";
+            case 'ex':
+                $overbudget = ApprovalMaster::get_budgetInfo("ex","all",$approval_number);
+                $overbudget_info = "Expense ".$overbudget."";
 
-                 $print = ApprovalDetail::selectRaw('approval_masters.*, approval_details.*, expenses.description as equipment_name')
-                     ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id')
-                     ->join('expenses','approval_details.budget_no','=','expenses.budget_no')
-                     ->where('approval_masters.approval_number',$approval_number)
-                     ->get();
+                $print = ApprovalDetail::selectRaw('approval_masters.*, approval_details.*, expenses.description as equipment_name')
+                    ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id')
+                    ->join('expenses','approval_details.budget_no','=','expenses.budget_no')
+                    ->where('approval_masters.approval_number',$approval_number)
+                    ->get();
 
-                 break;
+                break;
 
-             default:
-                 $overbudget_info = $approval->budget_type == "uc" ? "Unbudget Capex" : "Unbudget Expense";
+            default:
+                $overbudget_info = $approval->budget_type == "uc" ? "Unbudget Capex" : "Unbudget Expense";
 
-                 $print = DB::table('approval_details')
-                     ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id')
-                     ->Select('approval_masters.*','approval_details.*')
-                     ->where('approval_masters.approval_number',$approval_number)
-                     ->get();
+                $print = DB::table('approval_details')
+                    ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id')
+                    ->Select('approval_masters.*','approval_details.*')
+                    ->where('approval_masters.approval_number',$approval_number)
+                    ->get();
 
-                 break;
-         }
+                break;
+        }
 
-         $appVersion= 'App version = 4.3.0/ Printed by = '.\Auth::user()->name.' '.Carbon::now();
+        $appVersion= 'App version = 4.3.0/ Printed by = '.\Auth::user()->name.' '.Carbon::now();
 
-         $data  = [];
-         foreach($print as $prints) {
-              $newDate = date("M-y", strtotime($prints->budget_type == "cx" ? $prints->settlement_date : $prints->actual_gr));
-              $data[] = array(
-                 ($prints->budget_type == "uc" ? '-' : ($prints->budget_type == "ue" ? '-' : $prints->equipment_name)),
-                 $prints->pr_specs,
-                 $prints->sap_is_chemical,
-                 $prints->budget_no,
-                 $prints->sap_account_text,
-                 $prints->sap_account_code,
-                 $prints->actual_qty,
-                 $prints->pr_uom,
-                 $prints->sap_cc_code,
-                 $prints->sap_asset_no,
-                 $newDate,
-                 $prints->sap_cc_code,
-                 $prints->sap_cc_fname,
-                 $approval_number,
-                 $appVersion,
-                 $overbudget_info
-             );
-         }
-         $excel = \PHPExcel_IOFactory::load(storage_path('template/pr_output.xlsm'));
-         $excel->setActiveSheetIndex(2);
-         $objWorksheet2 	= $excel->getActiveSheet();
-         $objWorksheet2->fromArray($data,null,'A1',false,false);
+        $data  = [];
+        foreach($print as $prints) {
+            $newDate = date("M-y", strtotime($prints->budget_type == "cx" ? $prints->settlement_date : $prints->actual_gr));
+            $data[] = array(
+                ($prints->budget_type == "uc" ? '-' : ($prints->budget_type == "ue" ? '-' : $prints->equipment_name)),
+                $prints->pr_specs,
+                $prints->sap_is_chemical,
+                $prints->budget_no,
+                $prints->sap_account_text,
+                $prints->sap_account_code,
+                $prints->actual_qty,
+                $prints->pr_uom,
+                $prints->sap_cc_code,
+                $prints->sap_asset_no,
+                $newDate,
+                $prints->sap_cc_code,
+                $prints->sap_cc_fname,
+                $approval_number,
+                $appVersion,
+                $overbudget_info
+            );
+        }
+        $excel = \PHPExcel_IOFactory::load(storage_path('template/pr_output.xlsm'));
+        $excel->setActiveSheetIndex(2);
+        $objWorksheet2 	= $excel->getActiveSheet();
+        $objWorksheet2->fromArray($data,null,'A1',false,false);
 
-         $writer = new \PHPExcel_Writer_Excel2007($excel);
+        $writer = new \PHPExcel_Writer_Excel2007($excel);
 
-         // Save the file.
-         $writer->save(storage_path().'/app/public/approval.xlsm');
-         header('Location:'.url('storage/approval.xlsm'));
-         exit;
+        // Save the file.
+        $writer->save(storage_path().'/app/public/approval.xlsm');
+        header('Location:'.url('storage/approval.xlsm'));
+        exit;
     }
 
 	public function get_print($status)
