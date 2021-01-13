@@ -11,12 +11,10 @@ use App\SapModel\SapUom;
 use App\ApprovalMaster;
 use App\ApprovalDetail;
 use App\Approval;
-use App\ApprovalDtl;
 use App\ApproverUser;
 use DB;
 use DataTables;
 use Cart;
-use App\Cart as Carts;
 use App\Item;
 use Carbon\Carbon;
 
@@ -64,7 +62,6 @@ class ApprovalExpenseController extends Controller
     {
         $expenses           = Expense::find($request->budget_no);
         $sap_gl_account     = SapGlAccount::where('gl_gname', $request->sap_gl_account_id)->where('gl_aname', $request->gl_fname)->first();
-        $sap_assets         = SapAsset::find($request->sap_asset_id);
         $sap_costs          = SapCostCenter::find($request->sap_cos_center_id);
         $sap_uoms           = SapUom::find($request->sap_uom_id);
 
@@ -105,22 +102,16 @@ class ApprovalExpenseController extends Controller
                 'is_chemical'			=> $request->asset_category,
             ]
         ]);
-		// Carts::where('item_id',$item->id)->where('user_id',auth()->user()->id)->delete();
 
         $res = [
-					'title' => 'Success',
-                    'type' => 'success',
-                    'message' => 'Data has been inserted'
-                ];
+            'title' => 'Success',
+            'type' => 'success',
+            'message' => 'Data has been inserted'
+        ];
 
         return redirect()
                         ->route('approval-expense.index')
                         ->with($res);
-    }
-
-    function show($id)
-    {
-
     }
 
     function destroy($id)
