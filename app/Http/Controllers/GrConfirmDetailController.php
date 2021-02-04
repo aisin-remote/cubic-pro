@@ -31,12 +31,13 @@ class GrConfirmDetailController extends Controller
                         ->toJson();
 
             } else {
-                
+
                 $upload = UploadPurchaseOrder::where('po_number', $request->po_number)->first();
                 $app_detail = ApprovalDetail::where('id', $upload->approval_detail_id)->first();
                 $new_gr = ApprovalMaster::where('id', $app_detail->approval_master_id)->first();
-                
-                DB::transaction(function() use ($new_gr, $request){
+                $app_details = UploadPurchaseOrder::where('po_number', $request->po_number)->get();
+
+                DB::transaction(function() use ($new_gr, $app_details , $request){
 
                     $save_new = new GrConfirm;
                     $save_new->po_number = $request->po_number;
@@ -44,13 +45,13 @@ class GrConfirmDetailController extends Controller
                     $save_new->user_id = $new_gr->created_by;
                     $save_new->save();
 
-                    foreach ($new_gr->details as $new_gr_details) {
-
+                    foreach ($app_details as $new_gr_details) {
+                        $new_details = ApprovalDetail::where('id', $new_gr_details->approval_detail_id)->first();
                         $details_new = new GrConfirmDetail;
-                        $details_new->qty_order = $new_gr_details->actual_qty;
-                        $details_new->approval_detail_id = $new_gr_details->id;
+                        $details_new->qty_order = $new_details->actual_qty;
+                        $details_new->approval_detail_id = $new_gr_details->approval_detail_id;
                         $save_new->details()->save($details_new);
-                    }   
+                    }
 
                 });
 
@@ -66,7 +67,7 @@ class GrConfirmDetailController extends Controller
 
                 // return response()->json($new_gr->details);
 
-            }   
+            }
 
         } else {
 
@@ -78,12 +79,12 @@ class GrConfirmDetailController extends Controller
 
             return response()->json($result);
         }
-        
+
     }
-    
+
     public function xedit(Request $request)
     {
-        
+
         $gr_detail = GrConfirmDetail::find($request->pk);
 
         if ($request->name == 'qty_receive') {
