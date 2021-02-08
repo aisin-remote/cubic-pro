@@ -204,6 +204,7 @@ class ApprovalCapexController extends Controller
             $capex->fyear				   = date('Y');
             $capex->save();
             $i = 1;
+            $asset_no = null;
             foreach (Cart::instance('capex')->content() as $details) {
                 if ($details->options->asset_kind == 'CIP') {
                     $cip_no = ApprovalDetail::getNewCIPNumber($details->options->budget_no);
@@ -218,7 +219,9 @@ class ApprovalCapexController extends Controller
                 } else {
                     $cip_no = null;
                     $capexStatus = 1;
-                    $asset_no = SapAsset::getAutoAssetCode($details->options->asset_code);
+                    if ($asset_no === null) {
+                        $asset_no = SapAsset::getAutoAssetCode($details->options->asset_code);
+                    }
                 }
 
                 $capexBudget = Capex::where('budget_no', $details->options->budget_no)->first();
