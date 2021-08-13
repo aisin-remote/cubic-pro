@@ -8,6 +8,8 @@ $(document).ready(function(){
 		getBudgetDetail($(this).val());
 	});
 
+    getBudgetDetail(budget_no);
+
     tCapex = $('#table-CIP-capex').DataTable({
         ajax: SITE_URL+"/cip/settlement/ajaxlist/tablelist/open/"+budget_no,
         "fnDrawCallback": function (oSettings) {
