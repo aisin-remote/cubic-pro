@@ -667,6 +667,63 @@ Route::middleware('auth')->group(function(){
 
 	/******* END OF ROUTE UNBUDGET *******/
 
+	//****** ROUTE REQUEST BUDGET ******//
+
+	//RB TEMP
+	Route::get('temp', 'RequestController@temp')->name('temp.view');
+	Route::post('temp-import', 'RequestController@tempimp')->name('temp.import');
+
+	//RB SALES
+	Route::get('request-budget-sales', 'RequestController@salesview')->name('sales.view');
+	Route::post('/sales/import', 'RequestController@slsimport')->name('sales.import'); 
+
+	//RB DIRECT MATERIAL
+	Route::get('request-budget-directMaterial', 'RequestController@materialview')->name('material.view');
+	Route::post('/dMaterial/import', 'RequestController@materialimport')->name('material.import');
+
+	//RB CAPEX
+	Route::get('request-budget-capex', 'RequestController@capexview')->name('capex.view');
+	Route::post('/capex/import', 'RequestController@capeximport')->name('cpx.import');
+
+	//RB EXPANSE
+	Route::get('request-budget-expense', 'RequestController@expenseview')->name('expense.view');
+	Route::post('/expense/import', 'RequestController@expenseimport')->name('exps.import');
+
+	//RB EXPORT
+	Route::get('export-request-budget', 'RequestController@exportview')->name('rb.export');
+	Route::get('exporting', 'RequestController@exporttotemplate')->name('rb.exporttemplate');
+
+	//GET LIST SALES
+	Route::group(['middleware' => ['permission:sales-list','auth']], function() {
+		Route::get('sales', 'RequestController@slsindex')->name('index.sales');
+
+		//AJAX GET LIST CAPEX
+		Route::get('/sales/get_data', 'RequestController@getDataSales');
+	});
+
+	//GET LIST DIRECT MATERIAL
+	Route::group(['middleware' => ['permission:dm-list','auth']], function() {
+		Route::get('dm', 'RequestController@dmindex')->name('index.dm');
+
+		//AJAX GET LIST DIRECT MATERIAL
+		Route::get('/dm/get_data', 'RequestController@getDataDM');
+	});
+
+	//GET LIST CAPEX RB
+	Route::group(['middleware' => ['permission:capex-list','auth']], function() {
+		Route::get('list-capex-req-budget', 'RequestController@cpxindex')->name('index.cpx');
+
+		//AJAX GET LIST CAPEX
+		Route::get('/cpx/get_data', 'RequestController@getDataCPX');
+	});
+
+	//GET LIST EXPENSE RB
+	Route::group(['middleware' => ['permission:expense-list','auth']], function() {
+		Route::get('list-expense-req-budget', 'RequestController@expindex')->name('index.exp');
+
+		//AJAX GET LIST EXPENSE
+		Route::get('/exp/get_data', 'RequestController@getDataEXP');
+	});
 });
 
 Auth::routes();
