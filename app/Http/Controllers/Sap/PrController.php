@@ -153,6 +153,11 @@ class PrController extends Controller
                     $standard_billing = "";
                     break;
 
+                    case "V8":
+                    $purch_group      = "Z11";
+                    $standard_billing = "";
+                    break;
+
                     case "": //Bug
                     $purch_group      = "";
                     $standard_billing = "";
