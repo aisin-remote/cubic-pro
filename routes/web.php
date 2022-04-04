@@ -683,12 +683,12 @@ Route::middleware('auth')->group(function(){
 
 	//RB CAPEX
 	Route::get('request-budget-capex', 'RequestController@capexview')->name('capex.view');
-	Route::post('/capex/import', 'RequestController@capeximport')->name('cpx.import');
+	Route::post('/cpx/import', 'RequestController@capeximport')->name('cpx.import');
 
 	//RB EXPANSE
 	Route::get('request-budget-expense', 'RequestController@expenseview')->name('expense.view');
-	Route::post('/expense/import', 'RequestController@expenseimport')->name('exps.import');
 
+	Route::post('/exps/import', 'RequestController@expenseimport')->name('exps.import');
 	//RB EXPORT
 	Route::get('export-request-budget', 'RequestController@exportview')->name('rb.export');
 	Route::get('exporting', 'RequestController@exporttotemplate')->name('rb.exporttemplate');
