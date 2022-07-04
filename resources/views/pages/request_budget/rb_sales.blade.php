@@ -32,7 +32,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label">RB Sales File Input</label>
-                                <input type="file" name="file" class="form-control" accept=".csv">
+                                <input type="file" name="file" class="form-control" accept=".csv,.xlsx,.xls">
                                 <label class="text-muted">*) File format .csv</label>
                                 <br>
                                 <a href="{{ url('files/Template_Sales.xlsx') }}" ><i class="mdi mdi-download"></i>  Format RB Sales&emsp;</a>
@@ -48,7 +48,7 @@
                                 </label>
                             </div> -->
                         </div>
-                        
+
                         <div class="col-md-12 text-left">
                             <button type="submit" id="btn-import" class="btn btn-primary btn-bordered waves-effect waves-light" onclick="on_table_temporary()">Upload</button>
                             <button type="button" class="btn btn-default btn-bordered waves-effect waves-light" data-dismiss="modal">Cancel</button>
