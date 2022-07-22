@@ -82,7 +82,7 @@ class ExpenseController extends Controller
     public function getData(Request $request)
     {
         $expenses = Expense::ability();
-        $expenses = $expenses->get();
+        // $expenses = $expenses->get();
 
         return DataTables::of($expenses)
             ->editColumn("status", function ($expense) {
