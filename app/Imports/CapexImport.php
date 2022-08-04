@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Imports;
-
+use DB;
 use App\CapexRb;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -62,43 +62,18 @@ class CapexImport implements ToModel, WithHeadingRow, WithBatchInserts
         $mar                        = isset($row["mar"]) ? $row["mar"] : null; // mar
 
         if (!empty($budget_no)) {
-            $cek = CapexRb::where('budget_no', $budget_no)->where('line', $line_or_dept)->first();
-            if ($cek) {
-                $capexrb = CapexRb::where('budget_no', $budget_no)->where('line', $line_or_dept)
-                    ->update([
-                        'profit_center'          => $profit_center,
-                        'profit_center_code'     => $profit_center_code,
-                        'cost_center'            => $cost_center,
-                        'type'                   => $type,
-                        'project_name'           => $project_name,
-                        'import_domestic'        => $import_domestic,
-                        'items_name'             => $items_name,
-                        'equipment'              => $equipment,
-                        'qty'                    => $qty,
-                        'curency'                => $curency,
-                        'original_price'         => $original_price_full_amount,
-                        'exchange_rate'          => $exchange_rate,
-                        'price'                  => $price,
-                        'sop'                    => $sop,
-                        'first_dopayment_term'   => $first_down_payment_term,
-                        'first_dopayment_amount' => $first_down_payment_amount,
-                        'final_payment_term'     => $final_payment_term,
-                        'final_payment_amount'   => $final_payment_amount,
-                        'owner_asset'            => $owner_asset,
-                        'april'                  => $apr,
-                        'mei'                    => $may,
-                        'juni'                   => $jun,
-                        'juli'                   => $jul,
-                        'agustus'                => $aug,
-                        'september'              => $sep,
-                        'oktober'                => $oct,
-                        'november'               => $nov,
-                        'december'               => $dec,
-                        'januari'                => $jan,
-                        'februari'               => $feb,
-                        'maret'                  => $mar
-                    ]);
-            } else {
+            DB::beginTransaction();
+            
+            try {
+                $delete = CapexRb::where([
+                    'dept' => $dept,
+                    'budget_no' => $budget_no,
+                    'line' => $line_or_dept
+                ])->delete();
+                if (!$delete) {
+                    DB::rollBack();
+                }
+
                 $capexrb                         = new CapexRb;
                 $capexrb->dept                   = $dept;
                 $capexrb->budget_no              = $budget_no;
@@ -134,8 +109,17 @@ class CapexImport implements ToModel, WithHeadingRow, WithBatchInserts
                 $capexrb->januari                = $jan;
                 $capexrb->februari               = $feb;
                 $capexrb->maret                  = $mar;
-                $capexrb->save();
+                if (  $capexrb->save()) {
+                    DB::commit();
+                }
+
+            } catch (Exception $ex) {
+                DB::rollBack();
             }
+           
+            
+                
+           
         }
     }
 }

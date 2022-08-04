@@ -676,22 +676,37 @@ Route::middleware('auth')->group(function(){
 	//RB SALES
 	Route::get('request-budget-sales', 'RequestController@salesview')->name('sales.view');
 	Route::post('/sales/import', 'RequestController@slsimport')->name('sales.import'); 
+	// cek total
+	Route::post('/sales/importcek', 'RequestController@slsimportcek')->name('sales.importcek');
 
 	//RB DIRECT MATERIAL
 	Route::get('request-budget-directMaterial', 'RequestController@materialview')->name('material.view');
 	Route::post('/dMaterial/import', 'RequestController@materialimport')->name('material.import');
+	// cek total
+	Route::post('/dMaterial/importcek', 'RequestController@materialimportcek')->name('material.importcek');
 
 	//RB CAPEX
 	Route::get('request-budget-capex', 'RequestController@capexview')->name('capex.view');
+	// download data
+	Route::post('/cpx/export', 'RequestController@capexexport')->name('cpx.export');
+
 	Route::post('/cpx/import', 'RequestController@capeximport')->name('cpx.import');
+	// cek total
+	Route::post('/cpx/importcek', 'RequestController@capeximportcek')->name('cpx.importcek');
 
 	//RB EXPANSE
 	Route::get('request-budget-expense', 'RequestController@expenseview')->name('expense.view');
 
 	Route::post('/exps/import', 'RequestController@expenseimport')->name('exps.import');
+	// download data
+	Route::post('/exps/export', 'RequestController@expenseexport')->name('exps.export');
+
+	// cek total
+	Route::post('/cexpsx/importcek', 'RequestController@expenseimportcek')->name('exps.importcek');
 	//RB EXPORT
 	Route::get('export-request-budget', 'RequestController@exportview')->name('rb.export');
 	Route::get('exporting', 'RequestController@exporttotemplate')->name('rb.exporttemplate');
+	Route::post('exporting-data', 'RequestController@exportData')->name('rb.exporting-data');
 
 	//GET LIST SALES
 	Route::group(['middleware' => ['permission:sales-list','auth']], function() {

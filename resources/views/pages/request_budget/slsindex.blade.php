@@ -35,36 +35,35 @@
         <div class="col-md-12">
             <div class="card-box">
                 <div class="table-responsive">
-                    
-                
-                <table class="table m-0 table-colored table-inverse" id="table-sales">
-                    <thead>
-                        <tr>
-                            <th>Account Code</th>
-                            <th>Account Name</th>
-                            <th>Group</th>
-                            <th>april</th>
-                            <th>mei</th>
-                            <th>juni</th>
-                            <th>juli</th>
-                            <th>agustus</th>
-                            <th>september</th>
-                            <th>oktober</th>
-                            <th>november</th>
-                            <th>december</th>
-                            <th>januari</th>
-                            <th>februari</th>
-                            <th>maret</th>
-                            <th>fy 2022 1st</th>
-                            <th>fy 2022 2nd</th>
-                            <th>fy 2022 total</th>
-                            @if (\Entrust::hasRole('budget'))
-                                <th style="width: 100px">Opsi</th>
-                            @endif
-                        </tr>
-                    </thead>
-                </table>
-            </div>
+                    <table class="table m-0 table-colored table-inverse" id="table-sales">
+                        <thead>
+                            <tr>
+                                <th>Account Code</th>
+                                <th>Account Name</th>
+                                <th>Group</th>
+                                <th>Code</th>
+                                <th>april</th>
+                                <th>mei</th>
+                                <th>juni</th>
+                                <th>juli</th>
+                                <th>agustus</th>
+                                <th>september</th>
+                                <th>oktober</th>
+                                <th>november</th>
+                                <th>december</th>
+                                <th>januari</th>
+                                <th>februari</th>
+                                <th>maret</th>
+                                <th>fy 2022 1st</th>
+                                <th>fy 2022 2nd</th>
+                                <th>fy 2022 total</th>
+                                @if (\Entrust::hasRole('budget'))
+                                    <th style="width: 100px">Opsi</th>
+                                @endif
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

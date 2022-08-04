@@ -20,11 +20,16 @@ use App\Imports\SalesImport;
 // use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use App\Helpers\ImportBinder;
+use App\Imports\ExpenseImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\DirectMaterialImport;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+
+use PhpOffice\PhpSpreadsheet\Helper\Sample;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class RequestController extends Controller
 {
@@ -77,7 +82,7 @@ class RequestController extends Controller
 
     public function getDataSales(Request $request)
     {
-        $Sls = SalesRb::select('acc_code', 'acc_name', 'group', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
+        $Sls = SalesRb::select('acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
         // $sls = $slsx->get();
         return DataTables::of($Sls)->toJson();
         // ->editColumn("status", function ($capex) {
@@ -100,6 +105,68 @@ class RequestController extends Controller
         // ->toJson();
     }
 
+
+    public function slsimportcek(Request $request)
+    {
+        $file = $request->file('file');
+        // dd($file);
+        // $name = time() . '.' . $file->getClientOriginalExtension();
+        $ext  = $file->getClientOriginalExtension();
+
+        $hasil =1;
+        if($ext != 'xlsx' && $ext !='xls') {
+            $hasil =0;
+            $pesan ='Format tidak sesuai';
+            $total = 0;
+          
+        }
+
+        if($hasil==1){
+            $reader = IOFactory::createReader('Xlsx');
+            $spreadsheet = $reader->load($file);
+            $sheet = $spreadsheet->getSheet(0);
+            
+            $rw = 2;
+            $dept = "";
+            $arrayPush = array();
+            $i= 0;
+            foreach ($sheet->getRowIterator() as $row) {
+              
+                    if( $sheet->getCell("A$rw")->getCalculatedValue()){
+
+                    $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
+                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
+                
+                }
+                    if($sheet->getCell("A$rw")->getValue() ==""){
+                        break;
+                    }
+                    
+                $i++;
+                $rw++;
+                // dd($dept);
+            
+            }
+
+            if(count($arrayPush)>0){
+                $pesan ='';
+                $total = 0;
+                foreach($arrayPush as $key => $val)
+                    {
+                        $total = $total + $val['fy_total'];
+                    }
+            }
+
+            // dd($total);
+        }
+        $res = [
+            'pesan'   => $pesan,
+            'total'    => $total
+        ];
+
+        return response()->json($res);
+    }
+
     public function slsimport(Request $request)
     {
         $file = $request->file('file');
@@ -107,7 +174,7 @@ class RequestController extends Controller
         $ext  = $file->getClientOriginalExtension();
 
         /** Upload file ke storage public */
-        $file->storeAs('public/uploads', $name);
+        $file->storeAs('public/files', $name);
 
         /** Jika bukan format csv */
         if($ext !== 'csv') {
@@ -242,9 +309,70 @@ class RequestController extends Controller
 
     public function getDataDM(Request $request)
     {
-        $dm = DmaterialRb::select('acc_code', 'acc_name', 'group', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
+        $dm = DmaterialRb::select('acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
 
         return DataTables::of($dm)->toJson();
+    }
+
+    public function materialimportcek(Request $request)
+    {
+        $file = $request->file('file');
+        // dd($file);
+        // $name = time() . '.' . $file->getClientOriginalExtension();
+        $ext  = $file->getClientOriginalExtension();
+
+        $hasil =1;
+        if($ext != 'xlsx' && $ext !='xls') {
+            $hasil =0;
+            $pesan ='Format tidak sesuai';
+            $total = 0;
+          
+        }
+
+        if($hasil==1){
+            $reader = IOFactory::createReader('Xlsx');
+            $spreadsheet = $reader->load($file);
+            $sheet = $spreadsheet->getSheet(0);
+            
+            $rw = 2;
+            $dept = "";
+            $arrayPush = array();
+            $i= 0;
+            foreach ($sheet->getRowIterator() as $row) {
+              
+                    if( $sheet->getCell("A$rw")->getCalculatedValue()){
+
+                    $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
+                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
+                
+                }
+                    if($sheet->getCell("A$rw")->getValue() ==""){
+                        break;
+                    }
+                    
+                $i++;
+                $rw++;
+                // dd($dept);
+            
+            }
+
+            if(count($arrayPush)>0){
+                $pesan ='';
+                $total = 0;
+                foreach($arrayPush as $key => $val)
+                    {
+                        $total = $total + $val['fy_total'];
+                    }
+            }
+
+            // dd($total);
+        }
+        $res = [
+            'pesan'   => $pesan,
+            'total'    => $total
+        ];
+
+        return response()->json($res);
     }
 
     public function materialimport(Request $request)
@@ -381,37 +509,303 @@ class RequestController extends Controller
 
     public function getDataCPX(Request $request)
     {
-        $cpx = CapexRb::select('budget_no', 'line', 'profit_center', 'profit_center_code', 'cost_center', 'type', 'project_name', 'import_domestic', 'items_name', 'equipment', 'qty', 'curency', 'original_price', 'exchange_rate', 'price', 'sop', 'first_dopayment_term', 'first_dopayment_amount', 'final_payment_term', 'final_payment_amount', 'owner_asset', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret')->get();
+        $cpx = CapexRb::select('dept','budget_no', 'line', 'profit_center', 'profit_center_code', 'cost_center', 'type', 'project_name', 'import_domestic', 'items_name', 'equipment', 'qty', 'curency', 'original_price', 'exchange_rate', 'price', 'sop', 'first_dopayment_term', 'first_dopayment_amount', 'final_payment_term', 'final_payment_amount', 'owner_asset', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret')->get();
         // $sls = $slsx->get();
+        // dd($cpx);
         return DataTables::of($cpx)->toJson();
     }
 
+
+    public function capexexport(Request $request)
+    {
+        ini_set('max_execution_time', 0);
+        ob_start();
+        $reader = IOFactory::createReader('Xlsx');
+        $spreadsheet = $reader->load(public_path('files\Template_Capex_export.xlsx'));
+        
+        $dept = $request->post('dept');
+        $data = CapexRb::where([
+            'dept' => $dept
+        ])->get();
+        // dd($data);
+        if(count($data) > 0)
+        {
+            $i = 0;
+            $x = 2;
+            foreach ($data as $key => $row) {
+                // dd($row->dept);
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('B' . 2, $row->dept)
+                ->setCellValue('D' . $x, $row->budget_no)
+                ->setCellValue('E' . $x, $row->line)
+                ->setCellValue('F' . $x, $row->profit_center)
+                ->setCellValue('G' . $x, $row->profit_center_code)
+                ->setCellValue('H' . $x, $row->cost_center)
+                ->setCellValue('I' . $x, $row->type)
+                ->setCellValue('J' . $x, $row->project_name)
+                ->setCellValue('K' . $x, $row->import_domestic)
+                ->setCellValue('L' . $x, $row->items_name)
+                ->setCellValue('M' . $x, $row->equipment)
+                ->setCellValue('N' . $x, $row->qty)
+                ->setCellValue('O' . $x, $row->currency)
+                ->setCellValue('P' . $x, $row->original_price)
+                ->setCellValue('Q' . $x, $row->exchange_rate)
+                ->setCellValue('R' . $x, $row->price)
+                ->setCellValue('S' . $x, $row->sop)
+                ->setCellValue('T' . $x, $row->first_dopayment_term)
+                ->setCellValue('U' . $x, $row->first_dopayment_amount)
+                ->setCellValue('V' . $x, $row->final_payment_term)
+                ->setCellValue('W' . $x, $row->final_payment_amount)
+                ->setCellValue('X' . $x, $row->owner_asset)
+                ->setCellValue('Y' . $x, $row->april)
+                ->setCellValue('Z' . $x, $row->mei)
+                ->setCellValue('AA' . $x, $row->juni)
+                ->setCellValue('AB' . $x, $row->juli)
+                ->setCellValue('AC' . $x, $row->agustus)
+                ->setCellValue('AD' . $x, $row->september)
+                ->setCellValue('AE' . $x, $row->oktober)
+                ->setCellValue('AF' . $x, $row->november)
+                ->setCellValue('AG' . $x, $row->desember)
+                ->setCellValue('AH' . $x, $row->januari)
+                ->setCellValue('AI' . $x, $row->februari)
+                ->setCellValue('AJ' . $x, $row->maret);
+                
+                $i++;
+                $x++;
+            }
+        } 
+        $filename =  'Data Capex' . $dept . date('d/m/Y');
+
+        // Redirect output to a client’s web browser (Xlsx)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // header('Content-Disposition: attachment;filename="Report Excel.xlsx"');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+        $response =  array(
+            'op' => 'ok',
+            'filename' => $filename,
+            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
+        );
+
+        echo json_encode($response);
+    
+    }
+
+    public function capeximportcek(Request $request){
+        $file = $request->file('file');
+        // dd($file);
+        // $name = time() . '.' . $file->getClientOriginalExtension();
+        $ext  = $file->getClientOriginalExtension();
+
+        $hasil =1;
+        if($ext != 'xlsx' && $ext !='xls') {
+            $hasil =0;
+            $pesan ='Format tidak sesuai';
+            $total = 0;
+          
+        }
+
+        if($hasil==1){
+            $reader = IOFactory::createReader('Xlsx');
+            $spreadsheet = $reader->load($file);
+            $sheet = $spreadsheet->getSheet(0);
+            
+            $rw = 2;
+            $dept = "";
+            $arrayPush = array();
+            $i= 0;
+            foreach ($sheet->getRowIterator() as $row) {
+                if($sheet->getCell("B$rw")->getValue() !=""){
+
+                    $dept = $sheet->getCell("B$rw")->getValue();
+                }
+                    if( $sheet->getCell("D$rw")->getValue() !=""){
+
+                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getValue();
+                    $arrayPush[$i]['final_payment_amount'] = $sheet->getCell("W$rw")->getValue();
+                
+                }
+                    if($sheet->getCell("D$rw")->getValue() ==""){
+                        break;
+                    }
+                    
+                $i++;
+                $rw++;
+                // dd($dept);
+            
+            }
+
+            if(count($arrayPush)>0){
+                $pesan ='';
+                $total = 0;
+                foreach($arrayPush as $key => $val)
+                    {
+                        $total = $total + $val['final_payment_amount'];
+                    }
+            }
+
+            // dd($total);
+        }
+        $res = [
+            'pesan'   => $pesan,
+            'total'    => $total
+        ];
+
+        return response()->json($res);
+
+    }
     public function capeximport(Request $request)
     {
         $file = $request->file('file');
-        $name = time() . '.' . $file->getClientOriginalExtension();
+        // $name = time() . '.' . $file->getClientOriginalExtension();
         $ext  = $file->getClientOriginalExtension();
 
-        /** Upload file ke storage public */
-        $file->storeAs('public/uploads', $name);
+        // /** Upload file ke storage public */
+        // $file->storeAs('public/uploads', $name);
 
         /** Jika bukan format csv */
-        if($ext !== 'csv') {
-            $file = $this->parseXlsx($file, $name, 0);
+        // dd($ext);
+        $hasil =1;
+        if($ext != 'xlsx' && $ext !='xls') {
+            $hasil =0;
+            $title = 'Gagal';
+            $type = 'error';
+            $message = 'Data gagal di Upload  bukan xlsx!';
+          
         }
 
-        Excel::import(new CapexImport, $file);
+        if($hasil ==1){
+            
+        $reader = IOFactory::createReader('Xlsx');
+        $spreadsheet = $reader->load($file);
+        $sheet = $spreadsheet->getSheet(0);
+        
+        $rw = 2;
+        $dept = "";
+        $arrayPush = array();
+        $i= 0;
+        foreach ($sheet->getRowIterator() as $row) {
+            if($sheet->getCell("B$rw")->getValue() !=""){
 
+                $dept = $sheet->getCell("B$rw")->getValue();
+            }
+                if( $sheet->getCell("D$rw")->getValue() !=""){
+
+                $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getValue();
+                $arrayPush[$i]['line'] = $sheet->getCell("E$rw")->getValue();
+                $arrayPush[$i]['profit_center'] = $sheet->getCell("F$rw")->getValue();
+                $arrayPush[$i]['profit_center_code'] = $sheet->getCell("G$rw")->getValue();
+                $arrayPush[$i]['cost_center'] = $sheet->getCell("H$rw")->getValue();
+                $arrayPush[$i]['type'] = $sheet->getCell("I$rw")->getValue();
+                $arrayPush[$i]['project_name'] = $sheet->getCell("J$rw")->getValue();
+                $arrayPush[$i]['import_domestic'] = $sheet->getCell("K$rw")->getValue();
+                $arrayPush[$i]['items_name'] = $sheet->getCell("L$rw")->getValue();
+                $arrayPush[$i]['equipment'] = $sheet->getCell("M$rw")->getValue();
+                $arrayPush[$i]['qty'] = $sheet->getCell("N$rw")->getValue();
+                $arrayPush[$i]['curency'] = $sheet->getCell("O$rw")->getValue();
+                $arrayPush[$i]['original_price'] = $sheet->getCell("P$rw")->getValue();
+                $arrayPush[$i]['exchange_rate'] = $sheet->getCell("Q$rw")->getValue();
+                $arrayPush[$i]['price'] = $sheet->getCell("R$rw")->getValue();
+                $arrayPush[$i]['sop'] = $sheet->getCell("S$rw")->getValue();
+                $arrayPush[$i]['first_dopayment_term'] = $sheet->getCell("T$rw")->getValue();
+                $arrayPush[$i]['first_dopayment_amount'] = $sheet->getCell("U$rw")->getValue();
+                $arrayPush[$i]['final_payment_term'] = $sheet->getCell("V$rw")->getValue();
+                $arrayPush[$i]['final_payment_amount'] = $sheet->getCell("W$rw")->getValue();
+                $arrayPush[$i]['owner_asset'] = $sheet->getCell("X$rw")->getValue();
+                $arrayPush[$i]['april'] = $sheet->getCell("Y$rw")->getValue();
+                $arrayPush[$i]['mei'] = $sheet->getCell("Z$rw")->getValue();
+                $arrayPush[$i]['juni'] = $sheet->getCell("AA$rw")->getValue();
+                $arrayPush[$i]['juli'] = $sheet->getCell("AB$rw")->getValue();
+                $arrayPush[$i]['agustus'] = $sheet->getCell("AC$rw")->getValue();
+                $arrayPush[$i]['september'] = $sheet->getCell("AD$rw")->getValue();
+                $arrayPush[$i]['oktober'] = $sheet->getCell("AE$rw")->getValue();
+                $arrayPush[$i]['november'] = $sheet->getCell("AF$rw")->getValue();
+                $arrayPush[$i]['december'] = $sheet->getCell("AG$rw")->getValue();
+                $arrayPush[$i]['januari'] = $sheet->getCell("AH$rw")->getValue();
+                $arrayPush[$i]['februari'] = $sheet->getCell("AI$rw")->getValue();
+                $arrayPush[$i]['maret'] = $sheet->getCell("AJ$rw")->getValue();
+            
+            }
+                if($sheet->getCell("D$rw")->getValue() ==""){
+                    break;
+                }
+                
+            $i++;
+            $rw++;
+            // dd($dept);
+          
+        }
+
+    }
+
+        // dd($arrayPush);
+        if(count($arrayPush) > 0){
+            foreach($arrayPush as $key => $row){
+                $arrayPush[$key]['dept'] = $dept;
+                $arrayPush[$key]['created_at'] = now();
+                $arrayPush[$key]['updated_at'] =  now();
+            }
+
+            DB::beginTransaction();
+            
+                try {
+                    $delete = CapexRb::where([
+                        'dept' => $dept
+                    ])->delete();
+                    if (!$delete) {
+                        $hasil =0;
+                        $title = 'Gagal';
+                        $type = 'error';
+                        $message = 'Data gagal di Upload';
+                        DB::rollBack();
+                    }
+    
+                    $capexrb                         = new CapexRb;
+                  
+                    if (!$capexrb->insert($arrayPush)) {
+                        $hasil =0;
+                        $title = 'Gagal';
+                        $type = 'error';
+                        $message = 'Data gagal di Upload  insert';
+                        DB::rollBack();
+                    }else{
+                        $hasil =1;
+                        $title = 'Success';
+                        $type = 'success';
+                        $message = 'Data berhasil di upload';
+                        DB::commit();
+                    }
+    
+                } catch (Exception $ex) {
+                    $hasil =0;
+                    $title = 'Gagal';
+                    $type = 'error';
+                    $message =  $ex->getMessage();
+                    DB::rollBack();
+                }
+        }
+        // dd($upload);
         $res = [
-            'title'   => 'Sukses',
-            'type'    => 'success',
-            'message' => 'Data berhasil di Upload!'
+            'title'   => $title,
+            'type'    => $type,
+            'message' => $message
         ];
 
-        /** Hapus files */
-        $this->deleteFiles($name);
 
-        return redirect()->route('capex.view')->with($res);
+        return response()->json($res);
 
         // $data = [];
         // if ($request->hasFile('file')) {
@@ -562,148 +956,461 @@ class RequestController extends Controller
 
     public function getDataEXP(Request $request)
     {
-        $exp = ExpenseRb::select('budget_no', 'group', 'line', 'profit_center', 'profit_center_code', 'cost_center', 'acc_code', 'project_name', 'equipment_name', 'import_domestic', 'qty', 'cur', 'price_per_qty', 'exchange_rate', 'budget_before', 'cr', 'budgt_aft_cr', 'po', 'gr', 'sop', 'first_dopayment_term', 'first_dopayment_amount', 'final_payment_term', 'final_payment_amount', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret')->get();
+        $exp = ExpenseRb::select('dept','budget_no', 'group', 'code', 'line', 'profit_center', 'profit_center_code', 'cost_center', 'acc_code', 'project_name', 'equipment_name', 'import_domestic', 'qty', 'cur', 'price_per_qty', 'exchange_rate', 'budget_before', 'cr', 'budgt_aft_cr', 'po', 'gr', 'sop', 'first_dopayment_term', 'first_dopayment_amount', 'final_payment_term', 'final_payment_amount', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret')->get();
         // $sls = $slsx->get();
         return DataTables::of($exp)->toJson();
     }
 
+    public function expenseexport(Request $request)
+    {
+        ini_set('max_execution_time', 0);
+        ob_start();
+        $reader = IOFactory::createReader('Xlsx');
+        $spreadsheet = $reader->load(public_path('files\Template_Expense_export.xlsx'));
+        // dd($spreadsheet);
+        $dept = $request->post('dept');
+        $data = ExpenseRb::where([
+            'dept' => $dept
+        ])->get();
+        // dd($data);
+        if(count($data) > 0)
+        {
+            $i = 0;
+            $x = 2;
+            foreach ($data as $key => $row) {
+                // dd($row->dept);
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('B' . 2, $row->dept)
+                ->setCellValue('C' . $x, $i+1)
+                ->setCellValue('D' . $x, $row->budget_no)
+                ->setCellValue('E' . $x, $row->group)
+                ->setCellValue('F' . $x, $row->line)
+                ->setCellValue('G' . $x, $row->profit_center)
+                ->setCellValue('H' . $x, $row->profit_center_code)
+                ->setCellValue('I' . $x, $row->cost_center)
+                ->setCellValue('J' . $x, $row->acc_code)
+                ->setCellValue('K' . $x, $row->project_name)
+                ->setCellValue('L' . $x, $row->equipment_name)
+                ->setCellValue('M' . $x, $row->import_domestic)
+                ->setCellValue('N' . $x, $row->qty)
+                ->setCellValue('O' . $x, $row->cur)
+                ->setCellValue('P' . $x, $row->price_per_qty)
+                ->setCellValue('Q' . $x, $row->exchange_rate)
+                ->setCellValue('R' . $x, $row->budget_before)
+                ->setCellValue('S' . $x, $row->cr)
+                ->setCellValue('T' . $x, $row->budgt_aft_cr)
+                ->setCellValue('U' . $x, $row->po)
+                ->setCellValue('V' . $x, $row->gr)
+                ->setCellValue('W' . $x, $row->sop)
+                ->setCellValue('X' . $x, $row->first_dopayment_term)
+                ->setCellValue('Y' . $x, $row->first_dopayment_amount)
+                ->setCellValue('Z' . $x, $row->final_payment_term)
+                ->setCellValue('AA' . $x, $row->final_payment_amount)
+                ->setCellValue('AB' . $x, $row->april)
+                ->setCellValue('AC' . $x, $row->mei)
+                ->setCellValue('AD' . $x, $row->juni)
+                ->setCellValue('AE' . $x, $row->juli)
+                ->setCellValue('AF' . $x, $row->agustus)
+                ->setCellValue('AG' . $x, $row->september)
+                ->setCellValue('AH' . $x, $row->oktober)
+                ->setCellValue('AI' . $x, $row->november)
+                ->setCellValue('AJ' . $x, $row->december)
+                ->setCellValue('AK' . $x, $row->januari)
+                ->setCellValue('AL' . $x, $row->februari)
+                ->setCellValue('AM' . $x, $row->maret)
+                ->setCellValue('AN' . $x, $row->checking);
+                
+                $i++;
+                $x++;
+            }
+
+            $sheet = $spreadsheet->getSheet(0);
+            $sheet->getStyle('C2'.':AN'.(count($data) + 1))->applyFromArray(
+                [
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                    ],
+                ]
+            );
+        } 
+        $filename =  'Data Expense' . $dept . date('d/m/Y');
+
+        // Redirect output to a client’s web browser (Xlsx)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // header('Content-Disposition: attachment;filename="Report Excel.xlsx"');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+        $response =  array(
+            'op' => 'ok',
+            'filename' => $filename,
+            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
+        );
+
+        echo json_encode($response);
+    
+    }
+
+    public function expenseimportcek(Request $request)
+    {
+        $file = $request->file('file');
+        // dd($file);
+        // $name = time() . '.' . $file->getClientOriginalExtension();
+        $ext  = $file->getClientOriginalExtension();
+
+        $hasil =1;
+        if($ext != 'xlsx' && $ext !='xls') {
+            $hasil =0;
+            $pesan ='Format tidak sesuai';
+            $total = 0;
+          
+        }
+
+        if($hasil==1){
+            $reader = IOFactory::createReader('Xlsx');
+            $spreadsheet = $reader->load($file);
+            $sheet = $spreadsheet->getSheet(0);
+            
+            $rw = 2;
+            $dept = "";
+            $arrayPush = array();
+            $i= 0;
+            foreach ($sheet->getRowIterator() as $row) {
+                if($sheet->getCell("B$rw")->getValue() !=""){
+
+                    $dept = $sheet->getCell("B$rw")->getValue();
+                }
+                    if( $sheet->getCell("D$rw")->getCalculatedValue()){
+
+                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getCalculatedValue();
+                    $arrayPush[$i]['final_payment_amount'] = $sheet->getCell("AA$rw")->getValue();
+                
+                }
+                    if($sheet->getCell("D$rw")->getCalculatedValue() ==""){
+                        break;
+                    }
+                    
+                $i++;
+                $rw++;
+                // dd($dept);
+            
+            }
+
+            if(count($arrayPush)>0){
+                $pesan ='';
+                $total = 0;
+                foreach($arrayPush as $key => $val)
+                    {
+                        $total = $total + $val['final_payment_amount'];
+                    }
+            }
+
+            // dd($total);
+        }
+        $res = [
+            'pesan'   => $pesan,
+            'total'    => $total
+        ];
+
+        return response()->json($res);
+    }
+
     public function expenseimport(Request $request)
     {
-
         $file = $request->file('file');
-        $name = time() . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('public/uploads', $name);
+        // $name = time() . '.' . $file->getClientOriginalExtension();
+        $ext  = $file->getClientOriginalExtension();
 
-        $data = [];
-        if ($request->hasFile('file')) {
-            $datas = $this->getCsvFile3(public_path('storage/uploads/' . $name));
+        // /** Upload file ke storage public */
+        // $file->storeAs('public/uploads', $name);
 
-            if ($datas->first()->has('budget_no')) {
-                foreach ($datas as $data) {
-
-                    $cek = ExpenseRb::where('budget_no', $data->budget_no)->where('group', $data->group)->where('line', $data->line_or_dept)->first();
-
-                    if (!empty($data->budget_no)) {
-                        if ($cek) {
-
-                            $expenserb = ExpenseRb::where('budget_no', $data->budget_no)->where('group', $data->group)->where('line', $data->line_or_dept)
-                                ->update([
-                                    'profit_center' => $data->profit_center,
-                                    'profit_center_code'    => $data->profit_center_code,
-                                    'cost_center'           => $data->cost_center,
-                                    'acc_code'              => $data->account_code,
-                                    'project_name'          => $data->project_name,
-                                    'equipment_name'        => $data->equipment_name,
-                                    'import_domestic'       => $data->importdomestic,
-                                    'qty'                   => $data->qty,
-                                    'cur'                   => $data->curr,
-                                    'price_per_qty'         => $data->price_per_qty,
-                                    'exchange_rate'         => $data->exchange_rate,
-                                    'budget_before'         => $data->budget_before_cr,
-                                    'cr'                    => $data->cr,
-                                    'budgt_aft_cr'          => $data->budget_after_cr,
-                                    'po'                    => $data->po,
-                                    'gr'                    => $data->gr,
-                                    'sop'                   => $data->sop,
-                                    'first_dopayment_term'  => $data->first_down_payment_term,
-                                    'first_dopayment_amount' => $data->first_down_payment_amount,
-                                    'final_payment_term'    => $data->final_payment_term,
-                                    'final_payment_amount'  => $data->final_payment_amount,
-                                    'april'                 => $data->apr,
-                                    'mei'                   => $data->may,
-                                    'juni'                  => $data->jun,
-                                    'juli'                  => $data->jul,
-                                    'agustus'               => $data->aug,
-                                    'september'             => $data->sep,
-                                    'oktober'               => $data->oct,
-                                    'november'              => $data->nov,
-                                    'december'              => $data->dec,
-                                    'januari'               => $data->jan,
-                                    'februari'              => $data->feb,
-                                    'maret'                 => $data->mar,
-                                    'checking'              => $data->checking
-                                ]);
-                        } else {
-
-                            $expenserb                         = new ExpenseRb;
-                            $expenserb->budget_no              = $data->budget_no;
-                            $expenserb->group                  = $data->group;
-                            $expenserb->line                   = $data->line_or_dept;
-                            $expenserb->profit_center          = $data->profit_center;
-                            $expenserb->profit_center_code     = $data->profit_center_code;
-                            $expenserb->cost_center            = $data->cost_center;
-                            $expenserb->acc_code               = $data->account_code;
-                            $expenserb->project_name           = $data->project_name;
-                            $expenserb->equipment_name         = $data->equipment_name;
-                            $expenserb->import_domestic        = $data->importdomestic;
-                            $expenserb->qty                    = $data->qty;
-                            $expenserb->cur                    = $data->curr;
-                            $expenserb->price_per_qty          = $data->price_per_qty;
-                            $expenserb->exchange_rate          = $data->exchange_rate;
-                            $expenserb->budget_before          = $data->budget_before_cr;
-                            $expenserb->cr                     = $data->cr;
-                            $expenserb->budgt_aft_cr           = $data->budget_after_cr;
-                            $expenserb->po                     = $data->po;
-                            $expenserb->gr                     = $data->gr;
-                            $expenserb->sop                    = $data->sop;
-                            $expenserb->first_dopayment_term   = $data->first_down_payment_term;
-                            $expenserb->first_dopayment_amount = $data->first_down_payment_amount;
-                            $expenserb->final_payment_term     = $data->final_payment_term;
-                            $expenserb->final_payment_amount   = $data->final_payment_amount;
-                            $expenserb->april                  = $data->apr;
-                            $expenserb->mei                    = $data->may;
-                            $expenserb->juni                   = $data->jun;
-                            $expenserb->juli                   = $data->jul;
-                            $expenserb->agustus                = $data->aug;
-                            $expenserb->september              = $data->sep;
-                            $expenserb->oktober                = $data->oct;
-                            $expenserb->november               = $data->nov;
-                            $expenserb->december               = $data->dec;
-                            $expenserb->januari                = $data->jan;
-                            $expenserb->februari               = $data->feb;
-                            $expenserb->maret                  = $data->mar;
-                            $expenserb->checking               = $data->checking;
-                            $expenserb->save();
-                        }
-                        // else {
-
-                        //    return redirect()
-                        //            ->route('expense.view')
-                        //            ->with(
-                        //                [
-                        //                    'title' => 'Error',
-                        //                    'type' => 'error',
-                        //                    'message' => 'Bad Request, Gagal Upload!'
-                        //                ]
-                        //            );
-
-                        // }
-                    }
-                }
-                $res = [
-                    'title'             => 'Sukses',
-                    'type'              => 'success',
-                    'message'           => 'Data berhasil di Upload!'
-                ];
-                Storage::delete('public/uploads/' . $name);
-                return redirect()
-                    ->route('expense.view')
-                    ->with($res);
-            } else {
-
-                Storage::delete('public/uploads/' . $name);
-
-                return redirect()
-                    ->route('expense.view')
-                    ->with(
-                        [
-                            'title' => 'Error',
-                            'type' => 'error',
-                            'message' => 'Format Buruk!'
-                        ]
-                    );
-            }
+        /** Jika bukan format csv */
+        // dd($ext);
+        $hasil =1;
+        if($ext != 'xlsx' && $ext !='xls') {
+            $hasil =0;
+            $title = 'Gagal';
+            $type = 'error';
+            $message = 'Data gagal di Upload  bukan xlsx!';
+          
         }
+
+        if($hasil ==1){
+            
+        $reader = IOFactory::createReader('Xlsx');
+
+
+        $spreadsheet = $reader->load($file);
+        $sheet = $spreadsheet->getSheet(0);
+        
+        $rw = 2;
+        $dept = "";
+        $arrayPush = array();
+        $i= 0;
+        foreach ($sheet->getRowIterator() as $row) {
+
+            if($sheet->getCell("B$rw")->getValue() !=""  && $sheet->getCell("E$rw")->getValue() !=""){
+
+                $dept = $sheet->getCell("B$rw")->getValue();
+            }
+                if( $sheet->getCell("D$rw")->getCalculatedValue() !=""){
+
+                $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getCalculatedValue();
+                $arrayPush[$i]['group'] = $sheet->getCell("E$rw")->getValue();
+                $arrayPush[$i]['line'] = $sheet->getCell("F$rw")->getValue();
+                $arrayPush[$i]['profit_center'] = $sheet->getCell("G$rw")->getValue();
+                $arrayPush[$i]['profit_center_code'] = $sheet->getCell("H$rw")->getCalculatedValue();
+                $arrayPush[$i]['cost_center'] = $sheet->getCell("I$rw")->getValue();
+                $arrayPush[$i]['acc_code'] = $sheet->getCell("J$rw")->getValue();
+                $arrayPush[$i]['project_name'] = $sheet->getCell("K$rw")->getValue();
+                $arrayPush[$i]['equipment_name'] = $sheet->getCell("L$rw")->getValue();
+                $arrayPush[$i]['import_domestic'] = $sheet->getCell("M$rw")->getValue();
+                $arrayPush[$i]['qty'] = $sheet->getCell("N$rw")->getValue();
+                $arrayPush[$i]['cur'] = $sheet->getCell("O$rw")->getValue();
+                $arrayPush[$i]['price_per_qty'] = $sheet->getCell("P$rw")->getValue();
+                $arrayPush[$i]['exchange_rate'] = $sheet->getCell("Q$rw")->getCalculatedValue();
+                $arrayPush[$i]['budget_before'] = $sheet->getCell("R$rw")->getCalculatedValue();
+                $arrayPush[$i]['cr'] = $sheet->getCell("S$rw")->getValue();
+                $arrayPush[$i]['budgt_aft_cr'] = $sheet->getCell("T$rw")->getCalculatedValue();
+                $arrayPush[$i]['po'] = $sheet->getCell("U$rw")->getValue();
+                $arrayPush[$i]['gr'] = $sheet->getCell("V$rw")->getValue();
+                $arrayPush[$i]['sop'] = $sheet->getCell("W$rw")->getValue();
+                $arrayPush[$i]['first_dopayment_term'] = $sheet->getCell("X$rw")->getValue();
+                $arrayPush[$i]['first_dopayment_amount'] = $sheet->getCell("Y$rw")->getValue();
+                $arrayPush[$i]['final_payment_term'] = $sheet->getCell("Z$rw")->getValue();
+                $arrayPush[$i]['final_payment_amount'] = $sheet->getCell("AA$rw")->getValue();
+                $arrayPush[$i]['april'] = $sheet->getCell("AB$rw")->getCalculatedValue();
+                $arrayPush[$i]['mei'] = $sheet->getCell("AC$rw")->getCalculatedValue();
+                $arrayPush[$i]['juni'] = $sheet->getCell("AD$rw")->getCalculatedValue();
+                $arrayPush[$i]['juli'] = $sheet->getCell("AE$rw")->getCalculatedValue();
+                $arrayPush[$i]['agustus'] = $sheet->getCell("AF$rw")->getCalculatedValue();
+                $arrayPush[$i]['september'] = $sheet->getCell("AG$rw")->getCalculatedValue();
+                $arrayPush[$i]['oktober'] = $sheet->getCell("AH$rw")->getCalculatedValue();
+                $arrayPush[$i]['november'] = $sheet->getCell("AI$rw")->getCalculatedValue();
+                $arrayPush[$i]['december'] = $sheet->getCell("AJ$rw")->getCalculatedValue();
+                $arrayPush[$i]['januari'] = $sheet->getCell("AK$rw")->getCalculatedValue();
+                $arrayPush[$i]['februari'] = $sheet->getCell("AL$rw")->getCalculatedValue();
+                $arrayPush[$i]['maret'] = $sheet->getCell("AM$rw")->getCalculatedValue();
+                $arrayPush[$i]['checking'] = $sheet->getCell("AN$rw")->getCalculatedValue();
+            
+            }
+                if($sheet->getCell("D$rw")->getCalculatedValue() ==""){
+                    break;
+                }
+                
+            $i++;
+            $rw++;
+            // dd($dept);
+          
+        }
+
+    }
+
+        // dd($arrayPush);
+        if(count($arrayPush) > 0){
+            foreach($arrayPush as $key => $row){
+                $arrayPush[$key]['dept'] = $dept;
+                $arrayPush[$key]['created_at'] = now();
+                $arrayPush[$key]['updated_at'] =  now();
+            }
+
+            DB::beginTransaction();
+            
+                try {
+                    $delete = ExpenseRb::where([
+                        'dept' => $dept
+                    ])->delete();
+                    if (!$delete) {
+                        $hasil =0;
+                        $title = 'Gagal';
+                        $type = 'error';
+                        $message = 'Data gagal di Upload';
+                        DB::rollBack();
+                    }
+    
+                    $capexrb                         = new ExpenseRb;
+                  
+                    if (!$capexrb->insert($arrayPush)) {
+                        $hasil =0;
+                        $title = 'Gagal';
+                        $type = 'error';
+                        $message = 'Data gagal di Upload  insert';
+                        DB::rollBack();
+                    }else{
+                        $hasil =1;
+                        $title = 'Success';
+                        $type = 'success';
+                        $message = 'Data berhasil di upload';
+                        DB::commit();
+                    }
+    
+                } catch (Exception $ex) {
+                    $hasil =0;
+                    $title = 'Gagal';
+                    $type = 'error';
+                    $message =  $ex->getMessage();
+                    DB::rollBack();
+                }
+        }
+        // dd($upload);
+        $res = [
+            'title'   => $title,
+            'type'    => $type,
+            'message' => $message
+        ];
+
+
+        return response()->json($res);
+
+        // $file = $request->file('file');
+        // $name = time() . '.' . $file->getClientOriginalExtension();
+        // $path = $file->storeAs('public/uploads', $name);
+
+        // $data = [];
+        // if ($request->hasFile('file')) {
+        //     $datas = $this->getCsvFile3(public_path('storage/uploads/' . $name));
+
+        //     if ($datas->first()->has('budget_no')) {
+        //         foreach ($datas as $data) {
+
+        //             $cek = ExpenseRb::where('budget_no', $data->budget_no)->where('group', $data->group)->where('line', $data->line_or_dept)->first();
+
+        //             if (!empty($data->budget_no)) {
+        //                 if ($cek) {
+
+        //                     $expenserb = ExpenseRb::where('budget_no', $data->budget_no)->where('group', $data->group)->where('line', $data->line_or_dept)
+        //                         ->update([
+        //                             'profit_center' => $data->profit_center,
+        //                             'profit_center_code'    => $data->profit_center_code,
+        //                             'cost_center'           => $data->cost_center,
+        //                             'acc_code'              => $data->account_code,
+        //                             'project_name'          => $data->project_name,
+        //                             'equipment_name'        => $data->equipment_name,
+        //                             'import_domestic'       => $data->importdomestic,
+        //                             'qty'                   => $data->qty,
+        //                             'cur'                   => $data->curr,
+        //                             'price_per_qty'         => $data->price_per_qty,
+        //                             'exchange_rate'         => $data->exchange_rate,
+        //                             'budget_before'         => $data->budget_before_cr,
+        //                             'cr'                    => $data->cr,
+        //                             'budgt_aft_cr'          => $data->budget_after_cr,
+        //                             'po'                    => $data->po,
+        //                             'gr'                    => $data->gr,
+        //                             'sop'                   => $data->sop,
+        //                             'first_dopayment_term'  => $data->first_down_payment_term,
+        //                             'first_dopayment_amount' => $data->first_down_payment_amount,
+        //                             'final_payment_term'    => $data->final_payment_term,
+        //                             'final_payment_amount'  => $data->final_payment_amount,
+        //                             'april'                 => $data->apr,
+        //                             'mei'                   => $data->may,
+        //                             'juni'                  => $data->jun,
+        //                             'juli'                  => $data->jul,
+        //                             'agustus'               => $data->aug,
+        //                             'september'             => $data->sep,
+        //                             'oktober'               => $data->oct,
+        //                             'november'              => $data->nov,
+        //                             'december'              => $data->dec,
+        //                             'januari'               => $data->jan,
+        //                             'februari'              => $data->feb,
+        //                             'maret'                 => $data->mar,
+        //                             'checking'              => $data->checking
+        //                         ]);
+        //                 } else {
+
+        //                     $expenserb                         = new ExpenseRb;
+        //                     $expenserb->budget_no              = $data->budget_no;
+        //                     $expenserb->group                  = $data->group;
+        //                     $expenserb->line                   = $data->line_or_dept;
+        //                     $expenserb->profit_center          = $data->profit_center;
+        //                     $expenserb->profit_center_code     = $data->profit_center_code;
+        //                     $expenserb->cost_center            = $data->cost_center;
+        //                     $expenserb->acc_code               = $data->account_code;
+        //                     $expenserb->project_name           = $data->project_name;
+        //                     $expenserb->equipment_name         = $data->equipment_name;
+        //                     $expenserb->import_domestic        = $data->importdomestic;
+        //                     $expenserb->qty                    = $data->qty;
+        //                     $expenserb->cur                    = $data->curr;
+        //                     $expenserb->price_per_qty          = $data->price_per_qty;
+        //                     $expenserb->exchange_rate          = $data->exchange_rate;
+        //                     $expenserb->budget_before          = $data->budget_before_cr;
+        //                     $expenserb->cr                     = $data->cr;
+        //                     $expenserb->budgt_aft_cr           = $data->budget_after_cr;
+        //                     $expenserb->po                     = $data->po;
+        //                     $expenserb->gr                     = $data->gr;
+        //                     $expenserb->sop                    = $data->sop;
+        //                     $expenserb->first_dopayment_term   = $data->first_down_payment_term;
+        //                     $expenserb->first_dopayment_amount = $data->first_down_payment_amount;
+        //                     $expenserb->final_payment_term     = $data->final_payment_term;
+        //                     $expenserb->final_payment_amount   = $data->final_payment_amount;
+        //                     $expenserb->april                  = $data->apr;
+        //                     $expenserb->mei                    = $data->may;
+        //                     $expenserb->juni                   = $data->jun;
+        //                     $expenserb->juli                   = $data->jul;
+        //                     $expenserb->agustus                = $data->aug;
+        //                     $expenserb->september              = $data->sep;
+        //                     $expenserb->oktober                = $data->oct;
+        //                     $expenserb->november               = $data->nov;
+        //                     $expenserb->december               = $data->dec;
+        //                     $expenserb->januari                = $data->jan;
+        //                     $expenserb->februari               = $data->feb;
+        //                     $expenserb->maret                  = $data->mar;
+        //                     $expenserb->checking               = $data->checking;
+        //                     $expenserb->save();
+        //                 }
+        //                 // else {
+
+        //                 //    return redirect()
+        //                 //            ->route('expense.view')
+        //                 //            ->with(
+        //                 //                [
+        //                 //                    'title' => 'Error',
+        //                 //                    'type' => 'error',
+        //                 //                    'message' => 'Bad Request, Gagal Upload!'
+        //                 //                ]
+        //                 //            );
+
+        //                 // }
+        //             }
+        //         }
+        //         $res = [
+        //             'title'             => 'Sukses',
+        //             'type'              => 'success',
+        //             'message'           => 'Data berhasil di Upload!'
+        //         ];
+        //         Storage::delete('public/uploads/' . $name);
+        //         return redirect()
+        //             ->route('expense.view')
+        //             ->with($res);
+        //     } else {
+
+        //         Storage::delete('public/uploads/' . $name);
+
+        //         return redirect()
+        //             ->route('expense.view')
+        //             ->with(
+        //                 [
+        //                     'title' => 'Error',
+        //                     'type' => 'error',
+        //                     'message' => 'Format Buruk!'
+        //                 ]
+        //             );
+        //     }
+        // }
     }
 
     public function exportview()
@@ -763,7 +1470,7 @@ class RequestController extends Controller
             }
         }
     }
-    public function exporttotemplate(RbExport $export)
+    public function exporttotemplate()
     {
 
         ob_end_clean();
@@ -1405,7 +2112,1534 @@ class RequestController extends Controller
      */
     protected function deleteFiles($name) : void
     {
-        unlink(public_path('storage/uploads/' . $name));
+        // unlink(public_path('storage/uploads/' . $name));
         unlink(public_path('storage/uploads/' . $name . '.csv'));
+    }
+
+
+
+    public function exportData(Request $request)
+    {
+
+        ini_set('max_execution_time', 0);
+        ob_start();
+
+        $reader = IOFactory::createReader('Xlsx');
+        $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
+        // Set document properties
+       
+
+        // dd($data_master_expense);
+        $spreadsheet->getProperties()->setCreator('Aiia')
+            ->setLastModifiedBy('Aiia')
+            ->setTitle('Office 2021 XLSX Aiia Document')
+            ->setSubject('Office 2021 XLSX Aiia Document')
+            ->setDescription('Office 2021 XLSX Aiia Document.')
+            ->setKeywords('Office 2021 XLSX Aiia Document')
+            ->setCategory('Office 2021 XLSX Aiia Document');
+
+
+            $master_code = MasterCode::all();
+
+            $sales_code = SalesRb::select('acc_code','acc_name')
+                                ->groupBy('acc_name')
+                                ->get();
+
+            $material_code = DmaterialRb::select('acc_code','acc_name')
+                                ->groupBy('acc_name')
+                                ->get();
+            $expense_code = ExpenseRb::select('acc_code')
+                                ->groupBy('acc_code')
+                                ->get();
+
+
+            $sheet = $spreadsheet->getSheet(0);
+
+            $sc = 6;
+            $sales_code = array();
+            $a = 0;
+            foreach ($sheet->getRowIterator() as $row) {
+    
+                $acc_code = $sheet->getCell("A$sc")->getValue();
+                $acc_name = $sheet->getCell("B$sc")->getValue();
+                $sales_code[$a]['acc_code'] = $acc_code;
+                $sales_code[$a]['acc_name'] = $acc_name;
+            
+                $sc++;
+                $a++;
+                if($a === 8){
+                    break;
+                }
+            }
+    
+            $mc= 14;
+            $material_code = array();
+            $b = 0;
+            foreach ($sheet->getRowIterator() as $row) {
+    
+                $acc_code = $sheet->getCell("A$mc")->getValue();
+                $acc_name = $sheet->getCell("B$mc")->getValue();
+                $material_code[$b]['acc_code'] = $acc_code;
+                $material_code[$b]['acc_name'] = $acc_name;
+            
+                $mc++;
+                $b++;
+                if($b ===10){
+                    break;
+                }
+            }
+    
+            $ec= 24;
+            $expense_code = array();
+            $c = 0;
+            foreach ($sheet->getRowIterator() as $row) {
+    
+                $acc_code = $sheet->getCell("A$ec")->getValue();
+                $acc_name = $sheet->getCell("B$ec")->getValue();
+                $expense_code[$c]['acc_code'] = $acc_code;
+                $expense_code[$c]['acc_name'] =($acc_name =="                      Adjustment")?str_replace(" ","",$acc_name): $acc_name;
+            
+                $ec++;
+                $c++;
+                if($c ===364){
+                    break;
+                }
+            }
+            // dd($expense_code);
+                    
+            // return $codesU;
+            // sales body
+            $sales_body = SalesRb::select(
+                'acc_name','acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->where('group', 'body')
+                ->groupBy('acc_name')
+                ->get();
+                // sales unit
+            $sales_unit = SalesRb::select(
+                'acc_name','acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->where('group', 'unit')
+                ->groupBy('acc_name')
+                ->get();
+
+             // sales electrik
+            $sales_electrik = SalesRb::select(
+                'acc_name','acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->where('group', 'Electric')
+                ->groupBy('acc_name')
+                ->get();
+
+             // sales all/company basis
+            $sales_company_basis = SalesRb::select(
+                'acc_name','acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->groupBy('acc_name')
+                ->get();
+
+
+            // material
+              $material_body = DmaterialRb::select(
+                'acc_name','acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->where('group', 'body')
+                ->groupBy('acc_name')
+                ->get();
+              $material_unit = DmaterialRb::select(
+                'acc_name','acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->where('group', 'unit')
+                ->groupBy('acc_name')
+                ->get();
+              $material_electrik = DmaterialRb::select(
+                'acc_name','acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->where('group', 'Electric')
+                ->groupBy('acc_name')
+                ->get();
+              $material_company_basis = DmaterialRb::select(
+                'acc_name','acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->groupBy('acc_name')
+                ->get();
+
+            // expense
+            $expense_body = ExpenseRb::select(
+                'acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->where('group', 'body')
+                ->groupBy('acc_code')
+                ->get();
+            $expense_unit = ExpenseRb::select(
+                'acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->where('group', 'unit')
+                ->groupBy('acc_code')
+                ->get();
+            $expense_electrik= ExpenseRb::select(
+                'acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->where('group', 'electric')
+                ->groupBy('acc_code')
+                ->get();
+            $expense_company_basis = ExpenseRb::select(
+                'acc_code',
+                DB::raw('ifnull(sum(april),0) as sapril'),
+                DB::raw('ifnull(sum(mei),0) as smei'),
+                DB::raw('ifnull(sum(juni),0) as sjuni'),
+                DB::raw('ifnull(sum(juli),0) as sjuli'),
+                DB::raw('ifnull(sum(agustus),0) as sagustus'),
+                DB::raw('ifnull(sum(september),0) as sseptember'),
+                DB::raw('ifnull(sum(oktober),0) as soktober'),
+                DB::raw('ifnull(sum(november),0) as snovember'),
+                DB::raw('ifnull(sum(december),0) as sdecember'),
+                DB::raw('ifnull(sum(januari),0) as sjanuari'),
+                DB::raw('ifnull(sum(februari),0) as sfebruari'),
+                DB::raw('ifnull(sum(maret),0) as smaret')
+            )
+                ->groupBy('acc_code')
+                ->get();
+
+                
+    
+                // dd(json_encode($sales_company_basis));
+        //   echo json_encode($sales_company_basis);
+        //   die;
+            // sales
+
+            // $sheet = $spreadsheet->getActiveSheet();
+            if (count((array)$sales_code) > 0) {
+
+                $sales_code_count = count($sales_code) -1;
+                // dd($sales_code_count-1);
+                $i = 0;
+                $x = 6;
+                $dsales = array();
+                foreach ($sales_code as $key => $row) {
+                    // dd($row['acc_name']);
+                    if($row['acc_code'] != "SALES"){
+                        $dsales[$i]['acc_name'] = $row['acc_name'];
+                        $spreadsheet->setActiveSheetIndex(0)
+                        ->setCellValue('A' . $x, $row['acc_code'])
+                        ->setCellValue('B' . $x, $row['acc_name']);
+                        
+                        $i++;
+                        $x++;
+                    }
+                }
+
+               
+                // dd($dsales);
+               
+                
+                $total_all_body = 0;
+                $t_april_b= 0;
+                $t_mei_b= 0;
+                $t_juni_b= 0;
+                $t_juli_b= 0;
+                $t_agustus_b= 0;
+                $t_september_b= 0;
+                $t_oktober_b= 0;
+                $t_november_b= 0;
+                $t_desember_b= 0;
+                $t_januari_b= 0;
+                $t_februari_b= 0;
+                $t_maret_b= 0;
+                $persen_arr_b = array();
+                $b= 0;
+
+                // dd($sales_body);
+                foreach ($sales_body as $key => $value) {
+                    
+                    $key = array_search($value->acc_name, array_column($dsales, 'acc_name'));
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    if($key != false){
+                    $keyy = $key + 6;
+                    // dd($keyy .$value);
+
+                    $total_body = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue( 'R'.$keyy, $total_body)
+                    ->setCellValue( 'T'.$keyy, $value->sapril)
+                    ->setCellValue( 'U'.$keyy, $value->smei)
+                    ->setCellValue( 'V'.$keyy, $value->sjuni)
+                    ->setCellValue( 'W'.$keyy, $value->sjuli)
+                    ->setCellValue( 'X'.$keyy, $value->sagustus)
+                    ->setCellValue( 'Y'.$keyy, $value->sseptember)
+                    ->setCellValue( 'Z'.$keyy, $value->soktober)
+                    ->setCellValue( 'AA'.$keyy, $value->snovember)
+                    ->setCellValue( 'AB'.$keyy, $value->sdesember)
+                    ->setCellValue( 'AC'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'AD'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'AE'.$keyy, $value->smaret);
+
+                    $total_all_body = $total_all_body + $total_body;
+
+                    $t_april_b=  $t_april_b +  $value->sapril;
+                    $t_mei_b= $t_mei_b + $value->smei;
+                    $t_juni_b=  $t_juni_b + $value->sjuni;
+                    $t_juli_b= $t_juli_b + $value->sjuli;
+                    $t_agustus_b=  $t_agustus_b+ $value->sagustus;
+                    $t_september_b= $t_september_b+ $value->sseptember;
+                    $t_oktober_b=  $t_oktober_b+$value->soktober;
+                    $t_november_b=  $t_november_b+$value->snovember;
+                    $t_desember_b=  $t_desember_b+$value->sdesember;
+                    $t_januari_b= $t_januari_b+$value->sjanuari;
+                    $t_februari_b= $t_februari_b+$value->sfebruari;
+                    $t_maret_b= $t_maret_b+$value->smaret;
+
+                    $persen_arr_b[$b]['acc_name'] = $value->acc_name; 
+                    $persen_arr_b[$b]['total_body'] = $total_body; 
+
+                    $b++;
+                    }
+                }
+
+                // dd($persen_arr_b);
+
+                foreach($persen_arr_b as $val){
+                    // dd($val);
+                    $key = array_search($val['acc_name'], array_column($dsales, 'acc_name'));
+                    $keyy = $key + 6;
+                    $total_body_persen = $val['total_body'];
+                    $percent = $total_body_persen/$total_all_body;
+                    $percent_friendly = number_format($percent * 100, 2);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue( 'S'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('S')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+                
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('R' .  ($sales_code_count + 6), $total_all_body)
+                ->setCellValue('S' .  ($sales_code_count + 6), ($total_all_body >0)? 100 : '')
+                ->setCellValue('T' .  ($sales_code_count + 6), $t_april_b)
+                ->setCellValue('U' .  ($sales_code_count + 6), $t_mei_b)
+                ->setCellValue('V' .  ($sales_code_count + 6), $t_juni_b)
+                ->setCellValue('W' .  ($sales_code_count + 6), $t_juli_b)
+                ->setCellValue('X' .  ($sales_code_count + 6), $t_agustus_b)
+                ->setCellValue('Y' .  ($sales_code_count + 6), $t_september_b)
+                ->setCellValue('Z' .  ($sales_code_count + 6), $t_oktober_b)
+                ->setCellValue('AA' .  ($sales_code_count + 6), $t_november_b)
+                ->setCellValue('AB' .  ($sales_code_count + 6), $t_desember_b)
+                ->setCellValue('AC' .  ($sales_code_count + 6), $t_januari_b)
+                ->setCellValue('AD' .  ($sales_code_count + 6), $t_februari_b)
+                ->setCellValue('AE' .  ($sales_code_count + 6), $t_maret_b);
+           
+                
+
+                $total_all_unit = 0;
+                $t_april_u= 0;
+                $t_mei_u= 0;
+                $t_juni_u= 0;
+                $t_juli_u= 0;
+                $t_agustus_u= 0;
+                $t_september_u= 0;
+                $t_oktober_u= 0;
+                $t_november_u= 0;
+                $t_desember_u= 0;
+                $t_januari_u= 0;
+                $t_februari_u= 0;
+                $t_maret_u= 0;
+                $persen_arr_u = array();
+                $u=0;
+                foreach ($sales_unit as $key => $value) {
+                    $key = array_search($value->acc_name, array_column($dsales, 'acc_name'));
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + 6;
+                    $total_unit = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue( 'AG'.$keyy, $total_unit)
+                    ->setCellValue( 'AI'.$keyy, $value->sapril)
+                    ->setCellValue( 'AJ'.$keyy, $value->smei)
+                    ->setCellValue( 'AK'.$keyy, $value->sjuni)
+                    ->setCellValue( 'AL'.$keyy, $value->sjuli)
+                    ->setCellValue( 'AM'.$keyy, $value->sagustus)
+                    ->setCellValue( 'AN'.$keyy, $value->sseptember)
+                    ->setCellValue( 'AO'.$keyy, $value->soktober)
+                    ->setCellValue( 'AP'.$keyy, $value->snovember)
+                    ->setCellValue( 'AQ'.$keyy, $value->sdesember)
+                    ->setCellValue( 'AR'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'AS'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'AT'.$keyy, $value->smaret);
+
+                    $total_all_unit = $total_all_unit + $total_unit;
+
+                    $t_april_u=  $t_april_u +  $value->sapril;
+                    $t_mei_u= $t_mei_u + $value->smei;
+                    $t_juni_u=  $t_juni_u + $value->sjuni;
+                    $t_juli_u= $t_juli_u + $value->sjuli;
+                    $t_agustus_u=  $t_agustus_u+ $value->sagustus;
+                    $t_september_u= $t_september_u+ $value->sseptember;
+                    $t_oktober_u=  $t_oktober_u+$value->soktober;
+                    $t_november_u=  $t_november_u+$value->snovember;
+                    $t_desember_u=  $t_desember_u+$value->sdesember;
+                    $t_januari_u= $t_januari_u+$value->sjanuari;
+                    $t_februari_u= $t_februari_u+$value->sfebruari;
+                    $t_maret_u= $t_maret_u+$value->smaret;
+
+                    $persen_arr_u[$u]['acc_name'] = $value->acc_name; 
+                    $persen_arr_u[$u]['total_unit'] = $total_unit; 
+                    $u++;
+                }
+                foreach($persen_arr_u as $val){
+                    // dd($val['acc_name']);
+                    $key = array_search($val['acc_name'], array_column($dsales, 'acc_name'));
+                    $keyy = $key + 6;
+                    $total_unit_persen = $val['total_unit'];
+                    $percent = $total_unit_persen/$total_all_unit;
+                    // dd($val['acc_name'].$percent);
+                    $percent_friendly = number_format($percent * 100, 2);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('AH'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('AH')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('AG' .  ($sales_code_count + 6), $total_all_unit)
+                ->setCellValue('AH' .  ($sales_code_count + 6), ($total_all_unit >0)? 100 : '')
+                ->setCellValue('AI' .  ($sales_code_count + 6), $t_april_u)
+                ->setCellValue('AJ' .  ($sales_code_count + 6), $t_mei_u)
+                ->setCellValue('AK' .  ($sales_code_count + 6), $t_juni_u)
+                ->setCellValue('AL' .  ($sales_code_count + 6), $t_juli_u)
+                ->setCellValue('AM' .  ($sales_code_count + 6), $t_agustus_u)
+                ->setCellValue('AN' .  ($sales_code_count + 6), $t_september_u)
+                ->setCellValue('AO' .  ($sales_code_count + 6), $t_oktober_u)
+                ->setCellValue('AP' .  ($sales_code_count + 6), $t_november_u)
+                ->setCellValue('AQ' .  ($sales_code_count + 6), $t_desember_u)
+                ->setCellValue('AR' .  ($sales_code_count + 6), $t_januari_u)
+                ->setCellValue('AS' .  ($sales_code_count + 6), $t_februari_u)
+                ->setCellValue('AT' .  ($sales_code_count + 6), $t_maret_u);
+                
+
+                
+                $total_all_electrik = 0;
+                $t_april_e= 0;
+                $t_mei_e= 0;
+                $t_juni_e= 0;
+                $t_juli_e= 0;
+                $t_agustus_e= 0;
+                $t_september_e= 0;
+                $t_oktober_e= 0;
+                $t_november_e= 0;
+                $t_desember_e= 0;
+                $t_januari_e= 0;
+                $t_februari_e= 0;
+                $t_maret_e= 0;
+                $persen_arr_e = array();
+                $e=0;
+                foreach ($sales_electrik as $key => $value) {
+                    $key = array_search($value->acc_name, array_column($dsales, 'acc_name'));
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + 6;
+                    $total_electrik = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('AV'.$keyy, $total_electrik)
+                    ->setCellValue('AX'.$keyy, $value->sapril)
+                    ->setCellValue( 'AY'.$keyy, $value->smei)
+                    ->setCellValue( 'AZ'.$keyy, $value->sjuni)
+                    ->setCellValue( 'BA'.$keyy, $value->sjuli)
+                    ->setCellValue( 'BB'.$keyy, $value->sagustus)
+                    ->setCellValue( 'BC'.$keyy, $value->sseptember)
+                    ->setCellValue( 'BD'.$keyy, $value->soktober)
+                    ->setCellValue( 'BE'.$keyy, $value->snovember)
+                    ->setCellValue( 'BF'.$keyy, $value->sdesember)
+                    ->setCellValue( 'BG'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'BH'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'BI'.$keyy, $value->smaret);
+
+                    $total_all_electrik = $total_all_electrik + $total_electrik;
+
+                    $t_april_e=  $t_april_e +  $value->sapril;
+                    $t_mei_e= $t_mei_e + $value->smei;
+                    $t_juni_e=  $t_juni_e + $value->sjuni;
+                    $t_juli_e= $t_juli_e + $value->sjuli;
+                    $t_agustus_e=  $t_agustus_e+ $value->sagustus;
+                    $t_september_e= $t_september_e+ $value->sseptember;
+                    $t_oktober_e=  $t_oktober_e+$value->soktober;
+                    $t_november_e=  $t_november_e+$value->snovember;
+                    $t_desember_e=  $t_desember_e+$value->sdesember;
+                    $t_januari_e= $t_januari_e+$value->sjanuari;
+                    $t_februari_e= $t_februari_e+$value->sfebruari;
+                    $t_maret_e= $t_maret_e+$value->smaret;
+
+                    $persen_arr_e[$e]['acc_name'] = $value->acc_name; 
+                    $persen_arr_e[$e]['total_electrik'] = $total_electrik; 
+                    $e++;
+                }
+
+                foreach($persen_arr_e as $val){
+                    // dd($val['acc_name']);
+                    $key = array_search($val['acc_name'], array_column($dsales, 'acc_name'));
+                    $keyy = $key + 6;
+                    $total_electrik_persen = $val['total_electrik'];
+                    $percent = $total_electrik_persen/$total_all_electrik;
+                    // dd($val['acc_name'].$percent);
+                    $percent_friendly = number_format($percent * 100, 2);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('AW'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('AW')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('AV' .  ($sales_code_count + 6), $total_all_electrik)
+                ->setCellValue('AW' .  ($sales_code_count + 6), ($total_all_electrik >0)? 100 : '')
+                ->setCellValue('AX' .  ($sales_code_count + 6), $t_april_e)
+                ->setCellValue('AY' .  ($sales_code_count + 6), $t_mei_e)
+                ->setCellValue('AZ' .  ($sales_code_count + 6), $t_juni_e)
+                ->setCellValue('BA' .  ($sales_code_count + 6), $t_juli_e)
+                ->setCellValue('BB' .  ($sales_code_count + 6), $t_agustus_e)
+                ->setCellValue('BC' .  ($sales_code_count + 6), $t_september_e)
+                ->setCellValue('BD' .  ($sales_code_count + 6), $t_oktober_e)
+                ->setCellValue('BE' .  ($sales_code_count + 6), $t_november_e)
+                ->setCellValue('BF' .  ($sales_code_count + 6), $t_desember_e)
+                ->setCellValue('BG' .  ($sales_code_count + 6), $t_januari_e)
+                ->setCellValue('BH' .  ($sales_code_count + 6), $t_februari_e)
+                ->setCellValue('BI' .  ($sales_code_count + 6), $t_maret_e);
+                
+
+
+
+                // company basis
+                $total_all_cb = 0;
+                $t_april_cb= 0;
+                $t_mei_cb= 0;
+                $t_juni_cb= 0;
+                $t_juli_cb= 0;
+                $t_agustus_cb= 0;
+                $t_september_cb= 0;
+                $t_oktober_cb= 0;
+                $t_november_cb= 0;
+                $t_desember_cb= 0;
+                $t_januari_cb= 0;
+                $t_februari_cb= 0;
+                $t_maret_cb= 0;
+                $persen_arr_cb = array();
+                $cb=0;
+                foreach ($sales_company_basis as $key => $value) {
+                    $key = array_search($value->acc_name, array_column($dsales, 'acc_name'));
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + 6;
+                    $total_cb = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('C'.$keyy, $total_cb)
+                    ->setCellValue('E'.$keyy, $value->sapril)
+                    ->setCellValue( 'F'.$keyy, $value->smei)
+                    ->setCellValue( 'G'.$keyy, $value->sjuni)
+                    ->setCellValue( 'H'.$keyy, $value->sjuli)
+                    ->setCellValue( 'I'.$keyy, $value->sagustus)
+                    ->setCellValue( 'J'.$keyy, $value->sseptember)
+                    ->setCellValue( 'K'.$keyy, $value->soktober)
+                    ->setCellValue( 'L'.$keyy, $value->snovember)
+                    ->setCellValue( 'M'.$keyy, $value->sdesember)
+                    ->setCellValue( 'N'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'O'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'P'.$keyy, $value->smaret);
+
+                    $total_all_cb = $total_all_cb + $total_cb;
+
+                    $t_april_cb=  $t_april_cb +  $value->sapril;
+                    $t_mei_cb= $t_mei_cb + $value->smei;
+                    $t_juni_cb=  $t_juni_cb + $value->sjuni;
+                    $t_juli_cb= $t_juli_cb + $value->sjuli;
+                    $t_agustus_cb=  $t_agustus_cb+ $value->sagustus;
+                    $t_september_cb= $t_september_cb+ $value->sseptember;
+                    $t_oktober_cb=  $t_oktober_cb+$value->soktober;
+                    $t_november_cb=  $t_november_cb+$value->snovember;
+                    $t_desember_cb=  $t_desember_cb+$value->sdesember;
+                    $t_januari_cb= $t_januari_cb+$value->sjanuari;
+                    $t_februari_cb= $t_februari_cb+$value->sfebruari;
+                    $t_maret_cb= $t_maret_cb+$value->smaret;
+
+                    $persen_arr_cb[$cb]['acc_name'] = $value->acc_name; 
+                    $persen_arr_cb[$cb]['total_cb'] = $total_cb; 
+                    $cb++;
+                }
+                // dd($persen_arr_cb);
+
+                // dd($persen_arr_cb);
+                foreach($persen_arr_cb as $val){
+                   
+                    $key = array_search($val['acc_name'], array_column($dsales, 'acc_name'));
+                    // dd($key);
+                    $keyy = $key + 6;
+                    $total_cb_persen = $val['total_cb'];
+                    $percent = $total_cb_persen/$total_all_cb;
+                    // dd($val['acc_name'].$percent);
+                    $percent_friendly = number_format($percent * 100, 2);
+                    // dd($percent_friendly);
+                    $spreadsheet->setActiveSheetIndex(0)
+                                ->setCellValue('D'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('D')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('C' .  ($sales_code_count + 6), $total_all_cb)
+                ->setCellValue('D' .  ($sales_code_count + 6), ($total_all_cb >0)? 100 : '')
+                ->setCellValue('E' .  ($sales_code_count + 6), $t_april_cb)
+                ->setCellValue('F' .  ($sales_code_count + 6), $t_mei_cb)
+                ->setCellValue('G' .  ($sales_code_count + 6), $t_juni_cb)
+                ->setCellValue('H' .  ($sales_code_count + 6), $t_juli_cb)
+                ->setCellValue('I' .  ($sales_code_count + 6), $t_agustus_cb)
+                ->setCellValue('J' .  ($sales_code_count + 6), $t_september_cb)
+                ->setCellValue('K' .  ($sales_code_count + 6), $t_oktober_cb)
+                ->setCellValue('L' .  ($sales_code_count + 6), $t_november_cb)
+                ->setCellValue('M' .  ($sales_code_count + 6), $t_desember_cb)
+                ->setCellValue('N' .  ($sales_code_count + 6), $t_januari_cb)
+                ->setCellValue('O' .  ($sales_code_count + 6), $t_februari_cb)
+                ->setCellValue('P' .  ($sales_code_count + 6), $t_maret_cb);
+                
+
+            }
+
+            
+            // material
+            // dd('saa');
+            if (count((array)$material_code)> 0) {
+                $material_code_count = count($material_code)-1;
+                $i = 0;
+                $x = 6 + $sales_code_count + 1;
+                $dmate = array();
+                foreach ($material_code as $key => $row) {
+                    if($row['acc_code'] != "MATERIAL"){
+                    $dmate[$i]['acc_name'] = $row['acc_name'];
+                    $spreadsheet->setActiveSheetIndex(0)
+                                ->setCellValue('A' . $x, $row['acc_code'])
+                                ->setCellValue('B' . $x, $row['acc_name']);
+
+                    $i++;
+                     $x++;
+                    }
+                }
+                $count_sales_code_row= 6 + $sales_code_count + 1;
+
+                
+
+
+                $total_all_body = 0;
+                $t_april_b= 0;
+                $t_mei_b= 0;
+                $t_juni_b= 0;
+                $t_juli_b= 0;
+                $t_agustus_b= 0;
+                $t_september_b= 0;
+                $t_oktober_b= 0;
+                $t_november_b= 0;
+                $t_desember_b= 0;
+                $t_januari_b= 0;
+                $t_februari_b= 0;
+                $t_maret_b= 0;
+                $persen_arr_b = array();
+                $b= 0;
+                foreach ($material_body as $key => $value) {
+                    // dd($value);
+                    $key = array_search($value->acc_name, array_column($dmate, 'acc_name'));
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + $count_sales_code_row;
+
+                    $total_body = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue( 'R'.$keyy, $total_body)
+                    ->setCellValue( 'T'.$keyy, $value->sapril)
+                    ->setCellValue( 'U'.$keyy, $value->smei)
+                    ->setCellValue( 'V'.$keyy, $value->sjuni)
+                    ->setCellValue( 'W'.$keyy, $value->sjuli)
+                    ->setCellValue( 'X'.$keyy, $value->sagustus)
+                    ->setCellValue( 'Y'.$keyy, $value->sseptember)
+                    ->setCellValue( 'Z'.$keyy, $value->soktober)
+                    ->setCellValue( 'AA'.$keyy, $value->snovember)
+                    ->setCellValue( 'AB'.$keyy, $value->sdesember)
+                    ->setCellValue( 'AC'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'AD'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'AE'.$keyy, $value->smaret);
+
+                    $total_all_body = $total_all_body + $total_body;
+
+                    $t_april_b=  $t_april_b +  $value->sapril;
+                    $t_mei_b= $t_mei_b + $value->smei;
+                    $t_juni_b=  $t_juni_b + $value->sjuni;
+                    $t_juli_b= $t_juli_b + $value->sjuli;
+                    $t_agustus_b=  $t_agustus_b+ $value->sagustus;
+                    $t_september_b= $t_september_b+ $value->sseptember;
+                    $t_oktober_b=  $t_oktober_b+$value->soktober;
+                    $t_november_b=  $t_november_b+$value->snovember;
+                    $t_desember_b=  $t_desember_b+$value->sdesember;
+                    $t_januari_b= $t_januari_b+$value->sjanuari;
+                    $t_februari_b= $t_februari_b+$value->sfebruari;
+                    $t_maret_b= $t_maret_b+$value->smaret;
+
+                    $persen_arr_b[$b]['acc_name'] = $value->acc_name; 
+                    $persen_arr_b[$b]['total_body'] = $total_body; 
+
+                    $b++;
+                }
+
+                // dd($persen_arr_b);
+
+                foreach($persen_arr_b as $val){
+                    // dd($val);
+                    $key = array_search($val['acc_name'], array_column($dmate, 'acc_name'));
+                    $keyy = $key + $count_sales_code_row;
+                    $total_body_persen = $val['total_body'];
+                    $percent = $total_body_persen/$total_all_body;
+                    $percent_friendly = number_format($percent * 100, 2);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue( 'S'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('S')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+                
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('R' .  ($count_sales_code_row + $material_code_count), $total_all_body)
+                ->setCellValue('S' .  ($count_sales_code_row + $material_code_count),  ($total_all_body >0)? 100 : '')
+                ->setCellValue('T' .  ($count_sales_code_row + $material_code_count), $t_april_b)
+                ->setCellValue('U' .  ($count_sales_code_row + $material_code_count), $t_mei_b)
+                ->setCellValue('V' .  ($count_sales_code_row + $material_code_count), $t_juni_b)
+                ->setCellValue('W' .  ($count_sales_code_row + $material_code_count), $t_juli_b)
+                ->setCellValue('X' .  ($count_sales_code_row + $material_code_count), $t_agustus_b)
+                ->setCellValue('Y' .  ($count_sales_code_row + $material_code_count), $t_september_b)
+                ->setCellValue('Z' .  ($count_sales_code_row + $material_code_count), $t_oktober_b)
+                ->setCellValue('AA' .  ($count_sales_code_row + $material_code_count), $t_november_b)
+                ->setCellValue('AB' .  ($count_sales_code_row + $material_code_count), $t_desember_b)
+                ->setCellValue('AC' .  ($count_sales_code_row + $material_code_count), $t_januari_b)
+                ->setCellValue('AD' .  ($count_sales_code_row + $material_code_count), $t_februari_b)
+                ->setCellValue('AE' .  ($count_sales_code_row + $material_code_count), $t_maret_b);
+                
+
+
+                $total_all_unit = 0;
+                $t_april_u= 0;
+                $t_mei_u= 0;
+                $t_juni_u= 0;
+                $t_juli_u= 0;
+                $t_agustus_u= 0;
+                $t_september_u= 0;
+                $t_oktober_u= 0;
+                $t_november_u= 0;
+                $t_desember_u= 0;
+                $t_januari_u= 0;
+                $t_februari_u= 0;
+                $t_maret_u= 0;
+                $persen_arr_u = array();
+                $u=0;
+                foreach ($material_unit as $key => $value) {
+                    $key = array_search($value->acc_name, array_column($dmate, 'acc_name'));
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + $count_sales_code_row;
+                    $total_unit = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue( 'AG'.$keyy, $total_unit)
+                    ->setCellValue( 'AI'.$keyy, $value->sapril)
+                    ->setCellValue( 'AJ'.$keyy, $value->smei)
+                    ->setCellValue( 'AK'.$keyy, $value->sjuni)
+                    ->setCellValue( 'AL'.$keyy, $value->sjuli)
+                    ->setCellValue( 'AM'.$keyy, $value->sagustus)
+                    ->setCellValue( 'AN'.$keyy, $value->sseptember)
+                    ->setCellValue( 'AO'.$keyy, $value->soktober)
+                    ->setCellValue( 'AP'.$keyy, $value->snovember)
+                    ->setCellValue( 'AQ'.$keyy, $value->sdesember)
+                    ->setCellValue( 'AR'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'AS'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'AT'.$keyy, $value->smaret);
+
+                    $total_all_unit = $total_all_unit + $total_unit;
+
+                    $t_april_u=  $t_april_u +  $value->sapril;
+                    $t_mei_u= $t_mei_u + $value->smei;
+                    $t_juni_u=  $t_juni_u + $value->sjuni;
+                    $t_juli_u= $t_juli_u + $value->sjuli;
+                    $t_agustus_u=  $t_agustus_u+ $value->sagustus;
+                    $t_september_u= $t_september_u+ $value->sseptember;
+                    $t_oktober_u=  $t_oktober_u+$value->soktober;
+                    $t_november_u=  $t_november_u+$value->snovember;
+                    $t_desember_u=  $t_desember_u+$value->sdesember;
+                    $t_januari_u= $t_januari_u+$value->sjanuari;
+                    $t_februari_u= $t_februari_u+$value->sfebruari;
+                    $t_maret_u= $t_maret_u+$value->smaret;
+
+                    $persen_arr_u[$u]['acc_name'] = $value->acc_name; 
+                    $persen_arr_u[$u]['total_unit'] = $total_unit; 
+                    $u++;
+                }
+                foreach($persen_arr_u as $val){
+                    // dd($val['acc_name']);
+                    $key = array_search($val['acc_name'], array_column($dmate, 'acc_name'));
+                    $keyy = $key + $count_sales_code_row;
+                    $total_unit_persen = $val['total_unit'];
+                    $percent = $total_unit_persen/$total_all_unit;
+                    // dd($val['acc_name'].$percent);
+                    $percent_friendly = number_format($percent * 100, 2);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('AH'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('AH')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('AG' .  ($count_sales_code_row + $material_code_count), $total_all_unit)
+                ->setCellValue('AH' .  ($count_sales_code_row + $material_code_count),  ($total_all_unit >0)? 100 : '')
+                ->setCellValue('AI' .  ($count_sales_code_row + $material_code_count), $t_april_u)
+                ->setCellValue('AJ' .  ($count_sales_code_row + $material_code_count), $t_mei_u)
+                ->setCellValue('AK' .  ($count_sales_code_row + $material_code_count), $t_juni_u)
+                ->setCellValue('AL' .  ($count_sales_code_row + $material_code_count), $t_juli_u)
+                ->setCellValue('AM' .  ($count_sales_code_row + $material_code_count), $t_agustus_u)
+                ->setCellValue('AN' .  ($count_sales_code_row + $material_code_count), $t_september_u)
+                ->setCellValue('AO' .  ($count_sales_code_row + $material_code_count), $t_oktober_u)
+                ->setCellValue('AP' .  ($count_sales_code_row + $material_code_count), $t_november_u)
+                ->setCellValue('AQ' .  ($count_sales_code_row + $material_code_count), $t_desember_u)
+                ->setCellValue('AR' .  ($count_sales_code_row + $material_code_count), $t_januari_u)
+                ->setCellValue('AS' .  ($count_sales_code_row + $material_code_count), $t_februari_u)
+                ->setCellValue('AT' .  ($count_sales_code_row + $material_code_count), $t_maret_u);
+               
+
+               
+
+
+                $total_all_electrik = 0;
+                $t_april_e= 0;
+                $t_mei_e= 0;
+                $t_juni_e= 0;
+                $t_juli_e= 0;
+                $t_agustus_e= 0;
+                $t_september_e= 0;
+                $t_oktober_e= 0;
+                $t_november_e= 0;
+                $t_desember_e= 0;
+                $t_januari_e= 0;
+                $t_februari_e= 0;
+                $t_maret_e= 0;
+                $persen_arr_e = array();
+                $e=0;
+                foreach ($material_electrik as $key => $value) {
+                    $key = array_search($value->acc_name, array_column($dmate, 'acc_name'));
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + $count_sales_code_row;
+                    $total_electrik = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('AV'.$keyy, $total_electrik)
+                    ->setCellValue('AX'.$keyy, $value->sapril)
+                    ->setCellValue( 'AY'.$keyy, $value->smei)
+                    ->setCellValue( 'AZ'.$keyy, $value->sjuni)
+                    ->setCellValue( 'BA'.$keyy, $value->sjuli)
+                    ->setCellValue( 'BB'.$keyy, $value->sagustus)
+                    ->setCellValue( 'BC'.$keyy, $value->sseptember)
+                    ->setCellValue( 'BD'.$keyy, $value->soktober)
+                    ->setCellValue( 'BE'.$keyy, $value->snovember)
+                    ->setCellValue( 'BF'.$keyy, $value->sdesember)
+                    ->setCellValue( 'BG'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'BH'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'BI'.$keyy, $value->smaret);
+
+                    $total_all_electrik = $total_all_electrik + $total_electrik;
+
+                    $t_april_e=  $t_april_e +  $value->sapril;
+                    $t_mei_e= $t_mei_e + $value->smei;
+                    $t_juni_e=  $t_juni_e + $value->sjuni;
+                    $t_juli_e= $t_juli_e + $value->sjuli;
+                    $t_agustus_e=  $t_agustus_e+ $value->sagustus;
+                    $t_september_e= $t_september_e+ $value->sseptember;
+                    $t_oktober_e=  $t_oktober_e+$value->soktober;
+                    $t_november_e=  $t_november_e+$value->snovember;
+                    $t_desember_e=  $t_desember_e+$value->sdesember;
+                    $t_januari_e= $t_januari_e+$value->sjanuari;
+                    $t_februari_e= $t_februari_e+$value->sfebruari;
+                    $t_maret_e= $t_maret_e+$value->smaret;
+
+                    $persen_arr_e[$e]['acc_name'] = $value->acc_name; 
+                    $persen_arr_e[$e]['total_electrik'] = $total_electrik; 
+                    $e++;
+                }
+
+                foreach($persen_arr_e as $val){
+                    // dd($val['acc_name']);
+                    $key = array_search($val['acc_name'], array_column($dmate, 'acc_name'));
+                    $keyy = $key +$count_sales_code_row;
+                    $total_electrik_persen = $val['total_electrik'];
+                    $percent = $total_electrik_persen/$total_all_electrik;
+                    // dd($val['acc_name'].$percent);
+                    $percent_friendly = number_format($percent * 100, 2);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('AW'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('AW')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('AV' .  ($count_sales_code_row + $material_code_count), $total_all_electrik)
+                ->setCellValue('AW' .  ($count_sales_code_row + $material_code_count),  ($total_all_electrik >0)? 100 : '')
+                ->setCellValue('AX' .  ($count_sales_code_row + $material_code_count), $t_april_e)
+                ->setCellValue('AY' .  ($count_sales_code_row + $material_code_count), $t_mei_e)
+                ->setCellValue('AZ' .  ($count_sales_code_row + $material_code_count), $t_juni_e)
+                ->setCellValue('BA' .  ($count_sales_code_row + $material_code_count), $t_juli_e)
+                ->setCellValue('BB' .  ($count_sales_code_row + $material_code_count), $t_agustus_e)
+                ->setCellValue('BC' .  ($count_sales_code_row + $material_code_count), $t_september_e)
+                ->setCellValue('BD' .  ($count_sales_code_row + $material_code_count), $t_oktober_e)
+                ->setCellValue('BE' .  ($count_sales_code_row + $material_code_count), $t_november_e)
+                ->setCellValue('BF' .  ($count_sales_code_row + $material_code_count), $t_desember_e)
+                ->setCellValue('BG' .  ($count_sales_code_row + $material_code_count), $t_januari_e)
+                ->setCellValue('BH' .  ($count_sales_code_row + $material_code_count), $t_februari_e)
+                ->setCellValue('BI' .  ($count_sales_code_row + $material_code_count), $t_maret_e);
+                
+
+                
+                
+                // company basis
+                $total_all_cb = 0;
+                $t_april_cb= 0;
+                $t_mei_cb= 0;
+                $t_juni_cb= 0;
+                $t_juli_cb= 0;
+                $t_agustus_cb= 0;
+                $t_september_cb= 0;
+                $t_oktober_cb= 0;
+                $t_november_cb= 0;
+                $t_desember_cb= 0;
+                $t_januari_cb= 0;
+                $t_februari_cb= 0;
+                $t_maret_cb= 0;
+                $persen_arr_cb = array();
+                $cb=0;
+                foreach ($material_company_basis as $key => $value) {
+                    $key = array_search($value->acc_name, array_column($dmate, 'acc_name'));
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + $count_sales_code_row;
+                    $total_cb = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('C'.$keyy, $total_cb)
+                    ->setCellValue('E'.$keyy, $value->sapril)
+                    ->setCellValue( 'F'.$keyy, $value->smei)
+                    ->setCellValue( 'G'.$keyy, $value->sjuni)
+                    ->setCellValue( 'H'.$keyy, $value->sjuli)
+                    ->setCellValue( 'I'.$keyy, $value->sagustus)
+                    ->setCellValue( 'J'.$keyy, $value->sseptember)
+                    ->setCellValue( 'K'.$keyy, $value->soktober)
+                    ->setCellValue( 'L'.$keyy, $value->snovember)
+                    ->setCellValue( 'M'.$keyy, $value->sdesember)
+                    ->setCellValue( 'N'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'O'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'P'.$keyy, $value->smaret);
+
+                    $total_all_cb = $total_all_cb + $total_cb;
+
+                    $t_april_cb=  $t_april_cb +  $value->sapril;
+                    $t_mei_cb= $t_mei_cb + $value->smei;
+                    $t_juni_cb=  $t_juni_cb + $value->sjuni;
+                    $t_juli_cb= $t_juli_cb + $value->sjuli;
+                    $t_agustus_cb=  $t_agustus_cb+ $value->sagustus;
+                    $t_september_cb= $t_september_cb+ $value->sseptember;
+                    $t_oktober_cb=  $t_oktober_cb+$value->soktober;
+                    $t_november_cb=  $t_november_cb+$value->snovember;
+                    $t_desember_cb=  $t_desember_cb+$value->sdesember;
+                    $t_januari_cb= $t_januari_cb+$value->sjanuari;
+                    $t_februari_cb= $t_februari_cb+$value->sfebruari;
+                    $t_maret_cb= $t_maret_cb+$value->smaret;
+
+                    $persen_arr_cb[$cb]['acc_name'] = $value->acc_name; 
+                    $persen_arr_cb[$cb]['total_cb'] = $total_cb; 
+                    $cb++;
+                }
+                // dd($persen_arr_cb);
+
+                // dd($persen_arr_cb);
+                foreach($persen_arr_cb as $val){
+                   
+                    $key = array_search($val['acc_name'], array_column($dmate, 'acc_name'));
+                    // dd($key);
+                    $keyy = $key + $count_sales_code_row;
+                    $total_cb_persen = $val['total_cb'];
+                    $percent = $total_cb_persen/$total_all_cb;
+                    // dd($val['acc_name'].$percent);
+                    $percent_friendly = number_format($percent * 100, 2);
+                    // dd($percent_friendly);
+                    $spreadsheet->setActiveSheetIndex(0)
+                                ->setCellValue('D'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('D')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('C' .  ($count_sales_code_row + $material_code_count), $total_all_cb)
+                ->setCellValue('D' .  ($count_sales_code_row + $material_code_count),  ($total_all_cb >0)? 100 : '')
+                ->setCellValue('E' .  ($count_sales_code_row + $material_code_count), $t_april_cb)
+                ->setCellValue('F' .  ($count_sales_code_row + $material_code_count), $t_mei_cb)
+                ->setCellValue('G' .  ($count_sales_code_row + $material_code_count), $t_juni_cb)
+                ->setCellValue('H' .  ($count_sales_code_row + $material_code_count), $t_juli_cb)
+                ->setCellValue('I' .  ($count_sales_code_row + $material_code_count), $t_agustus_cb)
+                ->setCellValue('J' .  ($count_sales_code_row + $material_code_count), $t_september_cb)
+                ->setCellValue('K' .  ($count_sales_code_row + $material_code_count), $t_oktober_cb)
+                ->setCellValue('L' .  ($count_sales_code_row + $material_code_count), $t_november_cb)
+                ->setCellValue('M' .  ($count_sales_code_row + $material_code_count), $t_desember_cb)
+                ->setCellValue('N' .  ($count_sales_code_row + $material_code_count), $t_januari_cb)
+                ->setCellValue('O' .  ($count_sales_code_row + $material_code_count), $t_februari_cb)
+                ->setCellValue('P' .  ($count_sales_code_row + $material_code_count), $t_maret_cb);
+               
+               
+
+            }
+
+            if (count((array)$expense_code) > 0) {
+                $expense_code_count = count($expense_code)-1;
+                $i = 0;
+                $x = 6 + $sales_code_count + $material_code_count + 2;
+                // dd($x);
+                $dexpen= array();
+                foreach ($expense_code as $key => $row) {
+                    // $acc = explode("_",$row->acc_code);
+                    // $acc_code = $acc[0];
+                    // $acc_name = $acc[1];
+                    $dexpen[$i]['acc_name'] = $row['acc_name'];
+                    $spreadsheet->setActiveSheetIndex(0)
+                                ->setCellValue('A' . $x, $row['acc_code'])
+                                ->setCellValue('B' . $x, $row['acc_name']);
+
+                    $i++;
+                     $x++;
+                }
+
+                $count_material_code_row= 6 + $sales_code_count + $material_code_count + 2;
+              
+
+                $total_all_body = 0;
+                $t_april_b= 0;
+                $t_mei_b= 0;
+                $t_juni_b= 0;
+                $t_juli_b= 0;
+                $t_agustus_b= 0;
+                $t_september_b= 0;
+                $t_oktober_b= 0;
+                $t_november_b= 0;
+                $t_desember_b= 0;
+                $t_januari_b= 0;
+                $t_februari_b= 0;
+                $t_maret_b= 0;
+                $persen_arr_b = array();
+                $b= 0;
+
+                foreach ($expense_body as $key => $value) {
+                    // dd($value);
+                    $acc = explode("_",$value->acc_code);
+                    $acc_code = $acc[0];
+                    $acc_name = $acc[1];
+                    $key = array_search($acc_name, array_column($dexpen, 'acc_name'));
+
+                    // dd($key);
+                    if($key != false){
+                   
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + $count_material_code_row;
+
+                    $total_body = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue( 'R'.$keyy, $total_body)
+                    ->setCellValue( 'T'.$keyy, $value->sapril)
+                    ->setCellValue( 'U'.$keyy, $value->smei)
+                    ->setCellValue( 'V'.$keyy, $value->sjuni)
+                    ->setCellValue( 'W'.$keyy, $value->sjuli)
+                    ->setCellValue( 'X'.$keyy, $value->sagustus)
+                    ->setCellValue( 'Y'.$keyy, $value->sseptember)
+                    ->setCellValue( 'Z'.$keyy, $value->soktober)
+                    ->setCellValue( 'AA'.$keyy, $value->snovember)
+                    ->setCellValue( 'AB'.$keyy, $value->sdesember)
+                    ->setCellValue( 'AC'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'AD'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'AE'.$keyy, $value->smaret);
+
+                    $total_all_body = $total_all_body + $total_body;
+
+                    $t_april_b=  $t_april_b +  $value->sapril;
+                    $t_mei_b= $t_mei_b + $value->smei;
+                    $t_juni_b=  $t_juni_b + $value->sjuni;
+                    $t_juli_b= $t_juli_b + $value->sjuli;
+                    $t_agustus_b=  $t_agustus_b+ $value->sagustus;
+                    $t_september_b= $t_september_b+ $value->sseptember;
+                    $t_oktober_b=  $t_oktober_b+$value->soktober;
+                    $t_november_b=  $t_november_b+$value->snovember;
+                    $t_desember_b=  $t_desember_b+$value->sdesember;
+                    $t_januari_b= $t_januari_b+$value->sjanuari;
+                    $t_februari_b= $t_februari_b+$value->sfebruari;
+                    $t_maret_b= $t_maret_b+$value->smaret;
+
+                    $persen_arr_b[$b]['acc_name'] = $acc_name; 
+                    $persen_arr_b[$b]['total_body'] = $total_body; 
+
+                    $b++;
+                    }
+                }
+
+                // dd($persen_arr_b);
+
+                foreach($persen_arr_b as $val){
+                    // dd($val);
+                    $key = array_search($val['acc_name'], array_column($dexpen, 'acc_name'));
+                    $keyy = $key + $count_material_code_row;
+                    $total_body_persen = $val['total_body'];
+                    $percent = $total_body_persen/$total_all_body;
+                    $percent_friendly = number_format($percent * 100, 2);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue( 'S'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('S')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+                
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('R' .  ($count_material_code_row + $expense_code_count), $total_all_body)
+                ->setCellValue('S' .  ($count_material_code_row + $expense_code_count), ($total_all_body >0)? 100 : '')
+                ->setCellValue('T' .  ($count_material_code_row + $expense_code_count), $t_april_b)
+                ->setCellValue('U' .  ($count_material_code_row + $expense_code_count), $t_mei_b)
+                ->setCellValue('V' .  ($count_material_code_row + $expense_code_count), $t_juni_b)
+                ->setCellValue('W' .  ($count_material_code_row + $expense_code_count), $t_juli_b)
+                ->setCellValue('X' .  ($count_material_code_row + $expense_code_count), $t_agustus_b)
+                ->setCellValue('Y' .  ($count_material_code_row + $expense_code_count), $t_september_b)
+                ->setCellValue('Z' .  ($count_material_code_row + $expense_code_count), $t_oktober_b)
+                ->setCellValue('AA' .  ($count_material_code_row + $expense_code_count), $t_november_b)
+                ->setCellValue('AB' .  ($count_material_code_row + $expense_code_count), $t_desember_b)
+                ->setCellValue('AC' .  ($count_material_code_row + $expense_code_count), $t_januari_b)
+                ->setCellValue('AD' .  ($count_material_code_row + $expense_code_count), $t_februari_b)
+                ->setCellValue('AE' .  ($count_material_code_row + $expense_code_count), $t_maret_b);
+               
+
+                $total_all_unit = 0;
+                $t_april_u= 0;
+                $t_mei_u= 0;
+                $t_juni_u= 0;
+                $t_juli_u= 0;
+                $t_agustus_u= 0;
+                $t_september_u= 0;
+                $t_oktober_u= 0;
+                $t_november_u= 0;
+                $t_desember_u= 0;
+                $t_januari_u= 0;
+                $t_februari_u= 0;
+                $t_maret_u= 0;
+                $persen_arr_u = array();
+                $u=0;
+
+                foreach ($expense_unit as $key => $value) {
+                    $acc = explode("_",$value->acc_code);
+                    $acc_code = $acc[0];
+                    $acc_name = $acc[1];
+                    $key = array_search($acc_name, array_column($dexpen, 'acc_name'));
+                    if($key != false){
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + $count_material_code_row;
+                    $total_unit = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue( 'AG'.$keyy, $total_unit)
+                    ->setCellValue( 'AI'.$keyy, $value->sapril)
+                    ->setCellValue( 'AJ'.$keyy, $value->smei)
+                    ->setCellValue( 'AK'.$keyy, $value->sjuni)
+                    ->setCellValue( 'AL'.$keyy, $value->sjuli)
+                    ->setCellValue( 'AM'.$keyy, $value->sagustus)
+                    ->setCellValue( 'AN'.$keyy, $value->sseptember)
+                    ->setCellValue( 'AO'.$keyy, $value->soktober)
+                    ->setCellValue( 'AP'.$keyy, $value->snovember)
+                    ->setCellValue( 'AQ'.$keyy, $value->sdesember)
+                    ->setCellValue( 'AR'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'AS'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'AT'.$keyy, $value->smaret);
+
+                    $total_all_unit = $total_all_unit + $total_unit;
+
+                    $t_april_u=  $t_april_u +  $value->sapril;
+                    $t_mei_u= $t_mei_u + $value->smei;
+                    $t_juni_u=  $t_juni_u + $value->sjuni;
+                    $t_juli_u= $t_juli_u + $value->sjuli;
+                    $t_agustus_u=  $t_agustus_u+ $value->sagustus;
+                    $t_september_u= $t_september_u+ $value->sseptember;
+                    $t_oktober_u=  $t_oktober_u+$value->soktober;
+                    $t_november_u=  $t_november_u+$value->snovember;
+                    $t_desember_u=  $t_desember_u+$value->sdesember;
+                    $t_januari_u= $t_januari_u+$value->sjanuari;
+                    $t_februari_u= $t_februari_u+$value->sfebruari;
+                    $t_maret_u= $t_maret_u+$value->smaret;
+
+                    $persen_arr_u[$u]['acc_name'] = $acc_name; 
+                    $persen_arr_u[$u]['total_unit'] = $total_unit; 
+                    $u++;
+                    }
+                }
+
+                foreach($persen_arr_u as $val){
+                    // dd($val['acc_name']);
+                    $key = array_search($val['acc_name'], array_column($dexpen, 'acc_name'));
+                    $keyy = $key + $count_material_code_row;
+                    $total_unit_persen = $val['total_unit'];
+                    $percent = $total_unit_persen/$total_all_unit;
+                    // dd($val['acc_name'].$percent);
+                    $percent_friendly = number_format($percent * 100, 2);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('AH'.$keyy, $percent_friendly);
+                }
+
+                $sheet->getStyle('AH')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('AG' .  ($count_material_code_row + $expense_code_count), $total_all_unit)
+                ->setCellValue('AH' .  ($count_material_code_row + $expense_code_count),  ($total_all_unit >0)? 100 : '')
+                ->setCellValue('AI' .  ($count_material_code_row + $expense_code_count), $t_april_u)
+                ->setCellValue('AJ' .  ($count_material_code_row + $expense_code_count), $t_mei_u)
+                ->setCellValue('AK' .  ($count_material_code_row + $expense_code_count), $t_juni_u)
+                ->setCellValue('AL' .  ($count_material_code_row + $expense_code_count), $t_juli_u)
+                ->setCellValue('AM' .  ($count_material_code_row + $expense_code_count), $t_agustus_u)
+                ->setCellValue('AN' .  ($count_material_code_row + $expense_code_count), $t_september_u)
+                ->setCellValue('AO' .  ($count_material_code_row + $expense_code_count), $t_oktober_u)
+                ->setCellValue('AP' .  ($count_material_code_row + $expense_code_count), $t_november_u)
+                ->setCellValue('AQ' .  ($count_material_code_row + $expense_code_count), $t_desember_u)
+                ->setCellValue('AR' .  ($count_material_code_row + $expense_code_count), $t_januari_u)
+                ->setCellValue('AS' .  ($count_material_code_row + $expense_code_count), $t_februari_u)
+                ->setCellValue('AT' .  ($count_material_code_row + $expense_code_count), $t_maret_u);
+               
+
+                
+                
+                $total_all_electrik = 0;
+                $t_april_e= 0;
+                $t_mei_e= 0;
+                $t_juni_e= 0;
+                $t_juli_e= 0;
+                $t_agustus_e= 0;
+                $t_september_e= 0;
+                $t_oktober_e= 0;
+                $t_november_e= 0;
+                $t_desember_e= 0;
+                $t_januari_e= 0;
+                $t_februari_e= 0;
+                $t_maret_e= 0;
+                $persen_arr_e = array();
+                $e=0;
+                foreach ($expense_electrik as $key => $value) {
+                    $acc = explode("_",$value->acc_code);
+                    $acc_code = $acc[0];
+                    $acc_name = $acc[1];
+                    $key = array_search($acc_name, array_column($dexpen, 'acc_name'));
+                    if($key != false){
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + $count_material_code_row;
+                    $total_electrik = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('AV'.$keyy, $total_electrik)
+                    ->setCellValue('AX'.$keyy, $value->sapril)
+                    ->setCellValue( 'AY'.$keyy, $value->smei)
+                    ->setCellValue( 'AZ'.$keyy, $value->sjuni)
+                    ->setCellValue( 'BA'.$keyy, $value->sjuli)
+                    ->setCellValue( 'BB'.$keyy, $value->sagustus)
+                    ->setCellValue( 'BC'.$keyy, $value->sseptember)
+                    ->setCellValue( 'BD'.$keyy, $value->soktober)
+                    ->setCellValue( 'BE'.$keyy, $value->snovember)
+                    ->setCellValue( 'BF'.$keyy, $value->sdesember)
+                    ->setCellValue( 'BG'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'BH'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'BI'.$keyy, $value->smaret);
+
+                    $total_all_electrik = $total_all_electrik + $total_electrik;
+
+                    $t_april_e=  $t_april_e +  $value->sapril;
+                    $t_mei_e= $t_mei_e + $value->smei;
+                    $t_juni_e=  $t_juni_e + $value->sjuni;
+                    $t_juli_e= $t_juli_e + $value->sjuli;
+                    $t_agustus_e=  $t_agustus_e+ $value->sagustus;
+                    $t_september_e= $t_september_e+ $value->sseptember;
+                    $t_oktober_e=  $t_oktober_e+$value->soktober;
+                    $t_november_e=  $t_november_e+$value->snovember;
+                    $t_desember_e=  $t_desember_e+$value->sdesember;
+                    $t_januari_e= $t_januari_e+$value->sjanuari;
+                    $t_februari_e= $t_februari_e+$value->sfebruari;
+                    $t_maret_e= $t_maret_e+$value->smaret;
+
+                    $persen_arr_e[$e]['acc_name'] = $acc_name; 
+                    $persen_arr_e[$e]['total_electrik'] = $total_electrik; 
+                    $e++;
+                    }
+                }
+
+                foreach($persen_arr_e as $val){
+                    // dd($val['acc_name']);
+                    $key = array_search($val['acc_name'], array_column($dexpen, 'acc_name'));
+                    $keyy = $key +$count_material_code_row;
+                    $total_electrik_persen = $val['total_electrik'];
+                    $percent = $total_electrik_persen/$total_all_electrik;
+                    // dd($val['acc_name'].$percent);
+                    $percent_friendly = number_format($percent * 100, 2);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('AW'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('AW')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('AV' .  ($count_material_code_row + $expense_code_count), $total_all_electrik)
+                ->setCellValue('AW' .  ($count_material_code_row + $expense_code_count),  ($total_all_electrik >0)? 100 : '')
+                ->setCellValue('AX' .  ($count_material_code_row + $expense_code_count), $t_april_e)
+                ->setCellValue('AY' .  ($count_material_code_row + $expense_code_count), $t_mei_e)
+                ->setCellValue('AZ' .  ($count_material_code_row + $expense_code_count), $t_juni_e)
+                ->setCellValue('BA' .  ($count_material_code_row + $expense_code_count), $t_juli_e)
+                ->setCellValue('BB' .  ($count_material_code_row + $expense_code_count), $t_agustus_e)
+                ->setCellValue('BC' .  ($count_material_code_row + $expense_code_count), $t_september_e)
+                ->setCellValue('BD' .  ($count_material_code_row + $expense_code_count), $t_oktober_e)
+                ->setCellValue('BE' .  ($count_material_code_row + $expense_code_count), $t_november_e)
+                ->setCellValue('BF' .  ($count_material_code_row + $expense_code_count), $t_desember_e)
+                ->setCellValue('BG' .  ($count_material_code_row + $expense_code_count), $t_januari_e)
+                ->setCellValue('BH' .  ($count_material_code_row + $expense_code_count), $t_februari_e)
+                ->setCellValue('BI' .  ($count_material_code_row + $expense_code_count), $t_maret_e);
+                
+
+               
+                $total_all_cb = 0;
+                $t_mei_cb= 0;
+                $t_juni_cb= 0;
+                $t_juli_cb= 0;
+                $t_agustus_cb= 0;
+                $t_september_cb= 0;
+                $t_oktober_cb= 0;
+                $t_november_cb= 0;
+                $t_desember_cb= 0;
+                $t_januari_cb= 0;
+                $t_februari_cb= 0;
+                $t_maret_cb= 0;
+                $persen_arr_cb = array();
+                $cb=0;
+             
+                foreach ($expense_company_basis as $key => $value) {
+                    $acc = explode("_",$value->acc_code);
+                    $acc_code = $acc[0];
+                    $acc_name = $acc[1];
+                    $key = array_search($acc_name, array_column($dexpen, 'acc_name'));
+                    if($key != false){
+                    // dd($value->sapril.$value->acc_name);
+                    // dd(array_column($dsales, 'acc_code'));
+                    $keyy = $key + $count_material_code_row;
+                    $total_cb = ($value->sapril +  $value->smei + $value->sjuni +$value->sjuli+ $value->sagustus + $value->sseptember + $value->soktober+ $value->snovember+$value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $spreadsheet->setActiveSheetIndex( 0 )
+                    ->setCellValue('C'.$keyy, $total_cb)
+                    ->setCellValue('E'.$keyy, $value->sapril)
+                    ->setCellValue( 'F'.$keyy, $value->smei)
+                    ->setCellValue( 'G'.$keyy, $value->sjuni)
+                    ->setCellValue( 'H'.$keyy, $value->sjuli)
+                    ->setCellValue( 'I'.$keyy, $value->sagustus)
+                    ->setCellValue( 'J'.$keyy, $value->sseptember)
+                    ->setCellValue( 'K'.$keyy, $value->soktober)
+                    ->setCellValue( 'L'.$keyy, $value->snovember)
+                    ->setCellValue( 'M'.$keyy, $value->sdesember)
+                    ->setCellValue( 'N'.$keyy, $value->sjanuari)
+                    ->setCellValue( 'O'.$keyy, $value->sfebruari)
+                    ->setCellValue( 'P'.$keyy, $value->smaret);
+
+                    $total_all_cb = $total_all_cb + $total_cb;
+
+                    $t_april_cb=  $t_april_cb +  $value->sapril;
+                    $t_mei_cb= $t_mei_cb + $value->smei;
+                    $t_juni_cb=  $t_juni_cb + $value->sjuni;
+                    $t_juli_cb= $t_juli_cb + $value->sjuli;
+                    $t_agustus_cb=  $t_agustus_cb+ $value->sagustus;
+                    $t_september_cb= $t_september_cb+ $value->sseptember;
+                    $t_oktober_cb=  $t_oktober_cb+$value->soktober;
+                    $t_november_cb=  $t_november_cb+$value->snovember;
+                    $t_desember_cb=  $t_desember_cb+$value->sdesember;
+                    $t_januari_cb= $t_januari_cb+$value->sjanuari;
+                    $t_februari_cb= $t_februari_cb+$value->sfebruari;
+                    $t_maret_cb= $t_maret_cb+$value->smaret;
+
+                    $persen_arr_cb[$cb]['acc_name'] = $acc_name; 
+                    $persen_arr_cb[$cb]['total_cb'] = $total_cb; 
+                    $cb++;
+                    }
+                }
+
+                 // dd($persen_arr_cb);
+                 foreach($persen_arr_cb as $val){
+                   
+                    $key = array_search($val['acc_name'], array_column($dexpen, 'acc_name'));
+                    // dd($key);
+                    $keyy = $key + $count_material_code_row;
+                    $total_cb_persen = $val['total_cb'];
+                    $percent = $total_cb_persen/$total_all_cb;
+                    // dd($val['acc_name'].$percent);
+                    $percent_friendly = number_format($percent * 100, 2);
+                    // dd($percent_friendly);
+                    $spreadsheet->setActiveSheetIndex(0)
+                                ->setCellValue('D'.$keyy, $percent_friendly);
+                }
+                $sheet->getStyle('D')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+
+                $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('C' .  ($count_material_code_row + $expense_code_count), $total_all_cb)
+                ->setCellValue('D' .  ($count_material_code_row + $expense_code_count),  ($total_all_cb >0)? 100 : '')
+                ->setCellValue('E' .  ($count_material_code_row + $expense_code_count), $t_april_cb)
+                ->setCellValue('F' .  ($count_material_code_row + $expense_code_count), $t_mei_cb)
+                ->setCellValue('G' .  ($count_material_code_row + $expense_code_count), $t_juni_cb)
+                ->setCellValue('H' .  ($count_material_code_row + $expense_code_count), $t_juli_cb)
+                ->setCellValue('I' .  ($count_material_code_row + $expense_code_count), $t_agustus_cb)
+                ->setCellValue('J' .  ($count_material_code_row + $expense_code_count), $t_september_cb)
+                ->setCellValue('K' .  ($count_material_code_row + $expense_code_count), $t_oktober_cb)
+                ->setCellValue('L' .  ($count_material_code_row + $expense_code_count), $t_november_cb)
+                ->setCellValue('M' .  ($count_material_code_row + $expense_code_count), $t_desember_cb)
+                ->setCellValue('N' .  ($count_material_code_row + $expense_code_count), $t_januari_cb)
+                ->setCellValue('O' .  ($count_material_code_row + $expense_code_count), $t_februari_cb)
+                ->setCellValue('P' .  ($count_material_code_row + $expense_code_count), $t_maret_cb);
+               
+                
+            }
+
+        $filename = 'Export data'. date('d/m/Y');
+
+        // Redirect output to a client’s web browser (Xlsx)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // header('Content-Disposition: attachment;filename="Report Excel.xlsx"');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+        $response =  array(
+            'op' => 'ok',
+            'filename' => $filename,
+            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
+        );
+
+        echo json_encode($response);
     }
 }

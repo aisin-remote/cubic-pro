@@ -21,6 +21,7 @@ $(document).ready(function(){
             { data: 'acc_code', name: 'acc_code'},
             { data: 'acc_name', name: 'acc_name'},
             { data: 'group', name: 'group'},
+            { data: 'code', name: 'code'},
             { data: 'april', name: 'april'},
             { data: 'mei', name: 'mei'},
             { data: 'juni', name: 'juni'},

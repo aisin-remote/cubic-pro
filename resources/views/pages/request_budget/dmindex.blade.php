@@ -34,13 +34,14 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card-box">
-                <div class="table-responsive">     
+                <div class="table-responsive">
                     <table class="table m-0 table-colored table-inverse" id="table-dm">
                         <thead>
                             <tr>
                                 <th>Account Code</th>
                                 <th>Account Name</th>
                                 <th>Group</th>
+                                <th>Code</th>
                                 <th>april</th>
                                 <th>mei</th>
                                 <th>juni</th>

@@ -18,6 +18,7 @@ $(document).ready(function(){
 			// }
    //      },
         columns : [
+            { data: 'dept', name: 'dept'},
             { data: 'budget_no', name: 'budget_no'},
             { data: 'line', name: 'line'},
             { data: 'profit_center', name: 'profit_center'},

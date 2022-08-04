@@ -29,6 +29,7 @@ class DirectMaterialImport implements ToModel, WithHeadingRow, WithBatchInserts
         $acc_code  = isset($row['acc_code']) ? $row['acc_code'] : null;
         $acc_name  = isset($row['acc_name']) ? $row['acc_name'] : null;
         $group     = isset($row['group']) ? $row['group'] : null;
+        $code      = isset($row['code']) ? $row['code'] : null;
         $april     = isset($row['apr']) ? $row['apr'] : null;
         $mei       = isset($row['may']) ? $row['may'] : null;
         $juni      = isset($row['jun']) ? $row['jun'] : null;
@@ -45,11 +46,18 @@ class DirectMaterialImport implements ToModel, WithHeadingRow, WithBatchInserts
         $fy_second = isset($row['fy_2022_2nd']) ? $row['fy_2022_2nd'] : null;
         $fy_total  = isset($row['fy_2022_total']) ? $row['fy_2022_total'] : null;
 
-        $cek = DmaterialRb::where('acc_name', $acc_name)->where('group', $group)->first();
+        $cek = DmaterialRb::where([
+            'acc_name' => $acc_name,
+            'group' => $group,
+            'code' => $code
+        ])->first();
 
         if ($cek) {
-            $materialrb = SalesRb::where('acc_name', $acc_name)->where('group', $group)
-                ->update([
+            $materialrb = DmaterialRb::where([
+                'acc_name' => $acc_name,
+                'group' => $group,
+                'code' => $code
+            ])->update([
                     'april'     => $april,
                     'mei'       => $mei,
                     'juni'      => $juni,
@@ -71,6 +79,7 @@ class DirectMaterialImport implements ToModel, WithHeadingRow, WithBatchInserts
             $materialrb->acc_code  = $acc_code;
             $materialrb->acc_name  = $acc_name;
             $materialrb->group     = $group;
+            $materialrb->code      = $code;
             $materialrb->april     = $april;
             $materialrb->mei       = $mei;
             $materialrb->juni      = $juni;

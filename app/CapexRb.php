@@ -8,6 +8,6 @@ class CapexRb extends Model
 {
 	protected $table = 'capex_request_budgets';
 	protected $fillable = ['*'];
-    protected $hidden = ['created_at', 'updated_at'];
+    // protected $hidden = ['created_at', 'updated_at'];
 
 }
