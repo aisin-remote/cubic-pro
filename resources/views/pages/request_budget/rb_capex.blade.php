@@ -35,19 +35,10 @@
                                 <input type="file" id="file" name="file" class="form-control" accept=".csv,.xlsx,.xls">
                                 <label class="text-muted">*) File format .csv,.xlsx,.xls</label>
                                 <br>
-                                <a href="{{ url('files/Template_Capex2.xlsx') }}" ><i class="mdi mdi-download"></i>  Format RB Capex &emsp;</a>
+                                <a href="{{ url('files/Template_Capex.xlsx') }}" ><i class="mdi mdi-download"></i>  Format RB Capex &emsp;</a>
                                 <!-- <a href="{{ url('files/Template_Capex_body') }}" ><i class="mdi mdi-download"></i>  Format RB Capex Body</a> -->
                             </div>
-                            <!-- <div class="form-group">
-                                <label>
-                                <input type="checkbox" name="overwrite"> Overwrite (BE CAREFUL! All table records DELETED!)
-                                </label>
-                            </div>
-                            <div class="form-group">
-                                <label>
-                                <input type="checkbox" name="revision"> Is This a budget revision ? (Please checked for YES)
-                                </label>
-                            </div> -->
+                         
                         </div>
 
                         <div class="col-md-12 text-left">

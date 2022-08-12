@@ -34,8 +34,8 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card-box">
-                <div class="table-responsive">
-                <div class="pesan" id="pesan_daftar"></div>
+                <div class="table-responsive"> 
+                    <div class="pesan" id="pesan_daftar"></div>
                                  <div class="sebentar_daftar" id="sebentar_daftar"></div>
 
                                     
@@ -45,23 +45,24 @@
                                 </div>
                             </div>
                             <br>
-                    <div class="col-md-6">
+                        <div class="col-md-6">
                         <div class="row">
                             <div class="col-md-4">
 
                                 <select class="form-control" id="dept" name="dept" aria-label="Default select example">
-                                    <option value="" selected>--Pilih Dept--</option>
-                                    <option value="QA_SYSTEM">QA_SYSTEM</option>
-                                    <option value="QA_SYSTEM">QA_SYSTEM</option>
-                                    <option value="QA_SYSTEM">QA_SYSTEM</option>
-                                    <option value="QA_SYSTEM">QA_SYSTEM</option>
+                                    <option value="">--Pilih--</option>
+                                        @foreach($dep_data as $val)
+                                        <option value="{{$val->dept}}">{{$val->dept}}</option>
+
+                                        @endforeach
                                 </select>
                             </div>
                             <div class="col-md-2">
                             <button type="button" id="btn-download" class="btn btn-info btn-bordered waves-effect waves-light"> <i class="glyphicon glyphicon-save-file"></i> Download</button>
                             </div>
                         </div>
-                    </div>     
+                    </div>    
+                  
                     <table class="table m-0 table-colored table-inverse" id="table-cpx">
                         <thead>
                             <tr>
@@ -109,7 +110,6 @@
             </div>
         </div>
     </div>
-
 </div>
 <input type="hidden" id="is_budget" value="{{\Entrust::hasRole(['budget'])?'1':'0'}}">
 <!-- Modal for question -->

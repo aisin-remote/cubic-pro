@@ -35,7 +35,7 @@
         <div class="col-md-12">
             <div class="card-box">
                 <div class="table-responsive">
-                <div class="pesan" id="pesan_daftar"></div>
+                    <div class="pesan" id="pesan_daftar"></div>
                                  <div class="sebentar_daftar" id="sebentar_daftar"></div>
 
                                     
@@ -50,11 +50,11 @@
                             <div class="col-md-4">
 
                                 <select class="form-control" id="dept" name="dept" aria-label="Default select example">
-                                    <option value="" selected>--Pilih Dept--</option>
-                                    <option value="MTE">MTE</option>
-                                    <option value="MTE">MTE</option>
-                                    <option value="MTE">MTE</option>
-                                    <option value="MTE">MTE</option>
+                                    <option value="">--Pilih--</option>
+                                    @foreach($dep_data as $val)
+                                    <option value="MTE">{{$val->dept}}</option>
+
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-2">
@@ -84,9 +84,10 @@
                                 <th>Budgt. Before CR</th>
                                 <!-- <th>CR</th> -->
                                 <th>Budgt. After CR</th>
-                                <th>Purchase Request</th>
-                                <th>Receiving</th>
-                                <th>SOP</th>
+                                <th>Po</th>
+                                <!-- <th>Purchase Request</th> -->
+                                <th>Gr</th>
+                                <th>Sop</th>
                                 <th>1st D Payment Term</th>
                                 <th>1st D Payment Amount</th>
                                 <th>Final Payment Term</th>

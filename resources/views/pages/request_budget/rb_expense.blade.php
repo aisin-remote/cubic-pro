@@ -35,7 +35,7 @@
                                 <input type="file" id="file" name="file" class="form-control" accept=".csv,.xlsx,.xls">
                                 <label class="text-muted">*) File format .csv,.xlsx,.xls</label>
                                 <br>
-                                <a href="{{ url('files/Template_Expense_New2.xlsx') }}" ><i class="mdi mdi-download"></i> Format RB Expense
+                                <a href="{{ url('files/Template_Expense_New.xlsx') }}" ><i class="mdi mdi-download"></i> Format RB Expense
                                 </a>
                                 <!-- <a href="{{ url('files/Template_Expense_body') }}" ><i class="mdi mdi-download"></i>  Format RB Expense Body</a -->
                             </div>
