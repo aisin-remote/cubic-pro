@@ -52,7 +52,7 @@
                                 <select class="form-control" id="dept" name="dept" aria-label="Default select example">
                                     <option value="">--Pilih--</option>
                                     @foreach($dep_data as $val)
-                                    <option value="MTE">{{$val->dept}}</option>
+                                    <option value="{{$val->dept}}">{{$val->dept}}</option>
 
                                     @endforeach
                                 </select>
@@ -241,6 +241,7 @@ $(document).ready(function(){
 
     $('#btn-download').click(function(){
          var dept = $('#dept').val()
+     
          if(dept =="")
          {
              return false

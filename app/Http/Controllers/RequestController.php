@@ -85,7 +85,7 @@ class RequestController extends Controller
         $Sls = SalesRb::select('acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
         // $sls = $slsx->get();
         return DataTables::of($Sls)->toJson();
-
+     
     }
 
 
@@ -101,34 +101,34 @@ class RequestController extends Controller
             $hasil =0;
             $pesan ='Format tidak sesuai';
             $total = 0;
-
+          
         }
 
         if($hasil==1){
             $reader = IOFactory::createReader('Xlsx');
             $spreadsheet = $reader->load($file);
             $sheet = $spreadsheet->getSheet(0);
-
+            
             $rw = 2;
             $dept = "";
             $arrayPush = array();
             $i= 0;
             foreach ($sheet->getRowIterator() as $row) {
-
+              
                     if( $sheet->getCell("A$rw")->getCalculatedValue()){
 
                     $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
                     $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
-
+                
                 }
                     if($sheet->getCell("A$rw")->getValue() ==""){
                         break;
                     }
-
+                    
                 $i++;
                 $rw++;
                 // dd($dept);
-
+            
             }
 
             if(count($arrayPush)>0){
@@ -177,7 +177,7 @@ class RequestController extends Controller
 
         return redirect()->route('sales.view')->with($res);
 
-
+       
     }
 
     public function materialview()
@@ -215,34 +215,34 @@ class RequestController extends Controller
             $hasil =0;
             $pesan ='Format tidak sesuai';
             $total = 0;
-
+          
         }
 
         if($hasil==1){
             $reader = IOFactory::createReader('Xlsx');
             $spreadsheet = $reader->load($file);
             $sheet = $spreadsheet->getSheet(0);
-
+            
             $rw = 2;
             $dept = "";
             $arrayPush = array();
             $i= 0;
             foreach ($sheet->getRowIterator() as $row) {
-
+              
                     if( $sheet->getCell("A$rw")->getCalculatedValue()){
 
                     $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
                     $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
-
+                
                 }
                     if($sheet->getCell("A$rw")->getValue() ==""){
                         break;
                     }
-
+                    
                 $i++;
                 $rw++;
                 // dd($dept);
-
+            
             }
 
             if(count($arrayPush)>0){
@@ -326,7 +326,7 @@ class RequestController extends Controller
         ob_start();
         $reader = IOFactory::createReader('Xlsx');
         $spreadsheet = $reader->load(public_path('files/Template_Capex_export.xlsx'));
-
+        
         $dept = $request->post('dept');
         $data = CapexRb::where([
             'dept' => $dept
@@ -373,11 +373,11 @@ class RequestController extends Controller
                 ->setCellValue('AH' . $x, $row->januari)
                 ->setCellValue('AI' . $x, $row->februari)
                 ->setCellValue('AJ' . $x, $row->maret);
-
+                
                 $i++;
                 $x++;
             }
-        }
+        } 
         $filename =  'Data Capex' . $dept . date('d/m/Y');
 
         // Redirect output to a client’s web browser (Xlsx)
@@ -405,7 +405,7 @@ class RequestController extends Controller
         );
 
         echo json_encode($response);
-
+    
     }
 
     public function capeximportcek(Request $request){
@@ -419,14 +419,14 @@ class RequestController extends Controller
             $hasil =0;
             $pesan ='Format tidak sesuai';
             $total = 0;
-
+          
         }
 
         if($hasil==1){
             $reader = IOFactory::createReader('Xlsx');
             $spreadsheet = $reader->load($file);
             $sheet = $spreadsheet->getSheet(1);
-
+            
             $rw = 2;
             $dept = "";
             $arrayPush = array();
@@ -441,16 +441,16 @@ class RequestController extends Controller
 
                     $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getOldCalculatedValue();
                     $arrayPush[$i]['price'] = $sheet->getCell("R$rw")->getOldCalculatedValue();
-
+                
                 }
                     if($sheet->getCell("D$rw")->getOldCalculatedValue() ==""){
                         break;
                     }
-
+                    
                 $i++;
                 $rw++;
                 // dd($dept);
-
+            
             }
 
             if(count($arrayPush)>0){
@@ -489,15 +489,15 @@ class RequestController extends Controller
             $title = 'Gagal';
             $type = 'error';
             $message = 'Data gagal di Upload  bukan xlsx!';
-
+          
         }
 
         if($hasil ==1){
-
+            
         $reader = IOFactory::createReader('Xlsx');
         $spreadsheet = $reader->load($file);
         $sheet = $spreadsheet->getSheet(1);
-
+        
         $rw = 2;
         $dept = "";
         $arrayPush = array();
@@ -543,16 +543,16 @@ class RequestController extends Controller
                 $arrayPush[$i]['januari'] = $sheet->getCell("AH$rw")->getValue();
                 $arrayPush[$i]['februari'] = $sheet->getCell("AI$rw")->getValue();
                 $arrayPush[$i]['maret'] = $sheet->getCell("AJ$rw")->getValue();
-
+            
             }
                 if($sheet->getCell("D$rw")->getOldCalculatedValue() ==""){
                     break;
                 }
-
+                
             $i++;
             $rw++;
             // dd($dept);
-
+          
         }
 
     }
@@ -566,7 +566,7 @@ class RequestController extends Controller
             }
 
             DB::beginTransaction();
-
+            
                 try {
                     $delete = CapexRb::where([
                         'dept' => $dept
@@ -578,9 +578,9 @@ class RequestController extends Controller
                         $message = 'Data gagal di Upload';
                         DB::rollBack();
                     }
-
+    
                     $capexrb                         = new CapexRb;
-
+                  
                     if (!$capexrb->insert($arrayPush)) {
                         $hasil =0;
                         $title = 'Gagal';
@@ -594,7 +594,7 @@ class RequestController extends Controller
                         $message = 'Data berhasil di upload';
                         DB::commit();
                     }
-
+    
                 } catch (Exception $ex) {
                     $hasil =0;
                     $title = 'Gagal';
@@ -613,7 +613,7 @@ class RequestController extends Controller
 
         return response()->json($res);
 
-
+   
     }
 
     public function expenseview()
@@ -632,6 +632,7 @@ class RequestController extends Controller
             return response()->json($exp);
         }
         $dep_data = ExpenseRb::select('dept')->groupBy('dept')->get();
+        // dd($dep_data);
         return view('pages.request_budget.expindex',compact('dep_data'));
     }
 
@@ -700,7 +701,7 @@ class RequestController extends Controller
                 ->setCellValue('AL' . $x, $row->februari)
                 ->setCellValue('AM' . $x, $row->maret)
                 ->setCellValue('AN' . $x, $row->checking);
-
+                
                 $i++;
                 $x++;
             }
@@ -716,7 +717,7 @@ class RequestController extends Controller
                     ],
                 ]
             );
-        }
+        } 
         $filename =  'Data Expense' . $dept . date('d/m/Y');
 
         // Redirect output to a client’s web browser (Xlsx)
@@ -744,7 +745,7 @@ class RequestController extends Controller
         );
 
         echo json_encode($response);
-
+    
     }
 
     public function expenseimportcek(Request $request)
@@ -759,14 +760,14 @@ class RequestController extends Controller
             $hasil =0;
             $pesan ='Format tidak sesuai';
             $total = 0;
-
+          
         }
 
         if($hasil==1){
             $reader = IOFactory::createReader('Xlsx');
             $spreadsheet = $reader->load($file);
             $sheet = $spreadsheet->getSheet(0);
-
+            
             $rw = 2;
             $dept = "";
             $arrayPush = array();
@@ -780,16 +781,16 @@ class RequestController extends Controller
 
                     $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getCalculatedValue();
                     $arrayPush[$i]['budget_after_cr'] = $sheet->getCell("T$rw")->getCalculatedValue();
-
+                
                 }
                     if($sheet->getCell("D$rw")->getCalculatedValue() ==""){
                         break;
                     }
-
+                    
                 $i++;
                 $rw++;
                 // dd($dept);
-
+            
             }
 
             if(count($arrayPush)>0){
@@ -828,11 +829,11 @@ class RequestController extends Controller
             $title = 'Gagal';
             $type = 'error';
             $message = 'Data gagal di Upload  bukan xlsx!';
-
+          
         }
 
         if($hasil ==1){
-
+            
         $reader = IOFactory::createReader('Xlsx');
 
 
@@ -875,7 +876,7 @@ class RequestController extends Controller
                 $arrayPush[$i]['po'] = $sheet->getCell("U$rw")->getFormattedValue();
 
 
-
+         
                 $arrayPush[$i]['gr'] = $sheet->getCell("V$rw")->getFormattedValue();
                 $arrayPush[$i]['sop'] = $sheet->getCell("W$rw")->getFormattedValue();
                 $arrayPush[$i]['first_dopayment_term'] = $sheet->getCell("X$rw")->getFormattedValue();
@@ -895,16 +896,16 @@ class RequestController extends Controller
                 $arrayPush[$i]['februari'] = $sheet->getCell("AL$rw")->getCalculatedValue();
                 $arrayPush[$i]['maret'] = $sheet->getCell("AM$rw")->getCalculatedValue();
                 $arrayPush[$i]['checking'] = $sheet->getCell("AN$rw")->getCalculatedValue();
-
+            
             }
                 if($sheet->getCell("D$rw")->getCalculatedValue() ==""){
                     break;
                 }
-
+                
             $i++;
             $rw++;
             // dd($dept);
-
+          
         }
 
     }
@@ -918,7 +919,7 @@ class RequestController extends Controller
             }
 
             DB::beginTransaction();
-
+            
                 try {
                     $delete = ExpenseRb::where([
                         'dept' => $dept
@@ -930,9 +931,9 @@ class RequestController extends Controller
                         $message = 'Data gagal di Upload';
                         DB::rollBack();
                     }
-
+    
                     $capexrb                         = new ExpenseRb;
-
+                  
                     if (!$capexrb->insert($arrayPush)) {
                         $hasil =0;
                         $title = 'Gagal';
@@ -946,7 +947,7 @@ class RequestController extends Controller
                         $message = 'Data berhasil di upload';
                         DB::commit();
                     }
-
+    
                 } catch (Exception $ex) {
                     $hasil =0;
                     $title = 'Gagal';
@@ -965,7 +966,7 @@ class RequestController extends Controller
 
         return response()->json($res);
 
-
+      
     }
 
     public function exportview()
@@ -1682,7 +1683,7 @@ class RequestController extends Controller
         $reader = IOFactory::createReader('Xlsx');
         $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
         // Set document properties
-
+       
 
         // dd($data_master_expense);
         $spreadsheet->getProperties()->setCreator('Aiia')
@@ -1714,46 +1715,46 @@ class RequestController extends Controller
             $sales_code = array();
             $a = 0;
             foreach ($sheet->getRowIterator() as $row) {
-
+    
                 $acc_code = $sheet->getCell("A$sc")->getValue();
                 $acc_name = $sheet->getCell("B$sc")->getValue();
                 $sales_code[$a]['acc_code'] = $acc_code;
                 $sales_code[$a]['acc_name'] = $acc_name;
-
+            
                 $sc++;
                 $a++;
                 if($a === 8){
                     break;
                 }
             }
-
+    
             $mc= 14;
             $material_code = array();
             $b = 0;
             foreach ($sheet->getRowIterator() as $row) {
-
+    
                 $acc_code = $sheet->getCell("A$mc")->getValue();
                 $acc_name = $sheet->getCell("B$mc")->getValue();
                 $material_code[$b]['acc_code'] = $acc_code;
                 $material_code[$b]['acc_name'] = $acc_name;
-
+            
                 $mc++;
                 $b++;
                 if($b ===10){
                     break;
                 }
             }
-
+    
             $ec= 24;
             $expense_code = array();
             $c = 0;
             foreach ($sheet->getRowIterator() as $row) {
-
+    
                 $acc_code = $sheet->getCell("A$ec")->getValue();
                 $acc_name = $sheet->getCell("B$ec")->getValue();
                 $expense_code[$c]['acc_code'] = $acc_code;
                 $expense_code[$c]['acc_name'] =($acc_name =="                      Adjustment")?str_replace(" ","",$acc_name): $acc_name;
-
+            
                 $ec++;
                 $c++;
                 if($c ===364){
@@ -1761,7 +1762,7 @@ class RequestController extends Controller
                 }
             }
             // dd($expense_code);
-
+                    
             // return $codesU;
             // sales body
             $sales_body = SalesRb::select(
@@ -1988,8 +1989,8 @@ class RequestController extends Controller
                 ->groupBy('acc_code')
                 ->get();
 
-
-
+                
+    
                 // dd(json_encode($sales_company_basis));
         //   echo json_encode($sales_company_basis);
         //   die;
@@ -2010,16 +2011,16 @@ class RequestController extends Controller
                         $spreadsheet->setActiveSheetIndex(0)
                         ->setCellValue('A' . $x, $row['acc_code'])
                         ->setCellValue('B' . $x, $row['acc_name']);
-
+                        
                         $i++;
                         $x++;
                     }
                 }
 
-
+               
                 // dd($dsales);
-
-
+               
+                
                 $total_all_body = 0;
                 $t_april_b= 0;
                 $t_mei_b= 0;
@@ -2038,7 +2039,7 @@ class RequestController extends Controller
 
                 // dd($sales_body);
                 foreach ($sales_body as $key => $value) {
-
+                    
                     $key = array_search($value->acc_name, array_column($dsales, 'acc_name'));
                     // dd($value->sapril.$value->acc_name);
                     // dd(array_column($dsales, 'acc_code'));
@@ -2077,8 +2078,8 @@ class RequestController extends Controller
                     $t_februari_b= $t_februari_b+$value->sfebruari;
                     $t_maret_b= $t_maret_b+$value->smaret;
 
-                    $persen_arr_b[$b]['acc_name'] = $value->acc_name;
-                    $persen_arr_b[$b]['total_body'] = $total_body;
+                    $persen_arr_b[$b]['acc_name'] = $value->acc_name; 
+                    $persen_arr_b[$b]['total_body'] = $total_body; 
 
                     $b++;
                     }
@@ -2097,7 +2098,7 @@ class RequestController extends Controller
                     ->setCellValue( 'S'.$keyy, $percent_friendly);
                 }
                 $sheet->getStyle('S')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
+                
                 $spreadsheet->setActiveSheetIndex(0)
                 ->setCellValue('R' .  ($sales_code_count + 6), $total_all_body)
                 ->setCellValue('S' .  ($sales_code_count + 6), ($total_all_body >0)? 100 : '')
@@ -2113,8 +2114,8 @@ class RequestController extends Controller
                 ->setCellValue('AC' .  ($sales_code_count + 6), $t_januari_b)
                 ->setCellValue('AD' .  ($sales_code_count + 6), $t_februari_b)
                 ->setCellValue('AE' .  ($sales_code_count + 6), $t_maret_b);
-
-
+           
+                
 
                 $total_all_unit = 0;
                 $t_april_u= 0;
@@ -2167,8 +2168,8 @@ class RequestController extends Controller
                     $t_februari_u= $t_februari_u+$value->sfebruari;
                     $t_maret_u= $t_maret_u+$value->smaret;
 
-                    $persen_arr_u[$u]['acc_name'] = $value->acc_name;
-                    $persen_arr_u[$u]['total_unit'] = $total_unit;
+                    $persen_arr_u[$u]['acc_name'] = $value->acc_name; 
+                    $persen_arr_u[$u]['total_unit'] = $total_unit; 
                     $u++;
                 }
                 foreach($persen_arr_u as $val){
@@ -2198,9 +2199,9 @@ class RequestController extends Controller
                 ->setCellValue('AR' .  ($sales_code_count + 6), $t_januari_u)
                 ->setCellValue('AS' .  ($sales_code_count + 6), $t_februari_u)
                 ->setCellValue('AT' .  ($sales_code_count + 6), $t_maret_u);
+                
 
-
-
+                
                 $total_all_electrik = 0;
                 $t_april_e= 0;
                 $t_mei_e= 0;
@@ -2252,8 +2253,8 @@ class RequestController extends Controller
                     $t_februari_e= $t_februari_e+$value->sfebruari;
                     $t_maret_e= $t_maret_e+$value->smaret;
 
-                    $persen_arr_e[$e]['acc_name'] = $value->acc_name;
-                    $persen_arr_e[$e]['total_electrik'] = $total_electrik;
+                    $persen_arr_e[$e]['acc_name'] = $value->acc_name; 
+                    $persen_arr_e[$e]['total_electrik'] = $total_electrik; 
                     $e++;
                 }
 
@@ -2285,7 +2286,7 @@ class RequestController extends Controller
                 ->setCellValue('BG' .  ($sales_code_count + 6), $t_januari_e)
                 ->setCellValue('BH' .  ($sales_code_count + 6), $t_februari_e)
                 ->setCellValue('BI' .  ($sales_code_count + 6), $t_maret_e);
-
+                
 
 
 
@@ -2341,15 +2342,15 @@ class RequestController extends Controller
                     $t_februari_cb= $t_februari_cb+$value->sfebruari;
                     $t_maret_cb= $t_maret_cb+$value->smaret;
 
-                    $persen_arr_cb[$cb]['acc_name'] = $value->acc_name;
-                    $persen_arr_cb[$cb]['total_cb'] = $total_cb;
+                    $persen_arr_cb[$cb]['acc_name'] = $value->acc_name; 
+                    $persen_arr_cb[$cb]['total_cb'] = $total_cb; 
                     $cb++;
                 }
                 // dd($persen_arr_cb);
 
                 // dd($persen_arr_cb);
                 foreach($persen_arr_cb as $val){
-
+                   
                     $key = array_search($val['acc_name'], array_column($dsales, 'acc_name'));
                     // dd($key);
                     $keyy = $key + 6;
@@ -2378,11 +2379,11 @@ class RequestController extends Controller
                 ->setCellValue('N' .  ($sales_code_count + 6), $t_januari_cb)
                 ->setCellValue('O' .  ($sales_code_count + 6), $t_februari_cb)
                 ->setCellValue('P' .  ($sales_code_count + 6), $t_maret_cb);
-
+                
 
             }
 
-
+            
             // material
             // dd('saa');
             if (count((array)$material_code)> 0) {
@@ -2403,7 +2404,7 @@ class RequestController extends Controller
                 }
                 $count_sales_code_row= 6 + $sales_code_count + 1;
 
-
+                
 
 
                 $total_all_body = 0;
@@ -2459,8 +2460,8 @@ class RequestController extends Controller
                     $t_februari_b= $t_februari_b+$value->sfebruari;
                     $t_maret_b= $t_maret_b+$value->smaret;
 
-                    $persen_arr_b[$b]['acc_name'] = $value->acc_name;
-                    $persen_arr_b[$b]['total_body'] = $total_body;
+                    $persen_arr_b[$b]['acc_name'] = $value->acc_name; 
+                    $persen_arr_b[$b]['total_body'] = $total_body; 
 
                     $b++;
                 }
@@ -2478,7 +2479,7 @@ class RequestController extends Controller
                     ->setCellValue( 'S'.$keyy, $percent_friendly);
                 }
                 $sheet->getStyle('S')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
+                
                 $spreadsheet->setActiveSheetIndex(0)
                 ->setCellValue('R' .  ($count_sales_code_row + $material_code_count), $total_all_body)
                 ->setCellValue('S' .  ($count_sales_code_row + $material_code_count),  ($total_all_body >0)? 100 : '')
@@ -2494,7 +2495,7 @@ class RequestController extends Controller
                 ->setCellValue('AC' .  ($count_sales_code_row + $material_code_count), $t_januari_b)
                 ->setCellValue('AD' .  ($count_sales_code_row + $material_code_count), $t_februari_b)
                 ->setCellValue('AE' .  ($count_sales_code_row + $material_code_count), $t_maret_b);
-
+                
 
 
                 $total_all_unit = 0;
@@ -2548,8 +2549,8 @@ class RequestController extends Controller
                     $t_februari_u= $t_februari_u+$value->sfebruari;
                     $t_maret_u= $t_maret_u+$value->smaret;
 
-                    $persen_arr_u[$u]['acc_name'] = $value->acc_name;
-                    $persen_arr_u[$u]['total_unit'] = $total_unit;
+                    $persen_arr_u[$u]['acc_name'] = $value->acc_name; 
+                    $persen_arr_u[$u]['total_unit'] = $total_unit; 
                     $u++;
                 }
                 foreach($persen_arr_u as $val){
@@ -2579,9 +2580,9 @@ class RequestController extends Controller
                 ->setCellValue('AR' .  ($count_sales_code_row + $material_code_count), $t_januari_u)
                 ->setCellValue('AS' .  ($count_sales_code_row + $material_code_count), $t_februari_u)
                 ->setCellValue('AT' .  ($count_sales_code_row + $material_code_count), $t_maret_u);
+               
 
-
-
+               
 
 
                 $total_all_electrik = 0;
@@ -2635,8 +2636,8 @@ class RequestController extends Controller
                     $t_februari_e= $t_februari_e+$value->sfebruari;
                     $t_maret_e= $t_maret_e+$value->smaret;
 
-                    $persen_arr_e[$e]['acc_name'] = $value->acc_name;
-                    $persen_arr_e[$e]['total_electrik'] = $total_electrik;
+                    $persen_arr_e[$e]['acc_name'] = $value->acc_name; 
+                    $persen_arr_e[$e]['total_electrik'] = $total_electrik; 
                     $e++;
                 }
 
@@ -2668,10 +2669,10 @@ class RequestController extends Controller
                 ->setCellValue('BG' .  ($count_sales_code_row + $material_code_count), $t_januari_e)
                 ->setCellValue('BH' .  ($count_sales_code_row + $material_code_count), $t_februari_e)
                 ->setCellValue('BI' .  ($count_sales_code_row + $material_code_count), $t_maret_e);
+                
 
-
-
-
+                
+                
                 // company basis
                 $total_all_cb = 0;
                 $t_april_cb= 0;
@@ -2724,15 +2725,15 @@ class RequestController extends Controller
                     $t_februari_cb= $t_februari_cb+$value->sfebruari;
                     $t_maret_cb= $t_maret_cb+$value->smaret;
 
-                    $persen_arr_cb[$cb]['acc_name'] = $value->acc_name;
-                    $persen_arr_cb[$cb]['total_cb'] = $total_cb;
+                    $persen_arr_cb[$cb]['acc_name'] = $value->acc_name; 
+                    $persen_arr_cb[$cb]['total_cb'] = $total_cb; 
                     $cb++;
                 }
                 // dd($persen_arr_cb);
 
                 // dd($persen_arr_cb);
                 foreach($persen_arr_cb as $val){
-
+                   
                     $key = array_search($val['acc_name'], array_column($dmate, 'acc_name'));
                     // dd($key);
                     $keyy = $key + $count_sales_code_row;
@@ -2761,8 +2762,8 @@ class RequestController extends Controller
                 ->setCellValue('N' .  ($count_sales_code_row + $material_code_count), $t_januari_cb)
                 ->setCellValue('O' .  ($count_sales_code_row + $material_code_count), $t_februari_cb)
                 ->setCellValue('P' .  ($count_sales_code_row + $material_code_count), $t_maret_cb);
-
-
+               
+               
 
             }
 
@@ -2786,7 +2787,7 @@ class RequestController extends Controller
                 }
 
                 $count_material_code_row= 6 + $sales_code_count + $material_code_count + 2;
-
+              
 
                 $total_all_body = 0;
                 $t_april_b= 0;
@@ -2813,7 +2814,7 @@ class RequestController extends Controller
 
                     // dd($key);
                     if($key != false){
-
+                   
                     // dd($value->sapril.$value->acc_name);
                     // dd(array_column($dsales, 'acc_code'));
                     $keyy = $key + $count_material_code_row;
@@ -2849,8 +2850,8 @@ class RequestController extends Controller
                     $t_februari_b= $t_februari_b+$value->sfebruari;
                     $t_maret_b= $t_maret_b+$value->smaret;
 
-                    $persen_arr_b[$b]['acc_name'] = $acc_name;
-                    $persen_arr_b[$b]['total_body'] = $total_body;
+                    $persen_arr_b[$b]['acc_name'] = $acc_name; 
+                    $persen_arr_b[$b]['total_body'] = $total_body; 
 
                     $b++;
                     }
@@ -2869,7 +2870,7 @@ class RequestController extends Controller
                     ->setCellValue( 'S'.$keyy, $percent_friendly);
                 }
                 $sheet->getStyle('S')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
+                
                 $spreadsheet->setActiveSheetIndex(0)
                 ->setCellValue('R' .  ($count_material_code_row + $expense_code_count), $total_all_body)
                 ->setCellValue('S' .  ($count_material_code_row + $expense_code_count), ($total_all_body >0)? 100 : '')
@@ -2885,7 +2886,7 @@ class RequestController extends Controller
                 ->setCellValue('AC' .  ($count_material_code_row + $expense_code_count), $t_januari_b)
                 ->setCellValue('AD' .  ($count_material_code_row + $expense_code_count), $t_februari_b)
                 ->setCellValue('AE' .  ($count_material_code_row + $expense_code_count), $t_maret_b);
-
+               
 
                 $total_all_unit = 0;
                 $t_april_u= 0;
@@ -2943,8 +2944,8 @@ class RequestController extends Controller
                     $t_februari_u= $t_februari_u+$value->sfebruari;
                     $t_maret_u= $t_maret_u+$value->smaret;
 
-                    $persen_arr_u[$u]['acc_name'] = $acc_name;
-                    $persen_arr_u[$u]['total_unit'] = $total_unit;
+                    $persen_arr_u[$u]['acc_name'] = $acc_name; 
+                    $persen_arr_u[$u]['total_unit'] = $total_unit; 
                     $u++;
                     }
                 }
@@ -2977,10 +2978,10 @@ class RequestController extends Controller
                 ->setCellValue('AR' .  ($count_material_code_row + $expense_code_count), $t_januari_u)
                 ->setCellValue('AS' .  ($count_material_code_row + $expense_code_count), $t_februari_u)
                 ->setCellValue('AT' .  ($count_material_code_row + $expense_code_count), $t_maret_u);
+               
 
-
-
-
+                
+                
                 $total_all_electrik = 0;
                 $t_april_e= 0;
                 $t_mei_e= 0;
@@ -3036,8 +3037,8 @@ class RequestController extends Controller
                     $t_februari_e= $t_februari_e+$value->sfebruari;
                     $t_maret_e= $t_maret_e+$value->smaret;
 
-                    $persen_arr_e[$e]['acc_name'] = $acc_name;
-                    $persen_arr_e[$e]['total_electrik'] = $total_electrik;
+                    $persen_arr_e[$e]['acc_name'] = $acc_name; 
+                    $persen_arr_e[$e]['total_electrik'] = $total_electrik; 
                     $e++;
                     }
                 }
@@ -3070,9 +3071,9 @@ class RequestController extends Controller
                 ->setCellValue('BG' .  ($count_material_code_row + $expense_code_count), $t_januari_e)
                 ->setCellValue('BH' .  ($count_material_code_row + $expense_code_count), $t_februari_e)
                 ->setCellValue('BI' .  ($count_material_code_row + $expense_code_count), $t_maret_e);
+                
 
-
-
+               
                 $total_all_cb = 0;
                 $t_mei_cb= 0;
                 $t_juni_cb= 0;
@@ -3087,7 +3088,7 @@ class RequestController extends Controller
                 $t_maret_cb= 0;
                 $persen_arr_cb = array();
                 $cb=0;
-
+             
                 foreach ($expense_company_basis as $key => $value) {
                     $acc = explode("_",$value->acc_code);
                     $acc_code = $acc[0];
@@ -3128,15 +3129,15 @@ class RequestController extends Controller
                     $t_februari_cb= $t_februari_cb+$value->sfebruari;
                     $t_maret_cb= $t_maret_cb+$value->smaret;
 
-                    $persen_arr_cb[$cb]['acc_name'] = $acc_name;
-                    $persen_arr_cb[$cb]['total_cb'] = $total_cb;
+                    $persen_arr_cb[$cb]['acc_name'] = $acc_name; 
+                    $persen_arr_cb[$cb]['total_cb'] = $total_cb; 
                     $cb++;
                     }
                 }
 
                  // dd($persen_arr_cb);
                  foreach($persen_arr_cb as $val){
-
+                   
                     $key = array_search($val['acc_name'], array_column($dexpen, 'acc_name'));
                     // dd($key);
                     $keyy = $key + $count_material_code_row;
@@ -3165,8 +3166,8 @@ class RequestController extends Controller
                 ->setCellValue('N' .  ($count_material_code_row + $expense_code_count), $t_januari_cb)
                 ->setCellValue('O' .  ($count_material_code_row + $expense_code_count), $t_februari_cb)
                 ->setCellValue('P' .  ($count_material_code_row + $expense_code_count), $t_maret_cb);
-
-
+               
+                
             }
 
         $filename = 'Export data'. date('d/m/Y');

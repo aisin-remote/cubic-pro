@@ -35,7 +35,7 @@
                                 <input type="file" id="file" name="file" class="form-control" accept=".csv,.xlsx,.xls">
                                 <label class="text-muted">*) File format .csv,.xlsx,.xls</label>
                                 <br>
-                                <a href="{{ url('files\Template_Direct_Material_New.xlsx') }}" ><i class="mdi mdi-download"></i>  Format RB Direct Material &emsp;</a>
+                                <a href="{{ url('files/Template_Direct_Material_New.xlsx') }}" ><i class="mdi mdi-download"></i>  Format RB Direct Material &emsp;</a>
                                 <!-- <a href="{{ url('files/Template_Direct_Material_body') }}" ><i class="mdi mdi-download"></i>  Format RB Direct Material Body</a> -->
                             </div>
                             <!-- <div class="form-group">
