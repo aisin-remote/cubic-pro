@@ -427,7 +427,7 @@ class RequestController extends Controller
         ini_set('max_execution_time', 0);
         ob_start();
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files\Template_Capex_export.xlsx'));
+        $spreadsheet = $reader->load(public_path('files/Template_Capex_export.xlsx'));
 
         $dept = $request->post('dept');
         $data = CapexRb::where([
@@ -739,7 +739,7 @@ class RequestController extends Controller
         ini_set('max_execution_time', 0);
         ob_start();
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files\Template_Expense_export.xlsx'));
+        $spreadsheet = $reader->load(public_path('files/Template_Expense_export.xlsx'));
         // dd($spreadsheet);
         $dept = $request->post('dept');
         $data = ExpenseRb::where([
@@ -955,13 +955,7 @@ class RequestController extends Controller
                     $arrayPush[$i]['budget_before'] = $sheet->getCell("R$rw")->getCalculatedValue();
                     $arrayPush[$i]['cr'] = $sheet->getCell("S$rw")->getCalculatedValue();
                     $arrayPush[$i]['budgt_aft_cr'] = $sheet->getCell("T$rw")->getCalculatedValue();
-                    // $po =  \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($sheet->getCell("U$rw")->getValue());
-                    // // $po = $po['date'];
-                    // $po = date('Y-m-d', $po);
                     $arrayPush[$i]['po'] = $sheet->getCell("U$rw")->getFormattedValue();
-
-
-
                     $arrayPush[$i]['gr'] = $sheet->getCell("V$rw")->getFormattedValue();
                     $arrayPush[$i]['sop'] = $sheet->getCell("W$rw")->getFormattedValue();
                     $arrayPush[$i]['first_dopayment_term'] = $sheet->getCell("X$rw")->getFormattedValue();
@@ -1227,34 +1221,6 @@ class RequestController extends Controller
             ->where('group', 'unit')
             ->groupBy('acc_name')
             ->get();
-
-        // return $codes;
-        // $ArCode = array();
-        // foreach ($codes as $code) {
-
-        //     $cut = substr($code->acc_code, 10, 1);
-        //     if ($cut == '_') {
-        //         $hasil = substr($code->acc_code, 0, 10);
-        //     }
-        //     else {
-        //         $hasil = substr($code->acc_code, 0, 12);
-
-        //     }
-        //     array_push($ArCode, $hasil);
-        // }
-        // // return $ArCode;
-        // $row1 = $this->cekData($ArCode,'5120290101-1');
-        // $row2 = $this->cekData($ArCode,'5330990101');
-
-
-        // if($row2){
-        //     return "YESyu";
-        // }else{
-        //     return "no";
-        // }
-        // // return $ArCode;
-        // // 5120290101-1
-
 
         Excel::load('/public/files/AIIA-PNL.xlsx',  function ($file) use ($salesB, $salesU, $dmB, $dmU, $master_code, $codes, $codesU) {
             // $part_number    = $part->part_number;
@@ -1762,7 +1728,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
+        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
         // Set document properties
 
 
@@ -2184,38 +2150,6 @@ class RequestController extends Controller
                 }
             }
 
-            // dd($persen_arr_b);
-
-            // foreach ($persen_arr_b as $val) {
-            //     // dd($val);
-            //     $key = array_search($val['acc_code'], array_column($dsales, 'acc_code'));
-            //     $keyy = $key + 6;
-            //     $total_body_persen = $val['total_body'];
-            //     $percent = $total_body_persen / $total_all_body;
-            //     $percent_friendly = number_format($percent * 100, 2);
-            //     $spreadsheet->setActiveSheetIndex(0)
-            //         ->setCellValue('T' . $keyy, $percent_friendly);
-            // }
-            // $sheet1->getStyle('T')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
-            // $spreadsheet->setActiveSheetIndex(0)
-            //     ->setCellValue('R' .  ($sales_code_count + 6), $total_all_body)
-            //     ->setCellValue('S' .  ($sales_code_count + 6), ($total_all_body > 0) ? 100 : '')
-            //     ->setCellValue('T' .  ($sales_code_count + 6), $t_april_b)
-            //     ->setCellValue('U' .  ($sales_code_count + 6), $t_mei_b)
-            //     ->setCellValue('V' .  ($sales_code_count + 6), $t_juni_b)
-            //     ->setCellValue('W' .  ($sales_code_count + 6), $t_juli_b)
-            //     ->setCellValue('X' .  ($sales_code_count + 6), $t_agustus_b)
-            //     ->setCellValue('Y' .  ($sales_code_count + 6), $t_september_b)
-            //     ->setCellValue('Z' .  ($sales_code_count + 6), $t_oktober_b)
-            //     ->setCellValue('AA' .  ($sales_code_count + 6), $t_november_b)
-            //     ->setCellValue('AB' .  ($sales_code_count + 6), $t_desember_b)
-            //     ->setCellValue('AC' .  ($sales_code_count + 6), $t_januari_b)
-            //     ->setCellValue('AD' .  ($sales_code_count + 6), $t_februari_b)
-            //     ->setCellValue('AE' .  ($sales_code_count + 6), $t_maret_b);
-
-
-
             $total_all_unit = 0;
             $t_april_u = 0;
             $t_mei_u = 0;
@@ -2272,36 +2206,7 @@ class RequestController extends Controller
                 $persen_arr_u[$u]['total_unit'] = $total_unit;
                 $u++;
             }
-            // foreach ($persen_arr_u as $val) {
-            //     // dd($val['acc_name']);
-            //     $key = array_search($val['acc_code'], array_column($dsales, 'acc_code'));
-            //     $keyy = $key + 6;
-            //     $total_unit_persen = $val['total_unit'];
-            //     $percent = $total_unit_persen / $total_all_unit;
-            //     // dd($val['acc_name'].$percent);
-            //     $percent_friendly = number_format($percent * 100, 2);
-            //     $spreadsheet->setActiveSheetIndex(0)
-            //         ->setCellValue('AH' . $keyy, $percent_friendly);
-            // }
-            // $sheet1->getStyle('AH')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-            // $spreadsheet->setActiveSheetIndex(0)
-            //     ->setCellValue('AG' .  ($sales_code_count + 6), $total_all_unit)
-            //     ->setCellValue('AH' .  ($sales_code_count + 6), ($total_all_unit > 0) ? 100 : '')
-            //     ->setCellValue('AI' .  ($sales_code_count + 6), $t_april_u)
-            //     ->setCellValue('AJ' .  ($sales_code_count + 6), $t_mei_u)
-            //     ->setCellValue('AK' .  ($sales_code_count + 6), $t_juni_u)
-            //     ->setCellValue('AL' .  ($sales_code_count + 6), $t_juli_u)
-            //     ->setCellValue('AM' .  ($sales_code_count + 6), $t_agustus_u)
-            //     ->setCellValue('AN' .  ($sales_code_count + 6), $t_september_u)
-            //     ->setCellValue('AO' .  ($sales_code_count + 6), $t_oktober_u)
-            //     ->setCellValue('AP' .  ($sales_code_count + 6), $t_november_u)
-            //     ->setCellValue('AQ' .  ($sales_code_count + 6), $t_desember_u)
-            //     ->setCellValue('AR' .  ($sales_code_count + 6), $t_januari_u)
-            //     ->setCellValue('AS' .  ($sales_code_count + 6), $t_februari_u)
-            //     ->setCellValue('AT' .  ($sales_code_count + 6), $t_maret_u);
-
-
-
+            
             $total_all_electrik = 0;
             $t_april_e = 0;
             $t_mei_e = 0;
@@ -2359,38 +2264,7 @@ class RequestController extends Controller
                 $e++;
             }
 
-            // foreach ($persen_arr_e as $val) {
-            //     // dd($val['acc_name']);
-            //     $key = array_search($val['acc_code'], array_column($dsales, 'acc_code'));
-            //     $keyy = $key + 6;
-            //     $total_electrik_persen = $val['total_electrik'];
-            //     $percent = $total_electrik_persen / $total_all_electrik;
-            //     // dd($val['acc_name'].$percent);
-            //     $percent_friendly = number_format($percent * 100, 2);
-            //     $spreadsheet->setActiveSheetIndex(0)
-            //         ->setCellValue('AW' . $keyy, $percent_friendly);
-            // }
-            // $sheet1->getStyle('AW')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
-            // $spreadsheet->setActiveSheetIndex(0)
-            //     ->setCellValue('AV' .  ($sales_code_count + 6), $total_all_electrik)
-            //     ->setCellValue('AW' .  ($sales_code_count + 6), ($total_all_electrik > 0) ? 100 : '')
-            //     ->setCellValue('AX' .  ($sales_code_count + 6), $t_april_e)
-            //     ->setCellValue('AY' .  ($sales_code_count + 6), $t_mei_e)
-            //     ->setCellValue('AZ' .  ($sales_code_count + 6), $t_juni_e)
-            //     ->setCellValue('BA' .  ($sales_code_count + 6), $t_juli_e)
-            //     ->setCellValue('BB' .  ($sales_code_count + 6), $t_agustus_e)
-            //     ->setCellValue('BC' .  ($sales_code_count + 6), $t_september_e)
-            //     ->setCellValue('BD' .  ($sales_code_count + 6), $t_oktober_e)
-            //     ->setCellValue('BE' .  ($sales_code_count + 6), $t_november_e)
-            //     ->setCellValue('BF' .  ($sales_code_count + 6), $t_desember_e)
-            //     ->setCellValue('BG' .  ($sales_code_count + 6), $t_januari_e)
-            //     ->setCellValue('BH' .  ($sales_code_count + 6), $t_februari_e)
-            //     ->setCellValue('BI' .  ($sales_code_count + 6), $t_maret_e);
-
-
-
-
+           
             // company basis
             $total_all_cb = 0;
             $t_april_cb = 0;
@@ -2448,42 +2322,7 @@ class RequestController extends Controller
                 $persen_arr_cb[$cb]['total_cb'] = $total_cb;
                 $cb++;
             }
-            // dd($persen_arr_cb);
-
-            // dd($persen_arr_cb);
-            // foreach ($persen_arr_cb as $val) {
-
-            //     $key = array_search($val['acc_code'], array_column($dsales, 'acc_code'));
-            //     // dd($key);
-            //     $keyy = $key + 6;
-            //     $total_cb_persen = $val['total_cb'];
-            //     $percent = $total_cb_persen / $total_all_cb;
-            //     // dd($val['acc_name'].$percent);
-            //     $percent_friendly = number_format($percent * 100, 2);
-            //     // dd($percent_friendly);
-            //     $spreadsheet->setActiveSheetIndex(0)
-            //         ->setCellValue('D' . $keyy, $percent_friendly);
-            // }
-            // $sheet1->getStyle('D')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
-            // $spreadsheet->setActiveSheetIndex(0)
-            //     ->setCellValue('C' .  ($sales_code_count + 6), $total_all_cb)
-            //     ->setCellValue('D' .  ($sales_code_count + 6), ($total_all_cb > 0) ? 100 : '')
-            //     ->setCellValue('E' .  ($sales_code_count + 6), $t_april_cb)
-            //     ->setCellValue('F' .  ($sales_code_count + 6), $t_mei_cb)
-            //     ->setCellValue('G' .  ($sales_code_count + 6), $t_juni_cb)
-            //     ->setCellValue('H' .  ($sales_code_count + 6), $t_juli_cb)
-            //     ->setCellValue('I' .  ($sales_code_count + 6), $t_agustus_cb)
-            //     ->setCellValue('J' .  ($sales_code_count + 6), $t_september_cb)
-            //     ->setCellValue('K' .  ($sales_code_count + 6), $t_oktober_cb)
-            //     ->setCellValue('L' .  ($sales_code_count + 6), $t_november_cb)
-            //     ->setCellValue('M' .  ($sales_code_count + 6), $t_desember_cb)
-            //     ->setCellValue('N' .  ($sales_code_count + 6), $t_januari_cb)
-            //     ->setCellValue('O' .  ($sales_code_count + 6), $t_februari_cb)
-            //     ->setCellValue('P' .  ($sales_code_count + 6), $t_maret_cb);
-        }
-
-
+            
         // material
         // dd('saa');
         if (count((array)$material_code) > 0) {
@@ -2570,38 +2409,7 @@ class RequestController extends Controller
                 $b++;
             }
 
-            // dd($persen_arr_b);
-
-            // foreach ($persen_arr_b as $val) {
-            //     // dd($val);
-            //     $key = array_search($val['acc_name'], array_column($dmate, 'acc_name'));
-            //     $keyy = $key + $count_sales_code_row;
-            //     $total_body_persen = $val['total_body'];
-            //     $percent = $total_body_persen / $total_all_body;
-            //     $percent_friendly = number_format($percent * 100, 2);
-            //     $spreadsheet->setActiveSheetIndex(0)
-            //         ->setCellValue('S' . $keyy, $percent_friendly);
-            // }
-            // $sheet1->getStyle('S')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
-            // $spreadsheet->setActiveSheetIndex(0)
-            //     ->setCellValue('R' .  ($count_sales_code_row + $material_code_count), $total_all_body)
-            //     ->setCellValue('S' .  ($count_sales_code_row + $material_code_count), ($total_all_body > 0) ? 100 : '')
-            //     ->setCellValue('T' .  ($count_sales_code_row + $material_code_count), $t_april_b)
-            //     ->setCellValue('U' .  ($count_sales_code_row + $material_code_count), $t_mei_b)
-            //     ->setCellValue('V' .  ($count_sales_code_row + $material_code_count), $t_juni_b)
-            //     ->setCellValue('W' .  ($count_sales_code_row + $material_code_count), $t_juli_b)
-            //     ->setCellValue('X' .  ($count_sales_code_row + $material_code_count), $t_agustus_b)
-            //     ->setCellValue('Y' .  ($count_sales_code_row + $material_code_count), $t_september_b)
-            //     ->setCellValue('Z' .  ($count_sales_code_row + $material_code_count), $t_oktober_b)
-            //     ->setCellValue('AA' .  ($count_sales_code_row + $material_code_count), $t_november_b)
-            //     ->setCellValue('AB' .  ($count_sales_code_row + $material_code_count), $t_desember_b)
-            //     ->setCellValue('AC' .  ($count_sales_code_row + $material_code_count), $t_januari_b)
-            //     ->setCellValue('AD' .  ($count_sales_code_row + $material_code_count), $t_februari_b)
-            //     ->setCellValue('AE' .  ($count_sales_code_row + $material_code_count), $t_maret_b);
-
-
-
+            
             $total_all_unit = 0;
             $t_april_u = 0;
             $t_mei_u = 0;
@@ -2658,38 +2466,7 @@ class RequestController extends Controller
                 $persen_arr_u[$u]['total_unit'] = $total_unit;
                 $u++;
             }
-            // foreach ($persen_arr_u as $val) {
-            //     // dd($val['acc_name']);
-            //     $key = array_search($val['acc_name'], array_column($dmate, 'acc_name'));
-            //     $keyy = $key + $count_sales_code_row;
-            //     $total_unit_persen = $val['total_unit'];
-            //     $percent = $total_unit_persen / $total_all_unit;
-            //     // dd($val['acc_name'].$percent);
-            //     $percent_friendly = number_format($percent * 100, 2);
-            //     $spreadsheet->setActiveSheetIndex(0)
-            //         ->setCellValue('AH' . $keyy, $percent_friendly);
-            // }
-            // $sheet1->getStyle('AH')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-            // $spreadsheet->setActiveSheetIndex(0)
-            //     ->setCellValue('AG' .  ($count_sales_code_row + $material_code_count), $total_all_unit)
-            //     ->setCellValue('AH' .  ($count_sales_code_row + $material_code_count), ($total_all_unit > 0) ? 100 : '')
-            //     ->setCellValue('AI' .  ($count_sales_code_row + $material_code_count), $t_april_u)
-            //     ->setCellValue('AJ' .  ($count_sales_code_row + $material_code_count), $t_mei_u)
-            //     ->setCellValue('AK' .  ($count_sales_code_row + $material_code_count), $t_juni_u)
-            //     ->setCellValue('AL' .  ($count_sales_code_row + $material_code_count), $t_juli_u)
-            //     ->setCellValue('AM' .  ($count_sales_code_row + $material_code_count), $t_agustus_u)
-            //     ->setCellValue('AN' .  ($count_sales_code_row + $material_code_count), $t_september_u)
-            //     ->setCellValue('AO' .  ($count_sales_code_row + $material_code_count), $t_oktober_u)
-            //     ->setCellValue('AP' .  ($count_sales_code_row + $material_code_count), $t_november_u)
-            //     ->setCellValue('AQ' .  ($count_sales_code_row + $material_code_count), $t_desember_u)
-            //     ->setCellValue('AR' .  ($count_sales_code_row + $material_code_count), $t_januari_u)
-            //     ->setCellValue('AS' .  ($count_sales_code_row + $material_code_count), $t_februari_u)
-            //     ->setCellValue('AT' .  ($count_sales_code_row + $material_code_count), $t_maret_u);
-
-
-
-
-
+            
             $total_all_electrik = 0;
             $t_april_e = 0;
             $t_mei_e = 0;
@@ -2747,37 +2524,7 @@ class RequestController extends Controller
                 $e++;
             }
 
-            // foreach ($persen_arr_e as $val) {
-            //     // dd($val['acc_name']);
-            //     $key = array_search($val['acc_name'], array_column($dmate, 'acc_name'));
-            //     $keyy = $key + $count_sales_code_row;
-            //     $total_electrik_persen = $val['total_electrik'];
-            //     $percent = $total_electrik_persen / $total_all_electrik;
-            //     // dd($val['acc_name'].$percent);
-            //     $percent_friendly = number_format($percent * 100, 2);
-            //     $spreadsheet->setActiveSheetIndex(0)
-            //         ->setCellValue('AW' . $keyy, $percent_friendly);
-            // }
-            // $sheet1->getStyle('AW')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
-            // $spreadsheet->setActiveSheetIndex(0)
-            //     ->setCellValue('AV' .  ($count_sales_code_row + $material_code_count), $total_all_electrik)
-            //     ->setCellValue('AW' .  ($count_sales_code_row + $material_code_count), ($total_all_electrik > 0) ? 100 : '')
-            //     ->setCellValue('AX' .  ($count_sales_code_row + $material_code_count), $t_april_e)
-            //     ->setCellValue('AY' .  ($count_sales_code_row + $material_code_count), $t_mei_e)
-            //     ->setCellValue('AZ' .  ($count_sales_code_row + $material_code_count), $t_juni_e)
-            //     ->setCellValue('BA' .  ($count_sales_code_row + $material_code_count), $t_juli_e)
-            //     ->setCellValue('BB' .  ($count_sales_code_row + $material_code_count), $t_agustus_e)
-            //     ->setCellValue('BC' .  ($count_sales_code_row + $material_code_count), $t_september_e)
-            //     ->setCellValue('BD' .  ($count_sales_code_row + $material_code_count), $t_oktober_e)
-            //     ->setCellValue('BE' .  ($count_sales_code_row + $material_code_count), $t_november_e)
-            //     ->setCellValue('BF' .  ($count_sales_code_row + $material_code_count), $t_desember_e)
-            //     ->setCellValue('BG' .  ($count_sales_code_row + $material_code_count), $t_januari_e)
-            //     ->setCellValue('BH' .  ($count_sales_code_row + $material_code_count), $t_februari_e)
-            //     ->setCellValue('BI' .  ($count_sales_code_row + $material_code_count), $t_maret_e);
-
-
-
+            
 
             // company basis
             $total_all_cb = 0;
@@ -2836,39 +2583,7 @@ class RequestController extends Controller
                 $persen_arr_cb[$cb]['total_cb'] = $total_cb;
                 $cb++;
             }
-            // dd($persen_arr_cb);
-
-            // dd($persen_arr_cb);
-            // foreach ($persen_arr_cb as $val) {
-
-            //     $key = array_search($val['acc_code'], array_column($dmate, 'acc_code'));
-            //     // dd($key);
-            //     $keyy = $key + $count_sales_code_row;
-            //     $total_cb_persen = $val['total_cb'];
-            //     $percent = $total_cb_persen / $total_all_cb;
-            //     // dd($val['acc_name'].$percent);
-            //     $percent_friendly = number_format($percent * 100, 2);
-            //     // dd($percent_friendly);
-            //     $spreadsheet->setActiveSheetIndex(0)
-            //         ->setCellValue('D' . $keyy, $percent_friendly);
-            // }
-            // $sheet1->getStyle('D')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-
-            // $spreadsheet->setActiveSheetIndex(0)
-            //     ->setCellValue('C' .  ($count_sales_code_row + $material_code_count), $total_all_cb)
-            //     ->setCellValue('D' .  ($count_sales_code_row + $material_code_count), ($total_all_cb > 0) ? 100 : '')
-            //     ->setCellValue('E' .  ($count_sales_code_row + $material_code_count), $t_april_cb)
-            //     ->setCellValue('F' .  ($count_sales_code_row + $material_code_count), $t_mei_cb)
-            //     ->setCellValue('G' .  ($count_sales_code_row + $material_code_count), $t_juni_cb)
-            //     ->setCellValue('H' .  ($count_sales_code_row + $material_code_count), $t_juli_cb)
-            //     ->setCellValue('I' .  ($count_sales_code_row + $material_code_count), $t_agustus_cb)
-            //     ->setCellValue('J' .  ($count_sales_code_row + $material_code_count), $t_september_cb)
-            //     ->setCellValue('K' .  ($count_sales_code_row + $material_code_count), $t_oktober_cb)
-            //     ->setCellValue('L' .  ($count_sales_code_row + $material_code_count), $t_november_cb)
-            //     ->setCellValue('M' .  ($count_sales_code_row + $material_code_count), $t_desember_cb)
-            //     ->setCellValue('N' .  ($count_sales_code_row + $material_code_count), $t_januari_cb)
-            //     ->setCellValue('O' .  ($count_sales_code_row + $material_code_count), $t_februari_cb)
-            //     ->setCellValue('P' .  ($count_sales_code_row + $material_code_count), $t_maret_cb);
+            
         }
 
         if (count((array)$expense_code) > 0) {
@@ -3311,7 +3026,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
+        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
         // Set document properties
 
 
