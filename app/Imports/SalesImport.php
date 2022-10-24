@@ -21,10 +21,11 @@ class SalesImport implements ToModel, WithHeadingRow, WithBatchInserts
     }
 
     /**
-    * @param array $row
-    */
+     * @param array $row
+     */
     public function model(array $row)
     {
+        // dd($row);
         $acc_code      = isset($row['acc_code']) ? $row['acc_code'] : null;
         $acc_name      = isset($row['acc_name']) ? $row['acc_name'] : null;
         $group         = isset($row['group']) ? $row['group'] : null;
@@ -43,13 +44,13 @@ class SalesImport implements ToModel, WithHeadingRow, WithBatchInserts
         $mar           = isset($row['mar']) ? $row['mar'] : null;
         $fy_2022_1st   = isset($row['fy_2022_1st']) ? $row['fy_2022_1st'] : null;
         $fy_2022_2nd   = isset($row['fy_2022_2nd']) ? $row['fy_2022_2nd'] : null;
-        $fy_2022_total = isset($row['fy_2022_total']) ? $row['fy_2022_total']: null;
+        $fy_2022_total = isset($row['fy_2022_total']) ? $row['fy_2022_total'] : null;
 
         $cek = SalesRb::where([
-                'acc_name' => $acc_name,
-                'group' => $group,
-                'code' => $code
-            ])->first();
+            'acc_name' => $acc_name,
+            'group' => $group,
+            'code' => $code
+        ])->first();
 
         if ($cek) {
             $salesrb = SalesRb::where([
