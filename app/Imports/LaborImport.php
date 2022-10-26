@@ -47,14 +47,14 @@ class LaborImport implements ToModel, WithHeadingRow, WithBatchInserts
         $fy_2022_total = isset($row['fy_2022_total']) ? $row['fy_2022_total'] : null;
 
         $cek = LaborRb::where([
-            'acc_name' => $acc_name,
+            'acc_code' => $acc_code,
             'group' => $group,
             'code' => $code
         ])->first();
 
         if ($cek) {
             $salesrb = LaborRb::where([
-                'acc_name' => $acc_name,
+                'acc_code' => $acc_code,
                 'group' => $group,
                 'code' => $code
             ])->update([

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Helpers;
+
 use App\Role;
 use App\Permission;
 
@@ -17,7 +18,7 @@ class Helper
         return round($bytes, 2) . ' ' . $units[$i];
     }
 
-	public static function createSlug($title, $type, $id = 0)
+    public static function createSlug($title, $type, $id = 0)
     {
         // Normalize the title
         $slug = str_slug($title);
@@ -25,13 +26,13 @@ class Helper
         // This cuts the queries down by doing it once.
         $allSlugs = Helper::getRelatedSlugs($slug, $type, $id);
         // If we haven't used it before then we are all good.
-        if (! $allSlugs->contains('slug', $slug)){
+        if (!$allSlugs->contains('slug', $slug)) {
             return $slug;
         }
         // Just append numbers like a savage until we find not used.
         for ($i = 1; $i <= 10; $i++) {
-            $newSlug = $slug.'-'.$i;
-            if (! $allSlugs->contains('slug', $newSlug)) {
+            $newSlug = $slug . '-' . $i;
+            if (!$allSlugs->contains('slug', $newSlug)) {
                 return $newSlug;
             }
         }
@@ -41,17 +42,16 @@ class Helper
     protected static function getRelatedSlugs($slug, $type, $id = 0)
     {
         if ($type == 'role') {
-            return Role::select('name')->where('name', 'like', $slug.'%')
+            return Role::select('name')->where('name', 'like', $slug . '%')
                 ->where('id', '<>', $id)
                 ->get();
         }
 
         if ($type == 'permission') {
-            return Permission::select('name')->where('name', 'like', $slug.'%')
+            return Permission::select('name')->where('name', 'like', $slug . '%')
                 ->where('id', '<>', $id)
                 ->get();
-        }      
-    
+        }
     }
 
     public static function countLevel($level)
@@ -66,9 +66,20 @@ class Helper
         $result['point'] = $units[$i];
 
         return collect($result);
-        
     }
 
- 
 
+    public static function price_to_number($v)
+    {
+
+        if (!$v) {
+            return 0;
+        }
+
+        $v = preg_replace('/[^0-9,]/', '', $v);
+        $v = str_replace(',', '.', $v);
+        // $v = number_format($v,2);
+        $v = floatval($v);
+        return $v;
+    }
 }

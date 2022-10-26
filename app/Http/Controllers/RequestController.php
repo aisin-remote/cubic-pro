@@ -33,6 +33,8 @@ use PhpOffice\PhpSpreadsheet\Helper\Sample;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
+use App\Helpers\Helper;
+
 class RequestController extends Controller
 {
     //for trial
@@ -153,7 +155,7 @@ class RequestController extends Controller
         return response()->json($res);
     }
 
-    public function laborimport(Request $request)
+    public function laborimportold(Request $request)
     {
         $file = $request->file('file');
         $name = time() . '.' . $file->getClientOriginalExtension();
@@ -177,6 +179,196 @@ class RequestController extends Controller
 
         /** Hapus files */
         $this->deleteFiles($name);
+
+        return redirect()->route('labor.view')->with($res);
+    }
+
+    public function laborimport(Request $request)
+    {
+        $file = $request->file('file');
+        // $name = time() . '.' . $file->getClientOriginalExtension();
+        $ext  = $file->getClientOriginalExtension();
+
+        // /** Upload file ke storage public */
+        // $file->storeAs('public/uploads', $name);
+
+        /** Jika bukan format csv */
+        // dd($file);
+        $hasil = 1;
+        if ($ext != 'xlsx' && $ext != 'xls') {
+            $hasil = 0;
+            $title = 'Gagal';
+            $type = 'error';
+            $message = 'Data gagal di Upload  bukan xlsx!';
+        }
+
+        if ($hasil == 1) {
+
+
+            $objReader = IOFactory::createReader('Xlsx');
+            $objReader->setReadDataOnly(true);
+            $objPHPExcel = $objReader->load($file);
+            $rowIterator = $objPHPExcel->getActiveSheet()->getRowIterator();
+
+            $array_data = array();
+            foreach ($rowIterator as $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(false);
+                $rowIndex = $row->getRowIndex();
+                $array_data[$rowIndex] = array('A' => '', 'B' => '');
+                foreach ($cellIterator as $cell) {
+                    if ('A' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getCalculatedValue();
+                    } else if ('B' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getCalculatedValue();
+                    } else if ('C' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getCalculatedValue();
+                    } else if ('D' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getCalculatedValue();
+                    } else if ('E' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('F' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('G' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('H' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('I' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('J' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('K' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('L' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('M' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('N' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('O' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('P' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('Q' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('R' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('S' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    }
+                }
+            }
+
+            // dd($array_data);
+        }
+        if (count($array_data) > 0) {
+            unset($array_data[0]);
+            unset($array_data[1]);
+            foreach ($array_data as $key => $row) {
+                $array_data[$key]['created_at'] = now();
+                $array_data[$key]['updated_at'] =  now();
+            }
+            // dd($array_data);
+
+
+
+            DB::beginTransaction();
+
+            try {
+                foreach ($array_data as $val) {
+
+                    $acc_code      = isset($val['A']) ? $val['A'] : null;
+                    $acc_name      = isset($val['B']) ? $val['B'] : null;
+                    $group         = isset($val['C']) ? $val['C'] : null;
+                    $code          = isset($val['D']) ? $val['D'] : null;
+                    $apr           = isset($val['E']) ? $val['E'] : null;
+                    $may           = isset($val['F']) ? $val['F'] : null;
+                    $jun           = isset($val['G']) ? $val['G'] : null;
+                    $jul           = isset($val['H']) ? $val['H'] : null;
+                    $aug           = isset($val['I']) ? $val['I'] : null;
+                    $sept          = isset($val['J']) ? $val['J'] : null;
+                    $oct           = isset($val['K']) ? $val['K'] : null;
+                    $nov           = isset($val['L']) ? $val['L'] : null;
+                    $dec           = isset($val['M']) ? $val['M'] : null;
+                    $jan           = isset($val['N']) ? $val['N'] : null;
+                    $feb           = isset($val['O']) ? $val['O'] : null;
+                    $mar           = isset($val['P']) ? $val['P'] : null;
+                    $fy_2022_1st   = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_2nd   = isset($val['R']) ? $val['R'] : null;
+                    $fy_2022_total = isset($val['S']) ? $val['S'] : null;
+                    $cek = LaborRb::where([
+                        'acc_code' => $acc_code,
+                        'group' => $group,
+                        'code' => $code
+                    ])->first();
+                    // dd($cek);
+                    if ($cek) {
+                        $salesrb = LaborRb::where([
+                            'acc_code' => $acc_code,
+                            'group' => $group,
+                            'code' => $code
+                        ])->update([
+                            'april'     => $apr,
+                            'mei'       => $may,
+                            'juni'      => $jun,
+                            'juli'      => $jul,
+                            'agustus'   => $aug,
+                            'september' => $sept,
+                            'oktober'   => $oct,
+                            'november'  => $nov,
+                            'december'  => $dec,
+                            'januari'   => $jan,
+                            'februari'  => $feb,
+                            'maret'     => $mar,
+                            'fy_first'  => $fy_2022_1st,
+                            'fy_second' => $fy_2022_2nd,
+                            'fy_total'  => $fy_2022_total
+                        ]);
+                    } else {
+                        $salesrb            = new LaborRb;
+                        $salesrb->acc_code  = $acc_code;
+                        $salesrb->acc_name  = $acc_name;
+                        $salesrb->group     = $group;
+                        $salesrb->code      = $code;
+                        $salesrb->april     = $apr;
+                        $salesrb->mei       = $may;
+                        $salesrb->juni      = $jun;
+                        $salesrb->juli      = $jul;
+                        $salesrb->agustus   = $aug;
+                        $salesrb->september = $sept;
+                        $salesrb->oktober   = $oct;
+                        $salesrb->november  = $nov;
+                        $salesrb->december  = $dec;
+                        $salesrb->januari   = $jan;
+                        $salesrb->februari  = $feb;
+                        $salesrb->maret     = $mar;
+                        $salesrb->fy_first  = $fy_2022_1st;
+                        $salesrb->fy_second = $fy_2022_2nd;
+                        $salesrb->fy_total  = $fy_2022_total;
+                        $salesrb->save();
+                    }
+                }
+
+                $hasil = 1;
+                $title = 'Success';
+                $type = 'success';
+                $message = 'Data berhasil di upload';
+                DB::commit();
+            } catch (Exception $ex) {
+                $hasil = 0;
+                $title = 'Gagal';
+                $type = 'error';
+                $message =  $ex->getMessage();
+                DB::rollBack();
+            }
+        }
+        // dd($upload);
+        $res = [
+            'title'   => $title,
+            'type'    => $type,
+            'message' => $message
+        ];
+
 
         return redirect()->route('labor.view')->with($res);
     }
@@ -259,6 +451,196 @@ class RequestController extends Controller
     }
 
     public function slsimport(Request $request)
+    {
+        $file = $request->file('file');
+        // $name = time() . '.' . $file->getClientOriginalExtension();
+        $ext  = $file->getClientOriginalExtension();
+
+        // /** Upload file ke storage public */
+        // $file->storeAs('public/uploads', $name);
+
+        /** Jika bukan format csv */
+        // dd($file);
+        $hasil = 1;
+        if ($ext != 'xlsx' && $ext != 'xls') {
+            $hasil = 0;
+            $title = 'Gagal';
+            $type = 'error';
+            $message = 'Data gagal di Upload  bukan xlsx!';
+        }
+
+        if ($hasil == 1) {
+
+
+            $objReader = IOFactory::createReader('Xlsx');
+            $objReader->setReadDataOnly(true);
+            $objPHPExcel = $objReader->load($file);
+            $rowIterator = $objPHPExcel->getActiveSheet()->getRowIterator();
+
+            $array_data = array();
+            foreach ($rowIterator as $row) {
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(false);
+                $rowIndex = $row->getRowIndex();
+                $array_data[$rowIndex] = array('A' => '', 'B' => '');
+                foreach ($cellIterator as $cell) {
+                    if ('A' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getCalculatedValue();
+                    } else if ('B' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getCalculatedValue();
+                    } else if ('C' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getCalculatedValue();
+                    } else if ('D' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getCalculatedValue();
+                    } else if ('E' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('F' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('G' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('H' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('I' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('J' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('K' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('L' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('M' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('N' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('O' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('P' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('Q' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('R' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('S' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    }
+                }
+            }
+
+            // dd($array_data);
+        }
+        if (count($array_data) > 0) {
+            unset($array_data[0]);
+            unset($array_data[1]);
+            foreach ($array_data as $key => $row) {
+                $array_data[$key]['created_at'] = now();
+                $array_data[$key]['updated_at'] =  now();
+            }
+            // dd($array_data);
+
+
+
+            DB::beginTransaction();
+
+            try {
+                foreach ($array_data as $val) {
+
+                    $acc_code      = isset($val['A']) ? $val['A'] : null;
+                    $acc_name      = isset($val['B']) ? $val['B'] : null;
+                    $group         = isset($val['C']) ? $val['C'] : null;
+                    $code          = isset($val['D']) ? $val['D'] : null;
+                    $apr           = isset($val['E']) ? $val['E'] : null;
+                    $may           = isset($val['F']) ? $val['F'] : null;
+                    $jun           = isset($val['G']) ? $val['G'] : null;
+                    $jul           = isset($val['H']) ? $val['H'] : null;
+                    $aug           = isset($val['I']) ? $val['I'] : null;
+                    $sept          = isset($val['J']) ? $val['J'] : null;
+                    $oct           = isset($val['K']) ? $val['K'] : null;
+                    $nov           = isset($val['L']) ? $val['L'] : null;
+                    $dec           = isset($val['M']) ? $val['M'] : null;
+                    $jan           = isset($val['N']) ? $val['N'] : null;
+                    $feb           = isset($val['O']) ? $val['O'] : null;
+                    $mar           = isset($val['P']) ? $val['P'] : null;
+                    $fy_2022_1st   = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_2nd   = isset($val['R']) ? $val['R'] : null;
+                    $fy_2022_total = isset($val['S']) ? $val['S'] : null;
+                    $cek = SalesRb::where([
+                        'acc_code' => $acc_code,
+                        'group' => $group,
+                        'code' => $code
+                    ])->first();
+                    // dd($cek);
+                    if ($cek) {
+                        $salesrb = SalesRb::where([
+                            'acc_code' => $acc_code,
+                            'group' => $group,
+                            'code' => $code
+                        ])->update([
+                            'april'     => $apr,
+                            'mei'       => $may,
+                            'juni'      => $jun,
+                            'juli'      => $jul,
+                            'agustus'   => $aug,
+                            'september' => $sept,
+                            'oktober'   => $oct,
+                            'november'  => $nov,
+                            'december'  => $dec,
+                            'januari'   => $jan,
+                            'februari'  => $feb,
+                            'maret'     => $mar,
+                            'fy_first'  => $fy_2022_1st,
+                            'fy_second' => $fy_2022_2nd,
+                            'fy_total'  => $fy_2022_total
+                        ]);
+                    } else {
+                        $salesrb            = new SalesRb;
+                        $salesrb->acc_code  = $acc_code;
+                        $salesrb->acc_name  = $acc_name;
+                        $salesrb->group     = $group;
+                        $salesrb->code      = $code;
+                        $salesrb->april     = $apr;
+                        $salesrb->mei       = $may;
+                        $salesrb->juni      = $jun;
+                        $salesrb->juli      = $jul;
+                        $salesrb->agustus   = $aug;
+                        $salesrb->september = $sept;
+                        $salesrb->oktober   = $oct;
+                        $salesrb->november  = $nov;
+                        $salesrb->december  = $dec;
+                        $salesrb->januari   = $jan;
+                        $salesrb->februari  = $feb;
+                        $salesrb->maret     = $mar;
+                        $salesrb->fy_first  = $fy_2022_1st;
+                        $salesrb->fy_second = $fy_2022_2nd;
+                        $salesrb->fy_total  = $fy_2022_total;
+                        $salesrb->save();
+                    }
+                }
+
+                $hasil = 1;
+                $title = 'Success';
+                $type = 'success';
+                $message = 'Data berhasil di upload';
+                DB::commit();
+            } catch (Exception $ex) {
+                $hasil = 0;
+                $title = 'Gagal';
+                $type = 'error';
+                $message =  $ex->getMessage();
+                DB::rollBack();
+            }
+        }
+        // dd($upload);
+        $res = [
+            'title'   => $title,
+            'type'    => $type,
+            'message' => $message
+        ];
+
+
+        return redirect()->route('sales.view')->with($res);
+    }
+
+    public function slsimportold(Request $request)
     {
         $file = $request->file('file');
         $name = time() . '.' . $file->getClientOriginalExtension();
@@ -3311,7 +3693,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
+        $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
         // Set document properties
 
 
@@ -3350,7 +3732,7 @@ class RequestController extends Controller
                 break;
             }
         }
-
+        // dd($code);
         if (count((array)$code) > 0) {
             $i = 0;
             $x = 6;
@@ -3369,6 +3751,8 @@ class RequestController extends Controller
                 $x++;
             }
 
+            // dd($dcode);
+
             $saleselectrik =   SalesRb::select(
                 'acc_name',
                 'acc_code',
@@ -3386,7 +3770,7 @@ class RequestController extends Controller
                 DB::raw('ifnull(sum(maret),0) as smaret')
             )
                 ->where('group', 'Electric')
-                ->groupBy('acc_name', 'acc_code')
+                ->groupBy('acc_code')
                 ->get();
 
             $materialelectrik = DmaterialRb::select(
@@ -3406,7 +3790,7 @@ class RequestController extends Controller
                 DB::raw('ifnull(sum(maret),0) as smaret')
             )
                 ->where('group', 'Electric')
-                ->groupBy('acc_name', 'acc_code')
+                ->groupBy('acc_code')
                 ->get();
 
             $expenseelectrik = ExpenseRb::select(
@@ -3445,7 +3829,7 @@ class RequestController extends Controller
                 DB::raw('ifnull(sum(maret),0) as smaret')
             )
                 ->where('group', 'Electric')
-                ->groupBy('acc_name', 'acc_code')
+                ->groupBy('acc_code')
                 ->get();
 
             $electrik = array();
@@ -3453,38 +3837,36 @@ class RequestController extends Controller
             foreach ($saleselectrik as $key => $val) {
                 $electrik[$e]['acc_code']  = $val->acc_code;
                 $electrik[$e]['acc_name']  = $val->acc_name;
-                $electrik[$e]['sapril']  = $val->sapril;
-                $electrik[$e]['smei']  = $val->smei;
-                $electrik[$e]['sjuni']  = $val->sjuni;
-                $electrik[$e]['sjuli']  = $val->sjuli;
-                $electrik[$e]['sagustus']  = $val->sagustus;
-                $electrik[$e]['sseptember']  = $val->sseptember;
-                $electrik[$e]['soktober']  = $val->soktober;
-                $electrik[$e]['snovember']  = $val->snovember;
-                $electrik[$e]['sdecember']  = $val->sdecember;
-                $electrik[$e]['sjanuari']  = $val->sjanuari;
-                $electrik[$e]['sfebruari']  = $val->sfebruari;
-                $electrik[$e]['smaret']  = $val->smaret;
+                $electrik[$e]['sapril']  = str_replace(" ", "", $val->sapril);
+                $electrik[$e]['smei']  =  str_replace(" ", "", $val->smei);
+                $electrik[$e]['sjuni']  =  str_replace(" ", "", $val->sjuni);
+                $electrik[$e]['sjuli']  =  str_replace(" ", "", $val->sjuli);
+                $electrik[$e]['sagustus']  =  str_replace(" ", "", $val->sagustus);
+                $electrik[$e]['sseptember']  =  str_replace(" ", "", $val->sseptember);
+                $electrik[$e]['soktober']  =  str_replace(" ", "", $val->soktober);
+                $electrik[$e]['snovember']  =  str_replace(" ", "", $val->snovember);
+                $electrik[$e]['sdecember']  =  str_replace(" ", "", $val->sdecember);
+                $electrik[$e]['sjanuari']  =  str_replace(" ", "", $val->sjanuari);
+                $electrik[$e]['sfebruari']  =  str_replace(" ", "", $val->sfebruari);
+                $electrik[$e]['smaret']  =  str_replace(" ", "", $val->smaret);
                 $e++;
-                $key++;
             }
             foreach ($materialelectrik as $key => $val) {
                 $electrik[$e]['acc_code']  = $val->acc_code;
                 $electrik[$e]['acc_name']  = $val->acc_name;
-                $electrik[$e]['sapril']  = $val->sapril;
-                $electrik[$e]['smei']  = $val->smei;
-                $electrik[$e]['sjuni']  = $val->sjuni;
-                $electrik[$e]['sjuli']  = $val->sjuli;
-                $electrik[$e]['sagustus']  = $val->sagustus;
-                $electrik[$e]['sseptember']  = $val->sseptember;
-                $electrik[$e]['soktober']  = $val->soktober;
-                $electrik[$e]['snovember']  = $val->snovember;
-                $electrik[$e]['sdecember']  = $val->sdecember;
-                $electrik[$e]['sjanuari']  = $val->sjanuari;
-                $electrik[$e]['sfebruari']  = $val->sfebruari;
-                $electrik[$e]['smaret']  = $val->smaret;
+                $electrik[$e]['sapril']  =  str_replace(" ", "", $val->sapril);
+                $electrik[$e]['smei']  =  str_replace(" ", "", $val->smei);
+                $electrik[$e]['sjuni']  =  str_replace(" ", "", $val->sjuni);
+                $electrik[$e]['sjuli']  =  str_replace(" ", "", $val->sjuli);
+                $electrik[$e]['sagustus']  =  str_replace(" ", "", $val->sagustus);
+                $electrik[$e]['sseptember']  =  str_replace(" ", "", $val->sseptember);
+                $electrik[$e]['soktober']  =  str_replace(" ", "", $val->soktober);
+                $electrik[$e]['snovember']  =  str_replace(" ", "", $val->snovember);
+                $electrik[$e]['sdecember']  =  str_replace(" ", "", $val->sdecember);
+                $electrik[$e]['sjanuari']  =  str_replace(" ", "", $val->sjanuari);
+                $electrik[$e]['sfebruari']  =  str_replace(" ", "", $val->sfebruari);
+                $electrik[$e]['smaret']  =  str_replace(" ", "", $val->smaret);
                 $e++;
-                $key++;
             }
             foreach ($expenseelectrik as $key => $val) {
                 // dd($value);
@@ -3493,39 +3875,37 @@ class RequestController extends Controller
                 $acc_name = $acc[1];
                 $electrik[$e]['acc_code']  = $acc_code;
                 $electrik[$e]['acc_name']  = $acc_name;
-                $electrik[$e]['sapril']  = $val->sapril;
-                $electrik[$e]['smei']  = $val->smei;
-                $electrik[$e]['sjuni']  = $val->sjuni;
-                $electrik[$e]['sjuli']  = $val->sjuli;
-                $electrik[$e]['sagustus']  = $val->sagustus;
-                $electrik[$e]['sseptember']  = $val->sseptember;
-                $electrik[$e]['soktober']  = $val->soktober;
-                $electrik[$e]['snovember']  = $val->snovember;
-                $electrik[$e]['sdecember']  = $val->sdecember;
-                $electrik[$e]['sjanuari']  = $val->sjanuari;
-                $electrik[$e]['sfebruari']  = $val->sfebruari;
-                $electrik[$e]['smaret']  = $val->smaret;
+                $electrik[$e]['sapril']  =  str_replace(" ", "", $val->sapril);
+                $electrik[$e]['smei']  = str_replace(" ", "", $val->smei);
+                $electrik[$e]['sjuni']  = str_replace(" ", "", $val->sjuni);
+                $electrik[$e]['sjuli']  = str_replace(" ", "", $val->sjuli);
+                $electrik[$e]['sagustus']  = str_replace(" ", "", $val->sagustus);
+                $electrik[$e]['sseptember']  = str_replace(" ", "", $val->sseptember);
+                $electrik[$e]['soktober']  = str_replace(" ", "", $val->soktober);
+                $electrik[$e]['snovember']  = str_replace(" ", "", $val->snovember);
+                $electrik[$e]['sdecember']  = str_replace(" ", "", $val->sdecember);
+                $electrik[$e]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
+                $electrik[$e]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
+                $electrik[$e]['smaret']  = str_replace(" ", "", $val->smaret);
                 $e++;
-                $key++;
             }
 
             foreach ($laborelectrik as $key => $val) {
                 $electrik[$e]['acc_code']  = $val->acc_code;
                 $electrik[$e]['acc_name']  = $val->acc_name;
-                $electrik[$e]['sapril']  = $val->sapril;
-                $electrik[$e]['smei']  = $val->smei;
-                $electrik[$e]['sjuni']  = $val->sjuni;
-                $electrik[$e]['sjuli']  = $val->sjuli;
-                $electrik[$e]['sagustus']  = $val->sagustus;
-                $electrik[$e]['sseptember']  = $val->sseptember;
-                $electrik[$e]['soktober']  = $val->soktober;
-                $electrik[$e]['snovember']  = $val->snovember;
-                $electrik[$e]['sdecember']  = $val->sdecember;
-                $electrik[$e]['sjanuari']  = $val->sjanuari;
-                $electrik[$e]['sfebruari']  = $val->sfebruari;
-                $electrik[$e]['smaret']  = $val->smaret;
+                $electrik[$e]['sapril']  =  str_replace(" ", "", $val->sapril);
+                $electrik[$e]['smei']  = str_replace(" ", "", $val->smei);
+                $electrik[$e]['sjuni']  = str_replace(" ", "", $val->sjuni);
+                $electrik[$e]['sjuli']  = str_replace(" ", "", $val->sjuli);
+                $electrik[$e]['sagustus']  = str_replace(" ", "", $val->sagustus);
+                $electrik[$e]['sseptember']  = str_replace(" ", "", $val->sseptember);
+                $electrik[$e]['soktober']  = str_replace(" ", "", $val->soktober);
+                $electrik[$e]['snovember']  = str_replace(" ", "", $val->snovember);
+                $electrik[$e]['sdecember']  = str_replace(" ", "", $val->sdecember);
+                $electrik[$e]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
+                $electrik[$e]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
+                $electrik[$e]['smaret']  = str_replace(" ", "", $val->smaret);
                 $e++;
-                $key++;
             }
 
 
@@ -3546,7 +3926,7 @@ class RequestController extends Controller
                 DB::raw('ifnull(sum(maret),0) as smaret')
             )
                 ->where('group', 'unit')
-                ->groupBy('acc_name', 'acc_code')
+                ->groupBy('acc_code')
                 ->get();
 
             $materialunit = DmaterialRb::select(
@@ -3566,7 +3946,7 @@ class RequestController extends Controller
                 DB::raw('ifnull(sum(maret),0) as smaret')
             )
                 ->where('group', 'unit')
-                ->groupBy('acc_name', 'acc_code')
+                ->groupBy('acc_code')
                 ->get();
 
             $expenseunit = ExpenseRb::select(
@@ -3606,7 +3986,7 @@ class RequestController extends Controller
                 DB::raw('ifnull(sum(maret),0) as smaret')
             )
                 ->where('group', 'unit')
-                ->groupBy('acc_name', 'acc_code')
+                ->groupBy('acc_code')
                 ->get();
 
             $unit = array();
@@ -3614,38 +3994,36 @@ class RequestController extends Controller
             foreach ($salesunit as $key => $val) {
                 $unit[$u]['acc_code']  = $val->acc_code;
                 $unit[$u]['acc_name']  = $val->acc_name;
-                $unit[$u]['sapril']  = $val->sapril;
-                $unit[$u]['smei']  = $val->smei;
-                $unit[$u]['sjuni']  = $val->sjuni;
-                $unit[$u]['sjuli']  = $val->sjuli;
-                $unit[$u]['sagustus']  = $val->sagustus;
-                $unit[$u]['sseptember']  = $val->sseptember;
-                $unit[$u]['soktober']  = $val->soktober;
-                $unit[$u]['snovember']  = $val->snovember;
-                $unit[$u]['sdecember']  = $val->sdecember;
-                $unit[$u]['sjanuari']  = $val->sjanuari;
-                $unit[$u]['sfebruari']  = $val->sfebruari;
-                $unit[$u]['smaret']  = $val->smaret;
+                $unit[$u]['sapril']  = str_replace(" ", "", $val->sapril);
+                $unit[$u]['smei']  = str_replace(" ", "", $val->smei);
+                $unit[$u]['sjuni']  = str_replace(" ", "", $val->sjuni);
+                $unit[$u]['sjuli']  = str_replace(" ", "", $val->sjuli);
+                $unit[$u]['sagustus']  = str_replace(" ", "", $val->sagustus);
+                $unit[$u]['sseptember']  = str_replace(" ", "", $val->sseptember);
+                $unit[$u]['soktober']  = str_replace(" ", "", $val->soktober);
+                $unit[$u]['snovember']  = str_replace(" ", "", $val->snovember);
+                $unit[$u]['sdecember']  = str_replace(" ", "", $val->sdecember);
+                $unit[$u]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
+                $unit[$u]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
+                $unit[$u]['smaret']  = str_replace(" ", "", $val->smaret);
                 $u++;
-                $key++;
             }
             foreach ($materialunit as $key => $val) {
                 $unit[$u]['acc_code']  = $val->acc_code;
                 $unit[$u]['acc_name']  = $val->acc_name;
-                $unit[$u]['sapril']  = $val->sapril;
-                $unit[$u]['smei']  = $val->smei;
-                $unit[$u]['sjuni']  = $val->sjuni;
-                $unit[$u]['sjuli']  = $val->sjuli;
-                $unit[$u]['sagustus']  = $val->sagustus;
-                $unit[$u]['sseptember']  = $val->sseptember;
-                $unit[$u]['soktober']  = $val->soktober;
-                $unit[$u]['snovember']  = $val->snovember;
-                $unit[$u]['sdecember']  = $val->sdecember;
-                $unit[$u]['sjanuari']  = $val->sjanuari;
-                $unit[$u]['sfebruari']  = $val->sfebruari;
-                $unit[$u]['smaret']  = $val->smaret;
+                $unit[$u]['sapril']  = str_replace(" ", "", $val->sapril);
+                $unit[$u]['smei']  = str_replace(" ", "", $val->smei);
+                $unit[$u]['sjuni']  = str_replace(" ", "", $val->sjuni);
+                $unit[$u]['sjuli']  = str_replace(" ", "", $val->sjuli);
+                $unit[$u]['sagustus']  = str_replace(" ", "", $val->sagustus);
+                $unit[$u]['sseptember']  = str_replace(" ", "", $val->sseptember);
+                $unit[$u]['soktober']  = str_replace(" ", "", $val->soktober);
+                $unit[$u]['snovember']  = str_replace(" ", "", $val->snovember);
+                $unit[$u]['sdecember']  = str_replace(" ", "", $val->sdecember);
+                $unit[$u]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
+                $unit[$u]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
+                $unit[$u]['smaret']  = str_replace(" ", "", $val->smaret);
                 $u++;
-                $key++;
             }
             foreach ($expenseunit as $key => $val) {
                 // dd($value);
@@ -3654,39 +4032,37 @@ class RequestController extends Controller
                 $acc_name = $acc[1];
                 $unit[$u]['acc_code']  = $acc_code;
                 $unit[$u]['acc_name']  = $acc_name;
-                $unit[$u]['sapril']  = $val->sapril;
-                $unit[$u]['smei']  = $val->smei;
-                $unit[$u]['sjuni']  = $val->sjuni;
-                $unit[$u]['sjuli']  = $val->sjuli;
-                $unit[$u]['sagustus']  = $val->sagustus;
-                $unit[$u]['sseptember']  = $val->sseptember;
-                $unit[$u]['soktober']  = $val->soktober;
-                $unit[$u]['snovember']  = $val->snovember;
-                $unit[$u]['sdecember']  = $val->sdecember;
-                $unit[$u]['sjanuari']  = $val->sjanuari;
-                $unit[$u]['sfebruari']  = $val->sfebruari;
-                $unit[$u]['smaret']  = $val->smaret;
+                $unit[$u]['sapril']  = str_replace(" ", "", $val->sapril);
+                $unit[$u]['smei']  = str_replace(" ", "", $val->smei);
+                $unit[$u]['sjuni']  = str_replace(" ", "", $val->sjuni);
+                $unit[$u]['sjuli']  = str_replace(" ", "", $val->sjuli);
+                $unit[$u]['sagustus']  = str_replace(" ", "", $val->sagustus);
+                $unit[$u]['sseptember']  = str_replace(" ", "", $val->sseptember);
+                $unit[$u]['soktober']  = str_replace(" ", "", $val->soktober);
+                $unit[$u]['snovember']  = str_replace(" ", "", $val->snovember);
+                $unit[$u]['sdecember']  = str_replace(" ", "", $val->sdecember);
+                $unit[$u]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
+                $unit[$u]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
+                $unit[$u]['smaret']  = str_replace(" ", "", $val->smaret);
                 $u++;
-                $key++;
             }
 
             foreach ($laborunit as $key => $val) {
                 $unit[$u]['acc_code']  = $val->acc_code;
                 $unit[$u]['acc_name']  = $val->acc_name;
-                $unit[$u]['sapril']  = $val->sapril;
-                $unit[$u]['smei']  = $val->smei;
-                $unit[$u]['sjuni']  = $val->sjuni;
-                $unit[$u]['sjuli']  = $val->sjuli;
-                $unit[$u]['sagustus']  = $val->sagustus;
-                $unit[$u]['sseptember']  = $val->sseptember;
-                $unit[$u]['soktober']  = $val->soktober;
-                $unit[$u]['snovember']  = $val->snovember;
-                $unit[$u]['sdecember']  = $val->sdecember;
-                $unit[$u]['sjanuari']  = $val->sjanuari;
-                $unit[$u]['sfebruari']  = $val->sfebruari;
-                $unit[$u]['smaret']  = $val->smaret;
+                $unit[$u]['sapril']  = str_replace(" ", "", $val->sapril);
+                $unit[$u]['smei']  = str_replace(" ", "", $val->smei);
+                $unit[$u]['sjuni']  = str_replace(" ", "", $val->sjuni);
+                $unit[$u]['sjuli']  = str_replace(" ", "", $val->sjuli);
+                $unit[$u]['sagustus']  = str_replace(" ", "", $val->sagustus);
+                $unit[$u]['sseptember']  = str_replace(" ", "", $val->sseptember);
+                $unit[$u]['soktober']  = str_replace(" ", "", $val->soktober);
+                $unit[$u]['snovember']  = str_replace(" ", "", $val->snovember);
+                $unit[$u]['sdecember']  = str_replace(" ", "", $val->sdecember);
+                $unit[$u]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
+                $unit[$u]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
+                $unit[$u]['smaret']  = str_replace(" ", "", $val->smaret);
                 $u++;
-                $key++;
             }
 
 
@@ -3707,9 +4083,9 @@ class RequestController extends Controller
                 DB::raw('ifnull(sum(maret),0) as smaret')
             )
                 ->where('group', 'body')
-                ->groupBy('acc_name', 'acc_code')
+                ->groupBy('acc_code')
                 ->get();
-
+            // dd($salesbody);
             $materialbody = DmaterialRb::select(
                 'acc_name',
                 'acc_code',
@@ -3727,9 +4103,9 @@ class RequestController extends Controller
                 DB::raw('ifnull(sum(maret),0) as smaret')
             )
                 ->where('group', 'body')
-                ->groupBy('acc_name', 'acc_code')
+                ->groupBy('acc_code')
                 ->get();
-
+            // dd(json_encode($materialbody));
             $expensebody = ExpenseRb::select(
                 'acc_code',
                 DB::raw('ifnull(sum(april),0) as sapril'),
@@ -3767,47 +4143,45 @@ class RequestController extends Controller
                 DB::raw('ifnull(sum(maret),0) as smaret')
             )
                 ->where('group', 'body')
-                ->groupBy('acc_name', 'acc_code')
+                ->groupBy('acc_code')
                 ->get();
             $body = array();
             $b = 0;
             foreach ($salesbody as $key => $val) {
                 $body[$b]['acc_code']  = $val->acc_code;
                 $body[$b]['acc_name']  = $val->acc_name;
-                $body[$b]['sapril']  = $val->sapril;
-                $body[$b]['smei']  = $val->smei;
-                $body[$b]['sjuni']  = $val->sjuni;
-                $body[$b]['sjuli']  = $val->sjuli;
-                $body[$b]['sagustus']  = $val->sagustus;
-                $body[$b]['sseptember']  = $val->sseptember;
-                $body[$b]['soktober']  = $val->soktober;
-                $body[$b]['snovember']  = $val->snovember;
-                $body[$b]['sdecember']  = $val->sdecember;
-                $body[$b]['sjanuari']  = $val->sjanuari;
-                $body[$b]['sfebruari']  = $val->sfebruari;
-                $body[$b]['smaret']  = $val->smaret;
+                $body[$b]['sapril']  = str_replace(" ", "", $val->sapril);
+                $body[$b]['smei']  = str_replace(" ", "", $val->smei);
+                $body[$b]['sjuni']  = str_replace(" ", "", $val->sjuni);
+                $body[$b]['sjuli']  = str_replace(" ", "", $val->sjuli);
+                $body[$b]['sagustus']  = str_replace(" ", "", $val->sagustus);
+                $body[$b]['sseptember']  = str_replace(" ", "", $val->sseptember);
+                $body[$b]['soktober']  = str_replace(" ", "", $val->soktober);
+                $body[$b]['snovember']  = str_replace(" ", "", $val->snovember);
+                $body[$b]['sdecember']  = str_replace(" ", "", $val->sdecember);
+                $body[$b]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
+                $body[$b]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
+                $body[$b]['smaret']  = str_replace(" ", "", $val->smaret);
                 $b++;
-                $key++;
             }
 
 
             foreach ($materialbody as $key => $val) {
                 $body[$b]['acc_code']  = $val->acc_code;
                 $body[$b]['acc_name']  = $val->acc_name;
-                $body[$b]['sapril']  = $val->sapril;
-                $body[$b]['smei']  = $val->smei;
-                $body[$b]['sjuni']  = $val->sjuni;
-                $body[$b]['sjuli'] = $val->sjuli;
-                $body[$b]['sagustus'] = $val->sagustus;
-                $body[$b]['sseptember']  = $val->sseptember;
-                $body[$b]['soktober']  = $val->soktober;
-                $body[$b]['snovember']  = $val->snovember;
-                $body[$b]['sdecember']  = $val->sdecember;
-                $body[$b]['sjanuari']  = $val->sjanuari;
-                $body[$b]['sfebruari']  = $val->sfebruari;
-                $body[$b]['smaret']  = $val->smaret;
+                $body[$b]['sapril']  = str_replace(" ", "", $val->sapril);
+                $body[$b]['smei']  = str_replace(" ", "", $val->smei);
+                $body[$b]['sjuni']  = str_replace(" ", "", $val->sjuni);
+                $body[$b]['sjuli']  = str_replace(" ", "", $val->sjuli);
+                $body[$b]['sagustus']  = str_replace(" ", "", $val->sagustus);
+                $body[$b]['sseptember']  = str_replace(" ", "", $val->sseptember);
+                $body[$b]['soktober']  = str_replace(" ", "", $val->soktober);
+                $body[$b]['snovember']  = str_replace(" ", "", $val->snovember);
+                $body[$b]['sdecember']  = str_replace(" ", "", $val->sdecember);
+                $body[$b]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
+                $body[$b]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
+                $body[$b]['smaret']  = str_replace(" ", "", $val->smaret);
                 $b++;
-                $key++;
             }
             foreach ($expensebody as $key => $val) {
                 // dd($value);
@@ -3816,214 +4190,110 @@ class RequestController extends Controller
                 $acc_name = $acc[1];
                 $body[$b]['acc_code']  = $acc_code;
                 $body[$b]['acc_name']  = $acc_name;
-                $body[$b]['sapril']  = $val->sapril;
-                $body[$b]['smei']  = $val->smei;
-                $body[$b]['sjuni']  = $val->sjuni;
-                $body[$b]['sjuli']  = $val->sjuli;
-                $body[$b]['sagustus']  = $val->sagustus;
-                $body[$b]['sseptember']  = $val->sseptember;
-                $body[$b]['soktober']  = $val->soktober;
-                $body[$b]['snovember']  = $val->snovember;
-                $body[$b]['sdecember']  = $val->sdecember;
-                $body[$b]['sjanuari']  = $val->sjanuari;
-                $body[$b]['sfebruari']  = $val->sfebruari;
-                $body[$b]['smaret']  = $val->smaret;
+                $body[$b]['sapril']  = str_replace(" ", "", $val->sapril);
+                $body[$b]['smei']  = str_replace(" ", "", $val->smei);
+                $body[$b]['sjuni']  = str_replace(" ", "", $val->sjuni);
+                $body[$b]['sjuli']  = str_replace(" ", "", $val->sjuli);
+                $body[$b]['sagustus']  = str_replace(" ", "", $val->sagustus);
+                $body[$b]['sseptember']  = str_replace(" ", "", $val->sseptember);
+                $body[$b]['soktober']  = str_replace(" ", "", $val->soktober);
+                $body[$b]['snovember']  = str_replace(" ", "", $val->snovember);
+                $body[$b]['sdecember']  = str_replace(" ", "", $val->sdecember);
+                $body[$b]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
+                $body[$b]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
+                $body[$b]['smaret']  = str_replace(" ", "", $val->smaret);
                 $b++;
-                $key++;
             }
 
             foreach ($laborbody as $key => $val) {
                 $body[$b]['acc_code']  = $val->acc_code;
                 $body[$b]['acc_name']  = $val->acc_name;
-                $body[$b]['sapril']  = $val->sapril;
-                $body[$b]['smei']  = $val->smei;
-                $body[$b]['sjuni']  = $val->sjuni;
-                $body[$b]['sjuli']  = $val->sjuli;
-                $body[$b]['sagustus']  = $val->sagustus;
-                $body[$b]['sseptember']  = $val->sseptember;
-                $body[$b]['soktober']  = $val->soktober;
-                $body[$b]['snovember']  = $val->snovember;
-                $body[$b]['sdecember']  = $val->sdecember;
-                $body[$b]['sjanuari']  = $val->sjanuari;
-                $body[$b]['sfebruari']  = $val->sfebruari;
-                $body[$b]['smaret']  = $val->smaret;
+                $body[$b]['sapril']  = str_replace(" ", "", $val->sapril);
+                $body[$b]['smei']  = str_replace(" ", "", $val->smei);
+                $body[$b]['sjuni']  = str_replace(" ", "", $val->sjuni);
+                $body[$b]['sjuli']  = str_replace(" ", "", $val->sjuli);
+                $body[$b]['sagustus']  = str_replace(" ", "", $val->sagustus);
+                $body[$b]['sseptember']  = str_replace(" ", "", $val->sseptember);
+                $body[$b]['soktober']  = str_replace(" ", "", $val->soktober);
+                $body[$b]['snovember']  = str_replace(" ", "", $val->snovember);
+                $body[$b]['sdecember']  = str_replace(" ", "", $val->sdecember);
+                $body[$b]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
+                $body[$b]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
+                $body[$b]['smaret']  = str_replace(" ", "", $val->smaret);
                 $b++;
-                $key++;
             }
 
-            // dd($dcode);
-            $total_all_body = 0;
-            $t_april_b = 0;
-            $t_mei_b = 0;
-            $t_juni_b = 0;
-            $t_juli_b = 0;
-            $t_agustus_b = 0;
-            $t_september_b = 0;
-            $t_oktober_b = 0;
-            $t_november_b = 0;
-            $t_desember_b = 0;
-            $t_januari_b = 0;
-            $t_februari_b = 0;
-            $t_maret_b = 0;
-            $persen_arr_b = array();
             $bb = 0;
-
+            // dd($body);
             foreach ($body as $key => $value) {
-                // dd($value);
-                $key = array_search((string)$value['acc_code'], array_column($dcode, 'acc_code'));
-                // dd($key);
 
-                $keyy = $key + 6;
-                // dd($keyy . '/' . $value['acc_code'] . $value['acc_name']);
+                $keyb = array_search((string)$value['acc_code'], array_column($dcode, 'acc_code'));
 
-                $total_body = ($value['sapril'] +  $value['smei'] + $value['sjuni'] + $value['sjuli'] + $value['sagustus'] + $value['sseptember'] + $value['soktober'] + $value['snovember'] + $value['sdecember'] + $value['sjanuari'] + $value['sfebruari'] + $value['smaret']);
+
+                $keyyb = $keyb + 6;
+
                 $spreadsheet->setActiveSheetIndex(0)
-                    ->setCellValue('U' . $keyy, $value['sapril'])
-                    ->setCellValue('V' . $keyy, $value['smei'])
-                    ->setCellValue('W' . $keyy, $value['sjuni'])
-                    ->setCellValue('X' . $keyy, $value['sjuli'])
-                    ->setCellValue('Y' . $keyy, $value['sagustus'])
-                    ->setCellValue('Z' . $keyy, $value['sseptember'])
-                    ->setCellValue('AA' . $keyy, $value['soktober'])
-                    ->setCellValue('AB' . $keyy, $value['snovember'])
-                    ->setCellValue('AC' . $keyy, $value['sdecember'])
-                    ->setCellValue('AD' . $keyy, $value['sjanuari'])
-                    ->setCellValue('AE' . $keyy, $value['sfebruari'])
-                    ->setCellValue('AF' . $keyy, $value['smaret']);
-
-                $total_all_body = $total_all_body + $total_body;
-
-                $t_april_b =  $t_april_b +  $value['sapril'];
-                $t_mei_b = $t_mei_b +  $value['smei'];
-                $t_juni_b =  $t_juni_b + $value['sjuni'];
-                $t_juli_b = $t_juli_b + $value['sjuli'];
-                $t_agustus_b =  $t_agustus_b + $value['sagustus'];
-                $t_september_b = $t_september_b + $value['sseptember'];
-                $t_oktober_b =  $t_oktober_b + $value['soktober'];
-                $t_november_b =  $t_november_b + $value['snovember'];
-                $t_desember_b =  $t_desember_b + $value['sdecember'];
-                $t_januari_b = $t_januari_b + $value['sjanuari'];
-                $t_februari_b = $t_februari_b + $value['sfebruari'];
-                $t_maret_b = $t_maret_b + $value['smaret'];
-
-                $persen_arr_b[$bb]['acc_name'] = $value['acc_name'];
-                $persen_arr_b[$bb]['acc_code'] = $value['acc_code'];
-                $persen_arr_b[$bb]['total_body'] = $total_body;
+                    ->setCellValue('U' . $keyyb, $value['sapril'])
+                    ->setCellValue('V' . $keyyb, $value['smei'])
+                    ->setCellValue('W' . $keyyb, $value['sjuni'])
+                    ->setCellValue('X' . $keyyb, $value['sjuli'])
+                    ->setCellValue('Y' . $keyyb, $value['sagustus'])
+                    ->setCellValue('Z' . $keyyb, $value['sseptember'])
+                    ->setCellValue('AA' . $keyyb, $value['soktober'])
+                    ->setCellValue('AB' . $keyyb, $value['snovember'])
+                    ->setCellValue('AC' . $keyyb, $value['sdecember'])
+                    ->setCellValue('AD' . $keyyb, $value['sjanuari'])
+                    ->setCellValue('AE' . $keyyb, $value['sfebruari'])
+                    ->setCellValue('AF' . $keyyb, $value['smaret']);
 
                 $bb++;
             }
 
 
-            $total_all_unit = 0;
-            $t_april_u = 0;
-            $t_mei_u = 0;
-            $t_juni_u = 0;
-            $t_juli_u = 0;
-            $t_agustus_u = 0;
-            $t_september_u = 0;
-            $t_oktober_u = 0;
-            $t_november_u = 0;
-            $t_desember_u = 0;
-            $t_januari_u = 0;
-            $t_februari_u = 0;
-            $t_maret_u = 0;
-            $persen_arr_u = array();
+
             $uu = 0;
             foreach ($unit as $key => $value) {
-                $key = array_search((string)$value['acc_code'], array_column($dcode, 'acc_code'));
-                // dd($value->sapril.$value->acc_name);
-                // dd(array_column($dsales, 'acc_code'));
-                $keyy = $key + 6;
-                $total_unit = ($value['sapril'] +  $value['smei'] + $value['sjuni'] + $value['sjuli'] + $value['sagustus'] + $value['sseptember'] + $value['soktober'] + $value['snovember'] + $value['sdecember'] + $value['sjanuari'] + $value['sfebruari'] + $value['smaret']);
+                $keyu = array_search((string)$value['acc_code'], array_column($dcode, 'acc_code'));
+
+                $keyyu = $keyu + 6;
                 $spreadsheet->setActiveSheetIndex(0)
-                    ->setCellValue('AJ' . $keyy, $value['sapril'])
-                    ->setCellValue('AK' . $keyy, $value['smei'])
-                    ->setCellValue('AL' . $keyy, $value['sjuni'])
-                    ->setCellValue('AM' . $keyy, $value['sjuli'])
-                    ->setCellValue('AN' . $keyy, $value['sagustus'])
-                    ->setCellValue('AO' . $keyy, $value['sseptember'])
-                    ->setCellValue('AP' . $keyy, $value['soktober'])
-                    ->setCellValue('AQ' . $keyy, $value['snovember'])
-                    ->setCellValue('AR' . $keyy, $value['sdecember'])
-                    ->setCellValue('AS' . $keyy, $value['sjanuari'])
-                    ->setCellValue('AT' . $keyy, $value['sfebruari'])
-                    ->setCellValue('AU' . $keyy, $value['smaret']);
-
-                $total_all_unit = $total_all_unit + $total_unit;
-
-                $t_april_u =  $t_april_u +  $value['sapril'];
-                $t_mei_u = $t_mei_u + $value['smei'];
-                $t_juni_u =  $t_juni_u + $value['sjuni'];
-                $t_juli_u = $t_juli_u + $value['sjuli'];
-                $t_agustus_u =  $t_agustus_u + $value['sagustus'];
-                $t_september_u = $t_september_u + $value['sseptember'];
-                $t_oktober_u =  $t_oktober_u + $value['soktober'];
-                $t_november_u =  $t_november_u + $value['snovember'];
-                $t_desember_u =  $t_desember_u + $value['sdecember'];
-                $t_januari_u = $t_januari_u + $value['sjanuari'];
-                $t_februari_u = $t_februari_u + $value['sfebruari'];
-                $t_maret_u = $t_maret_u + $value['smaret'];
-
-                $persen_arr_u[$uu]['acc_name'] = $value['acc_name'];
-                $persen_arr_u[$uu]['acc_code'] = $value['acc_code'];
-                $persen_arr_u[$uu]['total_unit'] = $total_unit;
+                    ->setCellValue('AJ' . $keyyu, $value['sapril'])
+                    ->setCellValue('AK' . $keyyu, $value['smei'])
+                    ->setCellValue('AL' . $keyyu, $value['sjuni'])
+                    ->setCellValue('AM' . $keyyu, $value['sjuli'])
+                    ->setCellValue('AN' . $keyyu, $value['sagustus'])
+                    ->setCellValue('AO' . $keyyu, $value['sseptember'])
+                    ->setCellValue('AP' . $keyyu, $value['soktober'])
+                    ->setCellValue('AQ' . $keyyu, $value['snovember'])
+                    ->setCellValue('AR' . $keyyu, $value['sdecember'])
+                    ->setCellValue('AS' . $keyyu, $value['sjanuari'])
+                    ->setCellValue('AT' . $keyyu, $value['sfebruari'])
+                    ->setCellValue('AU' . $keyyu, $value['smaret']);
                 $uu++;
             }
 
 
-            $total_all_electrik = 0;
-            $t_april_e = 0;
-            $t_mei_e = 0;
-            $t_juni_e = 0;
-            $t_juli_e = 0;
-            $t_agustus_e = 0;
-            $t_september_e = 0;
-            $t_oktober_e = 0;
-            $t_november_e = 0;
-            $t_desember_e = 0;
-            $t_januari_e = 0;
-            $t_februari_e = 0;
-            $t_maret_e = 0;
-            $persen_arr_e = array();
+
             $ee = 0;
             foreach ($electrik as $key => $value) {
-                $key = array_search((string)$value['acc_code'], array_column($dcode, 'acc_code'));
-                // dd($value->sapril.$value->acc_name);
-                // dd(array_column($dsales, 'acc_code'));
-                $keyy = $key + 6;
-                $total_electrik = ($value['sapril'] +  $value['smei'] + $value['sjuni'] + $value['sjuli'] + $value['sagustus'] + $value['sseptember'] + $value['soktober'] + $value['snovember'] + $value['sdecember'] + $value['sjanuari'] + $value['sfebruari'] + $value['smaret']);
+                $keye = array_search((string)$value['acc_code'], array_column($dcode, 'acc_code'));
+
+                $keyye = $keye + 6;
                 $spreadsheet->setActiveSheetIndex(0)
-                    ->setCellValue('AY' . $keyy, $value['sapril'])
-                    ->setCellValue('AZ' . $keyy, $value['smei'])
-                    ->setCellValue('AA' . $keyy, $value['sjuni'])
-                    ->setCellValue('BB' . $keyy, $value['sjuli'])
-                    ->setCellValue('BC' . $keyy, $value['sagustus'])
-                    ->setCellValue('BD' . $keyy, $value['sseptember'])
-                    ->setCellValue('BE' . $keyy, $value['soktober'])
-                    ->setCellValue('BF' . $keyy, $value['snovember'])
-                    ->setCellValue('BG' . $keyy, $value['sdecember'])
-                    ->setCellValue('BH' . $keyy, $value['sjanuari'])
-                    ->setCellValue('BI' . $keyy, $value['sfebruari'])
-                    ->setCellValue('BJ' . $keyy, $value['smaret']);
+                    ->setCellValue('AY' . $keyye, $value['sapril'])
+                    ->setCellValue('AZ' . $keyye, $value['smei'])
+                    ->setCellValue('BA' . $keyye, $value['sjuni'])
+                    ->setCellValue('BB' . $keyye, $value['sjuli'])
+                    ->setCellValue('BC' . $keyye, $value['sagustus'])
+                    ->setCellValue('BD' . $keyye, $value['sseptember'])
+                    ->setCellValue('BE' . $keyye, $value['soktober'])
+                    ->setCellValue('BF' . $keyye, $value['snovember'])
+                    ->setCellValue('BG' . $keyye, $value['sdecember'])
+                    ->setCellValue('BH' . $keyye, $value['sjanuari'])
+                    ->setCellValue('BI' . $keyye, $value['sfebruari'])
+                    ->setCellValue('BJ' . $keyye, $value['smaret']);
 
-                $total_all_electrik = $total_all_electrik + $total_electrik;
 
-                $t_april_e =  $t_april_e +  $value['sapril'];
-                $t_mei_e = $t_mei_e + $value['smei'];
-                $t_juni_e =  $t_juni_e + $value['sjuni'];
-                $t_juli_e = $t_juli_e + $value['sjuli'];
-                $t_agustus_e =  $t_agustus_e + $value['sagustus'];
-                $t_september_e = $t_september_e + $value['sseptember'];
-                $t_oktober_e =  $t_oktober_e + $value['soktober'];
-                $t_november_e =  $t_november_e + $value['snovember'];
-                $t_desember_e =  $t_desember_e + $value['sdecember'];
-                $t_januari_e = $t_januari_e + $value['sjanuari'];
-                $t_februari_e = $t_februari_e + $value['sfebruari'];
-                $t_maret_e = $t_maret_e + $value['smaret'];
-
-                $persen_arr_e[$ee]['acc_name'] = $value['acc_name'];
-                $persen_arr_e[$ee]['acc_code'] = $value['acc_code'];
-                $persen_arr_e[$ee]['total_electrik'] = $total_electrik;
                 $ee++;
             }
             // dd($body);

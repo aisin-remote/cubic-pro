@@ -22,8 +22,8 @@ class DirectMaterialImport implements ToModel, WithHeadingRow, WithBatchInserts
     }
 
     /**
-    * @param array $row
-    */
+     * @param array $row
+     */
     public function model(array $row)
     {
         $acc_code  = isset($row['acc_code']) ? $row['acc_code'] : null;
@@ -47,33 +47,33 @@ class DirectMaterialImport implements ToModel, WithHeadingRow, WithBatchInserts
         $fy_total  = isset($row['fy_2022_total']) ? $row['fy_2022_total'] : null;
 
         $cek = DmaterialRb::where([
-            'acc_name' => $acc_name,
+            'acc_code' => $acc_code,
             'group' => $group,
             'code' => $code
         ])->first();
 
         if ($cek) {
             $materialrb = DmaterialRb::where([
-                'acc_name' => $acc_name,
+                'acc_code' => $acc_code,
                 'group' => $group,
                 'code' => $code
             ])->update([
-                    'april'     => $april,
-                    'mei'       => $mei,
-                    'juni'      => $juni,
-                    'juli'      => $juli,
-                    'agustus'   => $agustus,
-                    'september' => $september,
-                    'oktober'   => $oktober,
-                    'november'  => $november,
-                    'december'  => $december,
-                    'januari'   => $januari,
-                    'februari'  => $februari,
-                    'maret'     => $maret,
-                    'fy_first'  => $fy_first,
-                    'fy_second' => $fy_second,
-                    'fy_total'  => $fy_total,
-                ]);
+                'april'     => $april,
+                'mei'       => $mei,
+                'juni'      => $juni,
+                'juli'      => $juli,
+                'agustus'   => $agustus,
+                'september' => $september,
+                'oktober'   => $oktober,
+                'november'  => $november,
+                'december'  => $december,
+                'januari'   => $januari,
+                'februari'  => $februari,
+                'maret'     => $maret,
+                'fy_first'  => $fy_first,
+                'fy_second' => $fy_second,
+                'fy_total'  => $fy_total,
+            ]);
         } else {
             $materialrb = new DmaterialRb;
             $materialrb->acc_code  = $acc_code;
