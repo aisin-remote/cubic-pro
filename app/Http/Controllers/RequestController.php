@@ -3693,7 +3693,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
+        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
         // Set document properties
 
 
