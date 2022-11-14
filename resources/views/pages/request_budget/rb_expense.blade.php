@@ -127,7 +127,12 @@ Upload Expense
                             Swal.fire({
                                 icon: 'error',
                                 title: "Total : " + data.total,
-                                text: 'Data masih ada decimal value, cek kembali.!',
+                                text: 'Data masih ada decimal (koma) value, cek kembali.!',
+                                showCancelButton: false,
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'Ok'
+                            }).then((result) => {
+                                window.location.reload(true);
                             })
                         }
 
