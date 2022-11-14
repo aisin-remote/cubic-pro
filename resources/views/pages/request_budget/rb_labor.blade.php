@@ -105,19 +105,29 @@ Upload Labor
                     contentType: false,
                     data: fd,
                     success: function(data) {
-                        if (data.total != 0) {
+
+                        if (data.success) {
+
+                            if (data.total != 0) {
+                                Swal.fire({
+                                    title: 'Are you sure?',
+                                    text: "Total : " + data.total,
+                                    icon: 'info',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Yes, upload it!'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $('#form-import').trigger('submit')
+                                    }
+                                })
+                            }
+                        } else {
                             Swal.fire({
-                                title: 'Are you sure?',
-                                text: "Total : " + data.total,
-                                icon: 'info',
-                                showCancelButton: true,
-                                confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33',
-                                confirmButtonText: 'Yes, upload it!'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    $('#form-import').trigger('submit')
-                                }
+                                icon: 'error',
+                                title: "Total : " + data.total,
+                                text: 'Data masih ada decimal value, cek kembali.!',
                             })
                         }
 

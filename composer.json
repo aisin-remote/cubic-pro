@@ -64,7 +64,7 @@
         "sort-packages": true,
         "optimize-autoloader": true,
         "allow-plugins": {
-            "kylekatarnls/update-helper": true
+            "kylekatarnls/update-helper": false
         }
     },
     "minimum-stability": "dev",

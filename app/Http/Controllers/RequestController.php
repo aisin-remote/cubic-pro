@@ -103,7 +103,7 @@ class RequestController extends Controller
         // dd($file);
         // $name = time() . '.' . $file->getClientOriginalExtension();
         $ext  = $file->getClientOriginalExtension();
-
+        $success = true;
         $hasil = 1;
         if ($ext != 'xlsx' && $ext != 'xls') {
             $hasil = 0;
@@ -141,6 +141,9 @@ class RequestController extends Controller
                 $pesan = '';
                 $total = 0;
                 foreach ($arrayPush as $key => $val) {
+                    if (strpos($val['fy_total'], ".") !== false) {
+                        $success = false;
+                    }
                     $total = $total + $val['fy_total'];
                 }
             }
@@ -148,6 +151,7 @@ class RequestController extends Controller
             // dd($total);
         }
         $res = [
+            'success' => $success,
             'pesan'   => $pesan,
             'total'    => $total
         ];
@@ -398,7 +402,7 @@ class RequestController extends Controller
         // dd($file);
         // $name = time() . '.' . $file->getClientOriginalExtension();
         $ext  = $file->getClientOriginalExtension();
-
+        $success = true;
         $hasil = 1;
         if ($ext != 'xlsx' && $ext != 'xls') {
             $hasil = 0;
@@ -436,6 +440,9 @@ class RequestController extends Controller
                 $pesan = '';
                 $total = 0;
                 foreach ($arrayPush as $key => $val) {
+                    if (strpos($val['fy_total'], ".") !== false) {
+                        $success = false;
+                    }
                     $total = $total + $val['fy_total'];
                 }
             }
@@ -443,6 +450,7 @@ class RequestController extends Controller
             // dd($total);
         }
         $res = [
+            'success'   => $success,
             'pesan'   => $pesan,
             'total'    => $total
         ];
@@ -697,7 +705,7 @@ class RequestController extends Controller
         // dd($file);
         // $name = time() . '.' . $file->getClientOriginalExtension();
         $ext  = $file->getClientOriginalExtension();
-
+        $success = true;
         $hasil = 1;
         if ($ext != 'xlsx' && $ext != 'xls') {
             $hasil = 0;
@@ -735,6 +743,9 @@ class RequestController extends Controller
                 $pesan = '';
                 $total = 0;
                 foreach ($arrayPush as $key => $val) {
+                    if (strpos($val['fy_total'], ".") !== false) {
+                        $success = false;
+                    }
                     $total = $total + $val['fy_total'];
                 }
             }
@@ -742,6 +753,7 @@ class RequestController extends Controller
             // dd($total);
         }
         $res = [
+            'success'   => $success,
             'pesan'   => $pesan,
             'total'    => $total
         ];
@@ -896,7 +908,7 @@ class RequestController extends Controller
         // dd($file);
         // $name = time() . '.' . $file->getClientOriginalExtension();
         $ext  = $file->getClientOriginalExtension();
-
+        $success = true;
         $hasil = 1;
         if ($ext != 'xlsx' && $ext != 'xls') {
             $hasil = 0;
@@ -938,6 +950,9 @@ class RequestController extends Controller
                 $pesan = '';
                 $total = 0;
                 foreach ($arrayPush as $key => $val) {
+                    if (strpos($val['price'], ".") !== false) {
+                        $success = false;
+                    }
                     $total = $total + $val['price'];
                 }
             }
@@ -945,6 +960,7 @@ class RequestController extends Controller
             // dd($total);
         }
         $res = [
+            'success'   => $success,
             'pesan'   => $pesan,
             'total'    => $total
         ];
@@ -1225,7 +1241,7 @@ class RequestController extends Controller
         // dd($file);
         // $name = time() . '.' . $file->getClientOriginalExtension();
         $ext  = $file->getClientOriginalExtension();
-
+        $success = true;
         $hasil = 1;
         if ($ext != 'xlsx' && $ext != 'xls') {
             $hasil = 0;
@@ -1266,6 +1282,9 @@ class RequestController extends Controller
                 $pesan = '';
                 $total = 0;
                 foreach ($arrayPush as $key => $val) {
+                    if (strpos($val['budget_after_cr'], ".") !== false) {
+                        $success = false;
+                    }
                     $total = $total + $val['budget_after_cr'];
                 }
             }
@@ -1273,6 +1292,7 @@ class RequestController extends Controller
             // dd($total);
         }
         $res = [
+            'success'   => $success,
             'pesan'   => $pesan,
             'total'    => $total
         ];
@@ -2144,7 +2164,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
+        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
         // Set document properties
 
 
