@@ -42,7 +42,11 @@ Upload Capex
                         </div>
 
                         <div class="col-md-12 text-left">
+<<<<<<< HEAD
                             <button type="button" id="btn-import" class="btn btn-primary btn-bordered waves-effect waves-light" onclick="on_table_temporary()">Upload</button>
+=======
+                            <button type="button" id="btn-import" class="btn btn-primary btn-bordered waves-effect waves-light">Upload</button>
+>>>>>>> master
                             <button type="button" class="btn btn-default btn-bordered waves-effect waves-light" data-dismiss="modal">Cancel</button>
                         </div>
                     </form>
@@ -79,6 +83,7 @@ Upload Capex
 
         $('#btn-import').click(function() {
             var files = $('#file')[0].files;
+<<<<<<< HEAD
             console.log(files)
             if (files.length > 0) {
                 var fd = new FormData();
@@ -114,11 +119,58 @@ Upload Capex
                                     }
                                 })
                             }
+=======
+            if (files.length <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Files upload tidak boleh di kosongkan!',
+                })
+
+                return;
+            }
+            var fd = new FormData();
+
+            // Append data 
+            fd.append('file', files[0]);
+
+
+            $.ajax({
+                type: "POST",
+                url: "{{route('cpx.importcek')}}",
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                data: fd,
+                success: function(data) {
+
+
+                    if (data.success) {
+
+                        if (data.total != 0) {
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: "Total : " + data.total,
+                                icon: 'info',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, upload it!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    upload()
+                                }
+                            })
+>>>>>>> master
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: "Total : " + data.total,
+<<<<<<< HEAD
                                 text: 'Data masih ada decimal (koma) value, cek kembali.!',
+=======
+                                text: 'Data masih kosong',
+>>>>>>> master
                                 showCancelButton: false,
                                 confirmButtonColor: '#3085d6',
                                 confirmButtonText: 'Ok'
@@ -126,6 +178,7 @@ Upload Capex
                                 window.location.reload(true);
                             })
                         }
+<<<<<<< HEAD
 
                     },
                     error: function(err) {
@@ -135,6 +188,29 @@ Upload Capex
                 });
 
             }
+=======
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: "Total : " + data.total,
+                            text: 'Data masih ada decimal (koma) value, cek kembali.!',
+                            showCancelButton: false,
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'Ok'
+                        }).then((result) => {
+                            window.location.reload(true);
+                        })
+                    }
+
+                },
+                error: function(err) {
+                    alert("error cek request")
+                }
+
+            });
+
+
+>>>>>>> master
         })
 
     });
