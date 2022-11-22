@@ -160,7 +160,6 @@ class RequestController extends Controller
     }
 
 
-
     public function laborimport(Request $request)
     {
         $file = $request->file('file');
@@ -1019,7 +1018,7 @@ class RequestController extends Controller
         ini_set('max_execution_time', 0);
         ob_start();
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files\Template_Capex_export.xlsx'));
+        $spreadsheet = $reader->load(public_path('files/Template_Capex_export.xlsx'));
 
         $dept = $request->post('dept');
         $data = CapexRb::where([
@@ -1335,7 +1334,7 @@ class RequestController extends Controller
         ini_set('max_execution_time', 0);
         ob_start();
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files\Template_Expense_export.xlsx'));
+        $spreadsheet = $reader->load(public_path('files/Template_Expense_export.xlsx'));
         // dd($spreadsheet);
         $dept = $request->post('dept');
         $data = ExpenseRb::where([
@@ -2364,7 +2363,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
+        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
         // Set document properties
 
 
@@ -3913,7 +3912,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
+        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
         // Set document properties
 
 
