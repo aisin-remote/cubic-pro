@@ -125,11 +125,7 @@ class RequestController extends Controller
                 if ($sheet->getCell("A$rw")->getCalculatedValue()) {
 
                     $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
-<<<<<<< HEAD
-                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
-=======
                     $arrayPush[$i]['fy_total'] = $sheet->getCell("AE$rw")->getCalculatedValue();
->>>>>>> master
                 }
                 if ($sheet->getCell("A$rw")->getValue() == "") {
                     break;
@@ -163,37 +159,7 @@ class RequestController extends Controller
         return response()->json($res);
     }
 
-<<<<<<< HEAD
-    public function laborimportold(Request $request)
-    {
-        $file = $request->file('file');
-        $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
 
-        /** Upload file ke storage public */
-        $file->storeAs('public/files', $name);
-
-        /** Jika bukan format csv */
-        if ($ext !== 'csv') {
-            $file = $this->parseXlsx($file, $name, 0);
-        }
-
-        Excel::import(new LaborImport, $file);
-
-        $res = [
-            'title'   => 'Sukses',
-            'type'    => 'success',
-            'message' => 'Data berhasil di Upload!'
-        ];
-
-        /** Hapus files */
-        $this->deleteFiles($name);
-
-        return redirect()->route('labor.view')->with($res);
-    }
-=======
-
->>>>>>> master
 
     public function laborimport(Request $request)
     {
@@ -267,8 +233,6 @@ class RequestController extends Controller
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('S' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-<<<<<<< HEAD
-=======
                     } else if ('T' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('U' == $cell->getColumn()) {
@@ -295,7 +259,6 @@ class RequestController extends Controller
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('AF' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
->>>>>>> master
                     }
                 }
             }
@@ -322,73 +285,6 @@ class RequestController extends Controller
                     $acc_name      = isset($val['B']) ? $val['B'] : null;
                     $group         = isset($val['C']) ? $val['C'] : null;
                     $code          = isset($val['D']) ? $val['D'] : null;
-<<<<<<< HEAD
-                    $apr           = isset($val['E']) ? $val['E'] : null;
-                    $may           = isset($val['F']) ? $val['F'] : null;
-                    $jun           = isset($val['G']) ? $val['G'] : null;
-                    $jul           = isset($val['H']) ? $val['H'] : null;
-                    $aug           = isset($val['I']) ? $val['I'] : null;
-                    $sept          = isset($val['J']) ? $val['J'] : null;
-                    $oct           = isset($val['K']) ? $val['K'] : null;
-                    $nov           = isset($val['L']) ? $val['L'] : null;
-                    $dec           = isset($val['M']) ? $val['M'] : null;
-                    $jan           = isset($val['N']) ? $val['N'] : null;
-                    $feb           = isset($val['O']) ? $val['O'] : null;
-                    $mar           = isset($val['P']) ? $val['P'] : null;
-                    $fy_2022_1st   = isset($val['Q']) ? $val['Q'] : null;
-                    $fy_2022_2nd   = isset($val['R']) ? $val['R'] : null;
-                    $fy_2022_total = isset($val['S']) ? $val['S'] : null;
-                    $cek = LaborRb::where([
-                        'acc_code' => $acc_code,
-                        'group' => $group,
-                        'code' => $code
-                    ])->first();
-                    // dd($cek);
-                    if ($cek) {
-                        $salesrb = LaborRb::where([
-                            'acc_code' => $acc_code,
-                            'group' => $group,
-                            'code' => $code
-                        ])->update([
-                            'april'     => $apr,
-                            'mei'       => $may,
-                            'juni'      => $jun,
-                            'juli'      => $jul,
-                            'agustus'   => $aug,
-                            'september' => $sept,
-                            'oktober'   => $oct,
-                            'november'  => $nov,
-                            'december'  => $dec,
-                            'januari'   => $jan,
-                            'februari'  => $feb,
-                            'maret'     => $mar,
-                            'fy_first'  => $fy_2022_1st,
-                            'fy_second' => $fy_2022_2nd,
-                            'fy_total'  => $fy_2022_total
-                        ]);
-                    } else {
-                        $salesrb            = new LaborRb;
-                        $salesrb->acc_code  = $acc_code;
-                        $salesrb->acc_name  = $acc_name;
-                        $salesrb->group     = $group;
-                        $salesrb->code      = $code;
-                        $salesrb->april     = $apr;
-                        $salesrb->mei       = $may;
-                        $salesrb->juni      = $jun;
-                        $salesrb->juli      = $jul;
-                        $salesrb->agustus   = $aug;
-                        $salesrb->september = $sept;
-                        $salesrb->oktober   = $oct;
-                        $salesrb->november  = $nov;
-                        $salesrb->december  = $dec;
-                        $salesrb->januari   = $jan;
-                        $salesrb->februari  = $feb;
-                        $salesrb->maret     = $mar;
-                        $salesrb->fy_first  = $fy_2022_1st;
-                        $salesrb->fy_second = $fy_2022_2nd;
-                        $salesrb->fy_total  = $fy_2022_total;
-                        $salesrb->save();
-=======
                     $apr           = isset($val['Q']) ? $val['Q'] : null;
                     $may           = isset($val['R']) ? $val['R'] : null;
                     $jun           = isset($val['S']) ? $val['S'] : null;
@@ -457,7 +353,6 @@ class RequestController extends Controller
                             $salesrb->fy_total  = $fy_2022_total;
                             $salesrb->save();
                         }
->>>>>>> master
                     }
                 }
 
@@ -532,11 +427,7 @@ class RequestController extends Controller
                 if ($sheet->getCell("A$rw")->getCalculatedValue()) {
 
                     $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
-<<<<<<< HEAD
-                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
-=======
                     $arrayPush[$i]['fy_total'] = $sheet->getCell("AE$rw")->getCalculatedValue();
->>>>>>> master
                 }
                 if ($sheet->getCell("A$rw")->getValue() == "") {
                     break;
@@ -642,8 +533,6 @@ class RequestController extends Controller
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('S' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-<<<<<<< HEAD
-=======
                     } else if ('T' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('U' == $cell->getColumn()) {
@@ -670,7 +559,6 @@ class RequestController extends Controller
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('AF' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
->>>>>>> master
                     }
                 }
             }
@@ -692,81 +580,10 @@ class RequestController extends Controller
 
             try {
                 foreach ($array_data as $val) {
-<<<<<<< HEAD
-
-=======
->>>>>>> master
                     $acc_code      = isset($val['A']) ? $val['A'] : null;
                     $acc_name      = isset($val['B']) ? $val['B'] : null;
                     $group         = isset($val['C']) ? $val['C'] : null;
                     $code          = isset($val['D']) ? $val['D'] : null;
-<<<<<<< HEAD
-                    $apr           = isset($val['E']) ? $val['E'] : null;
-                    $may           = isset($val['F']) ? $val['F'] : null;
-                    $jun           = isset($val['G']) ? $val['G'] : null;
-                    $jul           = isset($val['H']) ? $val['H'] : null;
-                    $aug           = isset($val['I']) ? $val['I'] : null;
-                    $sept          = isset($val['J']) ? $val['J'] : null;
-                    $oct           = isset($val['K']) ? $val['K'] : null;
-                    $nov           = isset($val['L']) ? $val['L'] : null;
-                    $dec           = isset($val['M']) ? $val['M'] : null;
-                    $jan           = isset($val['N']) ? $val['N'] : null;
-                    $feb           = isset($val['O']) ? $val['O'] : null;
-                    $mar           = isset($val['P']) ? $val['P'] : null;
-                    $fy_2022_1st   = isset($val['Q']) ? $val['Q'] : null;
-                    $fy_2022_2nd   = isset($val['R']) ? $val['R'] : null;
-                    $fy_2022_total = isset($val['S']) ? $val['S'] : null;
-                    $cek = SalesRb::where([
-                        'acc_code' => $acc_code,
-                        'group' => $group,
-                        'code' => $code
-                    ])->first();
-                    // dd($cek);
-                    if ($cek) {
-                        $salesrb = SalesRb::where([
-                            'acc_code' => $acc_code,
-                            'group' => $group,
-                            'code' => $code
-                        ])->update([
-                            'april'     => $apr,
-                            'mei'       => $may,
-                            'juni'      => $jun,
-                            'juli'      => $jul,
-                            'agustus'   => $aug,
-                            'september' => $sept,
-                            'oktober'   => $oct,
-                            'november'  => $nov,
-                            'december'  => $dec,
-                            'januari'   => $jan,
-                            'februari'  => $feb,
-                            'maret'     => $mar,
-                            'fy_first'  => $fy_2022_1st,
-                            'fy_second' => $fy_2022_2nd,
-                            'fy_total'  => $fy_2022_total
-                        ]);
-                    } else {
-                        $salesrb            = new SalesRb;
-                        $salesrb->acc_code  = $acc_code;
-                        $salesrb->acc_name  = $acc_name;
-                        $salesrb->group     = $group;
-                        $salesrb->code      = $code;
-                        $salesrb->april     = $apr;
-                        $salesrb->mei       = $may;
-                        $salesrb->juni      = $jun;
-                        $salesrb->juli      = $jul;
-                        $salesrb->agustus   = $aug;
-                        $salesrb->september = $sept;
-                        $salesrb->oktober   = $oct;
-                        $salesrb->november  = $nov;
-                        $salesrb->december  = $dec;
-                        $salesrb->januari   = $jan;
-                        $salesrb->februari  = $feb;
-                        $salesrb->maret     = $mar;
-                        $salesrb->fy_first  = $fy_2022_1st;
-                        $salesrb->fy_second = $fy_2022_2nd;
-                        $salesrb->fy_total  = $fy_2022_total;
-                        $salesrb->save();
-=======
                     $apr           = isset($val['Q']) ? $val['Q'] : null;
                     $may           = isset($val['R']) ? $val['R'] : null;
                     $jun           = isset($val['S']) ? $val['S'] : null;
@@ -835,7 +652,6 @@ class RequestController extends Controller
                             $salesrb->fy_total  = $fy_2022_total;
                             $salesrb->save();
                         }
->>>>>>> master
                     }
                 }
 
@@ -863,37 +679,7 @@ class RequestController extends Controller
         return redirect()->route('sales.view')->with($res);
     }
 
-<<<<<<< HEAD
-    public function slsimportold(Request $request)
-    {
-        $file = $request->file('file');
-        $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
 
-        /** Upload file ke storage public */
-        $file->storeAs('public/files', $name);
-
-        /** Jika bukan format csv */
-        if ($ext !== 'csv') {
-            $file = $this->parseXlsx($file, $name, 0);
-        }
-
-        Excel::import(new SalesImport, $file);
-
-        $res = [
-            'title'   => 'Sukses',
-            'type'    => 'success',
-            'message' => 'Data berhasil di Upload!'
-        ];
-
-        /** Hapus files */
-        $this->deleteFiles($name);
-
-        return redirect()->route('sales.view')->with($res);
-    }
-=======
-
->>>>>>> master
 
     public function materialview()
     {
@@ -946,11 +732,7 @@ class RequestController extends Controller
                 if ($sheet->getCell("A$rw")->getCalculatedValue()) {
 
                     $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
-<<<<<<< HEAD
-                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
-=======
                     $arrayPush[$i]['fy_total'] = $sheet->getCell("AE$rw")->getCalculatedValue();
->>>>>>> master
                 }
                 if ($sheet->getCell("A$rw")->getValue() == "") {
                     break;
@@ -984,32 +766,6 @@ class RequestController extends Controller
         return response()->json($res);
     }
 
-<<<<<<< HEAD
-    public function materialimport(Request $request)
-    {
-        $file = $request->file('file');
-        $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
-
-        /** Upload file ke storage public */
-        $file->storeAs('public/uploads', $name);
-
-        /** Jika bukan format csv */
-        if ($ext !== 'csv') {
-            $file = $this->parseXlsx($file, $name, 0);
-        }
-
-        Excel::import(new DirectMaterialImport, $file);
-
-        $res = [
-            'title'   => 'Sukses',
-            'type'    => 'success',
-            'message' => 'Data berhasil di Upload!'
-        ];
-
-        /** Hapus files */
-        $this->deleteFiles($name);
-=======
 
 
     public function materialimport(Request $request)
@@ -1227,7 +983,6 @@ class RequestController extends Controller
             'message' => $message
         ];
 
->>>>>>> master
 
         return redirect()->route('material.view')->with($res);
     }
@@ -1264,11 +1019,7 @@ class RequestController extends Controller
         ini_set('max_execution_time', 0);
         ob_start();
         $reader = IOFactory::createReader('Xlsx');
-<<<<<<< HEAD
-        $spreadsheet = $reader->load(public_path('files/Template_Capex_export.xlsx'));
-=======
         $spreadsheet = $reader->load(public_path('files\Template_Capex_export.xlsx'));
->>>>>>> master
 
         $dept = $request->post('dept');
         $data = CapexRb::where([
@@ -1584,11 +1335,7 @@ class RequestController extends Controller
         ini_set('max_execution_time', 0);
         ob_start();
         $reader = IOFactory::createReader('Xlsx');
-<<<<<<< HEAD
-        $spreadsheet = $reader->load(public_path('files/Template_Expense_export.xlsx'));
-=======
         $spreadsheet = $reader->load(public_path('files\Template_Expense_export.xlsx'));
->>>>>>> master
         // dd($spreadsheet);
         $dept = $request->post('dept');
         $data = ExpenseRb::where([
@@ -1694,11 +1441,8 @@ class RequestController extends Controller
         $ext  = $file->getClientOriginalExtension();
         $success = true;
         $hasil = 1;
-<<<<<<< HEAD
-=======
         $pesan = '';
         $total = 0;
->>>>>>> master
         if ($ext != 'xlsx' && $ext != 'xls') {
             $hasil = 0;
             $pesan = 'Format tidak sesuai';
@@ -2620,11 +2364,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-<<<<<<< HEAD
-        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
-=======
         $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
->>>>>>> master
         // Set document properties
 
 
@@ -4173,11 +3913,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-<<<<<<< HEAD
-        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
-=======
         $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
->>>>>>> master
         // Set document properties
 
 

@@ -50,11 +50,7 @@ Upload Sales
                         </div>
 
                         <div class="col-md-12 text-left">
-<<<<<<< HEAD
-                            <button type="button" id="btn-import" class="btn btn-primary btn-bordered waves-effect waves-light" onclick="on_table_temporary()">Upload</button>
-=======
                             <button type="button" id="btn-import" class="btn btn-primary btn-bordered waves-effect waves-light">Upload</button>
->>>>>>> master
                             <button type="button" class="btn btn-default btn-bordered waves-effect waves-light" data-dismiss="modal">Cancel</button>
                         </div>
                     </form>
@@ -93,41 +89,6 @@ Upload Sales
 
         $('#btn-import').click(function() {
             var files = $('#file')[0].files;
-<<<<<<< HEAD
-            console.log(files)
-            if (files.length > 0) {
-                var fd = new FormData();
-
-                // Append data 
-                fd.append('file', files[0]);
-
-
-                $.ajax({
-                    type: "POST",
-                    url: "{{route('sales.importcek')}}",
-                    dataType: 'json',
-                    processData: false,
-                    contentType: false,
-                    data: fd,
-                    success: function(data) {
-                        if (data.success) {
-
-                            if (data.total != 0) {
-                                Swal.fire({
-                                    title: 'Are you sure?',
-                                    text: "Total : " + data.total,
-                                    icon: 'info',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#3085d6',
-                                    cancelButtonColor: '#d33',
-                                    confirmButtonText: 'Yes, upload it!'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        $('#form-import').trigger('submit')
-                                    }
-                                })
-                            }
-=======
 
             if (files.length <= 0) {
                 Swal.fire({
@@ -168,16 +129,11 @@ Upload Sales
                                     $('#form-import').trigger('submit')
                                 }
                             })
->>>>>>> master
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: "Total : " + data.total,
-<<<<<<< HEAD
-                                text: 'Data masih ada decimal (koma) value, cek kembali.!',
-=======
                                 text: 'Data masih kosong',
->>>>>>> master
                                 showCancelButton: false,
                                 confirmButtonColor: '#3085d6',
                                 confirmButtonText: 'Ok'
@@ -185,18 +141,6 @@ Upload Sales
                                 window.location.reload(true);
                             })
                         }
-<<<<<<< HEAD
-
-
-                    },
-                    error: function(err) {
-                        alert("error cek request")
-                    }
-
-                });
-
-            }
-=======
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -219,7 +163,6 @@ Upload Sales
             });
 
 
->>>>>>> master
         })
 
     });
