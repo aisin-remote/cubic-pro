@@ -37,6 +37,11 @@ use App\Helpers\Helper;
 
 class RequestController extends Controller
 {
+
+    public function __construct()
+    {
+        set_time_limit(0);
+    }
     //for trial
     public function temp()
     {
@@ -158,6 +163,7 @@ class RequestController extends Controller
 
         return response()->json($res);
     }
+
 
 
     public function laborimport(Request $request)
@@ -1018,7 +1024,7 @@ class RequestController extends Controller
         ini_set('max_execution_time', 0);
         ob_start();
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files/Template_Capex_export.xlsx'));
+        $spreadsheet = $reader->load(public_path('files\Template_Capex_export.xlsx'));
 
         $dept = $request->post('dept');
         $data = CapexRb::where([
@@ -1334,7 +1340,7 @@ class RequestController extends Controller
         ini_set('max_execution_time', 0);
         ob_start();
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files/Template_Expense_export.xlsx'));
+        $spreadsheet = $reader->load(public_path('files\Template_Expense_export.xlsx'));
         // dd($spreadsheet);
         $dept = $request->post('dept');
         $data = ExpenseRb::where([
@@ -1594,30 +1600,160 @@ class RequestController extends Controller
             }
         }
 
-        // dd($arrayPush);
         if (count($arrayPush) > 0) {
             foreach ($arrayPush as $key => $row) {
                 $arrayPush[$key]['dept'] = $dept;
                 $arrayPush[$key]['created_at'] = now();
                 $arrayPush[$key]['updated_at'] =  now();
             }
-
+            // dd($arrayPush);
             DB::beginTransaction();
 
             try {
-                $delete = ExpenseRb::where([
-                    'dept' => $dept
-                ])->delete();
-                if (!$delete) {
-                    $hasil = 0;
-                    $title = 'Gagal';
-                    $type = 'error';
-                    $message = 'Data gagal di Upload';
-                    DB::rollBack();
+                // foreach ($arrayPush as $val) {
+                //     $budget_no = isset($val['budget_no']) ? $val['budget_no'] : null;
+                //     $group = isset($val['group']) ? $val['group'] : null;
+                //     $line = isset($val['line']) ? $val['line'] : null;
+                //     $profit_center = isset($val['profit_center']) ? $val['profit_center'] : null;
+                //     $profit_center_code = isset($val['profit_center_code']) ? $val['profit_center_code'] : null;
+                //     $cost_center = isset($val['cost_center']) ? $val['cost_center'] : null;
+                //     $acc_code = isset($val['acc_code']) ? $val['acc_code'] : null;
+                //     $project_name = isset($val['project_name']) ? $val['project_name'] : null;
+                //     $equipment_name = isset($val['equipment_name']) ? $val['equipment_name'] : null;
+                //     $import_domestic = isset($val['import_domestic']) ? $val['import_domestic'] : null;
+                //     $qty = isset($val['qty']) ? $val['qty'] : null;
+                //     $cur = isset($val['cur']) ? $val['cur'] : null;
+                //     $price_per_qty = isset($val['price_per_qty']) ? $val['price_per_qty'] : null;
+                //     $exchange_rate = isset($val['exchange_rate']) ? $val['exchange_rate'] : null;
+                //     $budget_before = isset($val['budget_before']) ? $val['budget_before'] : null;
+                //     $cr = isset($val['cr']) ? $val['cr'] : null;
+                //     $budgt_aft_cr = isset($val['budgt_aft_cr']) ? $val['budgt_aft_cr'] : null;
+                //     $po = isset($val['po']) ? $val['po'] : null;
+                //     $gr = isset($val['gr']) ? $val['gr'] : null;
+                //     $sop = isset($val['sop']) ? $val['sop'] : null;
+                //     $first_dopayment_term = isset($val['first_dopayment_term']) ? $val['first_dopayment_term'] : null;
+                //     $first_dopayment_amount = isset($val['first_dopayment_amount']) ? $val['first_dopayment_amount'] : null;
+                //     $final_payment_term = isset($val['final_payment_term']) ? $val['final_payment_term'] : null;
+                //     $final_payment_amount = isset($val['final_payment_amount']) ? $val['final_payment_amount'] : null;
+                //     $april = isset($val['april']) ? $val['april'] : null;
+                //     $mei = isset($val['mei']) ? $val['mei'] : null;
+                //     $juni = isset($val['juni']) ? $val['juni'] : null;
+                //     $juli = isset($val['juli']) ? $val['juli'] : null;
+                //     $agustus = isset($val['agustus']) ? $val['agustus'] : null;
+                //     $september = isset($val['september']) ? $val['september'] : null;
+                //     $oktober = isset($val['oktober']) ? $val['oktober'] : null;
+                //     $november = isset($val['november']) ? $val['november'] : null;
+                //     $december = isset($val['december']) ? $val['december'] : null;
+                //     $januari = isset($val['januari']) ? $val['januari'] : null;
+                //     $februari = isset($val['februari']) ? $val['februari'] : null;
+                //     $maret = isset($val['maret']) ? $val['maret'] : null;
+                //     $checking = isset($val['checking']) ? $val['checking'] : null;
+                //     $dept = isset($val['dept']) ? $val['dept'] : null;
+
+                //     if ($dept && $budget_no) {
+                //         $cek =  ExpenseRb::where([
+                //             'line' => $line
+                //         ])->delete();
+                //         // dd($cek);
+                //         if ($cek) {
+                //             $exprb = ExpenseRb::where([
+                //                 'line' => $line
+                //             ])->update([
+                //                 'budget_no' => $budget_no,
+                //                 'group' => $group,
+                //                 'line' => $line,
+                //                 'profit_center' => $profit_center,
+                //                 'profit_center_code' => $profit_center_code,
+                //                 'cost_center' => $cost_center,
+                //                 'acc_code' => $acc_code,
+                //                 'project_name' => $project_name,
+                //                 'equipment_name' => $equipment_name,
+                //                 'import_domestic' => $import_domestic,
+                //                 'qty' => $qty,
+                //                 'cur' => $cur,
+                //                 'price_per_qty' => $price_per_qty,
+                //                 'exchange_rate' => $exchange_rate,
+                //                 'budget_before' => $budget_before,
+                //                 'cr' => $cr,
+                //                 'budgt_aft_cr' => $budgt_aft_cr,
+                //                 'po' => $po,
+                //                 'gr' => $gr,
+                //                 'sop' => $sop,
+                //                 'first_dopayment_term' => $first_dopayment_term,
+                //                 'first_dopayment_amount' => $first_dopayment_amount,
+                //                 'final_payment_term' => $final_payment_term,
+                //                 'final_payment_amount' => $final_payment_amount,
+                //                 'april' => $april,
+                //                 'mei' => $mei,
+                //                 'juni' => $juni,
+                //                 'juli' => $juli,
+                //                 'agustus' => $agustus,
+                //                 'september' => $september,
+                //                 'oktober' => $oktober,
+                //                 'november' => $november,
+                //                 'december' => $december,
+                //                 'januari' => $januari,
+                //                 'februari' => $februari,
+                //                 'maret' => $maret,
+                //                 'checking' => $checking,
+                //                 'dept' => $dept
+                //             ]);
+                //         } else {
+                //             $exprb = new ExpenseRb;
+                //             $exprb->budget_no = $budget_no;
+                //             $exprb->group = $group;
+                //             $exprb->line = $line;
+                //             $exprb->profit_center = $profit_center;
+                //             $exprb->profit_center_code = $profit_center_code;
+                //             $exprb->cost_center = $cost_center;
+                //             $exprb->acc_code = $acc_code;
+                //             $exprb->project_name = $project_name;
+                //             $exprb->equipment_name = $equipment_name;
+                //             $exprb->import_domestic = $import_domestic;
+                //             $exprb->qty = $qty;
+                //             $exprb->cur = $cur;
+                //             $exprb->price_per_qty = $price_per_qty;
+                //             $exprb->exchange_rate = $exchange_rate;
+                //             $exprb->budget_before = $budget_before;
+                //             $exprb->cr = $cr;
+                //             $exprb->budgt_aft_cr = $budgt_aft_cr;
+                //             $exprb->po = $po;
+                //             $exprb->gr = $gr;
+                //             $exprb->sop = $sop;
+                //             $exprb->first_dopayment_term = $first_dopayment_term;
+                //             $exprb->first_dopayment_amount = $first_dopayment_amount;
+                //             $exprb->final_payment_term = $final_payment_term;
+                //             $exprb->final_payment_amount = $final_payment_amount;
+                //             $exprb->april = $april;
+                //             $exprb->mei = $mei;
+                //             $exprb->juni = $juni;
+                //             $exprb->juli = $juli;
+                //             $exprb->agustus = $agustus;
+                //             $exprb->september = $september;
+                //             $exprb->oktober = $oktober;
+                //             $exprb->november = $november;
+                //             $exprb->december = $december;
+                //             $exprb->januari = $januari;
+                //             $exprb->februari = $februari;
+                //             $exprb->maret = $maret;
+                //             $exprb->checking = $checking;
+                //             $exprb->dept = $dept;
+
+                //             $exprb->save();
+                //         }
+                //     }
+                // }
+                $linetemp = '';
+                foreach ($arrayPush as $val) {
+                    if ($linetemp != $val['line']) {
+
+                        $delete = ExpenseRb::where([
+                            'line' => $val['line']
+                        ])->delete();
+                    }
+                    $linetemp = $val['line'];
                 }
-
                 $capexrb                         = new ExpenseRb;
-
                 if (!$capexrb->insert($arrayPush)) {
                     $hasil = 0;
                     $title = 'Gagal';
@@ -2363,7 +2499,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
+        $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
         // Set document properties
 
 
@@ -3912,7 +4048,7 @@ class RequestController extends Controller
         ob_start();
 
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
+        $spreadsheet = $reader->load(public_path('files\TemplateExport.xlsx'));
         // Set document properties
 
 

@@ -1,22 +1,22 @@
 @extends('layouts.master')
 
 @section('title')
-Upload Capex
+Upload Direct Material
 @endsection
 
 @section('content')
 
-@php($active = 'rb_capex')
+@php($active = 'rb_material')
 
 <div class="container">
     <div class="row">
         <div class="col-xs-12">
             <div class="page-title-box">
-                <h4 class="page-title">Upload Request Budget Capex</h4>
+                <h4 class="page-title">Upload Request Budget Direct Material</h4>
                 <ol class="breadcrumb p-0 m-0">
-                    <li><a href="{{ route('masterprice.index') }}">Upload Request Budget Capex</a></li>
+                    <li><a href="{{ route('masterprice.index') }}">Upload Request Budget Direct Material</a></li>
                     <li class="active">
-                        Upload Request Budget Capex
+                        Upload Request Budget Direct Material
                     </li>
                 </ol>
                 <div class="clearfix"></div>
@@ -27,18 +27,27 @@ Upload Capex
         <div class="col-md-12">
             <div class="card-box">
                 <div class="row">
-                    <form method="post" enctype="multipart/form-data" id="form-import">
+                    <form action="{{ route('material.import') }}" method="post" enctype="multipart/form-data" id="form-import">
                         @csrf
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="control-label">RB capex File Input</label>
+                                <label class="control-label">RB Direct Material File Input</label>
                                 <input type="file" id="file" name="file" class="form-control" accept=".csv,.xlsx,.xls">
                                 <label class="text-muted">*) File format .csv,.xlsx,.xls</label>
                                 <br>
-                                <a href="{{ url('files/Template_Capex.xlsx') }}"><i class="mdi mdi-download"></i> Format RB Capex &emsp;</a>
-                                <!-- <a href="{{ url('files/Template_Capex_body') }}" ><i class="mdi mdi-download"></i>  Format RB Capex Body</a> -->
+                                <a href="{{ url('files/Template_Direct_Material_New.xlsx') }}"><i class="mdi mdi-download"></i> Format RB Direct Material &emsp;</a>
+                                <!-- <a href="{{ url('files/Template_Direct_Material_body') }}" ><i class="mdi mdi-download"></i>  Format RB Direct Material Body</a> -->
                             </div>
-
+                            <!-- <div class="form-group">
+                                <label>
+                                <input type="checkbox" name="overwrite"> Overwrite (BE CAREFUL! All table records DELETED!)
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                <input type="checkbox" name="revision"> Is This a budget revision ? (Please checked for YES)
+                                </label>
+                            </div> -->
                         </div>
 
                         <div class="col-md-12 text-left">
@@ -68,6 +77,7 @@ Upload Capex
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     $(document).ready(function() {
 
@@ -96,19 +106,12 @@ Upload Capex
 
             $.ajax({
                 type: "POST",
-                url: "{{route('cpx.importcek')}}",
+                url: "{{route('material.importcek')}}",
                 dataType: 'json',
                 processData: false,
                 contentType: false,
                 data: fd,
-                beforeSend: function() {
-                    $('#btn-import').html('loading...')
-                    $('#btn-import').attr('disabled', true)
-                },
                 success: function(data) {
-
-                    $('#btn-import').html('Upload')
-                    $('#btn-import').removeAttr('disabled')
                     if (data.success) {
 
                         if (data.total != 0) {
@@ -122,7 +125,7 @@ Upload Capex
                                 confirmButtonText: 'Yes, upload it!'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    upload()
+                                    $('#form-import').trigger('submit')
                                 }
                             })
                         } else {
@@ -153,9 +156,6 @@ Upload Capex
                 },
                 error: function(err) {
                     alert("error cek request")
-                    window.location.reload(true);
-                    $('#btn-import').html('Upload')
-                    $('#btn-import').removeAttr('disabled')
                 }
 
             });
@@ -164,42 +164,4 @@ Upload Capex
         })
 
     });
-
-    function upload() {
-        var files = $('#file')[0].files;
-        if (files.length > 0) {
-            var fd = new FormData();
-
-            // Append data 
-            fd.append('file', files[0]);
-
-
-            $.ajax({
-                type: "POST",
-                url: "{{route('cpx.import')}}",
-                dataType: 'json',
-                processData: false,
-                contentType: false,
-                data: fd,
-                beforeSend: function() {
-                    $('#btn-import').html('loading...')
-                    $('#btn-import').attr('disabled', true)
-                },
-                success: function(data) {
-                    $('#btn-import').html('Upload')
-                    $('#btn-import').removeAttr('disabled')
-                    show_notification(data.title, data.type, data.message)
-
-                    $('#form-import')[0].reset()
-                },
-                error: function(err) {
-                    $('#btn-import').html('Upload')
-                    $('#btn-import').removeAttr('disabled')
-                    console.log(err)
-                }
-
-            });
-        }
-
-    }
 </script>

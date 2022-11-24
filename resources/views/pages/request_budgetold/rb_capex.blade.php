@@ -101,14 +101,9 @@ Upload Capex
                 processData: false,
                 contentType: false,
                 data: fd,
-                beforeSend: function() {
-                    $('#btn-import').html('loading...')
-                    $('#btn-import').attr('disabled', true)
-                },
                 success: function(data) {
 
-                    $('#btn-import').html('Upload')
-                    $('#btn-import').removeAttr('disabled')
+
                     if (data.success) {
 
                         if (data.total != 0) {
@@ -153,9 +148,6 @@ Upload Capex
                 },
                 error: function(err) {
                     alert("error cek request")
-                    window.location.reload(true);
-                    $('#btn-import').html('Upload')
-                    $('#btn-import').removeAttr('disabled')
                 }
 
             });
@@ -181,20 +173,14 @@ Upload Capex
                 processData: false,
                 contentType: false,
                 data: fd,
-                beforeSend: function() {
-                    $('#btn-import').html('loading...')
-                    $('#btn-import').attr('disabled', true)
-                },
                 success: function(data) {
-                    $('#btn-import').html('Upload')
-                    $('#btn-import').removeAttr('disabled')
+
                     show_notification(data.title, data.type, data.message)
 
                     $('#form-import')[0].reset()
                 },
                 error: function(err) {
-                    $('#btn-import').html('Upload')
-                    $('#btn-import').removeAttr('disabled')
+
                     console.log(err)
                 }
 
