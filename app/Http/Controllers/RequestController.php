@@ -901,7 +901,7 @@ class RequestController extends Controller
                     $may           = isset($val['R']) ? $val['R'] : null;
                     $jun           = isset($val['S']) ? $val['S'] : null;
                     $jul           = isset($val['T']) ? $val['T'] : null;
-                    $aug           = isset($val['U']) ? $val['Y'] : null;
+                    $aug           = isset($val['U']) ? $val['U'] : null;
                     $sept          = isset($val['V']) ? $val['V'] : null;
                     $oct           = isset($val['W']) ? $val['W'] : null;
                     $nov           = isset($val['X']) ? $val['X'] : null;
