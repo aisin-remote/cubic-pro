@@ -318,7 +318,8 @@ class ApprovalExpenseController extends Controller
             }
         }
 
-        $approval_expense = $approval_expense->get();
+        // $approval_expense = $approval_expense->get();
+        
 
         return DataTables::of($approval_expense)
             ->rawColumns(['action'])
