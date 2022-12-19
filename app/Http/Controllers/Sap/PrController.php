@@ -20,7 +20,7 @@ use App\SapGlAccout;
 use DataTables;
 use Carbon\Carbon;
 use DB;
-use Excel;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PrController extends Controller
 {
@@ -278,13 +278,18 @@ class PrController extends Controller
             }
         ob_end_clean(); // this
         ob_start(); // and this
-        Excel::create('Filename', function($excel) use ($data){
-            $excel->sheet('Data', function($sheet) use ($data) {
-
-                $sheet->fromArray($data, null, 'A1', false, false);
+        return Excel::download( function ($excel) use ($data) {
+            $excel->sheet('Courses', function ($sheet) use ($data) {
+                $sheet->fromArray($data);
             });
-        })->setFilename($approval_number)
-          ->export('xls');
+        },'Courses.xlsx');
+        // Excel::create('Filename', function($excel) use ($data){
+        //     $excel->sheet('Data', function($sheet) use ($data) {
+
+        //         $sheet->fromArray($data, null, 'A1', false, false);
+        //     });
+        // })->setFilename($approval_number)
+        //   ->export('xls');
 
         return $data;
 	}
