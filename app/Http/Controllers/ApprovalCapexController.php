@@ -466,6 +466,7 @@ class ApprovalCapexController extends Controller
             }
         }
 
+        $approval_capex->limit(10);
         $approval_capex = $approval_capex->get();
 
         return DataTables::of($approval_capex)

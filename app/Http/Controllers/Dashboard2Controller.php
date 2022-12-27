@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use App\Period;
 use Excel;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class Dashboard2Controller extends Controller
 {
@@ -502,7 +503,229 @@ class Dashboard2Controller extends Controller
         ]);
     }
 
-    protected function download2($request)
+    protected function download2($request){
+        ini_set('max_execution_time', 0);
+
+        ob_end_clean();
+        ob_start();
+        // Create a new spreadsheet
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->getProperties()->setCreator('Aiia')
+            ->setLastModifiedBy('Aiia')
+            ->setTitle('Office 2021 XLSX Aiia Document')
+            ->setSubject('Office 2021 XLSX Aiia Document')
+            ->setDescription('Office 2021 XLSX Aiia Document.')
+            ->setKeywords('Office 2021 XLSX Aiia Document')
+            ->setCategory('Office 2021 XLSX Aiia Document');
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $periods = Period::all();
+        $period_date_from = $periods->where('name', 'fyear_open_from')->first()->value;
+        $period_date_to = $periods->where('name', 'fyear_open_to')->first()->value;
+        $date = !empty($request->interval) ? explode('-', str_replace(' ', '', $request->interval)) : [$period_date_from, $period_date_to];
+        $date_from = Carbon::createFromFormat('d/m/Y', $date[0])->format('Y-m-d');
+        $date_to = Carbon::createFromFormat('d/m/Y', $date[1])->format('Y-m-d');
+
+        $department = null;
+        $division = null;
+
+        if (\Entrust::hasRole(['user', 'department-head'])) {
+            $department = auth()->user()->department->department_code;
+        } elseif (\Entrust::hasRole(['budget', 'director', 'admin'])) {
+            $department = $request->department;
+        } elseif (\Entrust::hasRole('gm')) {
+            $division = auth()->user()->division->division_code;
+        }
+
+        $approvals = ApprovalDetail::with(['approval', 'capex', 'expense'])
+            ->when($division, function ($query, $division) {
+                $query->whereHas('approval', function ($where) use ($division) {
+                    $where->where('division', $division);
+                });
+            })
+            ->when($department, function ($query, $department) {
+                $query->whereHas('approval', function ($where) use ($department) {
+                    $where->where('department', $department);
+                });
+            })
+            ->whereDate('created_at', '>=', $date_from)
+            ->whereDate('created_at', '<=', $date_to)
+            ->get();
+
+
+        $spreadsheet->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'No')
+            ->setCellValue('B1', 'Department')
+            ->setCellValue('C1', 'Type')
+            ->setCellValue('D1', 'Approval No.')
+            ->setCellValue('E1', 'Budget No.')
+            ->setCellValue('F1', 'Asset No.')
+            ->setCellValue('G1', 'SAP Track No.')
+            ->setCellValue('H1', 'Budget Description')
+            ->setCellValue('I1', 'Project Name')
+            ->setCellValue('J1', 'Actual Qty')
+            ->setCellValue('K1', 'Budget Reserved')
+            ->setCellValue('L1', 'Actual Price User')
+            ->setCellValue('M1', 'Actual Price Purchasing')
+            ->setCellValue('N1', 'Status Approval')
+            ->setCellValue('O1', 'Status Budget')
+            ->setCellValue('P1', 'Plan GR')
+            ->setCellValue('Q1', 'Actual GR')
+            ->setCellValue('R1', 'PO No.')
+            ->setCellValue('S1', 'Remarks')
+            ->setCellValue('T1', 'GL Account')
+            ->setCellValue('U1', 'GL Account Name')
+            ->setCellValue('V1', 'Cost Center')
+            ->setCellValue('W1', 'Created At');
+
+        $x = 2;
+        $no = 1;
+        foreach ($approvals as $key => $detail) {
+
+            $budgetDesc = '-';
+            $status = '-';
+            $planGr = '-';
+            switch ($detail->approval->budget_type) {
+                case 'cx':
+                    $budgetType = 'Capex';
+                    $budgetDesc = $detail->capex->equipment_name;
+                    break;
+                case 'uc':
+                    $budgetType = 'Unbudget Capex';
+                    break;
+                case 'ex':
+                    $budgetDesc = ($detail->expense != null) ? $detail->expense->description : '-';
+                    $budgetType = 'Expense';
+                    break;
+                case 'ue':
+                    $budgetType = 'Unbudget Expense';
+                    break;
+                default:
+                    $budgetType = '-';
+                    break;
+            }
+
+            switch ($detail->approval->status) {
+                case '0':
+                    $statusApproval = 'User Created';
+                    break;
+                case '1':
+                    $statusApproval = 'Validasi Budget';
+                    break;
+                case '2':
+                    $statusApproval = 'Approved by Dept. Head';
+                    break;
+                case '3':
+                    $statusApproval = 'Approved by GM';
+                    break;
+                case '4':
+                    $statusApproval = 'Approved by Director';
+                    break;
+                case '-1':
+                    $statusApproval = 'Canceled on Quotation Validation';
+                    break;
+                case '-2':
+                    $statusApproval = 'Canceled Dept. Head Approval';
+                    break;
+                default:
+                    $statusApproval = '';
+                    break;
+            }
+
+            if ($detail->approval->budget_type == 'cx' || $detail->approval->budget_type == 'ex') {
+                if ($detail->isOver) {
+                    $status = "Over Budget";
+                } else {
+                    $status = "Under Budget";
+                }
+
+                $planGr = $detail->planGrDate;
+            }
+
+
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $x, $no)
+                ->setCellValue('B' . $x, $detail->approval->departments->department_name)
+                ->setCellValue('C' . $x, $budgetType)
+                ->setCellValue('D' . $x, $detail->approval->approval_number)
+                ->setCellValue('E' . $x, $detail->budget_no)
+                ->setCellValue('F' . $x, $detail->asset_no ? $detail->asset_no : '-')
+                ->setCellValue('G' . $x, $detail->sap_track_no)
+                ->setCellValue('H' . $x, $budgetDesc)
+                ->setCellValue('I' . $x, $detail->project_name)
+                ->setCellValue('J' . $x, (int) $detail->actual_qty)
+                ->setCellValue('K' . $x, (int) $detail->budget_reserved)
+                ->setCellValue('L' . $x, (int) $detail->actual_price_user)
+                ->setCellValue('M' . $x, (int) $detail->actual_price_purchasing)
+                ->setCellValue('N' . $x, $statusApproval)
+                ->setCellValue('O' . $x, $status)
+                ->setCellValue('P' . $x, $planGr)
+                ->setCellValue('Q' . $x, Carbon::parse($detail->actual_gr)->format('d M \'y'))
+                ->setCellValue('R' . $x, $detail->po_number)
+                ->setCellValue('S' . $x, $detail->remarks)
+                ->setCellValue('T' . $x, $detail->sap_account_code)
+                ->setCellValue('U' . $x,  $detail->sap_account_text ? $detail->sap_account_text : '-')
+                ->setCellValue('V' . $x, $detail->sap_cc_code)
+                ->setCellValue('W' . $x, Carbon::parse($detail->created_at)->format('d M \'y'));
+
+            $x++;
+            $no++;
+        }
+
+        $spreadsheet->getActiveSheet()->setTitle('Data');
+        $sheet = $spreadsheet->getSheet(0);
+        foreach ($sheet->getColumnIterator() as $column) {
+            $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+        }
+
+        $sheet->getStyle('A1:W1')->applyFromArray(
+            [
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    'textRotation' => 0,
+                ],
+                'font' => [
+                    'bold' => true,
+                ],
+            ]
+        );
+        $sheet->getStyle('A1' . ':W' . (count($approvals)))->applyFromArray(
+            [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'color' => ['argb' => '000000'],
+                    ],
+                ],
+            ]
+        );
+        $filename = 'CSV2dashboard' . $date_from . '.' . $date_to;
+
+        // Redirect output to a client’s web browser (Xlsx)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // header('Content-Disposition: attachment;filename="Report Excel.xlsx"');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        ob_end_clean(); // this
+        ob_start(); // and
+        $writer->save('php://output');
+        exit;
+    }
+
+    protected function download2old($request)
     {
         $periods = Period::all();
         $period_date_from = $periods->where('name', 'fyear_open_from')->first()->value;
@@ -810,6 +1033,163 @@ class Dashboard2Controller extends Controller
     }
 
     protected function download(Request $request)
+    {
+        ob_end_clean();
+        ob_start();
+        // Create a new spreadsheet
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->getProperties()->setCreator('Aiia')
+            ->setLastModifiedBy('Aiia')
+            ->setTitle('Office 2021 XLSX Aiia Document')
+            ->setSubject('Office 2021 XLSX Aiia Document')
+            ->setDescription('Office 2021 XLSX Aiia Document.')
+            ->setKeywords('Office 2021 XLSX Aiia Document')
+            ->setCategory('Office 2021 XLSX Aiia Document');
+
+        $periods = Period::all();
+        $period_date_from = $periods->where('name', 'fyear_open_from')->first()->value;
+        $period_date_to = $periods->where('name', 'fyear_open_to')->first()->value;
+        $date = !empty($request->interval) ? explode('-', str_replace(' ', '', $request->interval)) : [$period_date_from, $period_date_to];
+        $date_from = Carbon::createFromFormat('d/m/Y', $date[0])->format('Y-m-d');
+        $date_to = Carbon::createFromFormat('d/m/Y', $date[1])->format('Y-m-d');
+
+        $capex = Capex::select('budget_no', 'equipment_name as description', 'budget_plan', 'budget_used', 'budget_remaining')
+            ->whereDate('created_at', '>=', $date_from)
+            ->whereDate('created_at', '<=', $date_to)
+            ->when($request, function ($query, $request) {
+                if (!empty($request->plan_type)) {
+                    if ($request->plan_type === 'rev') {
+                        $query->where('is_revised', 1);
+                    } else {
+                        $query->where('is_revised', 0);
+                    }
+                } else {
+                    $query->where('is_revised', 0);
+                }
+
+                if (!empty($request->division)) {
+                    $query->where('division', $request->division);
+                }
+
+                if (!empty($request->department)) {
+                    $query->where('department', $request->department);
+                }
+            });
+
+        $capex_expenses = Expense::select('budget_no', 'description', 'budget_plan', 'budget_used', 'budget_remaining')
+            ->whereDate('created_at', '>=', $date_from)
+            ->whereDate('created_at', '<=', $date_to)
+            ->when($request, function ($query, $request) {
+                if (!empty($request->plan_type)) {
+                    if ($request->plan_type === 'rev') {
+                        $query->where('is_revised', 1);
+                    } else {
+                        $query->where('is_revised', 0);
+                    }
+                } else {
+                    $query->where('is_revised', 0);
+                }
+
+                if (!empty($request->division)) {
+                    $query->where('division', $request->division);
+                }
+
+                if (!empty($request->department)) {
+                    $query->where('department', $request->department);
+                }
+            })
+            ->union($capex)
+            ->get();
+
+        $spreadsheet->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'Budget No')
+            ->setCellValue('B1', 'Budget Name')
+            ->setCellValue('C1', 'Budget Plan')
+            ->setCellValue('D1', 'Budget Used')
+            ->setCellValue('E1', 'Budget Remaining');
+
+        $x = 2;
+        foreach ($capex_expenses as $key => $value) {
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $x, $value->budget_no)
+                ->setCellValue('B' . $x, $value->description)
+                ->setCellValue('C' . $x, $value->budget_plan)
+                ->setCellValue('D' . $x, $value->budget_used)
+                ->setCellValue('E' . $x, $value->budget_remaining);
+            $x++;
+        }
+        // $capex_expenses = $capex_expenses->map(function ($cxex) {
+        //     return [
+        //         'budget_no' => $cxex->budget_no,
+        //         'budget_name' => $cxex->description,
+        //         'budget_plan' => $cxex->budget_plan,
+        //         'budget_used' => $cxex->budget_used,
+        //         'budget_remaining' => $cxex->budget_remaining,
+        //     ];
+        // });
+
+        // ob_end_clean(); // this
+        // ob_start(); // and this
+
+        // Excel::create('CSVdashboard.' . $date_from . '.' . $date_to, function ($excel) use ($capex_expenses) {
+        //     $excel->sheet('Sheet 1', function ($sheet) use ($capex_expenses) {
+        //         $sheet->fromArray($capex_expenses->toArray());
+        //     });
+        // })->export('xlsx');
+
+        $spreadsheet->getActiveSheet()->setTitle('Data');
+        $sheet = $spreadsheet->getSheet(0);
+
+        foreach ($sheet->getColumnIterator() as $column) {
+            $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+        }
+
+        $sheet->getStyle('A1:E1')->applyFromArray(
+            [
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    'textRotation' => 0,
+                ],
+                'font' => [
+                    'bold' => true,
+                ],
+            ]
+        );
+        $sheet->getStyle('A1' . ':E' . (count($capex_expenses)))->applyFromArray(
+            [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'color' => ['argb' => '000000'],
+                    ],
+                ],
+            ]
+        );
+        $filename = 'CSVdashboard' . $date_from . '.' . $date_to;
+
+        // Redirect output to a client’s web browser (Xlsx)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // header('Content-Disposition: attachment;filename="Report Excel.xlsx"');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        ob_end_clean(); // this
+        ob_start(); // and
+        $writer->save('php://output');
+        exit;
+    }
+    protected function downloadold(Request $request)
     {
         $periods = Period::all();
         $period_date_from = $periods->where('name', 'fyear_open_from')->first()->value;

@@ -1112,6 +1112,8 @@ class RequestController extends Controller
         // $name = time() . '.' . $file->getClientOriginalExtension();
         $ext  = $file->getClientOriginalExtension();
         $success = true;
+        $pesan = '';
+        $total = 0;
         $hasil = 1;
         if ($ext != 'xlsx' && $ext != 'xls') {
             $hasil = 0;
@@ -1228,18 +1230,18 @@ class RequestController extends Controller
                     $arrayPush[$i]['final_payment_term'] = $sheet->getCell("V$rw")->getFormattedValue();
                     $arrayPush[$i]['final_payment_amount'] = $sheet->getCell("W$rw")->getValue();
                     $arrayPush[$i]['owner_asset'] = $sheet->getCell("X$rw")->getValue();
-                    $arrayPush[$i]['april'] = $sheet->getCell("Y$rw")->getValue();
-                    $arrayPush[$i]['mei'] = $sheet->getCell("Z$rw")->getValue();
-                    $arrayPush[$i]['juni'] = $sheet->getCell("AA$rw")->getValue();
-                    $arrayPush[$i]['juli'] = $sheet->getCell("AB$rw")->getValue();
-                    $arrayPush[$i]['agustus'] = $sheet->getCell("AC$rw")->getValue();
-                    $arrayPush[$i]['september'] = $sheet->getCell("AD$rw")->getValue();
-                    $arrayPush[$i]['oktober'] = $sheet->getCell("AE$rw")->getValue();
-                    $arrayPush[$i]['november'] = $sheet->getCell("AF$rw")->getValue();
-                    $arrayPush[$i]['december'] = $sheet->getCell("AG$rw")->getValue();
-                    $arrayPush[$i]['januari'] = $sheet->getCell("AH$rw")->getValue();
-                    $arrayPush[$i]['februari'] = $sheet->getCell("AI$rw")->getValue();
-                    $arrayPush[$i]['maret'] = $sheet->getCell("AJ$rw")->getValue();
+                    $arrayPush[$i]['april'] = $sheet->getCell("Y$rw")->getCalculatedValue();
+                    $arrayPush[$i]['mei'] = $sheet->getCell("Z$rw")->getCalculatedValue();
+                    $arrayPush[$i]['juni'] = $sheet->getCell("AA$rw")->getCalculatedValue();
+                    $arrayPush[$i]['juli'] = $sheet->getCell("AB$rw")->getCalculatedValue();
+                    $arrayPush[$i]['agustus'] = $sheet->getCell("AC$rw")->getCalculatedValue();
+                    $arrayPush[$i]['september'] = $sheet->getCell("AD$rw")->getCalculatedValue();
+                    $arrayPush[$i]['oktober'] = $sheet->getCell("AE$rw")->getCalculatedValue();
+                    $arrayPush[$i]['november'] = $sheet->getCell("AF$rw")->getCalculatedValue();
+                    $arrayPush[$i]['december'] = $sheet->getCell("AG$rw")->getCalculatedValue();
+                    $arrayPush[$i]['januari'] = $sheet->getCell("AH$rw")->getCalculatedValue();
+                    $arrayPush[$i]['februari'] = $sheet->getCell("AI$rw")->getCalculatedValue();
+                    $arrayPush[$i]['maret'] = $sheet->getCell("AJ$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "") {
                     break;
@@ -4672,7 +4674,7 @@ class RequestController extends Controller
         header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header('Pragma: public'); // HTTP/1.0
 
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $writer->save('php://output');
         $xlsData = ob_get_contents();
         ob_end_clean();

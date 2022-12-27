@@ -152,6 +152,7 @@ Upload Capex
 
                 },
                 error: function(err) {
+                    console.log(err.responseText);
                     alert("error cek request")
                     window.location.reload(true);
                     $('#btn-import').html('Upload')

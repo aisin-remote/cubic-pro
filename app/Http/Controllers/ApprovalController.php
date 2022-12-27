@@ -25,6 +25,8 @@ use App\ApprovalDtl;
 use App\ApprovalMaster;
 use App\ApprovalDetail;
 
+require '../PHPExcel/PHPExcel.php';
+
 class ApprovalController extends Controller
 {
     public function index()
