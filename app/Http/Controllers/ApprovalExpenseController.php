@@ -318,7 +318,6 @@ class ApprovalExpenseController extends Controller
             }
         }
 
-        $approval_expense->limit(20);
 
         $approval_expense = $approval_expense->get();
         
