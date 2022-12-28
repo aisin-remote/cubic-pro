@@ -98,8 +98,8 @@ class EpsTrackingController extends Controller
         $query .= "LIMIT $start, $limit";
 
         $eps_tracking  = DB::select($query);
-
-        Config::set('datatables.engines.collection', CollectionCustom::class);
+        // diable karena CollectionCustom nit found, tetapi tetap running, by Handika.
+        //Config::set('datatables.engines.collection', CollectionCustom::class);
 
         return DataTables::of($eps_tracking)
             ->setTotalRecords($totalRecords)
