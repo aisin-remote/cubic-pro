@@ -10,6 +10,9 @@ use DataTables;
 use DB;
 use Illuminate\Support\Facades\Config;
 use Excel;
+use PhpOffice\PhpSpreadsheet\Helper\Sample;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class EpsTrackingController extends Controller
 {
@@ -116,6 +119,168 @@ class EpsTrackingController extends Controller
     }
 
     public function export(Request $request)
+    {
+
+        ob_end_clean();
+        ob_start();
+        // Create a new spreadsheet
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->getProperties()->setCreator('Aiia')
+            ->setLastModifiedBy('Aiia')
+            ->setTitle('Office 2021 XLSX Aiia Document')
+            ->setSubject('Office 2021 XLSX Aiia Document')
+            ->setDescription('Office 2021 XLSX Aiia Document.')
+            ->setKeywords('Office 2021 XLSX Aiia Document')
+            ->setCategory('Office 2021 XLSX Aiia Document');
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+
+        $prCreated = $request->pr_created;
+
+        if ($prCreated) {
+            $intervals = explode('-', $prCreated);
+
+            if (count($intervals) > 1) {
+                $from = date('Y-m-d', strtotime(trim($intervals[0])));
+                $to = date('Y-m-d', strtotime(trim($intervals[1])));
+            }
+        }
+
+        $user  = auth()->user();
+
+        $query = "SELECT am.approval_number as `APPROVAL NUMBER`, ad.project_name as `PROJECT NAME`, am.created_at as `PR CREATED AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 1 limit 1) LIMIT 1) AS `BUDGET APPROVE AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 2 limit 1) LIMIT 1) AS `DEPT HEAD APPROVE AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 3 limit 1) LIMIT 1) AS `GM APPROVE AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 4 limit 1) LIMIT 1) AS `DIR. APPROVE AT`, upo.pr_receive as `PR RECEIVED AT`, upo.po_date as `PO DATE`, upo.po_number as `PO NUMBER`, i.item_code as `ITEM CODE`, i.item_description as `ITEM DESCRIPTION`, ad.actual_qty as `ACTUAL QTY`, ad.pr_uom as `PR UOM`, ad.actual_price_user as `ACTUAL PRICE USER`, v.vendor_fname as `SUPPLIER NAME`, u.name as `USER NAME`, gcd.gr_no as `GR NO.`, gcd.created_at as `GR DATE`, gcd.qty_receive as `QTY RECEIVE`, gcd.qty_outstanding as `QTY OUTSTANDING`, gcd.notes as `NOTES` FROM approval_details ad LEFT OUTER JOIN approval_masters am ON ad.approval_master_id = am.id LEFT OUTER JOIN upload_purchase_orders upo ON ad.id = upo.approval_detail_id LEFT OUTER JOIN items i on ad.item_id = i.id LEFT OUTER JOIN sap_vendors v ON v.vendor_code = ad.sap_vendor_code LEFT OUTER JOIN users u on am.created_by = u.id LEFT OUTER JOIN gr_confirm_details gcd ON ad.id = gcd.approval_detail_id";
+
+        if ($prCreated) {
+            $intervals = explode('-', $prCreated);
+
+            $query .= "WHERE (am.created_at > '$from' && am.created_at < '$to') ";
+        }
+
+        if ($user->hasRole('department-head') || $user->hasRole('user')) {
+            $deptCode = $user->department->department_code;
+            if (!$prCreated) {
+                $query .= "WHERE";
+            } else {
+                $query .= "AND";
+            }
+
+            $query .= " am.department = '$deptCode' ";
+        }
+
+        $eps_tracking  = DB::select($query);
+        $data = json_decode(json_encode($eps_tracking), true);
+
+        // dd($data[0]);
+
+        if (count($data) > 0) {
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'APPROVAL NUMBER')
+                ->setCellValue('B1', 'PROJECT NAME')
+                ->setCellValue('C1', 'PR CREATED AT')
+                ->setCellValue('D1', 'BUDGET APPROVE AT')
+                ->setCellValue('E1', 'DEPT HEAD APPROVE AT')
+                ->setCellValue('F1', 'GM APPROVE AT')
+                ->setCellValue('G1', 'DIR. APPROVE AT')
+                ->setCellValue('H1', 'PR RECEIVED AT')
+                ->setCellValue('I1', 'PO DATE')
+                ->setCellValue('J1', 'PO NUMBER')
+                ->setCellValue('K1', 'ITEM CODE')
+                ->setCellValue('L1', 'ITEM DESCRIPTION')
+                ->setCellValue('M1', 'ACTUAL QTY')
+                ->setCellValue('N1', 'PR UOM')
+                ->setCellValue('O1', 'ACTUAL PRICE USER')
+                ->setCellValue('P1', 'SUPPLIER NAME')
+                ->setCellValue('Q1', 'USER NAME')
+                ->setCellValue('R1', 'GR NO.')
+                ->setCellValue('S1', 'GR DATE')
+                ->setCellValue('T1', 'QTY RECEIVE')
+                ->setCellValue('U1', 'QTY OUTSTANDING')
+                ->setCellValue('V1', 'NOTES');
+            $x = 2;
+            foreach ($data as $val) {
+
+                $spreadsheet->setActiveSheetIndex(0)
+                    ->setCellValue('A' . $x, $val['APPROVAL NUMBER'])
+                    ->setCellValue('B' . $x, $val['PROJECT NAME'])
+                    ->setCellValue('C' . $x, $val['PR CREATED AT'])
+                    ->setCellValue('D' . $x, $val['BUDGET APPROVE AT'])
+                    ->setCellValue('E' . $x, $val['DEPT HEAD APPROVE AT'])
+                    ->setCellValue('F' . $x, $val['GM APPROVE AT'])
+                    ->setCellValue('G' . $x, $val['DIR. APPROVE AT'])
+                    ->setCellValue('H' . $x, $val['PR RECEIVED AT'])
+                    ->setCellValue('I' . $x, $val['PO DATE'])
+                    ->setCellValue('J' . $x, $val['PO NUMBER'])
+                    ->setCellValue('K' . $x, $val['ITEM CODE'])
+                    ->setCellValue('L' . $x, $val['ITEM DESCRIPTION'])
+                    ->setCellValue('M' . $x, $val['ACTUAL QTY'])
+                    ->setCellValue('N' . $x, $val['PR UOM'])
+                    ->setCellValue('O' . $x, $val['ACTUAL PRICE USER'])
+                    ->setCellValue('P' . $x, $val['SUPPLIER NAME'])
+                    ->setCellValue('Q' . $x, $val['USER NAME'])
+                    ->setCellValue('R' . $x, $val['GR NO.'])
+                    ->setCellValue('S' . $x, $val['GR DATE'])
+                    ->setCellValue('T' . $x, $val['QTY RECEIVE'])
+                    ->setCellValue('U' . $x, $val['QTY OUTSTANDING'])
+                    ->setCellValue('V' . $x, $val['NOTES']);
+
+                $x++;
+            }
+        }
+
+        $spreadsheet->getActiveSheet()->setTitle('Data');
+        $sheet = $spreadsheet->getSheet(0);
+
+        foreach ($sheet->getColumnIterator() as $column) {
+            $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+        }
+
+        $sheet->getStyle('A1:V1')->applyFromArray(
+            [
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    'textRotation' => 0,
+                ],
+                'font' => [
+                    'bold' => true,
+                ],
+            ]
+        );
+        $sheet->getStyle('A1' . ':V' . (count($data) + 1))->applyFromArray(
+            [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'color' => ['argb' => '000000'],
+                    ],
+                ],
+            ]
+        );
+        $filename = 'EPS Tracking';
+
+        // Redirect output to a client’s web browser (Xlsx)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // header('Content-Disposition: attachment;filename="Report Excel.xlsx"');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        ob_end_clean(); // this
+        ob_start(); // and
+        $writer->save('php://output');
+        exit;
+    }
+    public function exportold(Request $request)
     {
         $prCreated = $request->pr_created;
 

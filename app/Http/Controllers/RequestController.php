@@ -15,6 +15,7 @@ use App\ExpenseRb;
 use Carbon\Carbon;
 use App\MasterCode;
 use App\DmaterialRb;
+use App\Department;
 use App\Exports\RbExport;
 use App\Imports\CapexImport;
 use App\Imports\SalesImport;
@@ -130,7 +131,7 @@ class RequestController extends Controller
                 if ($sheet->getCell("A$rw")->getCalculatedValue()) {
 
                     $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
-                    $arrayPush[$i]['fy_total'] = $sheet->getCell("AE$rw")->getCalculatedValue();
+                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("A$rw")->getValue() == "") {
                     break;
@@ -238,32 +239,6 @@ class RequestController extends Controller
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('S' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('T' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('U' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('V' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('W' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('X' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('Y' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('Z' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AA' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AB' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AC' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AD' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AE' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AF' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     }
                 }
             }
@@ -290,21 +265,21 @@ class RequestController extends Controller
                     $acc_name      = isset($val['B']) ? $val['B'] : null;
                     $group         = isset($val['C']) ? $val['C'] : null;
                     $code          = isset($val['D']) ? $val['D'] : null;
-                    $apr           = isset($val['Q']) ? $val['Q'] : null;
-                    $may           = isset($val['R']) ? $val['R'] : null;
-                    $jun           = isset($val['S']) ? $val['S'] : null;
-                    $jul           = isset($val['T']) ? $val['T'] : null;
-                    $aug           = isset($val['U']) ? $val['U'] : null;
-                    $sept          = isset($val['V']) ? $val['V'] : null;
-                    $oct           = isset($val['W']) ? $val['W'] : null;
-                    $nov           = isset($val['X']) ? $val['X'] : null;
-                    $dec           = isset($val['Y']) ? $val['Y'] : null;
-                    $jan           = isset($val['Z']) ? $val['Z'] : null;
-                    $feb           = isset($val['AA']) ? $val['AA'] : null;
-                    $mar           = isset($val['AB']) ? $val['AB'] : null;
-                    $fy_2022_1st   = isset($val['AC']) ? $val['AC'] : null;
-                    $fy_2022_2nd   = isset($val['AD']) ? $val['AD'] : null;
-                    $fy_2022_total = isset($val['AE']) ? $val['AE'] : null;
+                    $apr           = isset($val['E']) ? $val['E'] : null;
+                    $may           = isset($val['F']) ? $val['F'] : null;
+                    $jun           = isset($val['G']) ? $val['G'] : null;
+                    $jul           = isset($val['H']) ? $val['H'] : null;
+                    $aug           = isset($val['I']) ? $val['I'] : null;
+                    $sept          = isset($val['J']) ? $val['J'] : null;
+                    $oct           = isset($val['K']) ? $val['K'] : null;
+                    $nov           = isset($val['L']) ? $val['L'] : null;
+                    $dec           = isset($val['M']) ? $val['M'] : null;
+                    $jan           = isset($val['N']) ? $val['N'] : null;
+                    $feb           = isset($val['O']) ? $val['O'] : null;
+                    $mar           = isset($val['P']) ? $val['P'] : null;
+                    $fy_2022_1st   = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_2nd   = isset($val['R']) ? $val['R'] : null;
+                    $fy_2022_total = isset($val['S']) ? $val['S'] : null;
 
                     if ($acc_code) {
                         $cek = LaborRb::where([
@@ -432,7 +407,7 @@ class RequestController extends Controller
                 if ($sheet->getCell("A$rw")->getCalculatedValue()) {
 
                     $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
-                    $arrayPush[$i]['fy_total'] = $sheet->getCell("AE$rw")->getCalculatedValue();
+                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("A$rw")->getValue() == "") {
                     break;
@@ -538,32 +513,6 @@ class RequestController extends Controller
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('S' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('T' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('U' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('V' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('W' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('X' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('Y' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('Z' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AA' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AB' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AC' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AD' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AE' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AF' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     }
                 }
             }
@@ -589,21 +538,21 @@ class RequestController extends Controller
                     $acc_name      = isset($val['B']) ? $val['B'] : null;
                     $group         = isset($val['C']) ? $val['C'] : null;
                     $code          = isset($val['D']) ? $val['D'] : null;
-                    $apr           = isset($val['Q']) ? $val['Q'] : null;
-                    $may           = isset($val['R']) ? $val['R'] : null;
-                    $jun           = isset($val['S']) ? $val['S'] : null;
-                    $jul           = isset($val['T']) ? $val['T'] : null;
-                    $aug           = isset($val['U']) ? $val['U'] : null;
-                    $sept          = isset($val['V']) ? $val['V'] : null;
-                    $oct           = isset($val['W']) ? $val['W'] : null;
-                    $nov           = isset($val['X']) ? $val['X'] : null;
-                    $dec           = isset($val['Y']) ? $val['Y'] : null;
-                    $jan           = isset($val['Z']) ? $val['Z'] : null;
-                    $feb           = isset($val['AA']) ? $val['AA'] : null;
-                    $mar           = isset($val['AB']) ? $val['AB'] : null;
-                    $fy_2022_1st   = isset($val['AC']) ? $val['AC'] : null;
-                    $fy_2022_2nd   = isset($val['AD']) ? $val['AD'] : null;
-                    $fy_2022_total = isset($val['AE']) ? $val['AE'] : null;
+                    $apr           = isset($val['E']) ? $val['E'] : null;
+                    $may           = isset($val['F']) ? $val['F'] : null;
+                    $jun           = isset($val['G']) ? $val['G'] : null;
+                    $jul           = isset($val['H']) ? $val['H'] : null;
+                    $aug           = isset($val['I']) ? $val['I'] : null;
+                    $sept          = isset($val['J']) ? $val['J'] : null;
+                    $oct           = isset($val['K']) ? $val['K'] : null;
+                    $nov           = isset($val['L']) ? $val['L'] : null;
+                    $dec           = isset($val['M']) ? $val['M'] : null;
+                    $jan           = isset($val['N']) ? $val['N'] : null;
+                    $feb           = isset($val['O']) ? $val['O'] : null;
+                    $mar           = isset($val['P']) ? $val['P'] : null;
+                    $fy_2022_1st   = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_2nd   = isset($val['R']) ? $val['R'] : null;
+                    $fy_2022_total = isset($val['S']) ? $val['S'] : null;
 
                     if ($acc_code) {
                         $cek = SalesRb::where([
@@ -737,7 +686,7 @@ class RequestController extends Controller
                 if ($sheet->getCell("A$rw")->getCalculatedValue()) {
 
                     $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
-                    $arrayPush[$i]['fy_total'] = $sheet->getCell("AE$rw")->getCalculatedValue();
+                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("A$rw")->getValue() == "") {
                     break;
@@ -845,32 +794,6 @@ class RequestController extends Controller
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('S' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('T' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('U' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('V' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('W' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('X' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('Y' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('Z' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AA' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AB' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AC' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AD' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AE' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
-                    } else if ('AF' == $cell->getColumn()) {
-                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     }
                 }
             }
@@ -897,21 +820,21 @@ class RequestController extends Controller
                     $acc_name      = isset($val['B']) ? $val['B'] : null;
                     $group         = isset($val['C']) ? $val['C'] : null;
                     $code          = isset($val['D']) ? $val['D'] : null;
-                    $apr           = isset($val['Q']) ? $val['Q'] : null;
-                    $may           = isset($val['R']) ? $val['R'] : null;
-                    $jun           = isset($val['S']) ? $val['S'] : null;
-                    $jul           = isset($val['T']) ? $val['T'] : null;
-                    $aug           = isset($val['U']) ? $val['U'] : null;
-                    $sept          = isset($val['V']) ? $val['V'] : null;
-                    $oct           = isset($val['W']) ? $val['W'] : null;
-                    $nov           = isset($val['X']) ? $val['X'] : null;
-                    $dec           = isset($val['Y']) ? $val['Y'] : null;
-                    $jan           = isset($val['Z']) ? $val['Z'] : null;
-                    $feb           = isset($val['AA']) ? $val['AA'] : null;
-                    $mar           = isset($val['AB']) ? $val['AB'] : null;
-                    $fy_2022_1st   = isset($val['AC']) ? $val['AC'] : null;
-                    $fy_2022_2nd   = isset($val['AD']) ? $val['AD'] : null;
-                    $fy_2022_total = isset($val['AE']) ? $val['AE'] : null;
+                    $apr           = isset($val['E']) ? $val['E'] : null;
+                    $may           = isset($val['F']) ? $val['F'] : null;
+                    $jun           = isset($val['G']) ? $val['G'] : null;
+                    $jul           = isset($val['H']) ? $val['H'] : null;
+                    $aug           = isset($val['I']) ? $val['I'] : null;
+                    $sept          = isset($val['J']) ? $val['J'] : null;
+                    $oct           = isset($val['K']) ? $val['K'] : null;
+                    $nov           = isset($val['L']) ? $val['L'] : null;
+                    $dec           = isset($val['M']) ? $val['M'] : null;
+                    $jan           = isset($val['N']) ? $val['N'] : null;
+                    $feb           = isset($val['O']) ? $val['O'] : null;
+                    $mar           = isset($val['P']) ? $val['P'] : null;
+                    $fy_2022_1st   = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_2nd   = isset($val['R']) ? $val['R'] : null;
+                    $fy_2022_total = isset($val['S']) ? $val['S'] : null;
 
                     if ($acc_code) {
                         $cek = DmaterialRb::where([
@@ -1442,6 +1365,9 @@ class RequestController extends Controller
 
     public function expenseimportcek(Request $request)
     {
+        $dept_id = auth()->user()->department_id;
+        $deptuser =  Department::where('id', '=', $dept_id)->first()->department_code;
+        // dd($deptuser);
         $file = $request->file('file');
         // dd($file);
         // $name = time() . '.' . $file->getClientOriginalExtension();
@@ -1481,9 +1407,8 @@ class RequestController extends Controller
 
                 $i++;
                 $rw++;
-                // dd($dept);
-
             }
+            // dd($dept);
 
             if (count($arrayPush) > 0) {
                 $pesan = '';
@@ -1491,6 +1416,9 @@ class RequestController extends Controller
                 foreach ($arrayPush as $key => $val) {
                     if (strpos($val['budget_after_cr'], ".") !== false) {
                         $success = false;
+                    } else if ($dept != $deptuser) {
+                        $success = false;
+                        $pesan = 'Departemen Salah';
                     }
                     $total = $total + $val['budget_after_cr'];
                 }
