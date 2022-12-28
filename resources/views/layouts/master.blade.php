@@ -211,7 +211,7 @@
         <script src="{{ url('assets/plugins/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
         
         <!-- chartjs -->
-        <script src="{{ url('assets/plugins/chart.js/Chart.min.js') }}"></script>
+        <script src="{{ url('assets/plugins/chart.js/chart.min.js') }}"></script>
 
         <!-- Datepicker -->
         <script src="{{ url('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
