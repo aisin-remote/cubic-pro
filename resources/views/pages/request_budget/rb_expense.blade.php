@@ -148,10 +148,14 @@ Upload Expense
                             })
                         }
                     } else {
+                        var pes = 'Data masih ada decimal (koma) value, cek kembali.!'
+                        if (data.pesan != '') {
+                            pes = data.pesan
+                        }
                         Swal.fire({
                             icon: 'error',
                             title: "Total : " + data.total,
-                            text: 'Data masih ada decimal (koma) value, cek kembali.!',
+                            text: pes,
                             showCancelButton: false,
                             confirmButtonColor: '#3085d6',
                             confirmButtonText: 'Ok'
