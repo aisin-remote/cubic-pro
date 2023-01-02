@@ -1396,12 +1396,12 @@ class RequestController extends Controller
 
                     $dept = $sheet->getCell("B$rw")->getValue();
                 }
-                if ($sheet->getCell("D$rw")->getCalculatedValue()) {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue()) {
 
                     $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getCalculatedValue();
                     $arrayPush[$i]['budget_after_cr'] = $sheet->getCell("T$rw")->getCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getCalculatedValue() == "") {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "") {
                     break;
                 }
 
@@ -1473,9 +1473,9 @@ class RequestController extends Controller
 
                     $dept = $sheet->getCell("B$rw")->getCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getCalculatedValue() != "") {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "") {
 
-                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getCalculatedValue();
+                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getOldCalculatedValue();
                     $arrayPush[$i]['group'] = $sheet->getCell("E$rw")->getCalculatedValue();
                     $arrayPush[$i]['line'] = $sheet->getCell("F$rw")->getCalculatedValue();
                     $arrayPush[$i]['profit_center'] = $sheet->getCell("G$rw")->getCalculatedValue();
@@ -1519,7 +1519,7 @@ class RequestController extends Controller
                     $arrayPush[$i]['maret'] = $sheet->getCell("AM$rw")->getCalculatedValue();
                     $arrayPush[$i]['checking'] = $sheet->getCell("AN$rw")->getCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getCalculatedValue() == "") {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "") {
                     break;
                 }
 
@@ -1683,7 +1683,7 @@ class RequestController extends Controller
                     }
                     $linetemp = $val['line'];
                 }
-                $capexrb                         = new ExpenseRb;
+                $capexrb  = new ExpenseRb;
                 if (!$capexrb->insert($arrayPush)) {
                     $hasil = 0;
                     $title = 'Gagal';
