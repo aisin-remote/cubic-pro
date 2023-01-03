@@ -1030,6 +1030,8 @@ class RequestController extends Controller
 
     public function capeximportcek(Request $request)
     {
+        $dept_id = auth()->user()->department_id;
+        $deptuser =  Department::where('id', '=', $dept_id)->first()->department_code;
         $file = $request->file('file');
         // dd($file);
         // $name = time() . '.' . $file->getClientOriginalExtension();
@@ -1055,9 +1057,9 @@ class RequestController extends Controller
             $i = 0;
             foreach ($sheet->getRowIterator() as $row) {
                 // dd($sheet->getCell("R$rw")->getOldCalculatedValue());
-                if ($sheet->getCell("B$rw")->getCalculatedValue() != "") {
+                if ($sheet->getCell("A$rw")->getValue() != "") {
 
-                    $dept = $sheet->getCell("B$rw")->getCalculatedValue();
+                    $dept = $sheet->getCell("B$rw")->getValue();
                 }
                 if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "") {
 
@@ -1080,6 +1082,9 @@ class RequestController extends Controller
                 foreach ($arrayPush as $key => $val) {
                     if (strpos($val['price'], ".") !== false) {
                         $success = false;
+                    }else if ($dept != $deptuser) {
+                        $success = false;
+                        $pesan = 'Departemen Salah';
                     }
                     $total = $total + $val['price'];
                 }
@@ -1126,9 +1131,9 @@ class RequestController extends Controller
 
             $i = 0;
             foreach ($sheet->getRowIterator() as $row) {
-                if ($sheet->getCell("B$rw")->getCalculatedValue() != "") {
+                if ($sheet->getCell("A$rw")->getValue() != "") {
 
-                    $dept = $sheet->getCell("B$rw")->getCalculatedValue();
+                    $dept = $sheet->getCell("A$rw")->getValue();
                 }
                 if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "") {
 
@@ -1392,9 +1397,9 @@ class RequestController extends Controller
             $arrayPush = array();
             $i = 0;
             foreach ($sheet->getRowIterator() as $row) {
-                if ($sheet->getCell("B$rw")->getValue() != "") {
+                if ($sheet->getCell("A$rw")->getValue() != "") {
 
-                    $dept = $sheet->getCell("B$rw")->getValue();
+                    $dept = $sheet->getCell("A$rw")->getValue();
                 }
                 if ($sheet->getCell("D$rw")->getOldCalculatedValue()) {
 
@@ -1469,9 +1474,9 @@ class RequestController extends Controller
             $i = 0;
             foreach ($sheet->getRowIterator() as $row) {
 
-                if ($sheet->getCell("B$rw")->getCalculatedValue() != ""  && $sheet->getCell("E$rw")->getCalculatedValue() != "") {
+                if ($sheet->getCell("A$rw")->getCalculatedValue() != ""  && $sheet->getCell("E$rw")->getCalculatedValue() != "") {
 
-                    $dept = $sheet->getCell("B$rw")->getCalculatedValue();
+                    $dept = $sheet->getCell("A$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "") {
 
