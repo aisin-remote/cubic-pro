@@ -1683,7 +1683,7 @@ class RequestController extends Controller
                     if ($linetemp != $val['line']) {
 
                         $delete = ExpenseRb::where([
-                            'line' => $val['line']
+                            'dept' => $val['dept']
                         ])->delete();
                     }
                     $linetemp = $val['line'];
