@@ -1057,9 +1057,9 @@ class RequestController extends Controller
             $i = 0;
             foreach ($sheet->getRowIterator() as $row) {
                 // dd($sheet->getCell("R$rw")->getOldCalculatedValue());
-                if ($sheet->getCell("A$rw")->getValue() != "") {
+                if ($sheet->getCell("A$rw")->getCalculatedValue() != "") {
 
-                    $dept = $sheet->getCell("B$rw")->getValue();
+                    $dept = $sheet->getCell("B$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "") {
 
@@ -1131,9 +1131,9 @@ class RequestController extends Controller
 
             $i = 0;
             foreach ($sheet->getRowIterator() as $row) {
-                if ($sheet->getCell("A$rw")->getValue() != "") {
+                if ($sheet->getCell("A$rw")->getCalculatedValue() != "") {
 
-                    $dept = $sheet->getCell("A$rw")->getValue();
+                    $dept = $sheet->getCell("A$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "") {
 
@@ -1397,9 +1397,9 @@ class RequestController extends Controller
             $arrayPush = array();
             $i = 0;
             foreach ($sheet->getRowIterator() as $row) {
-                if ($sheet->getCell("A$rw")->getValue() != "") {
+                if ($sheet->getCell("A$rw")->getCalculatedValue() != "") {
 
-                    $dept = $sheet->getCell("A$rw")->getValue();
+                    $dept = $sheet->getCell("A$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("D$rw")->getOldCalculatedValue()) {
 
