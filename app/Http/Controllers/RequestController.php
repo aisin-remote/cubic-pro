@@ -1030,6 +1030,7 @@ class RequestController extends Controller
 
     public function capeximportcek(Request $request)
     {
+        $email = auth()->user()->email;
         $dept_id = auth()->user()->department_id;
         $deptuser =  Department::where('id', '=', $dept_id)->first()->department_code;
         $file = $request->file('file');
@@ -1082,7 +1083,7 @@ class RequestController extends Controller
                 foreach ($arrayPush as $key => $val) {
                     if (strpos($val['price'], ".") !== false) {
                         $success = false;
-                    }else if ($dept != $deptuser) {
+                    }else if ($dept != $deptuser && $email !='budget@aiia.co.id') {
                         $success = false;
                         $pesan = 'Departemen Salah';
                     }
@@ -1370,6 +1371,7 @@ class RequestController extends Controller
 
     public function expenseimportcek(Request $request)
     {
+        $email = auth()->user()->email;
         $dept_id = auth()->user()->department_id;
         $deptuser =  Department::where('id', '=', $dept_id)->first()->department_code;
         // dd($deptuser);
@@ -1421,7 +1423,7 @@ class RequestController extends Controller
                 foreach ($arrayPush as $key => $val) {
                     if (strpos($val['budget_after_cr'], ".") !== false) {
                         $success = false;
-                    } else if ($dept != $deptuser) {
+                    } else if ($dept != $deptuser && $email != 'budget@aiia.co.id') {
                         $success = false;
                         $pesan = 'Departemen Salah';
                     }
@@ -1683,6 +1685,10 @@ class RequestController extends Controller
                     if ($linetemp != $val['line']) {
 
                         $delete = ExpenseRb::where([
+<<<<<<< Updated upstream
+=======
+                            'line' => $val['line'],
+>>>>>>> Stashed changes
                             'dept' => $val['dept']
                         ])->delete();
                     }
