@@ -1685,10 +1685,6 @@ class RequestController extends Controller
                     if ($linetemp != $val['line']) {
 
                         $delete = ExpenseRb::where([
-<<<<<<< Updated upstream
-=======
-                            'line' => $val['line'],
->>>>>>> Stashed changes
                             'dept' => $val['dept']
                         ])->delete();
                     }
