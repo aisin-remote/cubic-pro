@@ -147,6 +147,7 @@
     <?php
     use App\Department;
     $dept_id = auth()->user()->department_id;
+    $email =  auth()->user()->email;
     $deptuser = Department::where('id', '=', $dept_id)->first()->department_code;
     ?>
     <script>
@@ -341,12 +342,13 @@
 
             $('#btn-download').click(function() {
                 var depuser = "<?php echo $deptuser; ?>";
+                var email = "<?php echo $email; ?>";
 
                 var dept = $('#dept').val()
 
                 if (dept == "") {
                     return false
-                } else if (dept != depuser) {
+                } else if (dept != depuser && email != "budget@aiia.co.id") {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
