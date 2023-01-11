@@ -1081,9 +1081,7 @@ class RequestController extends Controller
                 $pesan = '';
                 $total = 0;
                 foreach ($arrayPush as $key => $val) {
-                    if (strpos($val['price'], ".") !== false) {
-                        $success = false;
-                    }else if ($dept != $deptuser && $email !='budget@aiia.co.id') {
+                    if ($dept != $deptuser && $email !='budget@aiia.co.id') {
                         $success = false;
                         $pesan = 'Departemen Salah';
                     }
@@ -1421,9 +1419,7 @@ class RequestController extends Controller
                 $pesan = '';
                 $total = 0;
                 foreach ($arrayPush as $key => $val) {
-                    if (strpos($val['budget_after_cr'], ".") !== false) {
-                        $success = false;
-                    } else if ($dept != $deptuser && $email != 'budget@aiia.co.id') {
+                    if ($dept != $deptuser && $email != 'budget@aiia.co.id') {
                         $success = false;
                         $pesan = 'Departemen Salah';
                     }
