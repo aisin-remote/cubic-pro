@@ -1129,6 +1129,7 @@ class RequestController extends Controller
             $arrayPush = array();
 
             $i = 0;
+            // dd($sheet->getCell("Y6")->getCalculatedValue());
             foreach ($sheet->getRowIterator() as $row) {
                 if ($sheet->getCell("A1")->getCalculatedValue() != "") {
 
@@ -1148,27 +1149,27 @@ class RequestController extends Controller
                     $arrayPush[$i]['equipment'] = $sheet->getCell("M$rw")->getValue();
                     $arrayPush[$i]['qty'] = $sheet->getCell("N$rw")->getValue();
                     $arrayPush[$i]['curency'] = $sheet->getCell("O$rw")->getValue();
-                    $arrayPush[$i]['original_price'] = $sheet->getCell("P$rw")->getValue();
+                    $arrayPush[$i]['original_price'] = $sheet->getCell("P$rw")->getCalculatedValue();
                     $arrayPush[$i]['exchange_rate'] = $sheet->getCell("Q$rw")->getOldCalculatedValue();
                     $arrayPush[$i]['price'] = $sheet->getCell("R$rw")->getOldCalculatedValue();
                     $arrayPush[$i]['sop'] = $sheet->getCell("S$rw")->getFormattedValue();
                     $arrayPush[$i]['first_dopayment_term'] = $sheet->getCell("T$rw")->getFormattedValue();
-                    $arrayPush[$i]['first_dopayment_amount'] = $sheet->getCell("U$rw")->getValue();
+                    $arrayPush[$i]['first_dopayment_amount'] = $sheet->getCell("U$rw")->getCalculatedValue();
                     $arrayPush[$i]['final_payment_term'] = $sheet->getCell("V$rw")->getFormattedValue();
-                    $arrayPush[$i]['final_payment_amount'] = $sheet->getCell("W$rw")->getValue();
+                    $arrayPush[$i]['final_payment_amount'] = $sheet->getCell("W$rw")->getCalculatedValue();
                     $arrayPush[$i]['owner_asset'] = $sheet->getCell("X$rw")->getValue();
-                    $arrayPush[$i]['april'] = $sheet->getCell("Y$rw")->getCalculatedValue();
-                    $arrayPush[$i]['mei'] = $sheet->getCell("Z$rw")->getCalculatedValue();
-                    $arrayPush[$i]['juni'] = $sheet->getCell("AA$rw")->getCalculatedValue();
-                    $arrayPush[$i]['juli'] = $sheet->getCell("AB$rw")->getCalculatedValue();
-                    $arrayPush[$i]['agustus'] = $sheet->getCell("AC$rw")->getCalculatedValue();
-                    $arrayPush[$i]['september'] = $sheet->getCell("AD$rw")->getCalculatedValue();
-                    $arrayPush[$i]['oktober'] = $sheet->getCell("AE$rw")->getCalculatedValue();
-                    $arrayPush[$i]['november'] = $sheet->getCell("AF$rw")->getCalculatedValue();
-                    $arrayPush[$i]['december'] = $sheet->getCell("AG$rw")->getCalculatedValue();
-                    $arrayPush[$i]['januari'] = $sheet->getCell("AH$rw")->getCalculatedValue();
-                    $arrayPush[$i]['februari'] = $sheet->getCell("AI$rw")->getCalculatedValue();
-                    $arrayPush[$i]['maret'] = $sheet->getCell("AJ$rw")->getCalculatedValue();
+                    $arrayPush[$i]['april'] = $sheet->getCell("Y$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['mei'] = $sheet->getCell("Z$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['juni'] = $sheet->getCell("AA$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['juli'] = $sheet->getCell("AB$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['agustus'] = $sheet->getCell("AC$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['september'] = $sheet->getCell("AD$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['oktober'] = $sheet->getCell("AE$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['november'] = $sheet->getCell("AF$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['december'] = $sheet->getCell("AG$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['januari'] = $sheet->getCell("AH$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['februari'] = $sheet->getCell("AI$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['maret'] = $sheet->getCell("AJ$rw")->getOldCalculatedValue();
                 }
                 if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "") {
                     break;
