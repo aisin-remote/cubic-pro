@@ -118,7 +118,7 @@ class GrConfirmController extends Controller
         $approval_no = ApprovalMaster::find($gr->approval_id);
         $user = User::find($gr->user_id);
         $department = Department::find($user->department_id);
-        return view('pages.gr_confirm.edit', compact(['gr', 'approval_no', 'user', 'department', 'detail']));
+        return view('pages.gr_confirm.edit', compact(['gr', 'approval_no', 'user', 'department']));
     }
 
     /**
