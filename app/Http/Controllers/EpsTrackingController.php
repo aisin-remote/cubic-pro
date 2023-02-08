@@ -149,7 +149,7 @@ class EpsTrackingController extends Controller
         }
 
         $user  = auth()->user();
-
+        DB::enableQueryLog();
         $query = "SELECT am.approval_number as `APPROVAL NUMBER`, ad.project_name as `PROJECT NAME`, am.created_at as `PR CREATED AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 1 limit 1) LIMIT 1) AS `BUDGET APPROVE AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 2 limit 1) LIMIT 1) AS `DEPT HEAD APPROVE AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 3 limit 1) LIMIT 1) AS `GM APPROVE AT`, (SELECT au.created_at FROM approver_users au WHERE au.approval_master_id = am.id and au.user_id = (select adt.user_id from approval_dtls adt where adt.approval_id = (SELECT aps.id from approvals aps where aps.department = am.department) and adt.level = 4 limit 1) LIMIT 1) AS `DIR. APPROVE AT`, upo.pr_receive as `PR RECEIVED AT`, upo.po_date as `PO DATE`, upo.po_number as `PO NUMBER`, i.item_code as `ITEM CODE`, i.item_description as `ITEM DESCRIPTION`, ad.actual_qty as `ACTUAL QTY`, ad.pr_uom as `PR UOM`, ad.actual_price_user as `ACTUAL PRICE USER`, v.vendor_fname as `SUPPLIER NAME`, u.name as `USER NAME`, gcd.gr_no as `GR NO.`, gcd.created_at as `GR DATE`, gcd.qty_receive as `QTY RECEIVE`, gcd.qty_outstanding as `QTY OUTSTANDING`, gcd.notes as `NOTES` FROM approval_details ad LEFT OUTER JOIN approval_masters am ON ad.approval_master_id = am.id LEFT OUTER JOIN upload_purchase_orders upo ON ad.id = upo.approval_detail_id LEFT OUTER JOIN items i on ad.item_id = i.id LEFT OUTER JOIN sap_vendors v ON v.vendor_code = ad.sap_vendor_code LEFT OUTER JOIN users u on am.created_by = u.id LEFT OUTER JOIN gr_confirm_details gcd ON ad.id = gcd.approval_detail_id";
 
         if ($prCreated) {
@@ -161,14 +161,20 @@ class EpsTrackingController extends Controller
         if ($user->hasRole('department-head') || $user->hasRole('user')) {
             $deptCode = $user->department->department_code;
             if (!$prCreated) {
-                $query .= "WHERE";
+                $query .= " WHERE";
             } else {
                 $query .= "AND";
             }
+            $query .= " am.department= '$deptCode' ";
+            // dd($query);
 
-            $query .= " am.department = '$deptCode' ";
         }
+        DB::disableQueryLog();
 
+        $queries = DB::getQueryLog();
+        
+        $last_query = end($queries);
+        // dd($last_query);
         $eps_tracking  = DB::select($query);
         $data = json_decode(json_encode($eps_tracking), true);
 
