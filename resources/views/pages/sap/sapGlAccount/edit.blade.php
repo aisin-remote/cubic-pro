@@ -31,41 +31,41 @@
         <div class="col-md-12">
             <div class="card-box">
                 <div class="row">
-                    <form method="post" action="{{ route('gl_account.update', $cost->id) }}" id="form-add-edit">
+                    <form method="post" action="{{ route('gl_account.update', $gl_account->id) }}" id="form-add-edit">
                         @csrf
                         @method('PUT')
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">CC Code <span class="text-danger">*</span></label>
-                                <input type="text" name="cc_code" class="form-control" placeholder="CC Code " required="required" value="{{ $cost->cc_code }}">
+                                <label class="control-label">CC GCode <span class="text-danger">*</span></label>
+                                <input type="text" name="gl_gcode" class="form-control" placeholder="CC GCode " required="required" value="{{ $gl_account->gl_gcode }}">
                                 <span class="help-block"></span>
                             </div>
 
                             <div class="form-group">
-                                <label class="control-label">CC SName <span class="text-danger">*</span></label>
-                                <input type="text" name="cc_sname" class="form-control" placeholder="CC SName" required="required" value="{{ $cost->cc_sname }}">
+                                <label class="control-label">CC GName <span class="text-danger">*</span></label>
+                                <input type="text" name="gl_gname" class="form-control" placeholder="CC GName" required="required" value="{{ $gl_account->gl_gname }}">
                                 <span class="help-block"></span>
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">Cc FName</label>
-                                <input type="text" name="cc_fname" class="form-control" placeholder="Cc FName" value="{{ $cost->cc_fname }}">
+                                <label class="control-label">Cc AName</label>
+                                <input type="text" name="gl_aname" class="form-control" placeholder="Cc SName" value="{{ $gl_account->gl_aname }}">
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Cc GCode</label>
-                                <input type="text" name="cc_gcode" class="form-control" placeholder="Cc GCode" value="{{ $cost->cc_gcode }}">
+                                <label class="control-label">Cc ACode</label>
+                                <input type="text" name="gl_acode" class="form-control" placeholder="Cc SCode" value="{{ $gl_account->gl_acode }}">
                                 <span class="help-block"></span>
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">Cc GText</label>
-                                <input type="text" name="cc_gtext" class="form-control" placeholder="Cc GText" value="{{ $cost->cc_gtext }}">
+                                <label class="control-label">Cc Dep Key</label>
+                                <input type="text" name="dep_key" class="form-control" placeholder="Cc Dep Key" value="{{ $gl_account->dep_key }}">
                                 <span class="help-block"></span>
                             </div>
                             
