@@ -466,8 +466,6 @@ class ApprovalCapexController extends Controller
             }
         }
 
-        $approval_capex = $approval_capex->get();
-
         return DataTables::of($approval_capex)
             ->rawColumns(['action'])
             ->addColumn("created_by", function($approval_capex) {
