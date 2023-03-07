@@ -1106,7 +1106,7 @@ class ApprovalController extends Controller
             $res = [
                 'title' => 'Error',
                 'type' => 'error',
-                'message' => 'Could not print Approval ['.$approval_number.']: Dept. Head Approval required.'
+                'message' => 'Could not print Approval ['.$approval_number.']: Director Approval required.'
             ];
 
 
