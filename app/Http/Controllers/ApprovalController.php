@@ -1094,7 +1094,7 @@ class ApprovalController extends Controller
         }
         $dept = $approval->departments;
         $appDtl = $dept->approval->details()
-            ->where('level', '2')
+            ->where('level', '4')
             ->first();
 
         $approverUser = $approval->approverUsers()
