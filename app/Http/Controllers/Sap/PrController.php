@@ -144,6 +144,8 @@ class PrController extends Controller
 										INNER JOIN sap_cost_centers g ON g.cc_code = a.sap_cc_code
 								WHERE b.approval_number = "' . $approval_number . '" ORDER BY a.po_number');
 
+        // dd($print);
+
         $spreadsheet->setActiveSheetIndex(0)
             ->setCellValue('A1', 'Document Registration Key')
             ->setCellValue('B1', 'Purchasing Doc. Type')
@@ -200,7 +202,7 @@ class PrController extends Controller
             ->setCellValue('BA1', 'No ERS')
             ->setCellValue('BB1', 'Non-receipt Standard Billing');
 
-        $x = 2;
+        $row = 2;
         foreach ($print as $prints) {
             $newDate = date("d.m.Y");
             $actual_gr = date("d.m.Y", strtotime($prints->actual_gr));
@@ -285,62 +287,62 @@ class PrController extends Controller
 
 
             $spreadsheet->setActiveSheetIndex(0)
-                ->setCellValue('A' . $x, $prints->po_number)
-                ->setCellValue('B' . $x, $pur_doc_type)
-                ->setCellValue('C' . $x, $prints->sap_vendor_code)
-                ->setCellValue('D' . $x, config('cubic.sap.pur_organization'))
-                ->setCellValue('E' . $x,  $purch_group)
-                ->setCellValue('F' . $x, $newDate)
-                ->setCellValue('G' . $x, $collective_number)
-                ->setCellValue('H' . $x, "")
-                ->setCellValue('I' . $x, "")
-                ->setCellValue('J' . $x, "")
-                ->setCellValue('K' . $x, "")
-                ->setCellValue('L' . $x, "")
-                ->setCellValue('M' . $x, "")
-                ->setCellValue('N' . $x, "")
-                ->setCellValue('O' . $x, $prints->currency)
-                ->setCellValue('P' . $x, "")
-                ->setCellValue('Q' . $x, "")
-                ->setCellValue('R' . $x, "")
-                ->setCellValue('S' . $x, "")
-                ->setCellValue('T' . $x, "")
-                ->setCellValue('U' . $x, "")
-                ->setCellValue('V' . $x, "")
-                ->setCellValue('W' . $x, "")
-                ->setCellValue('X' . $x, "PIC : " . $name . ' ( ' . $dep_name . ' ) ')
-                ->setCellValue('Y' . $x, "")
-                ->setCellValue('Z' . $x, "")
-                ->setCellValue('AA' . $x, "")
-                ->setCellValue('AB' . $x, "")
-                ->setCellValue('AC' . $x, $prints->RowNumber)
-                ->setCellValue('AD' . $x, $acct_assign_cat)
-                ->setCellValue('AE' . $x, "")
-                ->setCellValue('AF' . $x, $qty)
-                ->setCellValue('AG' . $x, $prints->pr_uom)
-                ->setCellValue('AH' . $x, $actual_gr)
-                ->setCellValue('AI' . $x, $price)
-                ->setCellValue('AJ' . $x, $unit)
-                ->setCellValue('AK' . $x, "")
-                ->setCellValue('AL' . $x, $prints->remarks)
-                ->setCellValue('AM' . $x, "")
-                ->setCellValue('AN' . $x, config('cubic.sap.plant'))
-                ->setCellValue('AO' . $x, $material_group)
-                ->setCellValue('AP' . $x, "L001")
-                ->setCellValue('AQ' . $x, "")
-                ->setCellValue('AR' . $x, "")
-                ->setCellValue('AS' . $x, "")
-                ->setCellValue('AT' . $x, $prints->sap_asset_no)
-                ->setCellValue('AU' . $x, "")
-                ->setCellValue('AV' . $x, $prints->sap_account_code)
-                ->setCellValue('AW' . $x, $prints->sap_cc_code)
-                ->setCellValue('AX' . $x, $resp_cc_code)
-                ->setCellValue('AY' . $x, $prints->sap_track_no)
-                ->setCellValue('AZ' . $x, $prints->sap_tax_code)
-                ->setCellValue('BA' . $x, "")
-                ->setCellValue('BB' . $x, $standard_billing);
+                ->setCellValue('A' . $row, $prints->po_number)
+                ->setCellValue('B' . $row, $pur_doc_type)
+                ->setCellValue('C' . $row, $prints->sap_vendor_code)
+                ->setCellValue('D' . $row, config('cubic.sap.pur_organization'))
+                ->setCellValue('E' . $row,  $purch_group)
+                ->setCellValue('F' . $row, $newDate)
+                ->setCellValue('G' . $row, $collective_number)
+                ->setCellValue('H' . $row, "")
+                ->setCellValue('I' . $row, "")
+                ->setCellValue('J' . $row, "")
+                ->setCellValue('K' . $row, "")
+                ->setCellValue('L' . $row, "")
+                ->setCellValue('M' . $row, "")
+                ->setCellValue('N' . $row, "")
+                ->setCellValue('O' . $row, $prints->currency)
+                ->setCellValue('P' . $row, "")
+                ->setCellValue('Q' . $row, "")
+                ->setCellValue('R' . $row, "")
+                ->setCellValue('S' . $row, "")
+                ->setCellValue('T' . $row, "")
+                ->setCellValue('U' . $row, "")
+                ->setCellValue('V' . $row, "")
+                ->setCellValue('W' . $row, "")
+                ->setCellValue('X' . $row, "PIC : " . $name . ' ( ' . $dep_name . ' ) ')
+                ->setCellValue('Y' . $row, "")
+                ->setCellValue('Z' . $row, "")
+                ->setCellValue('AA' . $row, "")
+                ->setCellValue('AB' . $row, "")
+                ->setCellValue('AC' . $row, $prints->RowNumber)
+                ->setCellValue('AD' . $row, $acct_assign_cat)
+                ->setCellValue('AE' . $row, "")
+                ->setCellValue('AF' . $row, $qty)
+                ->setCellValue('AG' . $row, $prints->pr_uom)
+                ->setCellValue('AH' . $row, $actual_gr)
+                ->setCellValue('AI' . $row, $price)
+                ->setCellValue('AJ' . $row, $unit)
+                ->setCellValue('AK' . $row, "")
+                ->setCellValue('AL' . $row, $prints->remarks)
+                ->setCellValue('AM' . $row, "")
+                ->setCellValue('AN' . $row, config('cubic.sap.plant'))
+                ->setCellValue('AO' . $row, $material_group)
+                ->setCellValue('AP' . $row, "L001")
+                ->setCellValue('AQ' . $row, "")
+                ->setCellValue('AR' . $row, "")
+                ->setCellValue('AS' . $row, "")
+                ->setCellValue('AT' . $row, $prints->sap_asset_no)
+                ->setCellValue('AU' . $row, "")
+                ->setCellValue('AV' . $row, $prints->sap_account_code)
+                ->setCellValue('AW' . $row, $prints->sap_cc_code)
+                ->setCellValue('A' . $row, $resp_cc_code)
+                ->setCellValue('AY' . $row, $prints->sap_track_no)
+                ->setCellValue('AZ' . $row, $prints->sap_tax_code)
+                ->setCellValue('BA' . $row, "")
+                ->setCellValue('BB' . $row, $standard_billing);
 
-            $x++;
+            $row++;
             $data[] = array(
                 //kolom untuk upload ke SAP
                 $prints->po_number, //A, registrationkey
@@ -402,6 +404,7 @@ class PrController extends Controller
 
             );
         }
+        // dd($data);
 
         $spreadsheet->getActiveSheet()->setTitle('Data');
         $sheet = $spreadsheet->getSheet(0);
