@@ -204,6 +204,7 @@ class PrController extends Controller
 
         $row = 2;
         foreach ($print as $prints) {
+            // dd($prints);
             $newDate = date("d.m.Y");
             $actual_gr = date("d.m.Y", strtotime($prints->actual_gr));
             //mencari array dan mendapatkan key index dari array untuk registration_key
@@ -336,7 +337,7 @@ class PrController extends Controller
                 ->setCellValue('AU' . $row, "")
                 ->setCellValue('AV' . $row, $prints->sap_account_code)
                 ->setCellValue('AW' . $row, $prints->sap_cc_code)
-                ->setCellValue('A' . $row, $resp_cc_code)
+                ->setCellValue('AX' . $row, $resp_cc_code)
                 ->setCellValue('AY' . $row, $prints->sap_track_no)
                 ->setCellValue('AZ' . $row, $prints->sap_tax_code)
                 ->setCellValue('BA' . $row, "")
@@ -404,7 +405,7 @@ class PrController extends Controller
 
             );
         }
-        // dd($data);
+        //dd($data);
 
         $spreadsheet->getActiveSheet()->setTitle('Data');
         $sheet = $spreadsheet->getSheet(0);
