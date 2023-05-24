@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ApprovalDetail;
 use Illuminate\Http\Request;
 use App\UploadPurchaseOrder;
 use App\ApprovalMaster;
@@ -181,11 +182,27 @@ class UploadPoController extends Controller
 
     public function xedit(Request $request)
     {
-        $name = $request->name;
-        $upo = UploadPurchaseOrder::firstOrNew(['approval_detail_id' => $request->pk]);
-        $upo->approval_detail_id = $request->pk;
-        $upo->$name = $request->value;
-        $upo->save();
+        $upoCheck = UploadPurchaseOrder::where('approval_detail_id', $request->pk)->first();
+        if ($upoCheck) {
+            $name = $request->name;
+            $upo = UploadPurchaseOrder::firstOrNew(['approval_detail_id' => $value->id]);
+            $upo->approval_detail_id = $value->id;
+            $upo->$name = $request->value;
+            $upo->save();
+        } else {
+            $approval_detail = ApprovalDetail::where('id', $request->pk)->first();
+            $approval_number = ApprovalDetail::where('approval_master_id', $approval_detail->approval_master_id)->get();
+
+            foreach ($approval_number as $key => $value) {
+                $name = $request->name;
+                $upo = UploadPurchaseOrder::firstOrNew(['approval_detail_id' => $value->id]);
+                $upo->approval_detail_id = $value->id;
+                $upo->$name = $request->value;
+                $upo->save();
+            }
+
+        }
+
 
         return response()->json(['value' => $request->value], 200);
 
