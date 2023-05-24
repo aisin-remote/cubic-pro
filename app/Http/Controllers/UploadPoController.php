@@ -184,11 +184,27 @@ class UploadPoController extends Controller
     {
         $upoCheck = UploadPurchaseOrder::where('approval_detail_id', $request->pk)->first();
         if ($upoCheck) {
+
             $name = $request->name;
-            $upo = UploadPurchaseOrder::firstOrNew(['approval_detail_id' => $value->id]);
-            $upo->approval_detail_id = $value->id;
-            $upo->$name = $request->value;
-            $upo->save();
+            
+            if ($upoCheck->$name == NULL || $upoCheck->$name == '0000-00-00' ) {
+                $approval_detail = ApprovalDetail::where('id', $request->pk)->first();
+                $approval_number = ApprovalDetail::where('approval_master_id', $approval_detail->approval_master_id)->get();
+
+                foreach ($approval_number as $key => $value) {
+                    $name = $request->name;
+                    $upo = UploadPurchaseOrder::firstOrNew(['approval_detail_id' => $value->id]);
+                    $upo->approval_detail_id = $value->id;
+                    $upo->$name = $request->value;
+                    $upo->save();
+                }
+            } else {
+                $upo = UploadPurchaseOrder::firstOrNew(['approval_detail_id' => $request->pk]);
+                $upo->approval_detail_id = $request->pk;
+                $upo->$name = $request->value;
+                $upo->save();
+            }
+    
         } else {
             $approval_detail = ApprovalDetail::where('id', $request->pk)->first();
             $approval_number = ApprovalDetail::where('approval_master_id', $approval_detail->approval_master_id)->get();
