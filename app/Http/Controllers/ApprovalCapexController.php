@@ -649,6 +649,7 @@ class ApprovalCapexController extends Controller
 		$status = 0;
 		\DB::transaction(function() use ($request, &$capex){
             $approvaDetail = ApprovalDetail::where('id',$request->pk)->first();
+
             $budgetType = $approvaDetail->approval->budget_type;
 
             $dataUpdate = [$request->name => $request->value];
@@ -658,9 +659,18 @@ class ApprovalCapexController extends Controller
                 $dataUpdate['sap_account_text'] = $accountText;
             }
 
-			$status =  ApprovalDetail::where('id',$request->pk)->update($dataUpdate);
+            if ($approvaDetail[$request->name] == NULL || $approvaDetail[$request->name] == '0000-00-00' ) {
+                
+                $approvaDetails = ApprovalDetail::where('approval_master_id',$approvaDetail->approval_master_id)->get();
+                foreach ($approvaDetails as $key => $value) {
+                    $status = ApprovalDetail::where(['id' => $value->id])->update($dataUpdate);
+                }
+            } else {
+                $status =  ApprovalDetail::where('id',$request->pk)->update($dataUpdate);
+            }
 
 		});
+
 
 		return $status;
     }
