@@ -50,6 +50,7 @@ class GrConfirmDetailController extends Controller
                         $details_new = new GrConfirmDetail;
                         $details_new->qty_order = $new_details->actual_qty;
                         $details_new->approval_detail_id = $new_gr_details->approval_detail_id;
+                        $details_new->gr_amount = $new_details->actual_price_user;
                         $save_new->details()->save($details_new);
                     }
 

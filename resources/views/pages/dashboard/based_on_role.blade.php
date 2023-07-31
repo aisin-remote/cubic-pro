@@ -37,7 +37,7 @@ $active = 'Dashboard';
             <input type="hidden" id="departments" value="{{ $departments }}">
             <div class="col-md-12 m-b-10">
                 <div class="row">
-                    <div class="col-md-9">
+                    <div class="col-md-7">
                         <div class="form-group m-r-10">
                             <select class="form-control" id="plan-type">
                                 <option value="0">Original Plan</option>
@@ -61,8 +61,9 @@ $active = 'Dashboard';
                             <button class="btn btn-primary" type="submit">Filter</button>
                         </div>
                     </div>
-                    <div class="col-md-3 text-right">
+                    <div class="col-md-5 text-right">
                         <div class="form-group mr-10">
+                            <button class="btn btn-success" type="button" id="download-actgr"><i class="mdi mdi-download"></i>Actual GR</button>
                             <button class="btn btn-success" type="button" id="download-budget"><i class="mdi mdi-download"></i>List Budget</button>
                             <button class="btn btn-success" type="button" id="download-approval"><i class="mdi mdi-download"></i>List Approval</button>
                         </div>

@@ -80,9 +80,9 @@
                             <th>Specification</th>
                             <th>UoM</th>
                             <th>Qty Order</th>
-                            <th>Qty Receive</th>
-                            <th>Qty Outstanding</th>
                             <th>GR Number</th>
+                            <th>GR Amount</th>
+                            <th>GR Date</th>
                             <th>Notes</th>
                         </tr>
                     </thead>
@@ -142,6 +142,11 @@
                                </div>
                                <div class="form-group">
                                     <label class="control-label">GR Number<span class="text-danger">*</span></label>
+                                    
+                                    <span class="help-block"></span>
+                               </div>
+                               <div class="form-group">
+                                    <label class="control-label">GR Amount<span class="text-danger">*</span></label>
                                     
                                     <span class="help-block"></span>
                                </div>

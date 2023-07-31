@@ -16,9 +16,14 @@ $(document).ready(function(){
         { data: 'approval_detail.pr_specs', name: 'approval_detail.pr_specs'},
         { data: 'approval_detail.pr_uom', name: 'approval_detail.pr_uom'},
         { data: 'qty_order', name: 'qty_order'},
-        { data: 'qty_receive', name: 'qty_receive'},
-        { data: 'qty_outstanding', name: 'qty_outstanding'},
         { data: 'gr_no', name: 'gr_no'},
+        { 
+          data: 'gr_amount',
+          render: function(data) {
+              return Number(data).toLocaleString();
+          }
+        },
+        { data: 'gr_date', name: 'gr_date'},
         { data: 'notes', name: 'notes'}
 
       ],
@@ -151,15 +156,16 @@ function xeditClasser()
     $('#details-table tbody tr').each(function(i, e) {
 
         var id = $(this).attr('id');
-        var qty_order = $(this).find('td:nth-child(4)');
-        var qty_receive = $(this).find('td:nth-child(5)');
-        var qty_outstanding = qty_order - qty_receive;
-        var gr_no = $(this).find('td:nth-child(7)');
+        var gr_no = $(this).find('td:nth-child(5)');
+        var gr_amount = $(this).find('td:nth-child(6)');
+        var gr_date = $(this).find('td:nth-child(7)');
         var notes = $(this).find('td:nth-child(8)');
         
         // set qty_receive anchor
-        qty_receive.html('<a href="#" class="editable" data-pk="'+id+'" data-name="qty_receive" data-title="Enter qty receive">'+qty_receive.text()+'</a>');
         gr_no.html('<a href="#" class="editable" data-pk="'+id+'" data-name="gr_no" data-title="Enter GR Number">'+gr_no.text()+'</a>');
+        gr_amount.html('<a href="#" class="editable" data-pk="'+id+'" data-name="gr_amount" data-title="Enter Gr Amount">'+gr_amount.text()+'</a>');
+
+        gr_date.html('<a href="#" class="editable" data-type="date" data-pk="'+id+'" data-name="gr_date" data-title="Enter GR Date">'+gr_date.text()+'</a>');
         notes.html('<a href="#" class="editable" data-pk="'+id+'" data-name="notes" data-title="Enter Notes">'+notes.text()+'</a>');
         
        

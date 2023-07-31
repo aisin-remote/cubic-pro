@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Approval;
 use Illuminate\Http\Request;
 use App\Department;
@@ -11,6 +12,7 @@ use App\Expense;
 use App\ApprovalMaster;
 use App\ApprovalDetail;
 use App\ApproverUser;
+use App\GrConfirmDetail;
 use Carbon\Carbon;
 use App\Period;
 use Excel;
@@ -479,7 +481,7 @@ class Dashboard2Controller extends Controller
             ->get()
             ->keyBy('month');
 
-        $totalUe = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
+            $totalUe = ApprovalMaster::selectRaw('sum(total) total, MONTH(created_at) month')
             ->whereIn('department', $departments)
             ->where('budget_type', 'ue')
             ->whereIn('id', $approverMasterIds)
@@ -489,6 +491,39 @@ class Dashboard2Controller extends Controller
             ->get()
             ->keyBy('month');
 
+            // $tesCx = GrConfirmDetail::selectRaw('sum(gr_amount) total, LPAD(MONTH(gr_date), 2, 0) month')
+            //     ->whereHas('approval_detail', function ($query) use ($departments) {
+            //         $query->whereHas('approval', function ($query) use ($departments) {
+            //             $query->whereIn('department', $departments);
+            //             $query->where('budget_type', 'ex');
+            //         });
+            //     })  
+            //     ->whereBetween('created_at', [$startDate, $endDate])
+            //     ->groupBy('month')
+            //     ->get()
+            //     ->keyBy('month');
+
+            $tesCx = DB::table('gr_confirm_details')
+                ->join('approval_details', 'gr_confirm_details.approval_detail_id', '=', 'approval_details.id')
+                ->join('approval_masters', 'approval_details.approval_master_id' , '=', 'approval_masters.id')
+                ->select(DB::raw('sum(gr_confirm_details.gr_amount) as total, LPAD(MONTH(gr_confirm_details.gr_date), 2, 0) as month'))
+                ->whereBetween('gr_confirm_details.created_at', [$startDate, $endDate])
+                ->whereIn('approval_masters.department', $departments)
+                ->where('budget_type', 'cx')
+                ->groupBy('month')
+                ->get()
+                ->keyBy('month');
+            $tesEx = DB::table('gr_confirm_details')
+                ->join('approval_details', 'gr_confirm_details.approval_detail_id', '=', 'approval_details.id')
+                ->join('approval_masters', 'approval_details.approval_master_id' , '=', 'approval_masters.id')
+                ->select(DB::raw('sum(gr_confirm_details.gr_amount) as total, LPAD(MONTH(gr_confirm_details.gr_date), 2, 0) as month'))
+                ->whereIn('approval_masters.department', $departments)
+                ->where('budget_type', 'ex')
+                ->whereBetween('gr_confirm_details.created_at', [$startDate, $endDate])
+                ->groupBy('month')
+                ->get()
+                ->keyBy('month');
+
         return response()->json([
             'data' => [
                 'total_capex_per_month' => $totalCx,
@@ -496,7 +531,10 @@ class Dashboard2Controller extends Controller
                 'total_uc_per_month' => $totalUc,
                 'total_ue_per_month' => $totalUe,
                 'capexes' => $capex,
-                'expenses' => $expense
+                'expenses' => $expense,
+                'actGrCx' => $tesCx,
+                'actGrEx' => $tesEx,
+
             ],
             'success' => true,
             'message' => 'Data retrieved successfully'
@@ -1247,6 +1285,8 @@ class Dashboard2Controller extends Controller
             ->union($capex)
             ->get()->toArray();
 
+        dd($budgets);
+
         $spreadsheet->setActiveSheetIndex(0)
             ->setCellValue('A1', 'Budget Number')
             ->setCellValue('B1', 'Budget Name')
@@ -1597,4 +1637,120 @@ class Dashboard2Controller extends Controller
         })->export('xlsx');
 
     }
+
+
+    public function downloadGr(Request $request)
+    {
+
+        ini_set("display_errors", "on");
+        error_reporting(-1);
+        // dd($request);
+        ini_set('max_execution_time', 0);
+
+        ob_end_clean();
+        ob_start();
+        // Create a new spreadsheet
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->getProperties()->setCreator('Aiia')
+            ->setLastModifiedBy('Aiia')
+            ->setTitle('Office 2021 XLSX Aiia Document')
+            ->setSubject('Office 2021 XLSX Aiia Document')
+            ->setDescription('Office 2021 XLSX Aiia Document.')
+            ->setKeywords('Office 2021 XLSX Aiia Document')
+            ->setCategory('Office 2021 XLSX Aiia Document');
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $type = $request->type;
+        $period = $request->period;
+        $departments = $request->departments ? $request->departments : [];
+        //Query for get grDetails
+        $grDetails = DB::table('gr_confirm_details')
+                ->join('approval_details', 'gr_confirm_details.approval_detail_id', '=', 'approval_details.id')
+                ->join('approval_masters', 'approval_details.approval_master_id' , '=', 'approval_masters.id')
+                ->join('gr_confirms', 'gr_confirm_details.gr_confirm_id' , '=', 'gr_confirms.id')
+                ->select(DB::raw('approval_masters.department as department, approval_masters.approval_number as approval_number, gr_confirms.po_number as po_number, gr_confirm_details.gr_amount as gr_amount, gr_confirm_details.gr_date as gr_date '))
+                ->whereIn('approval_masters.department', $departments)
+                ->where(DB::raw('SUBSTRING(approval_details.budget_no, 4, 2)'), substr($period, -2))
+                ->where('gr_confirm_details.gr_date', '!=', 'null')
+                ->orderBy('gr_confirm_details.gr_date', 'asc')
+                ->get();
+        // dd($grDetails[0]->gr_date);
+        $spreadsheet->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'Department')
+            ->setCellValue('B1', 'Approval Number')
+            ->setCellValue('C1', 'PO Number')
+            ->setCellValue('D1', 'Amount')
+            ->setCellValue('E1', 'GR Date');
+
+        $row = count($grDetails);
+        $x = 2;
+        $no = 1;
+        $spreadsheet->getActiveSheet()->insertNewRowBefore($x + 1, $row);
+        foreach ($grDetails as $key => $budget) {
+
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $x, $budget->department)
+                ->setCellValue('B' . $x, $budget->approval_number)
+                ->setCellValue('C' . $x, $budget->po_number)
+                ->setCellValue('D' . $x, $budget->gr_amount)
+                ->setCellValue('E' . $x, $budget->gr_date);
+            $x++;
+            $no++;
+        }
+
+        $spreadsheet->getActiveSheet()->setTitle('Data');
+        $sheet = $spreadsheet->getSheet(0);
+        foreach ($sheet->getColumnIterator() as $column) {
+            $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+        }
+
+        $sheet->getStyle('A1:W1')->applyFromArray(
+            [
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    'textRotation' => 0,
+                ],
+                'font' => [
+                    'bold' => true,
+                ],
+            ]
+        );
+        $sheet->getStyle('A1' . ':E' . (count($grDetails)))->applyFromArray(
+            [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'color' => ['argb' => '000000'],
+                    ],
+                ],
+            ]
+        );
+        $filename = 'ACTUAL_GR_LIST_FY_' . $period;
+
+        // Redirect output to a client’s web browser (Xlsx)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // header('Content-Disposition: attachment;filename="Report Excel.xlsx"');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        ob_end_clean(); // this
+        ob_start(); // and
+        $writer->save('php://output');
+        exit;
+    }
+
 }
+
+

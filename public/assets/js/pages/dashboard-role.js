@@ -48,6 +48,7 @@ function generatePlanChart() {
         type: "get",
         success: function (data) {
             var data = data.data;
+            console.log(data);
             var capex = parseInt(data.capex) / 1000000000;
             var expense = parseInt(data.expense) / 1000000000;
             $('#capex-plan > span').text(capex.toFixed(2));
@@ -151,6 +152,7 @@ function generateSummaryChart() {
         type: "get",
         success: function (data) {
             var data = data.data;
+            console.log(data);
             var monthsStr = {
                 "Apr" : "04",
                 "May" : "05",
@@ -176,6 +178,8 @@ function generateSummaryChart() {
             var cumulativePlanExpense = [];
             var cumulativeActualCapex = [];
             var cumulativeActualExpense = [];
+            var actualGrExpense = [];
+            var actualGrCapex = [];
 
             for (var monthIndex in monthsStr) {
                 if (typeof data.capexes[monthsStr[monthIndex]] == 'undefined') {
@@ -225,6 +229,21 @@ function generateSummaryChart() {
                     totalActualEx += parseInt(data.total_ue_per_month[monthsStr[monthIndex]].total);
                 }
 
+
+                if (typeof data.actGrEx[monthsStr[monthIndex]] == 'undefined') {
+                    actualGrExpense.push(0);
+                } else {
+                    actualGrExpense.push(parseInt(data.actGrEx[monthsStr[monthIndex]].total));
+                }
+
+                if (typeof data.actGrCx[monthsStr[monthIndex]] == 'undefined') {
+                    actualGrCapex.push(0);
+                } else {
+                    console.log(data.actGrCx[monthsStr[monthIndex]]);
+
+                    actualGrCapex.push(parseInt(data.actGrCx[monthsStr[monthIndex]].total));
+                }
+
                 cumulativeActualCapex.push(totalActualCx);
                 cumulativeActualExpense.push(totalActualEx);
             }
@@ -235,17 +254,20 @@ function generateSummaryChart() {
                     'actualInMonths' : actualCapexInMonths,
                     'unbudgetInMonths' : unbudgetCapexInMonths,
                     'cumulativePlan' : cumulativePlanCapex,
-                    'cumulativeActual' : cumulativeActualCapex
+                    'cumulativeActual' : cumulativeActualCapex,
+                    'actualGr' : actualGrCapex
                 },
                 'chart-summary-expense' : {
                     'planInMonths' : planExpenseInMonths,
                     'actualInMonths' : actualExpenseInMonths,
                     'unbudgetInMonths' : unbudgetExpenseInMonths,
                     'cumulativePlan' : cumulativePlanExpense,
-                    'cumulativeActual' : cumulativeActualExpense
+                    'cumulativeActual' : cumulativeActualExpense,
+                    'actualGr' : actualGrExpense
                 }
             }
 
+            console.log(elementChartBar);
             for (element in elementChartBar) {
                 $('#'+element).replaceWith($('<canvas id="'+element+'"></canvas>'));
                 var label = element == 'chart-summary-capex' ? 'Capex Summary' : 'Expense Summary';
@@ -272,7 +294,7 @@ function generateSummaryChart() {
                             {
                                 label: 'Unbudget',
                                 backgroundColor: dynamicColors(),
-                                stack: 'Stack 1',
+                                stack: 'Stack 2',
                                 data: elementChartBar[element].unbudgetInMonths
                             },
                             {
@@ -288,6 +310,12 @@ function generateSummaryChart() {
                                 type: 'line',
                                 backgroundColor: dynamicColors(),
                                 fill: false,
+                            },
+                            {
+                                label: 'Act Gr',
+                                data: elementChartBar[element].actualGr,
+                                stack: 'Stack 3',
+                                backgroundColor: dynamicColors()
                             }
                         ]
                     },
@@ -383,6 +411,14 @@ $(document).ready(function() {
     });
 
     // download excel
+    $('#download-actgr').on('click', function() {
+        var query = $.param(getParam());
+
+        var url = '/dashboard/download/actgr?' + query;
+
+        window.open(url, '_blank');
+    });
+
     $('#download-budget').on('click', function() {
         var query = $.param(getParam());
 

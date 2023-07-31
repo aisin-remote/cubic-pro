@@ -43,6 +43,7 @@
 			Route::get('dashboard/view/based-on-role', 'Dashboard2Controller@viewBasedOnRole');
 			Route::get('dashboard/get/plan', 'Dashboard2Controller@getPlan');
 			Route::get('dashboard/get/summary', 'Dashboard2Controller@getSummary');
+			Route::get('dashboard/download/actgr', 'Dashboard2Controller@downloadGr');
 			Route::get('dashboard/download/budget', 'Dashboard2Controller@downloadBudget');
 			Route::get('dashboard/download/approval', 'Dashboard2Controller@downloadApproval');
 		});
@@ -171,6 +172,12 @@
 			Route::post('gr_confirm_detail/xedit', 'GrConfirmDetailController@xedit');
 			Route::post('gr_confirm_detail/store', 'GrConfirmDetailController@store')->name('gr_confirm_detail.store');
 			Route::delete('gr_confirm_detail/{id}', 'GrConfirmDetailController@destroy')->name('gr_confirm_detail.destroy');
+		});
+
+		// Upload GR Confirm 
+		Route::group(['middleware' => 'permission:actual-gr'], function () {
+			Route::get('actual-gr', 'ActualGrController@index');
+			Route::post('actual-gr/uploadData', 'ActualGrController@uploadData')->name('actual-gr.uploadData');
 		});
 
 		// EPS Tracking ARK. Ipan Herdiansyah
