@@ -81,27 +81,28 @@
                                     <th>Equipment</th>
                                     <th>QTY</th>
                                     <th>Curency</th>
-                                    <th>Original Price</th>
+                                    <th>Original Price Full Amount</th>
                                     <th>Exchange Rate</th>
                                     <th>Price</th>
                                     <th>SOP</th>
+                                    <th>GR</th>
                                     <th>1st D Payment Term</th>
                                     <th>1st D Payment Amount</th>
                                     <th>Final Payment Term</th>
                                     <th>Final Payment Amount</th>
                                     <th>Owner Asset</th>
-                                    <th>april</th>
-                                    <th>mei</th>
-                                    <th>juni</th>
-                                    <th>juli</th>
-                                    <th>agustus</th>
-                                    <th>september</th>
-                                    <th>oktober</th>
-                                    <th>november</th>
-                                    <th>december</th>
-                                    <th>januari</th>
-                                    <th>februari</th>
-                                    <th>maret</th>
+                                    <th>April-24</th>
+                                    <th>Mei-24</th>
+                                    <th>Juni-24</th>
+                                    <th>Juli-24</th>
+                                    <th>Agustus-24</th>
+                                    <th>September-24</th>
+                                    <th>Oktober-24</th>
+                                    <th>November-24</th>
+                                    <th>December-24</th>
+                                    <th>Januari-25</th>
+                                    <th>Februari-25</th>
+                                    <th>Maret-25</th>
                                     @if (\Entrust::hasRole('budget'))
                                         <th style="width: 100px">Opsi</th>
                                     @endif
@@ -241,6 +242,10 @@
                     {
                         data: 'sop',
                         name: 'sop'
+                    },
+                    {
+                        data: 'gr',
+                        name: 'gr'
                     },
                     {
                         data: 'first_dopayment_term',

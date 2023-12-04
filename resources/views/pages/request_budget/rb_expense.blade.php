@@ -35,21 +35,22 @@
                                         accept=".csv,.xlsx,.xls">
                                     <label class="text-muted">*) File format .csv,.xlsx,.xls</label>
                                     <br>
-                                    <a href="{{ url('files/Template_Expense_New.xlsx') }}"><i class="mdi mdi-download"></i>
+                                    <a href="{{ url('files/Template_Expense_New_2024_New.xlsx') }}"><i
+                                            class="mdi mdi-download"></i>
                                         Format RB Expense
                                     </a>
                                     <!-- <a href="{{ url('files/Template_Expense_body') }}" ><i class="mdi mdi-download"></i>  Format RB Expense Body</a -->
                                 </div>
                                 <!-- <div class="form-group">
-                                            <label>
-                                            <input type="checkbox" name="overwrite"> Overwrite (BE CAREFUL! All table records DELETED!)
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>
-                                            <input type="checkbox" name="revision"> Is This a budget revision ? (Please checked for YES)
-                                            </label>
-                                        </div> -->
+                                                            <label>
+                                                            <input type="checkbox" name="overwrite"> Overwrite (BE CAREFUL! All table records DELETED!)
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>
+                                                            <input type="checkbox" name="revision"> Is This a budget revision ? (Please checked for YES)
+                                                            </label>
+                                                        </div> -->
                             </div>
 
                             <div class="col-md-12 text-left">
@@ -165,6 +166,7 @@
                 },
                 error: function(err) {
                     alert("error cek request" + err.responseText)
+                    window.location.reload(true);
                     $('#btn-import').html('Upload')
                     $('#btn-import').removeAttr('disabled')
                 }

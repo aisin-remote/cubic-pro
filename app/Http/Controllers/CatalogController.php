@@ -13,7 +13,6 @@ class CatalogController extends Controller
     public function index()
     {
         $categories = ItemCategory::with(['items' => function($query){
-            
                 $query->groupBy('id');
             
         }])->whereHas('items')->get();

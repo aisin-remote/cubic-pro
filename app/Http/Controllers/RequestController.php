@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+use Exception;
 use file;
 use Config;
 use Response;
@@ -12,6 +13,7 @@ use App\CapexRb;
 use App\LaborRb;
 use App\SalesRb;
 use App\ExpenseRb;
+use App\MasterAccountCode;
 use Carbon\Carbon;
 use App\MasterCode;
 use App\DmaterialRb;
@@ -33,7 +35,6 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Helper\Sample;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-
 use App\Helpers\Helper;
 
 class RequestController extends Controller
@@ -108,7 +109,7 @@ class RequestController extends Controller
         $file = $request->file('file');
         // dd($file);
         // $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
+        $ext = $file->getClientOriginalExtension();
         $success = true;
         $hasil = 1;
         if ($ext != 'xlsx' && $ext != 'xls') {
@@ -158,8 +159,8 @@ class RequestController extends Controller
         }
         $res = [
             'success' => $success,
-            'pesan'   => $pesan,
-            'total'    => $total
+            'pesan' => $pesan,
+            'total' => $total
         ];
 
         return response()->json($res);
@@ -171,7 +172,7 @@ class RequestController extends Controller
     {
         $file = $request->file('file');
         // $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
+        $ext = $file->getClientOriginalExtension();
 
         // /** Upload file ke storage public */
         // $file->storeAs('public/uploads', $name);
@@ -250,7 +251,7 @@ class RequestController extends Controller
             unset($array_data[1]);
             foreach ($array_data as $key => $row) {
                 $array_data[$key]['created_at'] = now();
-                $array_data[$key]['updated_at'] =  now();
+                $array_data[$key]['updated_at'] = now();
             }
             // dd($array_data);
 
@@ -261,24 +262,24 @@ class RequestController extends Controller
             try {
                 foreach ($array_data as $val) {
 
-                    $acc_code      = isset($val['A']) ? $val['A'] : null;
-                    $acc_name      = isset($val['B']) ? $val['B'] : null;
-                    $group         = isset($val['C']) ? $val['C'] : null;
-                    $code          = isset($val['D']) ? $val['D'] : null;
-                    $apr           = isset($val['E']) ? $val['E'] : null;
-                    $may           = isset($val['F']) ? $val['F'] : null;
-                    $jun           = isset($val['G']) ? $val['G'] : null;
-                    $jul           = isset($val['H']) ? $val['H'] : null;
-                    $aug           = isset($val['I']) ? $val['I'] : null;
-                    $sept          = isset($val['J']) ? $val['J'] : null;
-                    $oct           = isset($val['K']) ? $val['K'] : null;
-                    $nov           = isset($val['L']) ? $val['L'] : null;
-                    $dec           = isset($val['M']) ? $val['M'] : null;
-                    $jan           = isset($val['N']) ? $val['N'] : null;
-                    $feb           = isset($val['O']) ? $val['O'] : null;
-                    $mar           = isset($val['P']) ? $val['P'] : null;
-                    $fy_2022_1st   = isset($val['Q']) ? $val['Q'] : null;
-                    $fy_2022_2nd   = isset($val['R']) ? $val['R'] : null;
+                    $acc_code = isset($val['A']) ? $val['A'] : null;
+                    $acc_name = isset($val['B']) ? $val['B'] : null;
+                    $group = isset($val['C']) ? $val['C'] : null;
+                    $code = isset($val['D']) ? $val['D'] : null;
+                    $apr = isset($val['E']) ? $val['E'] : null;
+                    $may = isset($val['F']) ? $val['F'] : null;
+                    $jun = isset($val['G']) ? $val['G'] : null;
+                    $jul = isset($val['H']) ? $val['H'] : null;
+                    $aug = isset($val['I']) ? $val['I'] : null;
+                    $sept = isset($val['J']) ? $val['J'] : null;
+                    $oct = isset($val['K']) ? $val['K'] : null;
+                    $nov = isset($val['L']) ? $val['L'] : null;
+                    $dec = isset($val['M']) ? $val['M'] : null;
+                    $jan = isset($val['N']) ? $val['N'] : null;
+                    $feb = isset($val['O']) ? $val['O'] : null;
+                    $mar = isset($val['P']) ? $val['P'] : null;
+                    $fy_2022_1st = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_2nd = isset($val['R']) ? $val['R'] : null;
                     $fy_2022_total = isset($val['S']) ? $val['S'] : null;
 
                     if ($acc_code) {
@@ -294,43 +295,43 @@ class RequestController extends Controller
                                 'group' => $group,
                                 'code' => $code
                             ])->update([
-                                'april'     => $apr,
-                                'mei'       => $may,
-                                'juni'      => $jun,
-                                'juli'      => $jul,
-                                'agustus'   => $aug,
-                                'september' => $sept,
-                                'oktober'   => $oct,
-                                'november'  => $nov,
-                                'december'  => $dec,
-                                'januari'   => $jan,
-                                'februari'  => $feb,
-                                'maret'     => $mar,
-                                'fy_first'  => $fy_2022_1st,
-                                'fy_second' => $fy_2022_2nd,
-                                'fy_total'  => $fy_2022_total
-                            ]);
+                                        'april' => $apr,
+                                        'mei' => $may,
+                                        'juni' => $jun,
+                                        'juli' => $jul,
+                                        'agustus' => $aug,
+                                        'september' => $sept,
+                                        'oktober' => $oct,
+                                        'november' => $nov,
+                                        'december' => $dec,
+                                        'januari' => $jan,
+                                        'februari' => $feb,
+                                        'maret' => $mar,
+                                        'fy_first' => $fy_2022_1st,
+                                        'fy_second' => $fy_2022_2nd,
+                                        'fy_total' => $fy_2022_total
+                                    ]);
                         } else {
-                            $salesrb            = new LaborRb;
-                            $salesrb->acc_code  = $acc_code;
-                            $salesrb->acc_name  = $acc_name;
-                            $salesrb->group     = $group;
-                            $salesrb->code      = $code;
-                            $salesrb->april     = $apr;
-                            $salesrb->mei       = $may;
-                            $salesrb->juni      = $jun;
-                            $salesrb->juli      = $jul;
-                            $salesrb->agustus   = $aug;
+                            $salesrb = new LaborRb;
+                            $salesrb->acc_code = $acc_code;
+                            $salesrb->acc_name = $acc_name;
+                            $salesrb->group = $group;
+                            $salesrb->code = $code;
+                            $salesrb->april = $apr;
+                            $salesrb->mei = $may;
+                            $salesrb->juni = $jun;
+                            $salesrb->juli = $jul;
+                            $salesrb->agustus = $aug;
                             $salesrb->september = $sept;
-                            $salesrb->oktober   = $oct;
-                            $salesrb->november  = $nov;
-                            $salesrb->december  = $dec;
-                            $salesrb->januari   = $jan;
-                            $salesrb->februari  = $feb;
-                            $salesrb->maret     = $mar;
-                            $salesrb->fy_first  = $fy_2022_1st;
+                            $salesrb->oktober = $oct;
+                            $salesrb->november = $nov;
+                            $salesrb->december = $dec;
+                            $salesrb->januari = $jan;
+                            $salesrb->februari = $feb;
+                            $salesrb->maret = $mar;
+                            $salesrb->fy_first = $fy_2022_1st;
                             $salesrb->fy_second = $fy_2022_2nd;
-                            $salesrb->fy_total  = $fy_2022_total;
+                            $salesrb->fy_total = $fy_2022_total;
                             $salesrb->save();
                         }
                     }
@@ -345,14 +346,14 @@ class RequestController extends Controller
                 $hasil = 0;
                 $title = 'Gagal';
                 $type = 'error';
-                $message =  $ex->getMessage();
+                $message = $ex->getMessage();
                 DB::rollBack();
             }
         }
         // dd($upload);
         $res = [
-            'title'   => $title,
-            'type'    => $type,
+            'title' => $title,
+            'type' => $type,
             'message' => $message
         ];
 
@@ -384,7 +385,7 @@ class RequestController extends Controller
         $file = $request->file('file');
         // dd($file);
         // $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
+        $ext = $file->getClientOriginalExtension();
         $success = true;
         $hasil = 1;
         if ($ext != 'xlsx' && $ext != 'xls') {
@@ -433,9 +434,9 @@ class RequestController extends Controller
             // dd($total);
         }
         $res = [
-            'success'   => $success,
-            'pesan'   => $pesan,
-            'total'    => $total
+            'success' => $success,
+            'pesan' => $pesan,
+            'total' => $total
         ];
 
         return response()->json($res);
@@ -445,7 +446,7 @@ class RequestController extends Controller
     {
         $file = $request->file('file');
         // $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
+        $ext = $file->getClientOriginalExtension();
 
         // /** Upload file ke storage public */
         // $file->storeAs('public/uploads', $name);
@@ -524,7 +525,7 @@ class RequestController extends Controller
             unset($array_data[1]);
             foreach ($array_data as $key => $row) {
                 $array_data[$key]['created_at'] = now();
-                $array_data[$key]['updated_at'] =  now();
+                $array_data[$key]['updated_at'] = now();
             }
             // dd($array_data);
 
@@ -534,24 +535,24 @@ class RequestController extends Controller
 
             try {
                 foreach ($array_data as $val) {
-                    $acc_code      = isset($val['A']) ? $val['A'] : null;
-                    $acc_name      = isset($val['B']) ? $val['B'] : null;
-                    $group         = isset($val['C']) ? $val['C'] : null;
-                    $code          = isset($val['D']) ? $val['D'] : null;
-                    $apr           = isset($val['E']) ? $val['E'] : null;
-                    $may           = isset($val['F']) ? $val['F'] : null;
-                    $jun           = isset($val['G']) ? $val['G'] : null;
-                    $jul           = isset($val['H']) ? $val['H'] : null;
-                    $aug           = isset($val['I']) ? $val['I'] : null;
-                    $sept          = isset($val['J']) ? $val['J'] : null;
-                    $oct           = isset($val['K']) ? $val['K'] : null;
-                    $nov           = isset($val['L']) ? $val['L'] : null;
-                    $dec           = isset($val['M']) ? $val['M'] : null;
-                    $jan           = isset($val['N']) ? $val['N'] : null;
-                    $feb           = isset($val['O']) ? $val['O'] : null;
-                    $mar           = isset($val['P']) ? $val['P'] : null;
-                    $fy_2022_1st   = isset($val['Q']) ? $val['Q'] : null;
-                    $fy_2022_2nd   = isset($val['R']) ? $val['R'] : null;
+                    $acc_code = isset($val['A']) ? $val['A'] : null;
+                    $acc_name = isset($val['B']) ? $val['B'] : null;
+                    $group = isset($val['C']) ? $val['C'] : null;
+                    $code = isset($val['D']) ? $val['D'] : null;
+                    $apr = isset($val['E']) ? $val['E'] : null;
+                    $may = isset($val['F']) ? $val['F'] : null;
+                    $jun = isset($val['G']) ? $val['G'] : null;
+                    $jul = isset($val['H']) ? $val['H'] : null;
+                    $aug = isset($val['I']) ? $val['I'] : null;
+                    $sept = isset($val['J']) ? $val['J'] : null;
+                    $oct = isset($val['K']) ? $val['K'] : null;
+                    $nov = isset($val['L']) ? $val['L'] : null;
+                    $dec = isset($val['M']) ? $val['M'] : null;
+                    $jan = isset($val['N']) ? $val['N'] : null;
+                    $feb = isset($val['O']) ? $val['O'] : null;
+                    $mar = isset($val['P']) ? $val['P'] : null;
+                    $fy_2022_1st = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_2nd = isset($val['R']) ? $val['R'] : null;
                     $fy_2022_total = isset($val['S']) ? $val['S'] : null;
 
                     if ($acc_code) {
@@ -567,43 +568,43 @@ class RequestController extends Controller
                                 'group' => $group,
                                 'code' => $code
                             ])->update([
-                                'april'     => $apr,
-                                'mei'       => $may,
-                                'juni'      => $jun,
-                                'juli'      => $jul,
-                                'agustus'   => $aug,
-                                'september' => $sept,
-                                'oktober'   => $oct,
-                                'november'  => $nov,
-                                'december'  => $dec,
-                                'januari'   => $jan,
-                                'februari'  => $feb,
-                                'maret'     => $mar,
-                                'fy_first'  => $fy_2022_1st,
-                                'fy_second' => $fy_2022_2nd,
-                                'fy_total'  => $fy_2022_total
-                            ]);
+                                        'april' => $apr,
+                                        'mei' => $may,
+                                        'juni' => $jun,
+                                        'juli' => $jul,
+                                        'agustus' => $aug,
+                                        'september' => $sept,
+                                        'oktober' => $oct,
+                                        'november' => $nov,
+                                        'december' => $dec,
+                                        'januari' => $jan,
+                                        'februari' => $feb,
+                                        'maret' => $mar,
+                                        'fy_first' => $fy_2022_1st,
+                                        'fy_second' => $fy_2022_2nd,
+                                        'fy_total' => $fy_2022_total
+                                    ]);
                         } else {
-                            $salesrb            = new SalesRb;
-                            $salesrb->acc_code  = $acc_code;
-                            $salesrb->acc_name  = $acc_name;
-                            $salesrb->group     = $group;
-                            $salesrb->code      = $code;
-                            $salesrb->april     = $apr;
-                            $salesrb->mei       = $may;
-                            $salesrb->juni      = $jun;
-                            $salesrb->juli      = $jul;
-                            $salesrb->agustus   = $aug;
+                            $salesrb = new SalesRb;
+                            $salesrb->acc_code = $acc_code;
+                            $salesrb->acc_name = $acc_name;
+                            $salesrb->group = $group;
+                            $salesrb->code = $code;
+                            $salesrb->april = $apr;
+                            $salesrb->mei = $may;
+                            $salesrb->juni = $jun;
+                            $salesrb->juli = $jul;
+                            $salesrb->agustus = $aug;
                             $salesrb->september = $sept;
-                            $salesrb->oktober   = $oct;
-                            $salesrb->november  = $nov;
-                            $salesrb->december  = $dec;
-                            $salesrb->januari   = $jan;
-                            $salesrb->februari  = $feb;
-                            $salesrb->maret     = $mar;
-                            $salesrb->fy_first  = $fy_2022_1st;
+                            $salesrb->oktober = $oct;
+                            $salesrb->november = $nov;
+                            $salesrb->december = $dec;
+                            $salesrb->januari = $jan;
+                            $salesrb->februari = $feb;
+                            $salesrb->maret = $mar;
+                            $salesrb->fy_first = $fy_2022_1st;
                             $salesrb->fy_second = $fy_2022_2nd;
-                            $salesrb->fy_total  = $fy_2022_total;
+                            $salesrb->fy_total = $fy_2022_total;
                             $salesrb->save();
                         }
                     }
@@ -618,14 +619,14 @@ class RequestController extends Controller
                 $hasil = 0;
                 $title = 'Gagal';
                 $type = 'error';
-                $message =  $ex->getMessage();
+                $message = $ex->getMessage();
                 DB::rollBack();
             }
         }
         // dd($upload);
         $res = [
-            'title'   => $title,
-            'type'    => $type,
+            'title' => $title,
+            'type' => $type,
             'message' => $message
         ];
 
@@ -663,7 +664,7 @@ class RequestController extends Controller
         $file = $request->file('file');
         // dd($file);
         // $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
+        $ext = $file->getClientOriginalExtension();
         $success = true;
         $hasil = 1;
         if ($ext != 'xlsx' && $ext != 'xls') {
@@ -712,9 +713,9 @@ class RequestController extends Controller
             // dd($total);
         }
         $res = [
-            'success'   => $success,
-            'pesan'   => $pesan,
-            'total'    => $total
+            'success' => $success,
+            'pesan' => $pesan,
+            'total' => $total
         ];
 
         return response()->json($res);
@@ -726,7 +727,7 @@ class RequestController extends Controller
     {
         $file = $request->file('file');
         // $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
+        $ext = $file->getClientOriginalExtension();
 
         // /** Upload file ke storage public */
         // $file->storeAs('public/uploads', $name);
@@ -805,7 +806,7 @@ class RequestController extends Controller
             unset($array_data[1]);
             foreach ($array_data as $key => $row) {
                 $array_data[$key]['created_at'] = now();
-                $array_data[$key]['updated_at'] =  now();
+                $array_data[$key]['updated_at'] = now();
             }
             // dd($array_data);
 
@@ -816,24 +817,24 @@ class RequestController extends Controller
             try {
                 foreach ($array_data as $val) {
 
-                    $acc_code      = isset($val['A']) ? $val['A'] : null;
-                    $acc_name      = isset($val['B']) ? $val['B'] : null;
-                    $group         = isset($val['C']) ? $val['C'] : null;
-                    $code          = isset($val['D']) ? $val['D'] : null;
-                    $apr           = isset($val['E']) ? $val['E'] : null;
-                    $may           = isset($val['F']) ? $val['F'] : null;
-                    $jun           = isset($val['G']) ? $val['G'] : null;
-                    $jul           = isset($val['H']) ? $val['H'] : null;
-                    $aug           = isset($val['I']) ? $val['I'] : null;
-                    $sept          = isset($val['J']) ? $val['J'] : null;
-                    $oct           = isset($val['K']) ? $val['K'] : null;
-                    $nov           = isset($val['L']) ? $val['L'] : null;
-                    $dec           = isset($val['M']) ? $val['M'] : null;
-                    $jan           = isset($val['N']) ? $val['N'] : null;
-                    $feb           = isset($val['O']) ? $val['O'] : null;
-                    $mar           = isset($val['P']) ? $val['P'] : null;
-                    $fy_2022_1st   = isset($val['Q']) ? $val['Q'] : null;
-                    $fy_2022_2nd   = isset($val['R']) ? $val['R'] : null;
+                    $acc_code = isset($val['A']) ? $val['A'] : null;
+                    $acc_name = isset($val['B']) ? $val['B'] : null;
+                    $group = isset($val['C']) ? $val['C'] : null;
+                    $code = isset($val['D']) ? $val['D'] : null;
+                    $apr = isset($val['E']) ? $val['E'] : null;
+                    $may = isset($val['F']) ? $val['F'] : null;
+                    $jun = isset($val['G']) ? $val['G'] : null;
+                    $jul = isset($val['H']) ? $val['H'] : null;
+                    $aug = isset($val['I']) ? $val['I'] : null;
+                    $sept = isset($val['J']) ? $val['J'] : null;
+                    $oct = isset($val['K']) ? $val['K'] : null;
+                    $nov = isset($val['L']) ? $val['L'] : null;
+                    $dec = isset($val['M']) ? $val['M'] : null;
+                    $jan = isset($val['N']) ? $val['N'] : null;
+                    $feb = isset($val['O']) ? $val['O'] : null;
+                    $mar = isset($val['P']) ? $val['P'] : null;
+                    $fy_2022_1st = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_2nd = isset($val['R']) ? $val['R'] : null;
                     $fy_2022_total = isset($val['S']) ? $val['S'] : null;
 
                     if ($acc_code) {
@@ -849,43 +850,43 @@ class RequestController extends Controller
                                 'group' => $group,
                                 'code' => $code
                             ])->update([
-                                'april'     => $apr,
-                                'mei'       => $may,
-                                'juni'      => $jun,
-                                'juli'      => $jul,
-                                'agustus'   => $aug,
-                                'september' => $sept,
-                                'oktober'   => $oct,
-                                'november'  => $nov,
-                                'december'  => $dec,
-                                'januari'   => $jan,
-                                'februari'  => $feb,
-                                'maret'     => $mar,
-                                'fy_first'  => $fy_2022_1st,
-                                'fy_second' => $fy_2022_2nd,
-                                'fy_total'  => $fy_2022_total
-                            ]);
+                                        'april' => $apr,
+                                        'mei' => $may,
+                                        'juni' => $jun,
+                                        'juli' => $jul,
+                                        'agustus' => $aug,
+                                        'september' => $sept,
+                                        'oktober' => $oct,
+                                        'november' => $nov,
+                                        'december' => $dec,
+                                        'januari' => $jan,
+                                        'februari' => $feb,
+                                        'maret' => $mar,
+                                        'fy_first' => $fy_2022_1st,
+                                        'fy_second' => $fy_2022_2nd,
+                                        'fy_total' => $fy_2022_total
+                                    ]);
                         } else {
-                            $salesrb            = new DmaterialRb;
-                            $salesrb->acc_code  = $acc_code;
-                            $salesrb->acc_name  = $acc_name;
-                            $salesrb->group     = $group;
-                            $salesrb->code      = $code;
-                            $salesrb->april     = $apr;
-                            $salesrb->mei       = $may;
-                            $salesrb->juni      = $jun;
-                            $salesrb->juli      = $jul;
-                            $salesrb->agustus   = $aug;
+                            $salesrb = new DmaterialRb;
+                            $salesrb->acc_code = $acc_code;
+                            $salesrb->acc_name = $acc_name;
+                            $salesrb->group = $group;
+                            $salesrb->code = $code;
+                            $salesrb->april = $apr;
+                            $salesrb->mei = $may;
+                            $salesrb->juni = $jun;
+                            $salesrb->juli = $jul;
+                            $salesrb->agustus = $aug;
                             $salesrb->september = $sept;
-                            $salesrb->oktober   = $oct;
-                            $salesrb->november  = $nov;
-                            $salesrb->december  = $dec;
-                            $salesrb->januari   = $jan;
-                            $salesrb->februari  = $feb;
-                            $salesrb->maret     = $mar;
-                            $salesrb->fy_first  = $fy_2022_1st;
+                            $salesrb->oktober = $oct;
+                            $salesrb->november = $nov;
+                            $salesrb->december = $dec;
+                            $salesrb->januari = $jan;
+                            $salesrb->februari = $feb;
+                            $salesrb->maret = $mar;
+                            $salesrb->fy_first = $fy_2022_1st;
                             $salesrb->fy_second = $fy_2022_2nd;
-                            $salesrb->fy_total  = $fy_2022_total;
+                            $salesrb->fy_total = $fy_2022_total;
                             $salesrb->save();
                         }
                     }
@@ -900,14 +901,14 @@ class RequestController extends Controller
                 $hasil = 0;
                 $title = 'Gagal';
                 $type = 'error';
-                $message =  $ex->getMessage();
+                $message = $ex->getMessage();
                 DB::rollBack();
             }
         }
         // dd($upload);
         $res = [
-            'title'   => $title,
-            'type'    => $type,
+            'title' => $title,
+            'type' => $type,
             'message' => $message
         ];
 
@@ -935,7 +936,7 @@ class RequestController extends Controller
 
     public function getDataCPX(Request $request)
     {
-        $cpx = CapexRb::select('dept', 'budget_no', 'line', 'profit_center', 'profit_center_code', 'cost_center', 'type', 'project_name', 'import_domestic', 'items_name', 'equipment', 'qty', 'curency', 'original_price', 'exchange_rate', 'price', 'sop', 'first_dopayment_term', 'first_dopayment_amount', 'final_payment_term', 'final_payment_amount', 'owner_asset', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret')->get();
+        $cpx = CapexRb::select('dept', 'budget_no', 'line', 'profit_center', 'profit_center_code', 'cost_center', 'type', 'project_name', 'import_domestic', 'items_name', 'equipment', 'qty', 'curency', 'original_price', 'exchange_rate', 'price', 'sop', 'gr', 'first_dopayment_term', 'first_dopayment_amount', 'final_payment_term', 'final_payment_amount', 'owner_asset', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret')->get();
         // $sls = $slsx->get();
         // dd($cpx);
         return DataTables::of($cpx)->toJson();
@@ -977,29 +978,30 @@ class RequestController extends Controller
                     ->setCellValue('Q' . $x, $row->exchange_rate)
                     ->setCellValue('R' . $x, $row->price)
                     ->setCellValue('S' . $x, $row->sop)
-                    ->setCellValue('T' . $x, $row->first_dopayment_term)
-                    ->setCellValue('U' . $x, $row->first_dopayment_amount)
-                    ->setCellValue('V' . $x, $row->final_payment_term)
-                    ->setCellValue('W' . $x, $row->final_payment_amount)
-                    ->setCellValue('X' . $x, $row->owner_asset)
-                    ->setCellValue('Y' . $x, $row->april)
-                    ->setCellValue('Z' . $x, $row->mei)
-                    ->setCellValue('AA' . $x, $row->juni)
-                    ->setCellValue('AB' . $x, $row->juli)
-                    ->setCellValue('AC' . $x, $row->agustus)
-                    ->setCellValue('AD' . $x, $row->september)
-                    ->setCellValue('AE' . $x, $row->oktober)
-                    ->setCellValue('AF' . $x, $row->november)
-                    ->setCellValue('AG' . $x, $row->desember)
-                    ->setCellValue('AH' . $x, $row->januari)
-                    ->setCellValue('AI' . $x, $row->februari)
-                    ->setCellValue('AJ' . $x, $row->maret);
+                    ->setCellValue('T' . $x, $row->sop)
+                    ->setCellValue('U' . $x, $row->first_dopayment_term)
+                    ->setCellValue('V' . $x, $row->first_dopayment_amount)
+                    ->setCellValue('W' . $x, $row->final_payment_term)
+                    ->setCellValue('X' . $x, $row->final_payment_amount)
+                    ->setCellValue('Y' . $x, $row->owner_asset)
+                    ->setCellValue('Z' . $x, $row->april)
+                    ->setCellValue('AA' . $x, $row->mei)
+                    ->setCellValue('AB' . $x, $row->juni)
+                    ->setCellValue('AC' . $x, $row->juli)
+                    ->setCellValue('AD' . $x, $row->agustus)
+                    ->setCellValue('AE' . $x, $row->september)
+                    ->setCellValue('AF' . $x, $row->oktober)
+                    ->setCellValue('AG' . $x, $row->november)
+                    ->setCellValue('AH' . $x, $row->desember)
+                    ->setCellValue('AI' . $x, $row->januari)
+                    ->setCellValue('AJ' . $x, $row->februari)
+                    ->setCellValue('AK' . $x, $row->maret);
 
                 $i++;
                 $x++;
             }
         }
-        $filename =  'Data Capex' . $dept . date('d/m/Y');
+        $filename = 'Data Capex' . $dept . date('d/m/Y');
 
         // Redirect output to a client’s web browser (Xlsx)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1019,7 +1021,7 @@ class RequestController extends Controller
         $writer->save('php://output');
         $xlsData = ob_get_contents();
         ob_end_clean();
-        $response =  array(
+        $response = array(
             'op' => 'ok',
             'filename' => $filename,
             'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
@@ -1028,46 +1030,46 @@ class RequestController extends Controller
         echo json_encode($response);
     }
 
+
     public function capeximportcek(Request $request)
     {
-        $email = auth()->user()->email;
-        $dept_id = auth()->user()->department_id;
-        $deptuser =  Department::where('id', '=', $dept_id)->first()->department_code;
-        $file = $request->file('file');
-        // dd($file);
-        // $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
-        $success = true;
-        $pesan = '';
-        $total = 0;
-        $hasil = 1;
-        if ($ext != 'xlsx' && $ext != 'xls') {
-            $hasil = 0;
-            $pesan = 'Format tidak sesuai';
+        try {
+            $email = auth()->user()->email;
+            $dept_id = auth()->user()->department_id;
+            $deptuser = Department::where('id', '=', $dept_id)->first()->department_code;
+            $file = $request->file('file');
+            // dd($file);
+            // $name = time() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->getClientOriginalExtension();
+            $success = true;
+            $pesan = '';
             $total = 0;
-        }
+            if ($ext != 'xlsx' && $ext != 'xls') {
+                $total = 0;
+                throw new Exception("Format tidak sesuai");
+            }
 
-        if ($hasil == 1) {
             $reader = IOFactory::createReader('Xlsx');
             $spreadsheet = $reader->load($file);
-            $sheet = $spreadsheet->getSheet(1);
+            $sheet = $spreadsheet->getSheetByName('CAPEX');
 
             $rw = 2;
             $dept = "";
             $arrayPush = array();
             $i = 0;
             foreach ($sheet->getRowIterator() as $row) {
-                // dd($sheet->getCell("R$rw")->getOldCalculatedValue());
-                if ($sheet->getCell("A1")->getCalculatedValue() != "") {
+                // dd($sheet->getCell("D$rw")->getCalculatedValue());
+                if ($sheet->getCell("A1")->getCalculatedValue() != "" || $sheet->getCell("A1")->getOldCalculatedValue()) {
 
-                    $dept = $sheet->getCell("A1")->getCalculatedValue();
+                    $dept = $sheet->getCell("A1")->getCalculatedValue() ?? $sheet->getCell("A1")->getOldCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "") {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "" || $sheet->getCell("D$rw")->getCalculatedValue()) {
 
-                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['price'] = $sheet->getCell("R$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getOldCalculatedValue() ?? $sheet->getCell("D$rw")->getCalculatedValue();
+                    $arrayPush[$i]['price'] = $sheet->getCell("R$rw")->getOldCalculatedValue() ?? $sheet->getCell("R$rw")->getCalculatedValue();
+                    $arrayPush[$i]['kodevalid'] = $sheet->getCell("AQ$rw")->getOldCalculatedValue() ?? $sheet->getCell("AQ$rw")->getCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "") {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "" && $sheet->getCell("D$rw")->getCalculatedValue()) {
                     break;
                 }
 
@@ -1077,24 +1079,33 @@ class RequestController extends Controller
 
             }
 
+            // dd($arrayPush);
             if (count($arrayPush) > 0) {
                 $pesan = '';
                 $total = 0;
                 foreach ($arrayPush as $key => $val) {
-                    if ($dept != $deptuser && $email !='budget@aiia.co.id') {
+                    if ($dept != $deptuser && $email != 'budget@aiia.co.id') {
                         $success = false;
-                        $pesan = 'Departemen Salah';
+                        throw new Exception("Departemen Salah");
+                    }
+                    if (strpos($val['budget_no'], $val['kodevalid']) === false) {
+                        $success = false;
+                        throw new Exception('Budget Nomor : ' . $val['budget_no'] . ' Tidak Sesuai dengan kreteria , mohon cek kembali');
                     }
                     $total = $total + $val['price'];
                 }
             }
 
             // dd($total);
+        } catch (\Throwable $th) {
+            $success = false;
+            $pesan = $th->getMessage();
         }
+
         $res = [
-            'success'   => $success,
-            'pesan'   => $pesan,
-            'total'    => $total
+            'success' => $success,
+            'pesan' => $pesan,
+            'total' => $total
         ];
 
         return response()->json($res);
@@ -1103,7 +1114,7 @@ class RequestController extends Controller
     {
         $file = $request->file('file');
         // $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
+        $ext = $file->getClientOriginalExtension();
 
         // /** Upload file ke storage public */
         // $file->storeAs('public/uploads', $name);
@@ -1131,13 +1142,13 @@ class RequestController extends Controller
             $i = 0;
             // dd($sheet->getCell("Y6")->getCalculatedValue());
             foreach ($sheet->getRowIterator() as $row) {
-                if ($sheet->getCell("A1")->getCalculatedValue() != "") {
+                if ($sheet->getCell("A1")->getCalculatedValue() != "" || $sheet->getCell("A1")->getOldCalculatedValue() != "") {
 
-                    $dept = $sheet->getCell("A1")->getCalculatedValue();
+                    $dept = $sheet->getCell("A1")->getCalculatedValue() ?? $sheet->getCell("A1")->getOldCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "") {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "" || $sheet->getCell("D$rw")->getCalculatedValue() != "") {
 
-                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getOldCalculatedValue() ?? $sheet->getCell("D$rw")->getCalculatedValue();
                     $arrayPush[$i]['line'] = $sheet->getCell("E$rw")->getValue();
                     $arrayPush[$i]['profit_center'] = $sheet->getCell("F$rw")->getValue();
                     $arrayPush[$i]['profit_center_code'] = $sheet->getCell("G$rw")->getOldCalculatedValue();
@@ -1153,25 +1164,26 @@ class RequestController extends Controller
                     $arrayPush[$i]['exchange_rate'] = $sheet->getCell("Q$rw")->getOldCalculatedValue();
                     $arrayPush[$i]['price'] = $sheet->getCell("R$rw")->getOldCalculatedValue();
                     $arrayPush[$i]['sop'] = $sheet->getCell("S$rw")->getFormattedValue();
-                    $arrayPush[$i]['first_dopayment_term'] = $sheet->getCell("T$rw")->getFormattedValue();
-                    $arrayPush[$i]['first_dopayment_amount'] = $sheet->getCell("U$rw")->getCalculatedValue();
-                    $arrayPush[$i]['final_payment_term'] = $sheet->getCell("V$rw")->getFormattedValue();
-                    $arrayPush[$i]['final_payment_amount'] = $sheet->getCell("W$rw")->getCalculatedValue();
-                    $arrayPush[$i]['owner_asset'] = $sheet->getCell("X$rw")->getValue();
-                    $arrayPush[$i]['april'] = $sheet->getCell("Y$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['mei'] = $sheet->getCell("Z$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['juni'] = $sheet->getCell("AA$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['juli'] = $sheet->getCell("AB$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['agustus'] = $sheet->getCell("AC$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['september'] = $sheet->getCell("AD$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['oktober'] = $sheet->getCell("AE$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['november'] = $sheet->getCell("AF$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['december'] = $sheet->getCell("AG$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['januari'] = $sheet->getCell("AH$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['februari'] = $sheet->getCell("AI$rw")->getOldCalculatedValue();
-                    $arrayPush[$i]['maret'] = $sheet->getCell("AJ$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['gr'] = $sheet->getCell("T$rw")->getFormattedValue();
+                    $arrayPush[$i]['first_dopayment_term'] = $sheet->getCell("U$rw")->getFormattedValue();
+                    $arrayPush[$i]['first_dopayment_amount'] = $sheet->getCell("V$rw")->getCalculatedValue();
+                    $arrayPush[$i]['final_payment_term'] = $sheet->getCell("W$rw")->getFormattedValue();
+                    $arrayPush[$i]['final_payment_amount'] = $sheet->getCell("X$rw")->getCalculatedValue();
+                    $arrayPush[$i]['owner_asset'] = $sheet->getCell("Y$rw")->getValue();
+                    $arrayPush[$i]['april'] = $sheet->getCell("Z$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['mei'] = $sheet->getCell("AA$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['juni'] = $sheet->getCell("AB$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['juli'] = $sheet->getCell("AC$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['agustus'] = $sheet->getCell("AD$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['september'] = $sheet->getCell("AE$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['oktober'] = $sheet->getCell("AF$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['november'] = $sheet->getCell("AG$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['december'] = $sheet->getCell("AH$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['januari'] = $sheet->getCell("AI$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['februari'] = $sheet->getCell("AJ$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['maret'] = $sheet->getCell("AK$rw")->getOldCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "") {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "" && $sheet->getCell("D$rw")->getCalculatedValue() == "") {
                     break;
                 }
 
@@ -1187,7 +1199,7 @@ class RequestController extends Controller
             foreach ($arrayPush as $key => $row) {
                 $arrayPush[$key]['dept'] = $dept;
                 $arrayPush[$key]['created_at'] = now();
-                $arrayPush[$key]['updated_at'] =  now();
+                $arrayPush[$key]['updated_at'] = now();
             }
 
             DB::beginTransaction();
@@ -1204,7 +1216,7 @@ class RequestController extends Controller
                     DB::rollBack();
                 }
 
-                $capexrb                         = new CapexRb;
+                $capexrb = new CapexRb;
 
                 if (!$capexrb->insert($arrayPush)) {
                     $hasil = 0;
@@ -1223,14 +1235,14 @@ class RequestController extends Controller
                 $hasil = 0;
                 $title = 'Gagal';
                 $type = 'error';
-                $message =  $ex->getMessage();
+                $message = $ex->getMessage();
                 DB::rollBack();
             }
         }
         // dd($upload);
         $res = [
-            'title'   => $title,
-            'type'    => $type,
+            'title' => $title,
+            'type' => $type,
             'message' => $message
         ];
 
@@ -1339,7 +1351,7 @@ class RequestController extends Controller
                 ]
             );
         }
-        $filename =  'Data Expense' . $dept . date('d/m/Y');
+        $filename = 'Data Expense' . $dept . date('d/m/Y');
 
         // Redirect output to a client’s web browser (Xlsx)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1359,7 +1371,7 @@ class RequestController extends Controller
         $writer->save('php://output');
         $xlsData = ob_get_contents();
         ob_end_clean();
-        $response =  array(
+        $response = array(
             'op' => 'ok',
             'filename' => $filename,
             'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
@@ -1370,44 +1382,43 @@ class RequestController extends Controller
 
     public function expenseimportcek(Request $request)
     {
-        $email = auth()->user()->email;
-        $dept_id = auth()->user()->department_id;
-        $deptuser =  Department::where('id', '=', $dept_id)->first()->department_code;
-        // dd($deptuser);
-        $file = $request->file('file');
-        // dd($file);
-        // $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
-        $success = true;
-        $hasil = 1;
-        $pesan = '';
-        $total = 0;
-        if ($ext != 'xlsx' && $ext != 'xls') {
-            $hasil = 0;
-            $pesan = 'Format tidak sesuai';
-            $total = 0;
-        }
 
-        if ($hasil == 1) {
+        try {
+            $email = auth()->user()->email;
+            $dept_id = auth()->user()->department_id;
+            $deptuser = Department::where('id', '=', $dept_id)->first()->department_code;
+            // dd($deptuser);
+            $file = $request->file('file');
+            // dd($file);
+            // $name = time() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->getClientOriginalExtension();
+            $success = true;
+            $pesan = '';
+            $total = 0;
+            if ($ext != 'xlsx' && $ext != 'xls' && $ext != 'xlsm') {
+                $total = 0;
+                throw new Exception("Format tidak sesuai");
+            }
+
             $reader = IOFactory::createReader('Xlsx');
             $spreadsheet = $reader->load($file);
-            $sheet = $spreadsheet->getSheet(0);
+            $sheet = $spreadsheet->getSheetByName('EXPENSE');
 
             $rw = 2;
             $dept = "";
             $arrayPush = array();
             $i = 0;
             foreach ($sheet->getRowIterator() as $row) {
-                if ($sheet->getCell("A1")->getCalculatedValue() != "") {
-
-                    $dept = $sheet->getCell("A1")->getCalculatedValue();
+                if ($sheet->getCell("A1")->getCalculatedValue() != "" || $sheet->getCell("A1")->getOldCalculatedValue() != "") {
+                    $dept = $sheet->getCell("A1")->getCalculatedValue() ?? $sheet->getCell("A1")->getOldCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getOldCalculatedValue()) {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "" || $sheet->getCell("D$rw")->getCalculatedValue() != "") {
 
-                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getCalculatedValue();
+                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getCalculatedValue() ?? $sheet->getCell("D$rw")->getCalculatedValue();
                     $arrayPush[$i]['budget_after_cr'] = $sheet->getCell("T$rw")->getCalculatedValue();
+                    $arrayPush[$i]['account_code'] = $sheet->getCell("J$rw")->getCalculatedValue() ?? $sheet->getCell("D$rw")->getCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "") {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "" && $sheet->getCell("D$rw")->getCalculatedValue() == "") {
                     break;
                 }
 
@@ -1422,18 +1433,34 @@ class RequestController extends Controller
                 foreach ($arrayPush as $key => $val) {
                     if ($dept != $deptuser && $email != 'budget@aiia.co.id') {
                         $success = false;
-                        $pesan = 'Departemen Salah';
+                        throw new Exception("Departemen Salah");
                     }
+
+                    $ArrayCode = MasterAccountCode::where('department_code', $dept)->pluck('acc_code')->toArray();
+
+                    if (empty($ArrayCode)) {
+                        $success = false;
+                        throw new Exception("Master account code belum ada");
+                    }
+                    // dd($ArrayCode);
+
+                    if (!in_array($val['account_code'], $ArrayCode)) {
+                        $success = false;
+                        throw new Exception("Acc code: {$val['account_code']} tidak ditemukan dalam Master Account Code");
+                    }
+
                     $total = $total + $val['budget_after_cr'];
                 }
             }
-
-            // dd( $success);
+        } catch (\Throwable $th) {
+            $success = false;
+            $pesan = $th->getMessage();
         }
+
         $res = [
-            'success'   => $success,
-            'pesan'   => $pesan,
-            'total'    => $total
+            'success' => $success,
+            'pesan' => $pesan,
+            'total' => $total
         ];
 
         return response()->json($res);
@@ -1443,7 +1470,7 @@ class RequestController extends Controller
     {
         $file = $request->file('file');
         // $name = time() . '.' . $file->getClientOriginalExtension();
-        $ext  = $file->getClientOriginalExtension();
+        $ext = $file->getClientOriginalExtension();
 
         // /** Upload file ke storage public */
         // $file->storeAs('public/uploads', $name);
@@ -1451,7 +1478,7 @@ class RequestController extends Controller
         /** Jika bukan format csv */
         // dd($ext);
         $hasil = 1;
-        if ($ext != 'xlsx' && $ext != 'xls') {
+        if ($ext != 'xlsx' && $ext != 'xls' && $ext != 'xlsm') {
             $hasil = 0;
             $title = 'Gagal';
             $type = 'error';
@@ -1466,20 +1493,20 @@ class RequestController extends Controller
             $spreadsheet = $reader->load($file);
             // $sheetData = $spreadsheet->getActiveSheet()->toArray();
             // dd($sheetData);
-            $sheet = $spreadsheet->getSheet(0);
+            $sheet = $spreadsheet->getSheetByName('EXPENSE');
             $rw = 2;
             $dept = "";
             $arrayPush = array();
             $i = 0;
             foreach ($sheet->getRowIterator() as $row) {
 
-                if ($sheet->getCell("A1")->getCalculatedValue() != ""  && $sheet->getCell("E$rw")->getCalculatedValue() != "") {
+                if ($sheet->getCell("A1")->getCalculatedValue() != "" || $sheet->getCell("E$rw")->getCalculatedValue() != "") {
 
                     $dept = $sheet->getCell("A1")->getCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "") {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() != "" || $sheet->getCell("D$rw")->getCalculatedValue() != "") {
 
-                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getOldCalculatedValue();
+                    $arrayPush[$i]['budget_no'] = $sheet->getCell("D$rw")->getOldCalculatedValue() ?? $sheet->getCell("D$rw")->getCalculatedValue();
                     $arrayPush[$i]['group'] = $sheet->getCell("E$rw")->getCalculatedValue();
                     $arrayPush[$i]['line'] = $sheet->getCell("F$rw")->getCalculatedValue();
                     $arrayPush[$i]['profit_center'] = $sheet->getCell("G$rw")->getCalculatedValue();
@@ -1523,7 +1550,7 @@ class RequestController extends Controller
                     $arrayPush[$i]['maret'] = $sheet->getCell("AM$rw")->getCalculatedValue();
                     $arrayPush[$i]['checking'] = $sheet->getCell("AN$rw")->getCalculatedValue();
                 }
-                if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "") {
+                if ($sheet->getCell("D$rw")->getOldCalculatedValue() == "" && $sheet->getCell("D$rw")->getCalculatedValue() == "") {
                     break;
                 }
 
@@ -1533,12 +1560,11 @@ class RequestController extends Controller
 
             }
         }
-
         if (count($arrayPush) > 0) {
             foreach ($arrayPush as $key => $row) {
                 $arrayPush[$key]['dept'] = $dept;
                 $arrayPush[$key]['created_at'] = now();
-                $arrayPush[$key]['updated_at'] =  now();
+                $arrayPush[$key]['updated_at'] = now();
             }
             // dd($arrayPush);
             DB::beginTransaction();
@@ -1687,7 +1713,7 @@ class RequestController extends Controller
                     }
                     $linetemp = $val['line'];
                 }
-                $capexrb  = new ExpenseRb;
+                $capexrb = new ExpenseRb;
                 if (!$capexrb->insert($arrayPush)) {
                     $hasil = 0;
                     $title = 'Gagal';
@@ -1705,14 +1731,14 @@ class RequestController extends Controller
                 $hasil = 0;
                 $title = 'Gagal';
                 $type = 'error';
-                $message =  $ex->getMessage();
+                $message = $ex->getMessage();
                 DB::rollBack();
             }
         }
         // dd($upload);
         $res = [
-            'title'   => $title,
-            'type'    => $type,
+            'title' => $title,
+            'type' => $type,
             'message' => $message
         ];
 
@@ -1741,7 +1767,7 @@ class RequestController extends Controller
         }
     }
 
-    public function  draw($file, $data, $master_account_code, $start)
+    public function draw($file, $data, $master_account_code, $start)
     {
         //BODY
         $bulan = array('april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret');
@@ -1927,7 +1953,7 @@ class RequestController extends Controller
         // // 5120290101-1
 
 
-        Excel::load('/public/files/AIIA-PNL.xlsx',  function ($file) use ($salesB, $salesU, $dmB, $dmU, $master_code, $codes, $codesU) {
+        Excel::load('/public/files/AIIA-PNL.xlsx', function ($file) use ($salesB, $salesU, $dmB, $dmU, $master_code, $codes, $codesU) {
             // $part_number    = $part->part_number;
             // $model          = $part->product;
             // $part_name      = $part->part_name;
@@ -2763,7 +2789,7 @@ class RequestController extends Controller
         // sales
 
         // $sheet = $spreadsheet->getActiveSheet();
-        if (count((array)$sales_code) > 0) {
+        if (count((array) $sales_code) > 0) {
 
             $sales_code_count = count($sales_code) - 1;
             // dd($sales_code_count);
@@ -2816,7 +2842,7 @@ class RequestController extends Controller
                     $keyy = $key + 6;
                     // dd($keyy .$value);
 
-                    $total_body = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $total_body = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                     $spreadsheet->setActiveSheetIndex(0)
                         ->setCellValue('S' . $keyy, $total_body)
                         ->setCellValue('U' . $keyy, $value->sapril)
@@ -2834,15 +2860,15 @@ class RequestController extends Controller
 
                     $total_all_body = $total_all_body + $total_body;
 
-                    $t_april_b =  $t_april_b +  $value->sapril;
+                    $t_april_b = $t_april_b + $value->sapril;
                     $t_mei_b = $t_mei_b + $value->smei;
-                    $t_juni_b =  $t_juni_b + $value->sjuni;
+                    $t_juni_b = $t_juni_b + $value->sjuni;
                     $t_juli_b = $t_juli_b + $value->sjuli;
-                    $t_agustus_b =  $t_agustus_b + $value->sagustus;
+                    $t_agustus_b = $t_agustus_b + $value->sagustus;
                     $t_september_b = $t_september_b + $value->sseptember;
-                    $t_oktober_b =  $t_oktober_b + $value->soktober;
-                    $t_november_b =  $t_november_b + $value->snovember;
-                    $t_desember_b =  $t_desember_b + $value->sdesember;
+                    $t_oktober_b = $t_oktober_b + $value->soktober;
+                    $t_november_b = $t_november_b + $value->snovember;
+                    $t_desember_b = $t_desember_b + $value->sdesember;
                     $t_januari_b = $t_januari_b + $value->sjanuari;
                     $t_februari_b = $t_februari_b + $value->sfebruari;
                     $t_maret_b = $t_maret_b + $value->smaret;
@@ -2907,7 +2933,7 @@ class RequestController extends Controller
                 // dd($value->sapril.$value->acc_name);
                 // dd(array_column($dsales, 'acc_code'));
                 $keyy = $key + 6;
-                $total_unit = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                $total_unit = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                 $spreadsheet->setActiveSheetIndex(0)
                     ->setCellValue('AH' . $keyy, $total_unit)
                     ->setCellValue('AJ' . $keyy, $value->sapril)
@@ -2925,15 +2951,15 @@ class RequestController extends Controller
 
                 $total_all_unit = $total_all_unit + $total_unit;
 
-                $t_april_u =  $t_april_u +  $value->sapril;
+                $t_april_u = $t_april_u + $value->sapril;
                 $t_mei_u = $t_mei_u + $value->smei;
-                $t_juni_u =  $t_juni_u + $value->sjuni;
+                $t_juni_u = $t_juni_u + $value->sjuni;
                 $t_juli_u = $t_juli_u + $value->sjuli;
-                $t_agustus_u =  $t_agustus_u + $value->sagustus;
+                $t_agustus_u = $t_agustus_u + $value->sagustus;
                 $t_september_u = $t_september_u + $value->sseptember;
-                $t_oktober_u =  $t_oktober_u + $value->soktober;
-                $t_november_u =  $t_november_u + $value->snovember;
-                $t_desember_u =  $t_desember_u + $value->sdesember;
+                $t_oktober_u = $t_oktober_u + $value->soktober;
+                $t_november_u = $t_november_u + $value->snovember;
+                $t_desember_u = $t_desember_u + $value->sdesember;
                 $t_januari_u = $t_januari_u + $value->sjanuari;
                 $t_februari_u = $t_februari_u + $value->sfebruari;
                 $t_maret_u = $t_maret_u + $value->smaret;
@@ -2993,7 +3019,7 @@ class RequestController extends Controller
                 // dd($value->sapril.$value->acc_name);
                 // dd(array_column($dsales, 'acc_code'));
                 $keyy = $key + 6;
-                $total_electrik = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                $total_electrik = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                 $spreadsheet->setActiveSheetIndex(0)
                     ->setCellValue('AW' . $keyy, $total_electrik)
                     ->setCellValue('AY' . $keyy, $value->sapril)
@@ -3011,15 +3037,15 @@ class RequestController extends Controller
 
                 $total_all_electrik = $total_all_electrik + $total_electrik;
 
-                $t_april_e =  $t_april_e +  $value->sapril;
+                $t_april_e = $t_april_e + $value->sapril;
                 $t_mei_e = $t_mei_e + $value->smei;
-                $t_juni_e =  $t_juni_e + $value->sjuni;
+                $t_juni_e = $t_juni_e + $value->sjuni;
                 $t_juli_e = $t_juli_e + $value->sjuli;
-                $t_agustus_e =  $t_agustus_e + $value->sagustus;
+                $t_agustus_e = $t_agustus_e + $value->sagustus;
                 $t_september_e = $t_september_e + $value->sseptember;
-                $t_oktober_e =  $t_oktober_e + $value->soktober;
-                $t_november_e =  $t_november_e + $value->snovember;
-                $t_desember_e =  $t_desember_e + $value->sdesember;
+                $t_oktober_e = $t_oktober_e + $value->soktober;
+                $t_november_e = $t_november_e + $value->snovember;
+                $t_desember_e = $t_desember_e + $value->sdesember;
                 $t_januari_e = $t_januari_e + $value->sjanuari;
                 $t_februari_e = $t_februari_e + $value->sfebruari;
                 $t_maret_e = $t_maret_e + $value->smaret;
@@ -3083,7 +3109,7 @@ class RequestController extends Controller
                 // dd($value->sapril.$value->acc_name);
                 // dd(array_column($dsales, 'acc_code'));
                 $keyy = $key + 6;
-                $total_cb = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                $total_cb = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                 $spreadsheet->setActiveSheetIndex(0)
                     ->setCellValue('D' . $keyy, $total_cb)
                     ->setCellValue('F' . $keyy, $value->sapril)
@@ -3101,15 +3127,15 @@ class RequestController extends Controller
 
                 $total_all_cb = $total_all_cb + $total_cb;
 
-                $t_april_cb =  $t_april_cb +  $value->sapril;
+                $t_april_cb = $t_april_cb + $value->sapril;
                 $t_mei_cb = $t_mei_cb + $value->smei;
-                $t_juni_cb =  $t_juni_cb + $value->sjuni;
+                $t_juni_cb = $t_juni_cb + $value->sjuni;
                 $t_juli_cb = $t_juli_cb + $value->sjuli;
-                $t_agustus_cb =  $t_agustus_cb + $value->sagustus;
+                $t_agustus_cb = $t_agustus_cb + $value->sagustus;
                 $t_september_cb = $t_september_cb + $value->sseptember;
-                $t_oktober_cb =  $t_oktober_cb + $value->soktober;
-                $t_november_cb =  $t_november_cb + $value->snovember;
-                $t_desember_cb =  $t_desember_cb + $value->sdesember;
+                $t_oktober_cb = $t_oktober_cb + $value->soktober;
+                $t_november_cb = $t_november_cb + $value->snovember;
+                $t_desember_cb = $t_desember_cb + $value->sdesember;
                 $t_januari_cb = $t_januari_cb + $value->sjanuari;
                 $t_februari_cb = $t_februari_cb + $value->sfebruari;
                 $t_maret_cb = $t_maret_cb + $value->smaret;
@@ -3157,7 +3183,7 @@ class RequestController extends Controller
 
         // material
         // dd('saa');
-        if (count((array)$material_code) > 0) {
+        if (count((array) $material_code) > 0) {
             $material_code_count = count($material_code) - 1;
             $i = 0;
             $x = 6 + $sales_code_count + 1;
@@ -3203,7 +3229,7 @@ class RequestController extends Controller
                 // dd(array_column($dsales, 'acc_code'));
                 $keyy = $key + $count_sales_code_row;
 
-                $total_body = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                $total_body = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                 $spreadsheet->setActiveSheetIndex(0)
                     ->setCellValue('S' . $keyy, $total_body)
                     ->setCellValue('U' . $keyy, $value->sapril)
@@ -3221,15 +3247,15 @@ class RequestController extends Controller
 
                 $total_all_body = $total_all_body + $total_body;
 
-                $t_april_b =  $t_april_b +  $value->sapril;
+                $t_april_b = $t_april_b + $value->sapril;
                 $t_mei_b = $t_mei_b + $value->smei;
-                $t_juni_b =  $t_juni_b + $value->sjuni;
+                $t_juni_b = $t_juni_b + $value->sjuni;
                 $t_juli_b = $t_juli_b + $value->sjuli;
-                $t_agustus_b =  $t_agustus_b + $value->sagustus;
+                $t_agustus_b = $t_agustus_b + $value->sagustus;
                 $t_september_b = $t_september_b + $value->sseptember;
-                $t_oktober_b =  $t_oktober_b + $value->soktober;
-                $t_november_b =  $t_november_b + $value->snovember;
-                $t_desember_b =  $t_desember_b + $value->sdesember;
+                $t_oktober_b = $t_oktober_b + $value->soktober;
+                $t_november_b = $t_november_b + $value->snovember;
+                $t_desember_b = $t_desember_b + $value->sdesember;
                 $t_januari_b = $t_januari_b + $value->sjanuari;
                 $t_februari_b = $t_februari_b + $value->sfebruari;
                 $t_maret_b = $t_maret_b + $value->smaret;
@@ -3293,7 +3319,7 @@ class RequestController extends Controller
                 // dd($value->sapril.$value->acc_name);
                 // dd(array_column($dsales, 'acc_code'));
                 $keyy = $key + $count_sales_code_row;
-                $total_unit = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                $total_unit = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                 $spreadsheet->setActiveSheetIndex(0)
                     ->setCellValue('AH' . $keyy, $total_unit)
                     ->setCellValue('AJ' . $keyy, $value->sapril)
@@ -3311,15 +3337,15 @@ class RequestController extends Controller
 
                 $total_all_unit = $total_all_unit + $total_unit;
 
-                $t_april_u =  $t_april_u +  $value->sapril;
+                $t_april_u = $t_april_u + $value->sapril;
                 $t_mei_u = $t_mei_u + $value->smei;
-                $t_juni_u =  $t_juni_u + $value->sjuni;
+                $t_juni_u = $t_juni_u + $value->sjuni;
                 $t_juli_u = $t_juli_u + $value->sjuli;
-                $t_agustus_u =  $t_agustus_u + $value->sagustus;
+                $t_agustus_u = $t_agustus_u + $value->sagustus;
                 $t_september_u = $t_september_u + $value->sseptember;
-                $t_oktober_u =  $t_oktober_u + $value->soktober;
-                $t_november_u =  $t_november_u + $value->snovember;
-                $t_desember_u =  $t_desember_u + $value->sdesember;
+                $t_oktober_u = $t_oktober_u + $value->soktober;
+                $t_november_u = $t_november_u + $value->snovember;
+                $t_desember_u = $t_desember_u + $value->sdesember;
                 $t_januari_u = $t_januari_u + $value->sjanuari;
                 $t_februari_u = $t_februari_u + $value->sfebruari;
                 $t_maret_u = $t_maret_u + $value->smaret;
@@ -3381,7 +3407,7 @@ class RequestController extends Controller
                 // dd($value->sapril.$value->acc_name);
                 // dd(array_column($dsales, 'acc_code'));
                 $keyy = $key + $count_sales_code_row;
-                $total_electrik = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                $total_electrik = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                 $spreadsheet->setActiveSheetIndex(0)
                     ->setCellValue('AW' . $keyy, $total_electrik)
                     ->setCellValue('AY' . $keyy, $value->sapril)
@@ -3399,15 +3425,15 @@ class RequestController extends Controller
 
                 $total_all_electrik = $total_all_electrik + $total_electrik;
 
-                $t_april_e =  $t_april_e +  $value->sapril;
+                $t_april_e = $t_april_e + $value->sapril;
                 $t_mei_e = $t_mei_e + $value->smei;
-                $t_juni_e =  $t_juni_e + $value->sjuni;
+                $t_juni_e = $t_juni_e + $value->sjuni;
                 $t_juli_e = $t_juli_e + $value->sjuli;
-                $t_agustus_e =  $t_agustus_e + $value->sagustus;
+                $t_agustus_e = $t_agustus_e + $value->sagustus;
                 $t_september_e = $t_september_e + $value->sseptember;
-                $t_oktober_e =  $t_oktober_e + $value->soktober;
-                $t_november_e =  $t_november_e + $value->snovember;
-                $t_desember_e =  $t_desember_e + $value->sdesember;
+                $t_oktober_e = $t_oktober_e + $value->soktober;
+                $t_november_e = $t_november_e + $value->snovember;
+                $t_desember_e = $t_desember_e + $value->sdesember;
                 $t_januari_e = $t_januari_e + $value->sjanuari;
                 $t_februari_e = $t_februari_e + $value->sfebruari;
                 $t_maret_e = $t_maret_e + $value->smaret;
@@ -3471,7 +3497,7 @@ class RequestController extends Controller
                 // dd($value->sapril.$value->acc_name);
                 // dd(array_column($dsales, 'acc_code'));
                 $keyy = $key + $count_sales_code_row;
-                $total_cb = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                $total_cb = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                 $spreadsheet->setActiveSheetIndex(0)
                     ->setCellValue('D' . $keyy, $total_cb)
                     ->setCellValue('F' . $keyy, $value->sapril)
@@ -3489,15 +3515,15 @@ class RequestController extends Controller
 
                 $total_all_cb = $total_all_cb + $total_cb;
 
-                $t_april_cb =  $t_april_cb +  $value->sapril;
+                $t_april_cb = $t_april_cb + $value->sapril;
                 $t_mei_cb = $t_mei_cb + $value->smei;
-                $t_juni_cb =  $t_juni_cb + $value->sjuni;
+                $t_juni_cb = $t_juni_cb + $value->sjuni;
                 $t_juli_cb = $t_juli_cb + $value->sjuli;
-                $t_agustus_cb =  $t_agustus_cb + $value->sagustus;
+                $t_agustus_cb = $t_agustus_cb + $value->sagustus;
                 $t_september_cb = $t_september_cb + $value->sseptember;
-                $t_oktober_cb =  $t_oktober_cb + $value->soktober;
-                $t_november_cb =  $t_november_cb + $value->snovember;
-                $t_desember_cb =  $t_desember_cb + $value->sdesember;
+                $t_oktober_cb = $t_oktober_cb + $value->soktober;
+                $t_november_cb = $t_november_cb + $value->snovember;
+                $t_desember_cb = $t_desember_cb + $value->sdesember;
                 $t_januari_cb = $t_januari_cb + $value->sjanuari;
                 $t_februari_cb = $t_februari_cb + $value->sfebruari;
                 $t_maret_cb = $t_maret_cb + $value->smaret;
@@ -3542,7 +3568,7 @@ class RequestController extends Controller
             //     ->setCellValue('P' .  ($count_sales_code_row + $material_code_count), $t_maret_cb);
         }
 
-        if (count((array)$expense_code) > 0) {
+        if (count((array) $expense_code) > 0) {
             $expense_code_count = count($expense_code) - 1;
             $i = 0;
             $x = 6 + $sales_code_count + $material_code_count + 2;
@@ -3597,7 +3623,7 @@ class RequestController extends Controller
                     // dd(array_column($dsales, 'acc_code'));
                     $keyy = $key + $count_material_code_row;
 
-                    $total_body = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $total_body = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                     $spreadsheet->setActiveSheetIndex(0)
                         ->setCellValue('R' . $keyy, $total_body)
                         ->setCellValue('T' . $keyy, $value->sapril)
@@ -3615,15 +3641,15 @@ class RequestController extends Controller
 
                     $total_all_body = $total_all_body + $total_body;
 
-                    $t_april_b =  $t_april_b +  $value->sapril;
+                    $t_april_b = $t_april_b + $value->sapril;
                     $t_mei_b = $t_mei_b + $value->smei;
-                    $t_juni_b =  $t_juni_b + $value->sjuni;
+                    $t_juni_b = $t_juni_b + $value->sjuni;
                     $t_juli_b = $t_juli_b + $value->sjuli;
-                    $t_agustus_b =  $t_agustus_b + $value->sagustus;
+                    $t_agustus_b = $t_agustus_b + $value->sagustus;
                     $t_september_b = $t_september_b + $value->sseptember;
-                    $t_oktober_b =  $t_oktober_b + $value->soktober;
-                    $t_november_b =  $t_november_b + $value->snovember;
-                    $t_desember_b =  $t_desember_b + $value->sdesember;
+                    $t_oktober_b = $t_oktober_b + $value->soktober;
+                    $t_november_b = $t_november_b + $value->snovember;
+                    $t_desember_b = $t_desember_b + $value->sdesember;
                     $t_januari_b = $t_januari_b + $value->sjanuari;
                     $t_februari_b = $t_februari_b + $value->sfebruari;
                     $t_maret_b = $t_maret_b + $value->smaret;
@@ -3650,20 +3676,20 @@ class RequestController extends Controller
             $sheet1->getStyle('S')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
             $spreadsheet->setActiveSheetIndex(0)
-                ->setCellValue('R' .  ($count_material_code_row + $expense_code_count), $total_all_body)
-                ->setCellValue('S' .  ($count_material_code_row + $expense_code_count), ($total_all_body > 0) ? 100 : '')
-                ->setCellValue('T' .  ($count_material_code_row + $expense_code_count), $t_april_b)
-                ->setCellValue('U' .  ($count_material_code_row + $expense_code_count), $t_mei_b)
-                ->setCellValue('V' .  ($count_material_code_row + $expense_code_count), $t_juni_b)
-                ->setCellValue('W' .  ($count_material_code_row + $expense_code_count), $t_juli_b)
-                ->setCellValue('X' .  ($count_material_code_row + $expense_code_count), $t_agustus_b)
-                ->setCellValue('Y' .  ($count_material_code_row + $expense_code_count), $t_september_b)
-                ->setCellValue('Z' .  ($count_material_code_row + $expense_code_count), $t_oktober_b)
-                ->setCellValue('AA' .  ($count_material_code_row + $expense_code_count), $t_november_b)
-                ->setCellValue('AB' .  ($count_material_code_row + $expense_code_count), $t_desember_b)
-                ->setCellValue('AC' .  ($count_material_code_row + $expense_code_count), $t_januari_b)
-                ->setCellValue('AD' .  ($count_material_code_row + $expense_code_count), $t_februari_b)
-                ->setCellValue('AE' .  ($count_material_code_row + $expense_code_count), $t_maret_b);
+                ->setCellValue('R' . ($count_material_code_row + $expense_code_count), $total_all_body)
+                ->setCellValue('S' . ($count_material_code_row + $expense_code_count), ($total_all_body > 0) ? 100 : '')
+                ->setCellValue('T' . ($count_material_code_row + $expense_code_count), $t_april_b)
+                ->setCellValue('U' . ($count_material_code_row + $expense_code_count), $t_mei_b)
+                ->setCellValue('V' . ($count_material_code_row + $expense_code_count), $t_juni_b)
+                ->setCellValue('W' . ($count_material_code_row + $expense_code_count), $t_juli_b)
+                ->setCellValue('X' . ($count_material_code_row + $expense_code_count), $t_agustus_b)
+                ->setCellValue('Y' . ($count_material_code_row + $expense_code_count), $t_september_b)
+                ->setCellValue('Z' . ($count_material_code_row + $expense_code_count), $t_oktober_b)
+                ->setCellValue('AA' . ($count_material_code_row + $expense_code_count), $t_november_b)
+                ->setCellValue('AB' . ($count_material_code_row + $expense_code_count), $t_desember_b)
+                ->setCellValue('AC' . ($count_material_code_row + $expense_code_count), $t_januari_b)
+                ->setCellValue('AD' . ($count_material_code_row + $expense_code_count), $t_februari_b)
+                ->setCellValue('AE' . ($count_material_code_row + $expense_code_count), $t_maret_b);
 
 
             $total_all_unit = 0;
@@ -3691,7 +3717,7 @@ class RequestController extends Controller
                     // dd($value->sapril.$value->acc_name);
                     // dd(array_column($dsales, 'acc_code'));
                     $keyy = $key + $count_material_code_row;
-                    $total_unit = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $total_unit = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                     $spreadsheet->setActiveSheetIndex(0)
                         ->setCellValue('AG' . $keyy, $total_unit)
                         ->setCellValue('AI' . $keyy, $value->sapril)
@@ -3709,15 +3735,15 @@ class RequestController extends Controller
 
                     $total_all_unit = $total_all_unit + $total_unit;
 
-                    $t_april_u =  $t_april_u +  $value->sapril;
+                    $t_april_u = $t_april_u + $value->sapril;
                     $t_mei_u = $t_mei_u + $value->smei;
-                    $t_juni_u =  $t_juni_u + $value->sjuni;
+                    $t_juni_u = $t_juni_u + $value->sjuni;
                     $t_juli_u = $t_juli_u + $value->sjuli;
-                    $t_agustus_u =  $t_agustus_u + $value->sagustus;
+                    $t_agustus_u = $t_agustus_u + $value->sagustus;
                     $t_september_u = $t_september_u + $value->sseptember;
-                    $t_oktober_u =  $t_oktober_u + $value->soktober;
-                    $t_november_u =  $t_november_u + $value->snovember;
-                    $t_desember_u =  $t_desember_u + $value->sdesember;
+                    $t_oktober_u = $t_oktober_u + $value->soktober;
+                    $t_november_u = $t_november_u + $value->snovember;
+                    $t_desember_u = $t_desember_u + $value->sdesember;
                     $t_januari_u = $t_januari_u + $value->sjanuari;
                     $t_februari_u = $t_februari_u + $value->sfebruari;
                     $t_maret_u = $t_maret_u + $value->smaret;
@@ -3742,20 +3768,20 @@ class RequestController extends Controller
 
             $sheet1->getStyle('AH')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
             $spreadsheet->setActiveSheetIndex(0)
-                ->setCellValue('AG' .  ($count_material_code_row + $expense_code_count), $total_all_unit)
-                ->setCellValue('AH' .  ($count_material_code_row + $expense_code_count), ($total_all_unit > 0) ? 100 : '')
-                ->setCellValue('AI' .  ($count_material_code_row + $expense_code_count), $t_april_u)
-                ->setCellValue('AJ' .  ($count_material_code_row + $expense_code_count), $t_mei_u)
-                ->setCellValue('AK' .  ($count_material_code_row + $expense_code_count), $t_juni_u)
-                ->setCellValue('AL' .  ($count_material_code_row + $expense_code_count), $t_juli_u)
-                ->setCellValue('AM' .  ($count_material_code_row + $expense_code_count), $t_agustus_u)
-                ->setCellValue('AN' .  ($count_material_code_row + $expense_code_count), $t_september_u)
-                ->setCellValue('AO' .  ($count_material_code_row + $expense_code_count), $t_oktober_u)
-                ->setCellValue('AP' .  ($count_material_code_row + $expense_code_count), $t_november_u)
-                ->setCellValue('AQ' .  ($count_material_code_row + $expense_code_count), $t_desember_u)
-                ->setCellValue('AR' .  ($count_material_code_row + $expense_code_count), $t_januari_u)
-                ->setCellValue('AS' .  ($count_material_code_row + $expense_code_count), $t_februari_u)
-                ->setCellValue('AT' .  ($count_material_code_row + $expense_code_count), $t_maret_u);
+                ->setCellValue('AG' . ($count_material_code_row + $expense_code_count), $total_all_unit)
+                ->setCellValue('AH' . ($count_material_code_row + $expense_code_count), ($total_all_unit > 0) ? 100 : '')
+                ->setCellValue('AI' . ($count_material_code_row + $expense_code_count), $t_april_u)
+                ->setCellValue('AJ' . ($count_material_code_row + $expense_code_count), $t_mei_u)
+                ->setCellValue('AK' . ($count_material_code_row + $expense_code_count), $t_juni_u)
+                ->setCellValue('AL' . ($count_material_code_row + $expense_code_count), $t_juli_u)
+                ->setCellValue('AM' . ($count_material_code_row + $expense_code_count), $t_agustus_u)
+                ->setCellValue('AN' . ($count_material_code_row + $expense_code_count), $t_september_u)
+                ->setCellValue('AO' . ($count_material_code_row + $expense_code_count), $t_oktober_u)
+                ->setCellValue('AP' . ($count_material_code_row + $expense_code_count), $t_november_u)
+                ->setCellValue('AQ' . ($count_material_code_row + $expense_code_count), $t_desember_u)
+                ->setCellValue('AR' . ($count_material_code_row + $expense_code_count), $t_januari_u)
+                ->setCellValue('AS' . ($count_material_code_row + $expense_code_count), $t_februari_u)
+                ->setCellValue('AT' . ($count_material_code_row + $expense_code_count), $t_maret_u);
 
 
 
@@ -3784,7 +3810,7 @@ class RequestController extends Controller
                     // dd($value->sapril.$value->acc_name);
                     // dd(array_column($dsales, 'acc_code'));
                     $keyy = $key + $count_material_code_row;
-                    $total_electrik = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $total_electrik = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                     $spreadsheet->setActiveSheetIndex(0)
                         ->setCellValue('AV' . $keyy, $total_electrik)
                         ->setCellValue('AX' . $keyy, $value->sapril)
@@ -3802,15 +3828,15 @@ class RequestController extends Controller
 
                     $total_all_electrik = $total_all_electrik + $total_electrik;
 
-                    $t_april_e =  $t_april_e +  $value->sapril;
+                    $t_april_e = $t_april_e + $value->sapril;
                     $t_mei_e = $t_mei_e + $value->smei;
-                    $t_juni_e =  $t_juni_e + $value->sjuni;
+                    $t_juni_e = $t_juni_e + $value->sjuni;
                     $t_juli_e = $t_juli_e + $value->sjuli;
-                    $t_agustus_e =  $t_agustus_e + $value->sagustus;
+                    $t_agustus_e = $t_agustus_e + $value->sagustus;
                     $t_september_e = $t_september_e + $value->sseptember;
-                    $t_oktober_e =  $t_oktober_e + $value->soktober;
-                    $t_november_e =  $t_november_e + $value->snovember;
-                    $t_desember_e =  $t_desember_e + $value->sdesember;
+                    $t_oktober_e = $t_oktober_e + $value->soktober;
+                    $t_november_e = $t_november_e + $value->snovember;
+                    $t_desember_e = $t_desember_e + $value->sdesember;
                     $t_januari_e = $t_januari_e + $value->sjanuari;
                     $t_februari_e = $t_februari_e + $value->sfebruari;
                     $t_maret_e = $t_maret_e + $value->smaret;
@@ -3835,20 +3861,20 @@ class RequestController extends Controller
             $sheet1->getStyle('AW')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
             $spreadsheet->setActiveSheetIndex(0)
-                ->setCellValue('AV' .  ($count_material_code_row + $expense_code_count), $total_all_electrik)
-                ->setCellValue('AW' .  ($count_material_code_row + $expense_code_count), ($total_all_electrik > 0) ? 100 : '')
-                ->setCellValue('AX' .  ($count_material_code_row + $expense_code_count), $t_april_e)
-                ->setCellValue('AY' .  ($count_material_code_row + $expense_code_count), $t_mei_e)
-                ->setCellValue('AZ' .  ($count_material_code_row + $expense_code_count), $t_juni_e)
-                ->setCellValue('BA' .  ($count_material_code_row + $expense_code_count), $t_juli_e)
-                ->setCellValue('BB' .  ($count_material_code_row + $expense_code_count), $t_agustus_e)
-                ->setCellValue('BC' .  ($count_material_code_row + $expense_code_count), $t_september_e)
-                ->setCellValue('BD' .  ($count_material_code_row + $expense_code_count), $t_oktober_e)
-                ->setCellValue('BE' .  ($count_material_code_row + $expense_code_count), $t_november_e)
-                ->setCellValue('BF' .  ($count_material_code_row + $expense_code_count), $t_desember_e)
-                ->setCellValue('BG' .  ($count_material_code_row + $expense_code_count), $t_januari_e)
-                ->setCellValue('BH' .  ($count_material_code_row + $expense_code_count), $t_februari_e)
-                ->setCellValue('BI' .  ($count_material_code_row + $expense_code_count), $t_maret_e);
+                ->setCellValue('AV' . ($count_material_code_row + $expense_code_count), $total_all_electrik)
+                ->setCellValue('AW' . ($count_material_code_row + $expense_code_count), ($total_all_electrik > 0) ? 100 : '')
+                ->setCellValue('AX' . ($count_material_code_row + $expense_code_count), $t_april_e)
+                ->setCellValue('AY' . ($count_material_code_row + $expense_code_count), $t_mei_e)
+                ->setCellValue('AZ' . ($count_material_code_row + $expense_code_count), $t_juni_e)
+                ->setCellValue('BA' . ($count_material_code_row + $expense_code_count), $t_juli_e)
+                ->setCellValue('BB' . ($count_material_code_row + $expense_code_count), $t_agustus_e)
+                ->setCellValue('BC' . ($count_material_code_row + $expense_code_count), $t_september_e)
+                ->setCellValue('BD' . ($count_material_code_row + $expense_code_count), $t_oktober_e)
+                ->setCellValue('BE' . ($count_material_code_row + $expense_code_count), $t_november_e)
+                ->setCellValue('BF' . ($count_material_code_row + $expense_code_count), $t_desember_e)
+                ->setCellValue('BG' . ($count_material_code_row + $expense_code_count), $t_januari_e)
+                ->setCellValue('BH' . ($count_material_code_row + $expense_code_count), $t_februari_e)
+                ->setCellValue('BI' . ($count_material_code_row + $expense_code_count), $t_maret_e);
 
 
 
@@ -3876,7 +3902,7 @@ class RequestController extends Controller
                     // dd($value->sapril.$value->acc_name);
                     // dd(array_column($dsales, 'acc_code'));
                     $keyy = $key + $count_material_code_row;
-                    $total_cb = ($value->sapril +  $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
+                    $total_cb = ($value->sapril + $value->smei + $value->sjuni + $value->sjuli + $value->sagustus + $value->sseptember + $value->soktober + $value->snovember + $value->sdesember + $value->sjanuari + $value->sfebruari + $value->smaret);
                     $spreadsheet->setActiveSheetIndex(0)
                         ->setCellValue('C' . $keyy, $total_cb)
                         ->setCellValue('E' . $keyy, $value->sapril)
@@ -3894,15 +3920,15 @@ class RequestController extends Controller
 
                     $total_all_cb = $total_all_cb + $total_cb;
 
-                    $t_april_cb =  $t_april_cb +  $value->sapril;
+                    $t_april_cb = $t_april_cb + $value->sapril;
                     $t_mei_cb = $t_mei_cb + $value->smei;
-                    $t_juni_cb =  $t_juni_cb + $value->sjuni;
+                    $t_juni_cb = $t_juni_cb + $value->sjuni;
                     $t_juli_cb = $t_juli_cb + $value->sjuli;
-                    $t_agustus_cb =  $t_agustus_cb + $value->sagustus;
+                    $t_agustus_cb = $t_agustus_cb + $value->sagustus;
                     $t_september_cb = $t_september_cb + $value->sseptember;
-                    $t_oktober_cb =  $t_oktober_cb + $value->soktober;
-                    $t_november_cb =  $t_november_cb + $value->snovember;
-                    $t_desember_cb =  $t_desember_cb + $value->sdesember;
+                    $t_oktober_cb = $t_oktober_cb + $value->soktober;
+                    $t_november_cb = $t_november_cb + $value->snovember;
+                    $t_desember_cb = $t_desember_cb + $value->sdesember;
                     $t_januari_cb = $t_januari_cb + $value->sjanuari;
                     $t_februari_cb = $t_februari_cb + $value->sfebruari;
                     $t_maret_cb = $t_maret_cb + $value->smaret;
@@ -3930,20 +3956,20 @@ class RequestController extends Controller
             $sheet1->getStyle('D')->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
             $spreadsheet->setActiveSheetIndex(0)
-                ->setCellValue('C' .  ($count_material_code_row + $expense_code_count), $total_all_cb)
-                ->setCellValue('D' .  ($count_material_code_row + $expense_code_count), ($total_all_cb > 0) ? 100 : '')
-                ->setCellValue('E' .  ($count_material_code_row + $expense_code_count), $t_april_cb)
-                ->setCellValue('F' .  ($count_material_code_row + $expense_code_count), $t_mei_cb)
-                ->setCellValue('G' .  ($count_material_code_row + $expense_code_count), $t_juni_cb)
-                ->setCellValue('H' .  ($count_material_code_row + $expense_code_count), $t_juli_cb)
-                ->setCellValue('I' .  ($count_material_code_row + $expense_code_count), $t_agustus_cb)
-                ->setCellValue('J' .  ($count_material_code_row + $expense_code_count), $t_september_cb)
-                ->setCellValue('K' .  ($count_material_code_row + $expense_code_count), $t_oktober_cb)
-                ->setCellValue('L' .  ($count_material_code_row + $expense_code_count), $t_november_cb)
-                ->setCellValue('M' .  ($count_material_code_row + $expense_code_count), $t_desember_cb)
-                ->setCellValue('N' .  ($count_material_code_row + $expense_code_count), $t_januari_cb)
-                ->setCellValue('O' .  ($count_material_code_row + $expense_code_count), $t_februari_cb)
-                ->setCellValue('P' .  ($count_material_code_row + $expense_code_count), $t_maret_cb);
+                ->setCellValue('C' . ($count_material_code_row + $expense_code_count), $total_all_cb)
+                ->setCellValue('D' . ($count_material_code_row + $expense_code_count), ($total_all_cb > 0) ? 100 : '')
+                ->setCellValue('E' . ($count_material_code_row + $expense_code_count), $t_april_cb)
+                ->setCellValue('F' . ($count_material_code_row + $expense_code_count), $t_mei_cb)
+                ->setCellValue('G' . ($count_material_code_row + $expense_code_count), $t_juni_cb)
+                ->setCellValue('H' . ($count_material_code_row + $expense_code_count), $t_juli_cb)
+                ->setCellValue('I' . ($count_material_code_row + $expense_code_count), $t_agustus_cb)
+                ->setCellValue('J' . ($count_material_code_row + $expense_code_count), $t_september_cb)
+                ->setCellValue('K' . ($count_material_code_row + $expense_code_count), $t_oktober_cb)
+                ->setCellValue('L' . ($count_material_code_row + $expense_code_count), $t_november_cb)
+                ->setCellValue('M' . ($count_material_code_row + $expense_code_count), $t_desember_cb)
+                ->setCellValue('N' . ($count_material_code_row + $expense_code_count), $t_januari_cb)
+                ->setCellValue('O' . ($count_material_code_row + $expense_code_count), $t_februari_cb)
+                ->setCellValue('P' . ($count_material_code_row + $expense_code_count), $t_maret_cb);
         }
 
         $filename = 'Export data' . date('d/m/Y');
@@ -3966,7 +3992,7 @@ class RequestController extends Controller
         $writer->save('php://output');
         $xlsData = ob_get_contents();
         ob_end_clean();
-        $response =  array(
+        $response = array(
             'op' => 'ok',
             'filename' => $filename,
             'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
@@ -3979,12 +4005,14 @@ class RequestController extends Controller
     public function exportData(Request $request)
     {
         ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '256M');
         ob_start();
-
+        
+        // Load the spreadsheet
         $reader = IOFactory::createReader('Xlsx');
         $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
-        // Set document properties
-
+        
+        // dd($spreadsheet);
 
         // dd($data_master_expense);
         $spreadsheet->getProperties()->setCreator('Aiia')
@@ -3995,16 +4023,17 @@ class RequestController extends Controller
             ->setKeywords('Office 2021 XLSX Aiia Document')
             ->setCategory('Office 2021 XLSX Aiia Document');
 
-        $sheet  =  $spreadsheet->getSheet(0);
+        $sheetdetail = $spreadsheet->getSheetByName('PnL Detail');
+        $sheetbydept = $spreadsheet->getSheetByName('By Dept');
 
         $sc = 6;
         $code = array();
         $a = 0;
-        foreach ($sheet->getRowIterator() as $row) {
+        foreach ($sheetdetail->getRowIterator() as $row) {
 
-            $acc_group = $sheet->getCell("A$sc")->getValue();
-            $acc_code = $sheet->getCell("B$sc")->getValue();
-            $acc_name = $sheet->getCell("C$sc")->getValue();
+            $acc_group = $sheetdetail->getCell("A$sc")->getValue();
+            $acc_code = $sheetdetail->getCell("B$sc")->getValue();
+            $acc_name = $sheetdetail->getCell("C$sc")->getValue();
             $code[$a]['acc_group'] = $acc_group;
             $code[$a]['acc_code'] = $acc_code;
             if ($acc_name == "                      Adjustment") {
@@ -4021,8 +4050,497 @@ class RequestController extends Controller
                 break;
             }
         }
+
+
+        $sc = 6;
+        $codedept = array();
+        $a = 0;
+        foreach ($sheetbydept->getRowIterator() as $row) {
+
+            $dept_code = $sheetbydept->getCell("C$sc")->getValue();
+            $acc_code = $sheetbydept->getCell("F$sc")->getValue();
+            $codedept[$a]['dept_code'] = $dept_code;
+            $codedept[$a]['acc_code'] = $acc_code;
+           
+            $sc++;
+            $a++;
+            if ($a === 228) {
+                break;
+            }
+        }
+
+        $saleselectrik = SalesRb::select(
+            'acc_name',
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'Electric')
+            ->groupBy('acc_code')
+            ->get();
+
+        $materialelectrik = DmaterialRb::select(
+            'acc_name',
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'Electric')
+            ->groupBy('acc_code')
+            ->get();
+
+        $expenseelectrik = ExpenseRb::select(
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'electric')
+            ->groupBy('acc_code')
+            ->get();
+
+        $laborelectrik = LaborRb::select(
+            'acc_name',
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'Electric')
+            ->groupBy('acc_code')
+            ->get();
+
+        $electrik = array();
+        $e = 0;
+        foreach ($saleselectrik as $key => $val) {
+            $electrik[$e]['acc_code'] = $val->acc_code;
+            $electrik[$e]['acc_name'] = $val->acc_name;
+            $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
+            $electrik[$e]['smei'] = str_replace(" ", "", $val->smei);
+            $electrik[$e]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $electrik[$e]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $electrik[$e]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $electrik[$e]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $electrik[$e]['soktober'] = str_replace(" ", "", $val->soktober);
+            $electrik[$e]['snovember'] = str_replace(" ", "", $val->snovember);
+            $electrik[$e]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $electrik[$e]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $electrik[$e]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $electrik[$e]['smaret'] = str_replace(" ", "", $val->smaret);
+            $e++;
+        }
+        foreach ($materialelectrik as $key => $val) {
+            $electrik[$e]['acc_code'] = $val->acc_code;
+            $electrik[$e]['acc_name'] = $val->acc_name;
+            $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
+            $electrik[$e]['smei'] = str_replace(" ", "", $val->smei);
+            $electrik[$e]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $electrik[$e]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $electrik[$e]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $electrik[$e]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $electrik[$e]['soktober'] = str_replace(" ", "", $val->soktober);
+            $electrik[$e]['snovember'] = str_replace(" ", "", $val->snovember);
+            $electrik[$e]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $electrik[$e]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $electrik[$e]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $electrik[$e]['smaret'] = str_replace(" ", "", $val->smaret);
+            $e++;
+        }
+        foreach ($expenseelectrik as $key => $val) {
+            // dd($value);
+            $acc = explode("_", $val->acc_code);
+            $acc_code = $acc[0];
+            $acc_name = $acc[1];
+            $electrik[$e]['acc_code'] = $acc_code;
+            $electrik[$e]['acc_name'] = $acc_name;
+            $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
+            $electrik[$e]['smei'] = str_replace(" ", "", $val->smei);
+            $electrik[$e]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $electrik[$e]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $electrik[$e]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $electrik[$e]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $electrik[$e]['soktober'] = str_replace(" ", "", $val->soktober);
+            $electrik[$e]['snovember'] = str_replace(" ", "", $val->snovember);
+            $electrik[$e]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $electrik[$e]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $electrik[$e]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $electrik[$e]['smaret'] = str_replace(" ", "", $val->smaret);
+            $e++;
+        }
+
+        foreach ($laborelectrik as $key => $val) {
+            $electrik[$e]['acc_code'] = $val->acc_code;
+            $electrik[$e]['acc_name'] = $val->acc_name;
+            $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
+            $electrik[$e]['smei'] = str_replace(" ", "", $val->smei);
+            $electrik[$e]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $electrik[$e]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $electrik[$e]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $electrik[$e]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $electrik[$e]['soktober'] = str_replace(" ", "", $val->soktober);
+            $electrik[$e]['snovember'] = str_replace(" ", "", $val->snovember);
+            $electrik[$e]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $electrik[$e]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $electrik[$e]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $electrik[$e]['smaret'] = str_replace(" ", "", $val->smaret);
+            $e++;
+        }
+
+
+        $salesunit = SalesRb::select(
+            'acc_name',
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'unit')
+            ->groupBy('acc_code')
+            ->get();
+
+        $materialunit = DmaterialRb::select(
+            'acc_name',
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'unit')
+            ->groupBy('acc_code')
+            ->get();
+
+        $expenseunit = ExpenseRb::select(
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'unit')
+            ->groupBy('acc_code')
+            ->get();
+
+
+        $laborunit = LaborRb::select(
+            'acc_name',
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'unit')
+            ->groupBy('acc_code')
+            ->get();
+
+        $unit = array();
+        $u = 0;
+        foreach ($salesunit as $key => $val) {
+            $unit[$u]['acc_code'] = $val->acc_code;
+            $unit[$u]['acc_name'] = $val->acc_name;
+            $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
+            $unit[$u]['smei'] = str_replace(" ", "", $val->smei);
+            $unit[$u]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $unit[$u]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $unit[$u]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $unit[$u]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $unit[$u]['soktober'] = str_replace(" ", "", $val->soktober);
+            $unit[$u]['snovember'] = str_replace(" ", "", $val->snovember);
+            $unit[$u]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $unit[$u]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $unit[$u]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $unit[$u]['smaret'] = str_replace(" ", "", $val->smaret);
+            $u++;
+        }
+        foreach ($materialunit as $key => $val) {
+            $unit[$u]['acc_code'] = $val->acc_code;
+            $unit[$u]['acc_name'] = $val->acc_name;
+            $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
+            $unit[$u]['smei'] = str_replace(" ", "", $val->smei);
+            $unit[$u]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $unit[$u]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $unit[$u]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $unit[$u]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $unit[$u]['soktober'] = str_replace(" ", "", $val->soktober);
+            $unit[$u]['snovember'] = str_replace(" ", "", $val->snovember);
+            $unit[$u]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $unit[$u]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $unit[$u]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $unit[$u]['smaret'] = str_replace(" ", "", $val->smaret);
+            $u++;
+        }
+        foreach ($expenseunit as $key => $val) {
+            // dd($value);
+            $acc = explode("_", $val->acc_code);
+            $acc_code = $acc[0];
+            $acc_name = $acc[1];
+            $unit[$u]['acc_code'] = $acc_code;
+            $unit[$u]['acc_name'] = $acc_name;
+            $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
+            $unit[$u]['smei'] = str_replace(" ", "", $val->smei);
+            $unit[$u]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $unit[$u]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $unit[$u]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $unit[$u]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $unit[$u]['soktober'] = str_replace(" ", "", $val->soktober);
+            $unit[$u]['snovember'] = str_replace(" ", "", $val->snovember);
+            $unit[$u]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $unit[$u]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $unit[$u]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $unit[$u]['smaret'] = str_replace(" ", "", $val->smaret);
+            $u++;
+        }
+
+        foreach ($laborunit as $key => $val) {
+            $unit[$u]['acc_code'] = $val->acc_code;
+            $unit[$u]['acc_name'] = $val->acc_name;
+            $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
+            $unit[$u]['smei'] = str_replace(" ", "", $val->smei);
+            $unit[$u]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $unit[$u]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $unit[$u]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $unit[$u]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $unit[$u]['soktober'] = str_replace(" ", "", $val->soktober);
+            $unit[$u]['snovember'] = str_replace(" ", "", $val->snovember);
+            $unit[$u]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $unit[$u]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $unit[$u]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $unit[$u]['smaret'] = str_replace(" ", "", $val->smaret);
+            $u++;
+        }
+
+
+        $salesbody = SalesRb::select(
+            'acc_name',
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'body')
+            ->groupBy('acc_code')
+            ->get();
+        // dd($salesbody);
+        $materialbody = DmaterialRb::select(
+            'acc_name',
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'body')
+            ->groupBy('acc_code')
+            ->get();
+        // dd(json_encode($materialbody));
+        $expensebody = ExpenseRb::select(
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'body')
+            ->groupBy('acc_code')
+            ->get();
+
+
+        $laborbody = LaborRb::select(
+            'acc_name',
+            'acc_code',
+            DB::raw('ifnull(sum(april),0) as sapril'),
+            DB::raw('ifnull(sum(mei),0) as smei'),
+            DB::raw('ifnull(sum(juni),0) as sjuni'),
+            DB::raw('ifnull(sum(juli),0) as sjuli'),
+            DB::raw('ifnull(sum(agustus),0) as sagustus'),
+            DB::raw('ifnull(sum(september),0) as sseptember'),
+            DB::raw('ifnull(sum(oktober),0) as soktober'),
+            DB::raw('ifnull(sum(november),0) as snovember'),
+            DB::raw('ifnull(sum(december),0) as sdecember'),
+            DB::raw('ifnull(sum(januari),0) as sjanuari'),
+            DB::raw('ifnull(sum(februari),0) as sfebruari'),
+            DB::raw('ifnull(sum(maret),0) as smaret')
+        )
+            ->where('group', 'body')
+            ->groupBy('acc_code')
+            ->get();
+        $body = array();
+        $b = 0;
+        foreach ($salesbody as $key => $val) {
+            $body[$b]['acc_code'] = $val->acc_code;
+            $body[$b]['acc_name'] = $val->acc_name;
+            $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
+            $body[$b]['smei'] = str_replace(" ", "", $val->smei);
+            $body[$b]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $body[$b]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $body[$b]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $body[$b]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $body[$b]['soktober'] = str_replace(" ", "", $val->soktober);
+            $body[$b]['snovember'] = str_replace(" ", "", $val->snovember);
+            $body[$b]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $body[$b]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $body[$b]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $body[$b]['smaret'] = str_replace(" ", "", $val->smaret);
+            $b++;
+        }
+
+
+        foreach ($materialbody as $key => $val) {
+            $body[$b]['acc_code'] = $val->acc_code;
+            $body[$b]['acc_name'] = $val->acc_name;
+            $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
+            $body[$b]['smei'] = str_replace(" ", "", $val->smei);
+            $body[$b]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $body[$b]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $body[$b]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $body[$b]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $body[$b]['soktober'] = str_replace(" ", "", $val->soktober);
+            $body[$b]['snovember'] = str_replace(" ", "", $val->snovember);
+            $body[$b]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $body[$b]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $body[$b]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $body[$b]['smaret'] = str_replace(" ", "", $val->smaret);
+            $b++;
+        }
+        foreach ($expensebody as $key => $val) {
+            // dd($value);
+            $acc = explode("_", $val->acc_code);
+            $acc_code = $acc[0];
+            $acc_name = $acc[1];
+            $body[$b]['acc_code'] = $acc_code;
+            $body[$b]['acc_name'] = $acc_name;
+            $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
+            $body[$b]['smei'] = str_replace(" ", "", $val->smei);
+            $body[$b]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $body[$b]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $body[$b]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $body[$b]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $body[$b]['soktober'] = str_replace(" ", "", $val->soktober);
+            $body[$b]['snovember'] = str_replace(" ", "", $val->snovember);
+            $body[$b]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $body[$b]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $body[$b]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $body[$b]['smaret'] = str_replace(" ", "", $val->smaret);
+            $b++;
+        }
+
+        foreach ($laborbody as $key => $val) {
+            $body[$b]['acc_code'] = $val->acc_code;
+            $body[$b]['acc_name'] = $val->acc_name;
+            $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
+            $body[$b]['smei'] = str_replace(" ", "", $val->smei);
+            $body[$b]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $body[$b]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $body[$b]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $body[$b]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $body[$b]['soktober'] = str_replace(" ", "", $val->soktober);
+            $body[$b]['snovember'] = str_replace(" ", "", $val->snovember);
+            $body[$b]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $body[$b]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $body[$b]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $body[$b]['smaret'] = str_replace(" ", "", $val->smaret);
+            $b++;
+        }
         // dd($code);
-        if (count((array)$code) > 0) {
+        // mapping set PnL Detail
+        if (count((array) $code) > 0) {
             $i = 0;
             $x = 6;
             $dcode = array();
@@ -4030,9 +4548,8 @@ class RequestController extends Controller
                 // dd($row);
                 $dcode[$i]['acc_group'] = $row['acc_group'];
                 $dcode[$i]['acc_name'] = $row['acc_name'];
-                $dcode[$i]['acc_code'] = (string)$row['acc_code'];
-                $spreadsheet->setActiveSheetIndex(0)
-                    ->setCellValue('A' . $x, $row['acc_group'])
+                $dcode[$i]['acc_code'] = (string) $row['acc_code'];
+                $sheetdetail->setCellValue('A' . $x, $row['acc_group'])
                     ->setCellValue('B' . $x, $row['acc_code'])
                     ->setCellValue('C' . $x, $row['acc_name']);
 
@@ -4040,489 +4557,19 @@ class RequestController extends Controller
                 $x++;
             }
 
-            // dd($dcode);
 
-            $saleselectrik =   SalesRb::select(
-                'acc_name',
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'Electric')
-                ->groupBy('acc_code')
-                ->get();
-
-            $materialelectrik = DmaterialRb::select(
-                'acc_name',
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'Electric')
-                ->groupBy('acc_code')
-                ->get();
-
-            $expenseelectrik = ExpenseRb::select(
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'electric')
-                ->groupBy('acc_code')
-                ->get();
-
-            $laborelectrik = LaborRb::select(
-                'acc_name',
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'Electric')
-                ->groupBy('acc_code')
-                ->get();
-
-            $electrik = array();
-            $e = 0;
-            foreach ($saleselectrik as $key => $val) {
-                $electrik[$e]['acc_code']  = $val->acc_code;
-                $electrik[$e]['acc_name']  = $val->acc_name;
-                $electrik[$e]['sapril']  = str_replace(" ", "", $val->sapril);
-                $electrik[$e]['smei']  =  str_replace(" ", "", $val->smei);
-                $electrik[$e]['sjuni']  =  str_replace(" ", "", $val->sjuni);
-                $electrik[$e]['sjuli']  =  str_replace(" ", "", $val->sjuli);
-                $electrik[$e]['sagustus']  =  str_replace(" ", "", $val->sagustus);
-                $electrik[$e]['sseptember']  =  str_replace(" ", "", $val->sseptember);
-                $electrik[$e]['soktober']  =  str_replace(" ", "", $val->soktober);
-                $electrik[$e]['snovember']  =  str_replace(" ", "", $val->snovember);
-                $electrik[$e]['sdecember']  =  str_replace(" ", "", $val->sdecember);
-                $electrik[$e]['sjanuari']  =  str_replace(" ", "", $val->sjanuari);
-                $electrik[$e]['sfebruari']  =  str_replace(" ", "", $val->sfebruari);
-                $electrik[$e]['smaret']  =  str_replace(" ", "", $val->smaret);
-                $e++;
-            }
-            foreach ($materialelectrik as $key => $val) {
-                $electrik[$e]['acc_code']  = $val->acc_code;
-                $electrik[$e]['acc_name']  = $val->acc_name;
-                $electrik[$e]['sapril']  =  str_replace(" ", "", $val->sapril);
-                $electrik[$e]['smei']  =  str_replace(" ", "", $val->smei);
-                $electrik[$e]['sjuni']  =  str_replace(" ", "", $val->sjuni);
-                $electrik[$e]['sjuli']  =  str_replace(" ", "", $val->sjuli);
-                $electrik[$e]['sagustus']  =  str_replace(" ", "", $val->sagustus);
-                $electrik[$e]['sseptember']  =  str_replace(" ", "", $val->sseptember);
-                $electrik[$e]['soktober']  =  str_replace(" ", "", $val->soktober);
-                $electrik[$e]['snovember']  =  str_replace(" ", "", $val->snovember);
-                $electrik[$e]['sdecember']  =  str_replace(" ", "", $val->sdecember);
-                $electrik[$e]['sjanuari']  =  str_replace(" ", "", $val->sjanuari);
-                $electrik[$e]['sfebruari']  =  str_replace(" ", "", $val->sfebruari);
-                $electrik[$e]['smaret']  =  str_replace(" ", "", $val->smaret);
-                $e++;
-            }
-            foreach ($expenseelectrik as $key => $val) {
-                // dd($value);
-                $acc = explode("_", $val->acc_code);
-                $acc_code = $acc[0];
-                $acc_name = $acc[1];
-                $electrik[$e]['acc_code']  = $acc_code;
-                $electrik[$e]['acc_name']  = $acc_name;
-                $electrik[$e]['sapril']  =  str_replace(" ", "", $val->sapril);
-                $electrik[$e]['smei']  = str_replace(" ", "", $val->smei);
-                $electrik[$e]['sjuni']  = str_replace(" ", "", $val->sjuni);
-                $electrik[$e]['sjuli']  = str_replace(" ", "", $val->sjuli);
-                $electrik[$e]['sagustus']  = str_replace(" ", "", $val->sagustus);
-                $electrik[$e]['sseptember']  = str_replace(" ", "", $val->sseptember);
-                $electrik[$e]['soktober']  = str_replace(" ", "", $val->soktober);
-                $electrik[$e]['snovember']  = str_replace(" ", "", $val->snovember);
-                $electrik[$e]['sdecember']  = str_replace(" ", "", $val->sdecember);
-                $electrik[$e]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
-                $electrik[$e]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
-                $electrik[$e]['smaret']  = str_replace(" ", "", $val->smaret);
-                $e++;
-            }
-
-            foreach ($laborelectrik as $key => $val) {
-                $electrik[$e]['acc_code']  = $val->acc_code;
-                $electrik[$e]['acc_name']  = $val->acc_name;
-                $electrik[$e]['sapril']  =  str_replace(" ", "", $val->sapril);
-                $electrik[$e]['smei']  = str_replace(" ", "", $val->smei);
-                $electrik[$e]['sjuni']  = str_replace(" ", "", $val->sjuni);
-                $electrik[$e]['sjuli']  = str_replace(" ", "", $val->sjuli);
-                $electrik[$e]['sagustus']  = str_replace(" ", "", $val->sagustus);
-                $electrik[$e]['sseptember']  = str_replace(" ", "", $val->sseptember);
-                $electrik[$e]['soktober']  = str_replace(" ", "", $val->soktober);
-                $electrik[$e]['snovember']  = str_replace(" ", "", $val->snovember);
-                $electrik[$e]['sdecember']  = str_replace(" ", "", $val->sdecember);
-                $electrik[$e]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
-                $electrik[$e]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
-                $electrik[$e]['smaret']  = str_replace(" ", "", $val->smaret);
-                $e++;
-            }
-
-
-            $salesunit = SalesRb::select(
-                'acc_name',
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'unit')
-                ->groupBy('acc_code')
-                ->get();
-
-            $materialunit = DmaterialRb::select(
-                'acc_name',
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'unit')
-                ->groupBy('acc_code')
-                ->get();
-
-            $expenseunit = ExpenseRb::select(
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'unit')
-                ->groupBy('acc_code')
-                ->get();
-
-
-            $laborunit = LaborRb::select(
-                'acc_name',
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'unit')
-                ->groupBy('acc_code')
-                ->get();
-
-            $unit = array();
-            $u = 0;
-            foreach ($salesunit as $key => $val) {
-                $unit[$u]['acc_code']  = $val->acc_code;
-                $unit[$u]['acc_name']  = $val->acc_name;
-                $unit[$u]['sapril']  = str_replace(" ", "", $val->sapril);
-                $unit[$u]['smei']  = str_replace(" ", "", $val->smei);
-                $unit[$u]['sjuni']  = str_replace(" ", "", $val->sjuni);
-                $unit[$u]['sjuli']  = str_replace(" ", "", $val->sjuli);
-                $unit[$u]['sagustus']  = str_replace(" ", "", $val->sagustus);
-                $unit[$u]['sseptember']  = str_replace(" ", "", $val->sseptember);
-                $unit[$u]['soktober']  = str_replace(" ", "", $val->soktober);
-                $unit[$u]['snovember']  = str_replace(" ", "", $val->snovember);
-                $unit[$u]['sdecember']  = str_replace(" ", "", $val->sdecember);
-                $unit[$u]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
-                $unit[$u]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
-                $unit[$u]['smaret']  = str_replace(" ", "", $val->smaret);
-                $u++;
-            }
-            foreach ($materialunit as $key => $val) {
-                $unit[$u]['acc_code']  = $val->acc_code;
-                $unit[$u]['acc_name']  = $val->acc_name;
-                $unit[$u]['sapril']  = str_replace(" ", "", $val->sapril);
-                $unit[$u]['smei']  = str_replace(" ", "", $val->smei);
-                $unit[$u]['sjuni']  = str_replace(" ", "", $val->sjuni);
-                $unit[$u]['sjuli']  = str_replace(" ", "", $val->sjuli);
-                $unit[$u]['sagustus']  = str_replace(" ", "", $val->sagustus);
-                $unit[$u]['sseptember']  = str_replace(" ", "", $val->sseptember);
-                $unit[$u]['soktober']  = str_replace(" ", "", $val->soktober);
-                $unit[$u]['snovember']  = str_replace(" ", "", $val->snovember);
-                $unit[$u]['sdecember']  = str_replace(" ", "", $val->sdecember);
-                $unit[$u]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
-                $unit[$u]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
-                $unit[$u]['smaret']  = str_replace(" ", "", $val->smaret);
-                $u++;
-            }
-            foreach ($expenseunit as $key => $val) {
-                // dd($value);
-                $acc = explode("_", $val->acc_code);
-                $acc_code = $acc[0];
-                $acc_name = $acc[1];
-                $unit[$u]['acc_code']  = $acc_code;
-                $unit[$u]['acc_name']  = $acc_name;
-                $unit[$u]['sapril']  = str_replace(" ", "", $val->sapril);
-                $unit[$u]['smei']  = str_replace(" ", "", $val->smei);
-                $unit[$u]['sjuni']  = str_replace(" ", "", $val->sjuni);
-                $unit[$u]['sjuli']  = str_replace(" ", "", $val->sjuli);
-                $unit[$u]['sagustus']  = str_replace(" ", "", $val->sagustus);
-                $unit[$u]['sseptember']  = str_replace(" ", "", $val->sseptember);
-                $unit[$u]['soktober']  = str_replace(" ", "", $val->soktober);
-                $unit[$u]['snovember']  = str_replace(" ", "", $val->snovember);
-                $unit[$u]['sdecember']  = str_replace(" ", "", $val->sdecember);
-                $unit[$u]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
-                $unit[$u]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
-                $unit[$u]['smaret']  = str_replace(" ", "", $val->smaret);
-                $u++;
-            }
-
-            foreach ($laborunit as $key => $val) {
-                $unit[$u]['acc_code']  = $val->acc_code;
-                $unit[$u]['acc_name']  = $val->acc_name;
-                $unit[$u]['sapril']  = str_replace(" ", "", $val->sapril);
-                $unit[$u]['smei']  = str_replace(" ", "", $val->smei);
-                $unit[$u]['sjuni']  = str_replace(" ", "", $val->sjuni);
-                $unit[$u]['sjuli']  = str_replace(" ", "", $val->sjuli);
-                $unit[$u]['sagustus']  = str_replace(" ", "", $val->sagustus);
-                $unit[$u]['sseptember']  = str_replace(" ", "", $val->sseptember);
-                $unit[$u]['soktober']  = str_replace(" ", "", $val->soktober);
-                $unit[$u]['snovember']  = str_replace(" ", "", $val->snovember);
-                $unit[$u]['sdecember']  = str_replace(" ", "", $val->sdecember);
-                $unit[$u]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
-                $unit[$u]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
-                $unit[$u]['smaret']  = str_replace(" ", "", $val->smaret);
-                $u++;
-            }
-
-
-            $salesbody = SalesRb::select(
-                'acc_name',
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'body')
-                ->groupBy('acc_code')
-                ->get();
-            // dd($salesbody);
-            $materialbody = DmaterialRb::select(
-                'acc_name',
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'body')
-                ->groupBy('acc_code')
-                ->get();
-            // dd(json_encode($materialbody));
-            $expensebody = ExpenseRb::select(
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'body')
-                ->groupBy('acc_code')
-                ->get();
-
-
-            $laborbody = LaborRb::select(
-                'acc_name',
-                'acc_code',
-                DB::raw('ifnull(sum(april),0) as sapril'),
-                DB::raw('ifnull(sum(mei),0) as smei'),
-                DB::raw('ifnull(sum(juni),0) as sjuni'),
-                DB::raw('ifnull(sum(juli),0) as sjuli'),
-                DB::raw('ifnull(sum(agustus),0) as sagustus'),
-                DB::raw('ifnull(sum(september),0) as sseptember'),
-                DB::raw('ifnull(sum(oktober),0) as soktober'),
-                DB::raw('ifnull(sum(november),0) as snovember'),
-                DB::raw('ifnull(sum(december),0) as sdecember'),
-                DB::raw('ifnull(sum(januari),0) as sjanuari'),
-                DB::raw('ifnull(sum(februari),0) as sfebruari'),
-                DB::raw('ifnull(sum(maret),0) as smaret')
-            )
-                ->where('group', 'body')
-                ->groupBy('acc_code')
-                ->get();
-            $body = array();
-            $b = 0;
-            foreach ($salesbody as $key => $val) {
-                $body[$b]['acc_code']  = $val->acc_code;
-                $body[$b]['acc_name']  = $val->acc_name;
-                $body[$b]['sapril']  = str_replace(" ", "", $val->sapril);
-                $body[$b]['smei']  = str_replace(" ", "", $val->smei);
-                $body[$b]['sjuni']  = str_replace(" ", "", $val->sjuni);
-                $body[$b]['sjuli']  = str_replace(" ", "", $val->sjuli);
-                $body[$b]['sagustus']  = str_replace(" ", "", $val->sagustus);
-                $body[$b]['sseptember']  = str_replace(" ", "", $val->sseptember);
-                $body[$b]['soktober']  = str_replace(" ", "", $val->soktober);
-                $body[$b]['snovember']  = str_replace(" ", "", $val->snovember);
-                $body[$b]['sdecember']  = str_replace(" ", "", $val->sdecember);
-                $body[$b]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
-                $body[$b]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
-                $body[$b]['smaret']  = str_replace(" ", "", $val->smaret);
-                $b++;
-            }
-
-
-            foreach ($materialbody as $key => $val) {
-                $body[$b]['acc_code']  = $val->acc_code;
-                $body[$b]['acc_name']  = $val->acc_name;
-                $body[$b]['sapril']  = str_replace(" ", "", $val->sapril);
-                $body[$b]['smei']  = str_replace(" ", "", $val->smei);
-                $body[$b]['sjuni']  = str_replace(" ", "", $val->sjuni);
-                $body[$b]['sjuli']  = str_replace(" ", "", $val->sjuli);
-                $body[$b]['sagustus']  = str_replace(" ", "", $val->sagustus);
-                $body[$b]['sseptember']  = str_replace(" ", "", $val->sseptember);
-                $body[$b]['soktober']  = str_replace(" ", "", $val->soktober);
-                $body[$b]['snovember']  = str_replace(" ", "", $val->snovember);
-                $body[$b]['sdecember']  = str_replace(" ", "", $val->sdecember);
-                $body[$b]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
-                $body[$b]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
-                $body[$b]['smaret']  = str_replace(" ", "", $val->smaret);
-                $b++;
-            }
-            foreach ($expensebody as $key => $val) {
-                // dd($value);
-                $acc = explode("_", $val->acc_code);
-                $acc_code = $acc[0];
-                $acc_name = $acc[1];
-                $body[$b]['acc_code']  = $acc_code;
-                $body[$b]['acc_name']  = $acc_name;
-                $body[$b]['sapril']  = str_replace(" ", "", $val->sapril);
-                $body[$b]['smei']  = str_replace(" ", "", $val->smei);
-                $body[$b]['sjuni']  = str_replace(" ", "", $val->sjuni);
-                $body[$b]['sjuli']  = str_replace(" ", "", $val->sjuli);
-                $body[$b]['sagustus']  = str_replace(" ", "", $val->sagustus);
-                $body[$b]['sseptember']  = str_replace(" ", "", $val->sseptember);
-                $body[$b]['soktober']  = str_replace(" ", "", $val->soktober);
-                $body[$b]['snovember']  = str_replace(" ", "", $val->snovember);
-                $body[$b]['sdecember']  = str_replace(" ", "", $val->sdecember);
-                $body[$b]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
-                $body[$b]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
-                $body[$b]['smaret']  = str_replace(" ", "", $val->smaret);
-                $b++;
-            }
-
-            foreach ($laborbody as $key => $val) {
-                $body[$b]['acc_code']  = $val->acc_code;
-                $body[$b]['acc_name']  = $val->acc_name;
-                $body[$b]['sapril']  = str_replace(" ", "", $val->sapril);
-                $body[$b]['smei']  = str_replace(" ", "", $val->smei);
-                $body[$b]['sjuni']  = str_replace(" ", "", $val->sjuni);
-                $body[$b]['sjuli']  = str_replace(" ", "", $val->sjuli);
-                $body[$b]['sagustus']  = str_replace(" ", "", $val->sagustus);
-                $body[$b]['sseptember']  = str_replace(" ", "", $val->sseptember);
-                $body[$b]['soktober']  = str_replace(" ", "", $val->soktober);
-                $body[$b]['snovember']  = str_replace(" ", "", $val->snovember);
-                $body[$b]['sdecember']  = str_replace(" ", "", $val->sdecember);
-                $body[$b]['sjanuari']  = str_replace(" ", "", $val->sjanuari);
-                $body[$b]['sfebruari']  = str_replace(" ", "", $val->sfebruari);
-                $body[$b]['smaret']  = str_replace(" ", "", $val->smaret);
-                $b++;
-            }
+            
 
             $bb = 0;
             // dd($body);
             foreach ($body as $key => $value) {
 
-                $keyb = array_search((string)$value['acc_code'], array_column($dcode, 'acc_code'));
+                $keyb = array_search((string) $value['acc_code'], array_column($dcode, 'acc_code'));
 
 
                 $keyyb = $keyb + 6;
 
-                $spreadsheet->setActiveSheetIndex(0)
-                    ->setCellValue('U' . $keyyb, $value['sapril'])
+                $sheetdetail->setCellValue('U' . $keyyb, $value['sapril'])
                     ->setCellValue('V' . $keyyb, $value['smei'])
                     ->setCellValue('W' . $keyyb, $value['sjuni'])
                     ->setCellValue('X' . $keyyb, $value['sjuli'])
@@ -4542,11 +4589,10 @@ class RequestController extends Controller
 
             $uu = 0;
             foreach ($unit as $key => $value) {
-                $keyu = array_search((string)$value['acc_code'], array_column($dcode, 'acc_code'));
+                $keyu = array_search((string) $value['acc_code'], array_column($dcode, 'acc_code'));
 
                 $keyyu = $keyu + 6;
-                $spreadsheet->setActiveSheetIndex(0)
-                    ->setCellValue('AJ' . $keyyu, $value['sapril'])
+                $sheetdetail->setCellValue('AJ' . $keyyu, $value['sapril'])
                     ->setCellValue('AK' . $keyyu, $value['smei'])
                     ->setCellValue('AL' . $keyyu, $value['sjuni'])
                     ->setCellValue('AM' . $keyyu, $value['sjuli'])
@@ -4565,11 +4611,10 @@ class RequestController extends Controller
 
             $ee = 0;
             foreach ($electrik as $key => $value) {
-                $keye = array_search((string)$value['acc_code'], array_column($dcode, 'acc_code'));
+                $keye = array_search((string) $value['acc_code'], array_column($dcode, 'acc_code'));
 
                 $keyye = $keye + 6;
-                $spreadsheet->setActiveSheetIndex(0)
-                    ->setCellValue('AY' . $keyye, $value['sapril'])
+                $sheetdetail->setCellValue('AY' . $keyye, $value['sapril'])
                     ->setCellValue('AZ' . $keyye, $value['smei'])
                     ->setCellValue('BA' . $keyye, $value['sjuni'])
                     ->setCellValue('BB' . $keyye, $value['sjuli'])
@@ -4585,6 +4630,488 @@ class RequestController extends Controller
 
                 $ee++;
             }
+            // dd($body);
+        }
+
+        // mapping shet By Dept
+        if (count((array) $codedept) > 0) {
+            $i = 0;
+            $x = 6;
+            $dcodedept = array();
+            foreach ($codedept as $key => $row) {
+                // dd($row);
+                $dcodedept[$i]['dept_code'] = $row['dept_code'];
+                $dcodedept[$i]['acc_code'] = (string) $row['acc_code'];
+                $sheetbydept->setCellValue('C' . $x, $row['dept_code'])
+                    ->setCellValue('F' . $x, $row['acc_code']);
+
+                $i++;
+                $x++;
+            }
+
+            
+          
+            $sumDataBody = [];
+
+            foreach ($body as $itembody) {
+                $cekCode = substr($itembody['acc_code'], 0, 5);
+                $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itembody['acc_code'], 0, 4);
+                if (!isset($sumDataBody[$codePrefix])) {
+                    $sumDataBody[$codePrefix] = [
+                        'acc_code' => $codePrefix,
+                    ];
+                }
+
+                foreach ($itembody as $key => $value) {
+                    if ($key !== 'acc_code') {
+                        if (!isset($sumDataBody[$codePrefix][$key])) {
+                            $sumDataBody[$codePrefix][$key] = 0;
+                        }
+                        $sumDataBody[$codePrefix][$key] += (float)$value;
+                    }
+                }
+            }
+            $bb = 0;
+            foreach ($sumDataBody as $key => $value) {
+
+                $keyb = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
+                $keyyb = $keyb + 6;
+
+                $sheetbydept->setCellValue('R' . $keyyb, $value['sapril'])
+                    ->setCellValue('S' . $keyyb, $value['smei'])
+                    ->setCellValue('T' . $keyyb, $value['sjuni'])
+                    ->setCellValue('U' . $keyyb, $value['sjuli'])
+                    ->setCellValue('V' . $keyyb, $value['sagustus'])
+                    ->setCellValue('W' . $keyyb, $value['sseptember'])
+                    ->setCellValue('X' . $keyyb, $value['soktober'])
+                    ->setCellValue('Y' . $keyyb, $value['snovember'])
+                    ->setCellValue('Z' . $keyyb, $value['sdecember'])
+                    ->setCellValue('AA' . $keyyb, $value['sjanuari'])
+                    ->setCellValue('AB' . $keyyb, $value['sfebruari'])
+                    ->setCellValue('AC' . $keyyb, $value['smaret']);
+
+                $bb++;
+            }
+
+
+            
+            $sumDataUnit = [];
+
+            foreach ($unit as $itemunit) {
+                $cekCode = substr($itemunit['acc_code'], 0, 5);
+                $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itemunit['acc_code'], 0, 4);
+                if (!isset($sumDataUnit[$codePrefix])) {
+                    $sumDataUnit[$codePrefix] = [
+                        'acc_code' => $codePrefix,
+                    ];
+                }
+
+                foreach ($itemunit as $key => $value) {
+                    if ($key !== 'acc_code') {
+                        if (!isset($sumDataUnit[$codePrefix][$key])) {
+                            $sumDataUnit[$codePrefix][$key] = 0;
+                        }
+                        $sumDataUnit[$codePrefix][$key] += (float)$value;
+                    }
+                }
+            }
+            $uu = 0;
+            foreach ($sumDataUnit as $key => $value) {
+
+                $keyu = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
+                $keyyu = $keyu + 6;
+
+                $sheetbydept->setCellValue('AE' . $keyyu, $value['sapril'])
+                    ->setCellValue('AF' . $keyyu, $value['smei'])
+                    ->setCellValue('AG' . $keyyu, $value['sjuni'])
+                    ->setCellValue('AH' . $keyyu, $value['sjuli'])
+                    ->setCellValue('AI' . $keyyu, $value['sagustus'])
+                    ->setCellValue('AJ' . $keyyu, $value['sseptember'])
+                    ->setCellValue('AK' . $keyyu, $value['soktober'])
+                    ->setCellValue('AL' . $keyyu, $value['snovember'])
+                    ->setCellValue('AM' . $keyyu, $value['sdecember'])
+                    ->setCellValue('AN' . $keyyu, $value['sjanuari'])
+                    ->setCellValue('AO' . $keyyu, $value['sfebruari'])
+                    ->setCellValue('AP' . $keyyu, $value['smaret']);
+
+                $uu++;
+            }
+
+            $sumDataElectrik = [];
+
+            foreach ($electrik as $itemelectrik) {
+                $cekCode = substr($itemelectrik['acc_code'], 0, 5);
+                $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itemelectrik['acc_code'], 0, 4);
+                if (!isset($sumDataElectrik[$codePrefix])) {
+                    $sumDataElectrik[$codePrefix] = [
+                        'acc_code' => $codePrefix,
+                    ];
+                }
+
+                foreach ($itemelectrik as $key => $value) {
+                    if ($key !== 'acc_code') {
+                        if (!isset($sumDataElectrik[$codePrefix][$key])) {
+                            $sumDataElectrik[$codePrefix][$key] = 0;
+                        }
+                        $sumDataElectrik[$codePrefix][$key] += (float)$value;
+                    }
+                }
+            }
+            $ee = 0;
+            foreach ($sumDataElectrik as $key => $value) {
+
+                $keye = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
+                $keyye = $keye + 6;
+
+                $sheetbydept->setCellValue('AE' . $keyye, $value['sapril'])
+                    ->setCellValue('AF' . $keyye, $value['smei'])
+                    ->setCellValue('AG' . $keyye, $value['sjuni'])
+                    ->setCellValue('AH' . $keyye, $value['sjuli'])
+                    ->setCellValue('AI' . $keyye, $value['sagustus'])
+                    ->setCellValue('AJ' . $keyye, $value['sseptember'])
+                    ->setCellValue('AK' . $keyye, $value['soktober'])
+                    ->setCellValue('AL' . $keyye, $value['snovember'])
+                    ->setCellValue('AM' . $keyye, $value['sdecember'])
+                    ->setCellValue('AN' . $keyye, $value['sjanuari'])
+                    ->setCellValue('AO' . $keyye, $value['sfebruari'])
+                    ->setCellValue('AP' . $keyye, $value['smaret']);
+
+                $ee++;
+            }
+        }
+
+
+
+        $filename = 'Export Request Budget' . date('d/m/Y');
+
+        // Redirect output to a client’s web browser (Xlsx)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // header('Content-Disposition: attachment;filename="Report Excel.xlsx"');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+        $response = array(
+            'op' => 'ok',
+            'filename' => $filename,
+            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
+        );
+
+        echo json_encode($response);
+        // dd($code);
+    }
+
+    public function exportDataCapex(Request $request)
+    {
+        ini_set('max_execution_time', 0);
+        ob_start();
+
+        $reader = IOFactory::createReader('Xlsx');
+        $spreadsheet = $reader->load(public_path('files/TemplateCapexExport.xlsx'));
+        // Set document properties
+
+
+        // dd($data_master_expense);
+        $spreadsheet->getProperties()->setCreator('Aiia')
+            ->setLastModifiedBy('Aiia')
+            ->setTitle('Office 2021 XLSX Aiia Document')
+            ->setSubject('Office 2021 XLSX Aiia Document')
+            ->setDescription('Office 2021 XLSX Aiia Document.')
+            ->setKeywords('Office 2021 XLSX Aiia Document')
+            ->setCategory('Office 2021 XLSX Aiia Document');
+
+        $sheettype = $spreadsheet->getSheetByName('Summary CAPEX');
+        $sheetdept = $spreadsheet->getSheetByName('Summary CAPEX By Dept');
+        // dd($sheettype);
+        $sc = 7;
+        $type = array();
+        $a = 0;
+        foreach ($sheettype->getRowIterator() as $row) {
+
+            $types = $sheettype->getCell("A$sc")->getValue();
+            $type[$a]['type'] = $types;
+            $sc++;
+            $a++;
+            if ($a === 7) {
+                break;
+            }
+        }
+
+        $sc = 6;
+        $bydept = array();
+        $a = 0;
+        foreach ($sheetdept->getRowIterator() as $row) {
+
+            $deptt = $sheetdept->getCell("B$sc")->getValue() ?? $sheetdept->getCell("B$sc")->getCalculatedValue();
+            $typee = $sheetdept->getCell("D$sc")->getValue() ?? $sheetdept->getCell("D$sc")->getCalculatedValue();
+            if ($deptt == "") {
+                break;
+            }
+            $bydept[$a]['dept_code'] = $deptt;
+            $bydept[$a]['by_type'] = $typee;
+            $sc++;
+            $a++;
+
+        }
+
+        if (count((array) $bydept) > 0) {
+            $i = 0;
+            $x = 6;
+
+            foreach ($bydept as $key => $row) {
+
+                $deptcode = $row['dept_code'];
+                $typename = $row['by_type'];
+
+                $sheetdept->setCellValue('B' . $x, $deptcode);
+
+                if ($deptcode != "" && $typename != "") {
+
+                    $AIIA = CapexRb::select(
+                        'dept',
+                        'type',
+                        'owner_asset',
+                        DB::raw('IFNULL(SUM(april), 0) as sapril'),
+                        DB::raw('IFNULL(SUM(mei), 0) as smei'),
+                        DB::raw('IFNULL(SUM(juni), 0) as sjuni'),
+                        DB::raw('IFNULL(SUM(juli), 0) as sjuli'),
+                        DB::raw('IFNULL(SUM(agustus), 0) as sagustus'),
+                        DB::raw('IFNULL(SUM(september), 0) as sseptember'),
+                        DB::raw('IFNULL(SUM(oktober), 0) as soktober'),
+                        DB::raw('IFNULL(SUM(november), 0) as snovember'),
+                        DB::raw('IFNULL(SUM(december), 0) as sdecember'),
+                        DB::raw('IFNULL(SUM(januari), 0) as sjanuari'),
+                        DB::raw('IFNULL(SUM(februari), 0) as sfebruari'),
+                        DB::raw('IFNULL(SUM(maret), 0) as smaret')
+                    )
+                        ->where('owner_asset', 'AIIA')
+                        ->where('type', $typename)
+                        ->where('dept', $deptcode)
+                        ->groupBy('type', 'dept')
+                        ->get();
+                    $sheetdept->setCellValue('L' . $x, $AIIA[0]['sapril'] ?? 0);
+                    $sheetdept->setCellValue('M' . $x, $AIIA[0]['smei'] ?? 0);
+                    $sheetdept->setCellValue('N' . $x, $AIIA[0]['sjuni'] ?? 0);
+                    $sheetdept->setCellValue('O' . $x, $AIIA[0]['sjuli'] ?? 0);
+                    $sheetdept->setCellValue('P' . $x, $AIIA[0]['saagustus'] ?? 0);
+                    $sheetdept->setCellValue('Q' . $x, $AIIA[0]['sseptember'] ?? 0);
+                    $sheetdept->setCellValue('R' . $x, $AIIA[0]['soktober'] ?? 0);
+                    $sheetdept->setCellValue('S' . $x, $AIIA[0]['snovember'] ?? 0);
+                    $sheetdept->setCellValue('T' . $x, $AIIA[0]['sdesember'] ?? 0);
+                    $sheetdept->setCellValue('U' . $x, $AIIA[0]['sjanuari'] ?? 0);
+                    $sheetdept->setCellValue('V' . $x, $AIIA[0]['sfebruari'] ?? 0);
+                    $sheetdept->setCellValue('W' . $x, $AIIA[0]['smaret'] ?? 0);
+
+                    $SUPPLIER = CapexRb::select(
+                        'dept',
+                        'type',
+                        'owner_asset',
+                        DB::raw('IFNULL(SUM(april), 0) as sapril'),
+                        DB::raw('IFNULL(SUM(mei), 0) as smei'),
+                        DB::raw('IFNULL(SUM(juni), 0) as sjuni'),
+                        DB::raw('IFNULL(SUM(juli), 0) as sjuli'),
+                        DB::raw('IFNULL(SUM(agustus), 0) as sagustus'),
+                        DB::raw('IFNULL(SUM(september), 0) as sseptember'),
+                        DB::raw('IFNULL(SUM(oktober), 0) as soktober'),
+                        DB::raw('IFNULL(SUM(november), 0) as snovember'),
+                        DB::raw('IFNULL(SUM(december), 0) as sdecember'),
+                        DB::raw('IFNULL(SUM(januari), 0) as sjanuari'),
+                        DB::raw('IFNULL(SUM(februari), 0) as sfebruari'),
+                        DB::raw('IFNULL(SUM(maret), 0) as smaret')
+                    )
+                        ->where('owner_asset', 'Supplier')
+                        ->where('type', $typename)
+                        ->where('dept', $deptcode)
+                        ->groupBy('type', 'dept')
+                        ->get();
+                    $sheetdept->setCellValue('Y' . $x, $SUPPLIER[0]['sapril'] ?? 0);
+                    $sheetdept->setCellValue('Z' . $x, $SUPPLIER[0]['smei'] ?? 0);
+                    $sheetdept->setCellValue('AA' . $x, $SUPPLIER[0]['sjuni'] ?? 0);
+                    $sheetdept->setCellValue('AB' . $x, $SUPPLIER[0]['sjuli'] ?? 0);
+                    $sheetdept->setCellValue('AC' . $x, $SUPPLIER[0]['saagustus'] ?? 0);
+                    $sheetdept->setCellValue('AD' . $x, $SUPPLIER[0]['sseptember'] ?? 0);
+                    $sheetdept->setCellValue('AE' . $x, $SUPPLIER[0]['soktober'] ?? 0);
+                    $sheetdept->setCellValue('AF' . $x, $SUPPLIER[0]['snovember'] ?? 0);
+                    $sheetdept->setCellValue('AG' . $x, $SUPPLIER[0]['sdesember'] ?? 0);
+                    $sheetdept->setCellValue('AH' . $x, $SUPPLIER[0]['sjanuari'] ?? 0);
+                    $sheetdept->setCellValue('AI' . $x, $SUPPLIER[0]['sfebruari'] ?? 0);
+                    $sheetdept->setCellValue('AJ' . $x, $SUPPLIER[0]['smaret'] ?? 0);
+
+                    $LAINNYA = CapexRb::select(
+                        'dept',
+                        'type',
+                        'owner_asset',
+                        DB::raw('IFNULL(SUM(april), 0) as sapril'),
+                        DB::raw('IFNULL(SUM(mei), 0) as smei'),
+                        DB::raw('IFNULL(SUM(juni), 0) as sjuni'),
+                        DB::raw('IFNULL(SUM(juli), 0) as sjuli'),
+                        DB::raw('IFNULL(SUM(agustus), 0) as sagustus'),
+                        DB::raw('IFNULL(SUM(september), 0) as sseptember'),
+                        DB::raw('IFNULL(SUM(oktober), 0) as soktober'),
+                        DB::raw('IFNULL(SUM(november), 0) as snovember'),
+                        DB::raw('IFNULL(SUM(december), 0) as sdecember'),
+                        DB::raw('IFNULL(SUM(januari), 0) as sjanuari'),
+                        DB::raw('IFNULL(SUM(februari), 0) as sfebruari'),
+                        DB::raw('IFNULL(SUM(maret), 0) as smaret')
+                    )
+                        ->where('owner_asset', 'Lainnya')
+                        ->where('type', $typename)
+                        ->where('dept', $deptcode)
+                        ->groupBy('type', 'dept')
+                        ->get();
+                    $sheetdept->setCellValue('AK' . $x, $SUPPLIER[0]['sapril'] ?? 0);
+                    $sheetdept->setCellValue('AM' . $x, $SUPPLIER[0]['smei'] ?? 0);
+                    $sheetdept->setCellValue('AN' . $x, $SUPPLIER[0]['sjuni'] ?? 0);
+                    $sheetdept->setCellValue('AO' . $x, $SUPPLIER[0]['sjuli'] ?? 0);
+                    $sheetdept->setCellValue('AP' . $x, $SUPPLIER[0]['saagustus'] ?? 0);
+                    $sheetdept->setCellValue('AQ' . $x, $SUPPLIER[0]['sseptember'] ?? 0);
+                    $sheetdept->setCellValue('AR' . $x, $SUPPLIER[0]['soktober'] ?? 0);
+                    $sheetdept->setCellValue('AS' . $x, $SUPPLIER[0]['snovember'] ?? 0);
+                    $sheetdept->setCellValue('AT' . $x, $SUPPLIER[0]['sdesember'] ?? 0);
+                    $sheetdept->setCellValue('AU' . $x, $SUPPLIER[0]['sjanuari'] ?? 0);
+                    $sheetdept->setCellValue('AV' . $x, $SUPPLIER[0]['sfebruari'] ?? 0);
+                    $sheetdept->setCellValue('AW' . $x, $SUPPLIER[0]['smaret'] ?? 0);
+                }
+
+                $i++;
+                $x++;
+            }
+        }
+
+        if (count((array) $type) > 0) {
+            $i = 0;
+            $x = 7;
+            $dcodesheettype = array();
+            foreach ($type as $key => $row) {
+                // dd($row);
+                $dcodesheettype[$i]['type'] = $row['type'];
+                $sheettype->setCellValue('A' . $x, $row['type']);
+
+                $AIIA = CapexRb::select(
+                    'type',
+                    'owner_asset',
+                    DB::raw('IFNULL(SUM(april), 0) as sapril'),
+                    DB::raw('IFNULL(SUM(mei), 0) as smei'),
+                    DB::raw('IFNULL(SUM(juni), 0) as sjuni'),
+                    DB::raw('IFNULL(SUM(juli), 0) as sjuli'),
+                    DB::raw('IFNULL(SUM(agustus), 0) as sagustus'),
+                    DB::raw('IFNULL(SUM(september), 0) as sseptember'),
+                    DB::raw('IFNULL(SUM(oktober), 0) as soktober'),
+                    DB::raw('IFNULL(SUM(november), 0) as snovember'),
+                    DB::raw('IFNULL(SUM(december), 0) as sdecember'),
+                    DB::raw('IFNULL(SUM(januari), 0) as sjanuari'),
+                    DB::raw('IFNULL(SUM(februari), 0) as sfebruari'),
+                    DB::raw('IFNULL(SUM(maret), 0) as smaret')
+                )
+                    ->where('owner_asset', 'AIIA')
+                    ->where('type', $row['type'])
+                    ->groupBy('type')
+                    ->get();
+                // dd($AIIA[0]['smei']);
+
+                $sheettype->setCellValue('I' . $x, $AIIA[0]['sapril'] ?? 0);
+                $sheettype->setCellValue('J' . $x, $AIIA[0]['smei'] ?? 0);
+                $sheettype->setCellValue('K' . $x, $AIIA[0]['sjuni'] ?? 0);
+                $sheettype->setCellValue('L' . $x, $AIIA[0]['sjuli'] ?? 0);
+                $sheettype->setCellValue('M' . $x, $AIIA[0]['sagustus'] ?? 0);
+                $sheettype->setCellValue('N' . $x, $AIIA[0]['sseptember'] ?? 0);
+                $sheettype->setCellValue('O' . $x, $AIIA[0]['soktober'] ?? 0);
+                $sheettype->setCellValue('P' . $x, $AIIA[0]['snovember'] ?? 0);
+                $sheettype->setCellValue('Q' . $x, $AIIA[0]['sdesember'] ?? 0);
+                $sheettype->setCellValue('R' . $x, $AIIA[0]['sjanuari'] ?? 0);
+                $sheettype->setCellValue('S' . $x, $AIIA[0]['sfebruari'] ?? 0);
+                $sheettype->setCellValue('T' . $x, $AIIA[0]['smaret'] ?? 0);
+
+                $SUPPLIER = CapexRb::select(
+                    'type',
+                    'owner_asset',
+                    DB::raw('IFNULL(SUM(april), 0) as sapril'),
+                    DB::raw('IFNULL(SUM(mei), 0) as smei'),
+                    DB::raw('IFNULL(SUM(juni), 0) as sjuni'),
+                    DB::raw('IFNULL(SUM(juli), 0) as sjuli'),
+                    DB::raw('IFNULL(SUM(agustus), 0) as sagustus'),
+                    DB::raw('IFNULL(SUM(september), 0) as sseptember'),
+                    DB::raw('IFNULL(SUM(oktober), 0) as soktober'),
+                    DB::raw('IFNULL(SUM(november), 0) as snovember'),
+                    DB::raw('IFNULL(SUM(december), 0) as sdecember'),
+                    DB::raw('IFNULL(SUM(januari), 0) as sjanuari'),
+                    DB::raw('IFNULL(SUM(februari), 0) as sfebruari'),
+                    DB::raw('IFNULL(SUM(maret), 0) as smaret')
+                )
+                    ->where('owner_asset', 'Supplier')
+                    ->where('type', $row['type'])
+                    ->groupBy('type')
+                    ->get();
+                // dd($AIIA[0]['smei']);
+
+                $sheettype->setCellValue('V' . $x, $SUPPLIER[0]['sapril'] ?? 0);
+                $sheettype->setCellValue('W' . $x, $SUPPLIER[0]['smei'] ?? 0);
+                $sheettype->setCellValue('X' . $x, $SUPPLIER[0]['sjuni'] ?? 0);
+                $sheettype->setCellValue('Y' . $x, $SUPPLIER[0]['sjuli'] ?? 0);
+                $sheettype->setCellValue('Z' . $x, $SUPPLIER[0]['sagustus'] ?? 0);
+                $sheettype->setCellValue('AA' . $x, $SUPPLIER[0]['sseptember'] ?? 0);
+                $sheettype->setCellValue('AB' . $x, $SUPPLIER[0]['soktober'] ?? 0);
+                $sheettype->setCellValue('AC' . $x, $SUPPLIER[0]['snovember'] ?? 0);
+                $sheettype->setCellValue('AD' . $x, $SUPPLIER[0]['sdesember'] ?? 0);
+                $sheettype->setCellValue('AE' . $x, $SUPPLIER[0]['sjanuari'] ?? 0);
+                $sheettype->setCellValue('AF' . $x, $SUPPLIER[0]['sfebruari'] ?? 0);
+                $sheettype->setCellValue('AG' . $x, $SUPPLIER[0]['smaret'] ?? 0);
+
+
+                $LAINNYA = CapexRb::select(
+                    'type',
+                    'owner_asset',
+                    DB::raw('IFNULL(SUM(april), 0) as sapril'),
+                    DB::raw('IFNULL(SUM(mei), 0) as smei'),
+                    DB::raw('IFNULL(SUM(juni), 0) as sjuni'),
+                    DB::raw('IFNULL(SUM(juli), 0) as sjuli'),
+                    DB::raw('IFNULL(SUM(agustus), 0) as sagustus'),
+                    DB::raw('IFNULL(SUM(september), 0) as sseptember'),
+                    DB::raw('IFNULL(SUM(oktober), 0) as soktober'),
+                    DB::raw('IFNULL(SUM(november), 0) as snovember'),
+                    DB::raw('IFNULL(SUM(december), 0) as sdecember'),
+                    DB::raw('IFNULL(SUM(januari), 0) as sjanuari'),
+                    DB::raw('IFNULL(SUM(februari), 0) as sfebruari'),
+                    DB::raw('IFNULL(SUM(maret), 0) as smaret')
+                )
+                    ->where('owner_asset', 'Lainnya')
+                    ->where('type', $row['type'])
+                    ->groupBy('type')
+                    ->get();
+                // dd($AIIA[0]['smei']);
+
+                $sheettype->setCellValue('AI' . $x, $LAINNYA[0]['sapril'] ?? 0);
+                $sheettype->setCellValue('AJ' . $x, $LAINNYA[0]['smei'] ?? 0);
+                $sheettype->setCellValue('AK' . $x, $LAINNYA[0]['sjuni'] ?? 0);
+                $sheettype->setCellValue('AL' . $x, $LAINNYA[0]['sjuli'] ?? 0);
+                $sheettype->setCellValue('AM' . $x, $LAINNYA[0]['sagustus'] ?? 0);
+                $sheettype->setCellValue('AN' . $x, $LAINNYA[0]['sseptember'] ?? 0);
+                $sheettype->setCellValue('AO' . $x, $LAINNYA[0]['soktober'] ?? 0);
+                $sheettype->setCellValue('AP' . $x, $LAINNYA[0]['snovember'] ?? 0);
+                $sheettype->setCellValue('AQ' . $x, $LAINNYA[0]['sdesember'] ?? 0);
+                $sheettype->setCellValue('AR' . $x, $LAINNYA[0]['sjanuari'] ?? 0);
+                $sheettype->setCellValue('AS' . $x, $LAINNYA[0]['sfebruari'] ?? 0);
+                $sheettype->setCellValue('AT' . $x, $LAINNYA[0]['smaret'] ?? 0);
+
+                $i++;
+                $x++;
+            }
+
+
+
+
+
             // dd($body);
         }
 
@@ -4610,7 +5137,7 @@ class RequestController extends Controller
         $writer->save('php://output');
         $xlsData = ob_get_contents();
         ob_end_clean();
-        $response =  array(
+        $response = array(
             'op' => 'ok',
             'filename' => $filename,
             'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)

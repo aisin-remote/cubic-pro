@@ -718,6 +718,7 @@
 		Route::get('export-request-budget', 'RequestController@exportview')->name('rb.export');
 		Route::get('exporting', 'RequestController@exporttotemplate')->name('rb.exporttemplate');
 		Route::post('exporting-data', 'RequestController@exportData')->name('rb.exporting-data');
+		Route::post('exporting-capex-data', 'RequestController@exportDataCapex')->name('rb.exporting-capex-data');
 
 		//GET LIST SALES
 		Route::group(['middleware' => ['permission:sales-list', 'auth']], function () {

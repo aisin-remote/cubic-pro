@@ -42,21 +42,21 @@ List of RB Labor
                                 <th>Account Name</th>
                                 <th>Group</th>
                                 <th>Code</th>
-                                <th>april</th>
-                                <th>mei</th>
-                                <th>juni</th>
-                                <th>juli</th>
-                                <th>agustus</th>
-                                <th>september</th>
-                                <th>oktober</th>
-                                <th>november</th>
-                                <th>december</th>
-                                <th>januari</th>
-                                <th>februari</th>
-                                <th>maret</th>
-                                <th>fy 2022 1st</th>
-                                <th>fy 2022 2nd</th>
-                                <th>fy 2022 total</th>
+                                <th>April-24</th>
+                                <th>Mei-24</th>
+                                <th>Juni-24</th>
+                                <th>Juli-24</th>
+                                <th>Agustus-24</th>
+                                <th>September-24</th>
+                                <th>Oktober-24</th>
+                                <th>November-24</th>
+                                <th>December-24</th>
+                                <th>Januari-25</th>
+                                <th>Februari-25</th>
+                                <th>Maret-25</th>
+                                <th>Fy 2024 1st</th>
+                                <th>Fy 2024 2nd</th>
+                                <th>Fy 2024 total</th>
                                 @if (\Entrust::hasRole('budget'))
                                 <th style="width: 100px">Opsi</th>
                                 @endif

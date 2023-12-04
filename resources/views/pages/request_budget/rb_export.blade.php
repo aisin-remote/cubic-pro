@@ -12,7 +12,41 @@ Export Template PNL
     .bs-example {
         margin: 20px;
     }
+    .flex {
+        display: flex;
+        justify-content: space-between;
+    }
 </style>
+<style>
+ .spin {
+        border: 6px solid #0042A4;
+        border-radius: 60%;
+        border-top: 6px solid #3776CF;
+        border-right: 6px solid #619BEE;
+        border-bottom: 6px solid #96BFF9;
+        border-left: 6px solid #C9E0FF;
+        width: 23px;
+        height: 23px;
+        -webkit-animation: spin 1.5s linear infinite;
+        animation: spin 1.5s linear infinite;
+      }
+      @-webkit-keyframes spin {
+        0% {
+          -webkit-transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+  </style>
 <div class="container">
     <div class="row">
         <div class="col-xs-12">
@@ -44,7 +78,7 @@ Export Template PNL
 
                             <div id="process_daftar" style="display:none;">
                                 <div class="progress mt-3">
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated active" role="progressbar" style="" aria-valuemin="5" aria-valuemax="100"></div>
                                 </div>
                             </div>
                             <br>
@@ -54,16 +88,29 @@ Export Template PNL
                             <div class="panel panel-default">
                                 <div class="bs-example">
                                     <div class="container">
-
-
                                         <div class="row">
-                                            <div class="col-lg-12 bg-light text-center">
-                                                Export Data Request Budget
-                                                <p><small>*) File format .xlsx</small></p>
-                                                <button class="btn btn-info btn-lg" id="export"> <i class="glyphicon glyphicon-save-file"></i> Export To Excel </button>
+                                            <div class="col-md-5">
+                                                <div class="bg-light text-center">
+                                                    <p>Export Data Request Budget</p>
+                                                    <p><small>*) File format .xlsx</small></p>
+                                                    <button class="btn btn-info btn-lg" id="export">
+                                                        <i class="glyphicon glyphicon-save-file"></i> Export To Excel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2"></div>
+                                            <div class="col-md-5">
+                                                <div class="bg-light text-center">
+                                                    <p>Export Data Request Budget CAPEX</p>
+                                                    <p><small>*) File format .xlsx</small></p>
+                                                    <button class="btn btn-warning btn-lg" id="export-capex">
+                                                        <i class="glyphicon glyphicon-save-file"></i> Export To Excel
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                    
 
                                 </div>
                             </div>
@@ -108,9 +155,8 @@ Export Template PNL
                     url: "{{route('rb.exporting-data')}}",
                     dataType: 'json',
                     beforeSend: function() {
-                        $('#sebentar_daftar').html("<div class='alert alert-warning mb-3' role='alert'>Processing dont close this page...! <i class = 'fa fa-cloud-download'> </i> </div> ");
+                        $('#sebentar_daftar').html("<div class='alert alert-warning mb-3 d-flex justify-content-between' role='alert'><div class='flex'><div class='child'>Processing, don't close this page...</div><div class='spin'></div></div></div>");
                         $('#process_daftar').css('display', 'block');
-
                         $("#export").attr('disabled', true);
                     },
                     success: function(data) {
@@ -133,15 +179,46 @@ Export Template PNL
                 });
             })
 
+            $('#export-capex').on('click', function() {
+                $.ajax({
+                    type: "POST",
+                    url: "{{route('rb.exporting-capex-data')}}",
+                    dataType: 'json',
+                    beforeSend: function() {
+                        $('#sebentar_daftar').html("<div class='alert alert-warning mb-3 d-flex justify-content-between' role='alert'><div class='flex'><div class='child'>Processing, don't close this page...</div><div class='spin'></div></div></div>");
+                        $('#process_daftar').css('display', 'block');
+                        $("#export-capex").attr('disabled', true);
+                    },
+                    success: function(data) {
+                        var percentage = 0;
+
+                        var timer = setInterval(function() {
+                            percentage = percentage + 20;
+                            progress_bar_process_daftar(percentage, timer, data);
+                        }, 1000);
+
+                    },
+                    error: function(err) {
+                        $('#sebentar_daftar').html("");
+                        $('#pesan_daftar').html('');
+                        $("#export-capex").removeAttr('disabled');
+                        $('#process_daftar').css('display', 'none');
+                        $('.progress-bar').css('width', '0%');
+                    }
+
+                });
+            })
+
 
         })
 
 
         function progress_bar_process_daftar(percentage, timer, data) {
             $('.progress-bar').css('width', percentage + '%');
-            if (percentage > 100) {
+            if (percentage >= 100) {
                 clearInterval(timer);
                 $("#export").removeAttr('disabled');
+                $("#export-capex").removeAttr('disabled');
                 $('#process_daftar').css('display', 'none');
                 $('.progress-bar').css('width', '0%');
 
