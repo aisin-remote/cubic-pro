@@ -1382,7 +1382,8 @@ class RequestController extends Controller
 
     public function expenseimportcek(Request $request)
     {
-
+        ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '256M');
         try {
             $email = auth()->user()->email;
             $dept_id = auth()->user()->department_id;
@@ -1403,7 +1404,6 @@ class RequestController extends Controller
             $reader = IOFactory::createReader('Xlsx');
             $spreadsheet = $reader->load($file);
             $sheet = $spreadsheet->getSheetByName('EXPENSE');
-            dd($sheet);
             $rw = 2;
             $dept = "";
             $arrayPush = array();
@@ -1468,6 +1468,8 @@ class RequestController extends Controller
 
     public function expenseimport(Request $request)
     {
+        ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '256M');
         $file = $request->file('file');
         // $name = time() . '.' . $file->getClientOriginalExtension();
         $ext = $file->getClientOriginalExtension();
