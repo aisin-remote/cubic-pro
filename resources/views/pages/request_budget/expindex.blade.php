@@ -160,8 +160,8 @@
     ?>
     <script type="text/javascript">
         $(document).ready(function() {
-            if (tSales) {
-                tSales.destroy(); // Destroy the existing DataTable
+            if ($.fn.DataTable.isDataTable('#tables-exp')) {
+                $('#tables-exp').DataTable().destroy(); 
             }
             $.ajaxSetup({
                 headers: {
@@ -174,6 +174,7 @@
                 responsive: true,
                 processing: true,
                 serverSide: true,
+                bDestroy:true,
                 ajax: SITE_URL + '/exp/get_data',
                 //      fnDrawCallback : function (oSettings) {
                 //          budgetStatusStyler();
