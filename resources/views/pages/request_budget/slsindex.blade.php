@@ -54,9 +54,9 @@
                                 <th>Januari-25</th>
                                 <th>Februari-25</th>
                                 <th>Maret-25</th>
-                                <th>Fy 2022 1st</th>
-                                <th>Fy 2022 2nd</th>
-                                <th>Fy 2022 total</th>
+                                <th>Fy 2024 1st</th>
+                                <th>Fy 2024 2nd</th>
+                                <th>Fy 2024 total</th>
                                 @if (\Entrust::hasRole('budget'))
                                     <th style="width: 100px">Opsi</th>
                                 @endif
