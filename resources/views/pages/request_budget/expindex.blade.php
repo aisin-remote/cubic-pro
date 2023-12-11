@@ -160,6 +160,9 @@
     ?>
     <script type="text/javascript">
         $(document).ready(function() {
+            if (tSales) {
+                tSales.destroy(); // Destroy the existing DataTable
+            }
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
