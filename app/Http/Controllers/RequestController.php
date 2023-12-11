@@ -1403,7 +1403,7 @@ class RequestController extends Controller
             $reader = IOFactory::createReader('Xlsx');
             $spreadsheet = $reader->load($file);
             $sheet = $spreadsheet->getSheetByName('EXPENSE');
-
+            dd($sheet);
             $rw = 2;
             $dept = "";
             $arrayPush = array();
@@ -1425,7 +1425,7 @@ class RequestController extends Controller
                 $i++;
                 $rw++;
             }
-            dd($dept);
+            // dd($dept);
 
             if (count($arrayPush) > 0) {
                 $pesan = '';
