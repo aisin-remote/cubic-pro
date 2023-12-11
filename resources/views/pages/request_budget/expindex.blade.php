@@ -64,7 +64,7 @@
                                 </div>
                             </div>
                         </div>
-                        <table class="table m-0 table-colored table-inverse" id="table-exp">
+                        <table class="table m-0 table-colored table-inverse" id="tablesdd-exp">
                             <thead>
                                 <tr>
                                     <th>Dept</th>
@@ -170,7 +170,7 @@
             });
             var is_budget = $('#is_budget').val();
             var csrfToken = $('#csrf-token').val();
-            var tSales = $('#table-exp').DataTable({
+            var tSales = $('#tables-exp').DataTable({
                 responsive: true,
                 processing: true,
                 serverSide: true,
