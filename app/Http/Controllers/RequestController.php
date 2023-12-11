@@ -1425,7 +1425,7 @@ class RequestController extends Controller
                 $i++;
                 $rw++;
             }
-            // dd($dept);
+            dd($dept);
 
             if (count($arrayPush) > 0) {
                 $pesan = '';

@@ -166,7 +166,7 @@
                 },
                 error: function(err) {
                     alert("error cek request" + err.responseText)
-                    window.location.reload(true);
+                    // window.location.reload(true);
                     $('#btn-import').html('Upload')
                     $('#btn-import').removeAttr('disabled')
                 }
