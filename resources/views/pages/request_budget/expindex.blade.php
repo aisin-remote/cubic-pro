@@ -64,7 +64,7 @@
                                 </div>
                             </div>
                         </div>
-                        <table class="table m-0 table-colored table-inverse" id="tablesdd-exp">
+                        <table class="table m-0 table-colored table-inverse" id="tables-exp">
                             <thead>
                                 <tr>
                                     <th>Dept</th>
