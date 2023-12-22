@@ -35,7 +35,7 @@
                                         accept=".csv,.xlsx,.xls,.xlsm">
                                     <label class="text-muted">*) File format .csv,.xlsx,.xls,.xlsm</label>
                                     <br>
-                                    <a href="{{ url('files/Template_Expense_New_2024_New.xlsm') }}"><i
+                                    <a href="{{ url('files/Template_Expense_New_2024_New.xlsx') }}"><i
                                             class="mdi mdi-download"></i>
                                         Format RB Expense
                                     </a>

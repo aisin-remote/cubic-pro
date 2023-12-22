@@ -1396,7 +1396,7 @@ class RequestController extends Controller
             $success = true;
             $pesan = '';
             $total = 0;
-            if ($ext != 'xlsx' && $ext != 'xls' && $ext != 'xlsm') {
+            if ($ext != 'xlsx' && $ext != 'xls' && $ext != 'xlsx') {
                 $total = 0;
                 throw new Exception("Format tidak sesuai");
             }
@@ -1480,7 +1480,7 @@ class RequestController extends Controller
         /** Jika bukan format csv */
         // dd($ext);
         $hasil = 1;
-        if ($ext != 'xlsx' && $ext != 'xls' && $ext != 'xlsm') {
+        if ($ext != 'xlsx' && $ext != 'xls' && $ext != 'xlsx') {
             $hasil = 0;
             $title = 'Gagal';
             $type = 'error';
@@ -4012,6 +4012,7 @@ class RequestController extends Controller
         
         // Load the spreadsheet
         $reader = IOFactory::createReader('Xlsx');
+        // $spreadsheet = $reader->load(public_path('files/Summary_New_2024.xlsx'));
         $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
         
         // dd($spreadsheet);
@@ -4066,7 +4067,7 @@ class RequestController extends Controller
            
             $sc++;
             $a++;
-            if ($a === 228) {
+            if ($a === 233) {
                 break;
             }
         }
@@ -4765,18 +4766,18 @@ class RequestController extends Controller
                 $keye = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
                 $keyye = $keye + 6;
 
-                $sheetbydept->setCellValue('AE' . $keyye, $value['sapril'])
-                    ->setCellValue('AF' . $keyye, $value['smei'])
-                    ->setCellValue('AG' . $keyye, $value['sjuni'])
-                    ->setCellValue('AH' . $keyye, $value['sjuli'])
-                    ->setCellValue('AI' . $keyye, $value['sagustus'])
-                    ->setCellValue('AJ' . $keyye, $value['sseptember'])
-                    ->setCellValue('AK' . $keyye, $value['soktober'])
-                    ->setCellValue('AL' . $keyye, $value['snovember'])
-                    ->setCellValue('AM' . $keyye, $value['sdecember'])
-                    ->setCellValue('AN' . $keyye, $value['sjanuari'])
-                    ->setCellValue('AO' . $keyye, $value['sfebruari'])
-                    ->setCellValue('AP' . $keyye, $value['smaret']);
+                $sheetbydept->setCellValue('AR' . $keyye, $value['sapril'])
+                    ->setCellValue('AS' . $keyye, $value['smei'])
+                    ->setCellValue('AT' . $keyye, $value['sjuni'])
+                    ->setCellValue('AU' . $keyye, $value['sjuli'])
+                    ->setCellValue('AV' . $keyye, $value['sagustus'])
+                    ->setCellValue('AW' . $keyye, $value['sseptember'])
+                    ->setCellValue('AX' . $keyye, $value['soktober'])
+                    ->setCellValue('AY' . $keyye, $value['snovember'])
+                    ->setCellValue('AZ' . $keyye, $value['sdecember'])
+                    ->setCellValue('BA' . $keyye, $value['sjanuari'])
+                    ->setCellValue('BB' . $keyye, $value['sfebruari'])
+                    ->setCellValue('BC' . $keyye, $value['smaret']);
 
                 $ee++;
             }
