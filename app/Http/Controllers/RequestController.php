@@ -4679,20 +4679,22 @@ class RequestController extends Controller
 
                 $keyb = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
                 $keyyb = $keyb + 6;
-
-                $sheetbydept->setCellValue('R' . $keyyb, $value['sapril'])
-                    ->setCellValue('S' . $keyyb, $value['smei'])
-                    ->setCellValue('T' . $keyyb, $value['sjuni'])
-                    ->setCellValue('U' . $keyyb, $value['sjuli'])
-                    ->setCellValue('V' . $keyyb, $value['sagustus'])
-                    ->setCellValue('W' . $keyyb, $value['sseptember'])
-                    ->setCellValue('X' . $keyyb, $value['soktober'])
-                    ->setCellValue('Y' . $keyyb, $value['snovember'])
-                    ->setCellValue('Z' . $keyyb, $value['sdecember'])
-                    ->setCellValue('AA' . $keyyb, $value['sjanuari'])
-                    ->setCellValue('AB' . $keyyb, $value['sfebruari'])
-                    ->setCellValue('AC' . $keyyb, $value['smaret']);
-
+                
+                if ($keyyb > 0) {
+                    # code...
+                    $sheetbydept->setCellValue('R' . $keyyb, $value['sapril'])
+                        ->setCellValue('S' . $keyyb, $value['smei'])
+                        ->setCellValue('T' . $keyyb, $value['sjuni'])
+                        ->setCellValue('U' . $keyyb, $value['sjuli'])
+                        ->setCellValue('V' . $keyyb, $value['sagustus'])
+                        ->setCellValue('W' . $keyyb, $value['sseptember'])
+                        ->setCellValue('X' . $keyyb, $value['soktober'])
+                        ->setCellValue('Y' . $keyyb, $value['snovember'])
+                        ->setCellValue('Z' . $keyyb, $value['sdecember'])
+                        ->setCellValue('AA' . $keyyb, $value['sjanuari'])
+                        ->setCellValue('AB' . $keyyb, $value['sfebruari'])
+                        ->setCellValue('AC' . $keyyb, $value['smaret']);
+                }
                 $bb++;
             }
 
@@ -4724,6 +4726,8 @@ class RequestController extends Controller
                 $keyu = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
                 $keyyu = $keyu + 6;
 
+                if ($keyyu > 0) {
+                
                 $sheetbydept->setCellValue('AE' . $keyyu, $value['sapril'])
                     ->setCellValue('AF' . $keyyu, $value['smei'])
                     ->setCellValue('AG' . $keyyu, $value['sjuni'])
@@ -4736,7 +4740,8 @@ class RequestController extends Controller
                     ->setCellValue('AN' . $keyyu, $value['sjanuari'])
                     ->setCellValue('AO' . $keyyu, $value['sfebruari'])
                     ->setCellValue('AP' . $keyyu, $value['smaret']);
-
+                    # code...
+                }
                 $uu++;
             }
 
