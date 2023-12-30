@@ -4067,7 +4067,7 @@ class RequestController extends Controller
            
             $sc++;
             $a++;
-            if ($a === 233) {
+            if ($a === 238) {
                 break;
             }
         }
@@ -4680,7 +4680,7 @@ class RequestController extends Controller
                 $keyb = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
                 $keyyb = $keyb + 6;
                 
-                if ($keyyb > 0) {
+                if ($keyyb > 0 && $keyb != false) {
                     # code...
                     $sheetbydept->setCellValue('R' . $keyyb, $value['sapril'])
                         ->setCellValue('S' . $keyyb, $value['smei'])
@@ -4726,7 +4726,7 @@ class RequestController extends Controller
                 $keyu = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
                 $keyyu = $keyu + 6;
 
-                if ($keyyu > 0) {
+                if ($keyyu > 0 && $keyu != false) {
                 
                 $sheetbydept->setCellValue('AE' . $keyyu, $value['sapril'])
                     ->setCellValue('AF' . $keyyu, $value['smei'])
@@ -4770,22 +4770,29 @@ class RequestController extends Controller
 
                 $keye = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
                 $keyye = $keye + 6;
-
-                $sheetbydept->setCellValue('AR' . $keyye, $value['sapril'])
-                    ->setCellValue('AS' . $keyye, $value['smei'])
-                    ->setCellValue('AT' . $keyye, $value['sjuni'])
-                    ->setCellValue('AU' . $keyye, $value['sjuli'])
-                    ->setCellValue('AV' . $keyye, $value['sagustus'])
-                    ->setCellValue('AW' . $keyye, $value['sseptember'])
-                    ->setCellValue('AX' . $keyye, $value['soktober'])
-                    ->setCellValue('AY' . $keyye, $value['snovember'])
-                    ->setCellValue('AZ' . $keyye, $value['sdecember'])
-                    ->setCellValue('BA' . $keyye, $value['sjanuari'])
-                    ->setCellValue('BB' . $keyye, $value['sfebruari'])
-                    ->setCellValue('BC' . $keyye, $value['smaret']);
-
+                if ($keye > 0 && $keye != false) {
+                    $sheetbydept->setCellValue('AR' . $keyye, $value['sapril'])
+                        ->setCellValue('AS' . $keyye, $value['smei'])
+                        ->setCellValue('AT' . $keyye, $value['sjuni'])
+                        ->setCellValue('AU' . $keyye, $value['sjuli'])
+                        ->setCellValue('AV' . $keyye, $value['sagustus'])
+                        ->setCellValue('AW' . $keyye, $value['sseptember'])
+                        ->setCellValue('AX' . $keyye, $value['soktober'])
+                        ->setCellValue('AY' . $keyye, $value['snovember'])
+                        ->setCellValue('AZ' . $keyye, $value['sdecember'])
+                        ->setCellValue('BA' . $keyye, $value['sjanuari'])
+                        ->setCellValue('BB' . $keyye, $value['sfebruari'])
+                        ->setCellValue('BC' . $keyye, $value['smaret']);
+                }
                 $ee++;
             }
+            $semua = [
+                ['body'=> $sumDataBody,
+                    'unit'=>$sumDataUnit,
+                    'elektrik'=>$sumDataElectrik,
+                ]
+            ];
+            // dd(json_encode($semua));
         }
 
 
