@@ -4012,6 +4012,7 @@ class RequestController extends Controller
         
         // Load the spreadsheet
         $reader = IOFactory::createReader('Xlsx');
+        $reader->setReadDataOnly(true);
         // $spreadsheet = $reader->load(public_path('files/Summary_New_2024.xlsx'));
         $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
         
@@ -4073,6 +4074,7 @@ class RequestController extends Controller
         }
 
         $saleselectrik = SalesRb::select(
+            'dept',
             'acc_name',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
@@ -4093,6 +4095,7 @@ class RequestController extends Controller
             ->get();
 
         $materialelectrik = DmaterialRb::select(
+            'dept',
             'acc_name',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
@@ -4113,6 +4116,7 @@ class RequestController extends Controller
             ->get();
 
         $expenseelectrik = ExpenseRb::select(
+            'dept',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
             DB::raw('ifnull(sum(mei),0) as smei'),
@@ -4132,6 +4136,7 @@ class RequestController extends Controller
             ->get();
 
         $laborelectrik = LaborRb::select(
+            'dept',
             'acc_name',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
@@ -4229,6 +4234,7 @@ class RequestController extends Controller
 
 
         $salesunit = SalesRb::select(
+            'dept',
             'acc_name',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
@@ -4249,6 +4255,7 @@ class RequestController extends Controller
             ->get();
 
         $materialunit = DmaterialRb::select(
+            'dept',
             'acc_name',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
@@ -4269,6 +4276,7 @@ class RequestController extends Controller
             ->get();
 
         $expenseunit = ExpenseRb::select(
+            'dept',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
             DB::raw('ifnull(sum(mei),0) as smei'),
@@ -4289,6 +4297,7 @@ class RequestController extends Controller
 
 
         $laborunit = LaborRb::select(
+            'dept',
             'acc_name',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
@@ -4386,6 +4395,7 @@ class RequestController extends Controller
 
 
         $salesbody = SalesRb::select(
+            'dept',
             'acc_name',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
@@ -4406,6 +4416,7 @@ class RequestController extends Controller
             ->get();
         // dd($salesbody);
         $materialbody = DmaterialRb::select(
+            'dept',
             'acc_name',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
@@ -4426,6 +4437,7 @@ class RequestController extends Controller
             ->get();
         // dd(json_encode($materialbody));
         $expensebody = ExpenseRb::select(
+            'dept',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
             DB::raw('ifnull(sum(mei),0) as smei'),
@@ -4446,6 +4458,7 @@ class RequestController extends Controller
 
 
         $laborbody = LaborRb::select(
+            'dept',
             'acc_name',
             'acc_code',
             DB::raw('ifnull(sum(april),0) as sapril'),
@@ -4645,6 +4658,7 @@ class RequestController extends Controller
                 // dd($row);
                 $dcodedept[$i]['dept_code'] = $row['dept_code'];
                 $dcodedept[$i]['acc_code'] = (string) $row['acc_code'];
+                $dcodedept[$i]['dept_acc'] = $row['dept_code'] .'-'. (string) $row['acc_code'];
                 $sheetbydept->setCellValue('C' . $x, $row['dept_code'])
                     ->setCellValue('F' . $x, $row['acc_code']);
 
@@ -4659,21 +4673,24 @@ class RequestController extends Controller
             foreach ($body as $itembody) {
                 $cekCode = substr($itembody['acc_code'], 0, 5);
                 $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itembody['acc_code'], 0, 4);
-                if (!isset($sumDataBody[$codePrefix])) {
-                    $sumDataBody[$codePrefix] = [
-                        'acc_code' => $codePrefix,
+                $deptPrefix = $itembody['dept'];
+                $deptAccPrefix = $codePrefix .'-'.$codePrefix;
+                if (!isset($sumDataBody[$deptAccPrefix])) {
+                    $sumDataBody[$deptAccPrefix] = [
+                        'dept_acc' => $deptAccPrefix,
                     ];
                 }
 
                 foreach ($itembody as $key => $value) {
-                    if ($key !== 'acc_code') {
-                        if (!isset($sumDataBody[$codePrefix][$key])) {
-                            $sumDataBody[$codePrefix][$key] = 0;
+                    if ($key !== 'dept_acc') {
+                        if (!isset($sumDataBody[$deptAccPrefix][$key])) {
+                            $sumDataBody[$deptAccPrefix][$key] = 0;
                         }
-                        $sumDataBody[$codePrefix][$key] += (float)$value;
+                        $sumDataBody[$deptAccPrefix][$key] += (float)$value;
                     }
                 }
             }
+            dd($sumDataBody);
             $bb = 0;
             foreach ($sumDataBody as $key => $value) {
 
