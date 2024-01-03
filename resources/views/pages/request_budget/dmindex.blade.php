@@ -38,6 +38,7 @@
                     <table class="table m-0 table-colored table-inverse" id="table-dm">
                         <thead>
                             <tr>
+                                <th>Dept</th>
                                 <th>Account Code</th>
                                 <th>Account Name</th>
                                 <th>Group</th>

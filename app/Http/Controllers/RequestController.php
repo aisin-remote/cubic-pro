@@ -92,8 +92,7 @@ class RequestController extends Controller
 
     public function getDataLabor(Request $request)
     {
-        $Sls = LaborRb::select('acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
-        // $sls = $slsx->get();
+        $Sls = LaborRb::select('dept', 'acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
         return DataTables::of($Sls)->toJson();
     }
 
@@ -131,8 +130,8 @@ class RequestController extends Controller
 
                 if ($sheet->getCell("A$rw")->getCalculatedValue()) {
 
-                    $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
-                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
+                    $arrayPush[$i]['acc_code'] = $sheet->getCell("B$rw")->getCalculatedValue();
+                    $arrayPush[$i]['fy_total'] = $sheet->getCell("T$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("A$rw")->getValue() == "") {
                     break;
@@ -240,6 +239,8 @@ class RequestController extends Controller
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('S' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('T' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     }
                 }
             }
@@ -262,25 +263,26 @@ class RequestController extends Controller
             try {
                 foreach ($array_data as $val) {
 
-                    $acc_code = isset($val['A']) ? $val['A'] : null;
-                    $acc_name = isset($val['B']) ? $val['B'] : null;
-                    $group = isset($val['C']) ? $val['C'] : null;
-                    $code = isset($val['D']) ? $val['D'] : null;
-                    $apr = isset($val['E']) ? $val['E'] : null;
-                    $may = isset($val['F']) ? $val['F'] : null;
-                    $jun = isset($val['G']) ? $val['G'] : null;
-                    $jul = isset($val['H']) ? $val['H'] : null;
-                    $aug = isset($val['I']) ? $val['I'] : null;
-                    $sept = isset($val['J']) ? $val['J'] : null;
-                    $oct = isset($val['K']) ? $val['K'] : null;
-                    $nov = isset($val['L']) ? $val['L'] : null;
-                    $dec = isset($val['M']) ? $val['M'] : null;
-                    $jan = isset($val['N']) ? $val['N'] : null;
-                    $feb = isset($val['O']) ? $val['O'] : null;
-                    $mar = isset($val['P']) ? $val['P'] : null;
-                    $fy_2022_1st = isset($val['Q']) ? $val['Q'] : null;
-                    $fy_2022_2nd = isset($val['R']) ? $val['R'] : null;
-                    $fy_2022_total = isset($val['S']) ? $val['S'] : null;
+                    $dept = isset($val['A']) ? $val['A'] : null;
+                    $acc_code = isset($val['B']) ? $val['B'] : null;
+                    $acc_name = isset($val['C']) ? $val['C'] : null;
+                    $group = isset($val['D']) ? $val['D'] : null;
+                    $code = isset($val['E']) ? $val['E'] : null;
+                    $apr = isset($val['F']) ? $val['F'] : null;
+                    $may = isset($val['G']) ? $val['G'] : null;
+                    $jun = isset($val['H']) ? $val['H'] : null;
+                    $jul = isset($val['I']) ? $val['I'] : null;
+                    $aug = isset($val['J']) ? $val['J'] : null;
+                    $sept = isset($val['K']) ? $val['K'] : null;
+                    $oct = isset($val['L']) ? $val['L'] : null;
+                    $nov = isset($val['M']) ? $val['M'] : null;
+                    $dec = isset($val['N']) ? $val['N'] : null;
+                    $jan = isset($val['O']) ? $val['O'] : null;
+                    $feb = isset($val['P']) ? $val['P'] : null;
+                    $mar = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_1st = isset($val['R']) ? $val['R'] : null;
+                    $fy_2022_2nd = isset($val['S']) ? $val['S'] : null;
+                    $fy_2022_total = isset($val['T']) ? $val['T'] : null;
 
                     if ($acc_code) {
                         $cek = LaborRb::where([
@@ -313,6 +315,7 @@ class RequestController extends Controller
                                     ]);
                         } else {
                             $salesrb = new LaborRb;
+                            $salesrb->dept = $dept;
                             $salesrb->acc_code = $acc_code;
                             $salesrb->acc_name = $acc_name;
                             $salesrb->group = $group;
@@ -374,7 +377,7 @@ class RequestController extends Controller
 
     public function getDataSales(Request $request)
     {
-        $Sls = SalesRb::select('acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
+        $Sls = SalesRb::select('dept','acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
         // $sls = $slsx->get();
         return DataTables::of($Sls)->toJson();
     }
@@ -407,8 +410,8 @@ class RequestController extends Controller
 
                 if ($sheet->getCell("A$rw")->getCalculatedValue()) {
 
-                    $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
-                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
+                    $arrayPush[$i]['acc_code'] = $sheet->getCell("B$rw")->getCalculatedValue();
+                    $arrayPush[$i]['fy_total'] = $sheet->getCell("T$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("A$rw")->getValue() == "") {
                     break;
@@ -514,6 +517,8 @@ class RequestController extends Controller
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('S' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('T' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     }
                 }
             }
@@ -535,25 +540,26 @@ class RequestController extends Controller
 
             try {
                 foreach ($array_data as $val) {
-                    $acc_code = isset($val['A']) ? $val['A'] : null;
-                    $acc_name = isset($val['B']) ? $val['B'] : null;
-                    $group = isset($val['C']) ? $val['C'] : null;
-                    $code = isset($val['D']) ? $val['D'] : null;
-                    $apr = isset($val['E']) ? $val['E'] : null;
-                    $may = isset($val['F']) ? $val['F'] : null;
-                    $jun = isset($val['G']) ? $val['G'] : null;
-                    $jul = isset($val['H']) ? $val['H'] : null;
-                    $aug = isset($val['I']) ? $val['I'] : null;
-                    $sept = isset($val['J']) ? $val['J'] : null;
-                    $oct = isset($val['K']) ? $val['K'] : null;
-                    $nov = isset($val['L']) ? $val['L'] : null;
-                    $dec = isset($val['M']) ? $val['M'] : null;
-                    $jan = isset($val['N']) ? $val['N'] : null;
-                    $feb = isset($val['O']) ? $val['O'] : null;
-                    $mar = isset($val['P']) ? $val['P'] : null;
-                    $fy_2022_1st = isset($val['Q']) ? $val['Q'] : null;
-                    $fy_2022_2nd = isset($val['R']) ? $val['R'] : null;
-                    $fy_2022_total = isset($val['S']) ? $val['S'] : null;
+                    $dept = isset($val['A']) ? $val['A'] : null;
+                    $acc_code = isset($val['B']) ? $val['B'] : null;
+                    $acc_name = isset($val['C']) ? $val['C'] : null;
+                    $group = isset($val['D']) ? $val['D'] : null;
+                    $code = isset($val['E']) ? $val['E'] : null;
+                    $apr = isset($val['F']) ? $val['F'] : null;
+                    $may = isset($val['G']) ? $val['G'] : null;
+                    $jun = isset($val['H']) ? $val['H'] : null;
+                    $jul = isset($val['I']) ? $val['I'] : null;
+                    $aug = isset($val['J']) ? $val['J'] : null;
+                    $sept = isset($val['K']) ? $val['K'] : null;
+                    $oct = isset($val['L']) ? $val['L'] : null;
+                    $nov = isset($val['M']) ? $val['M'] : null;
+                    $dec = isset($val['N']) ? $val['N'] : null;
+                    $jan = isset($val['O']) ? $val['O'] : null;
+                    $feb = isset($val['P']) ? $val['P'] : null;
+                    $mar = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_1st = isset($val['R']) ? $val['R'] : null;
+                    $fy_2022_2nd = isset($val['S']) ? $val['S'] : null;
+                    $fy_2022_total = isset($val['T']) ? $val['T'] : null;
 
                     if ($acc_code) {
                         $cek = SalesRb::where([
@@ -586,6 +592,7 @@ class RequestController extends Controller
                                     ]);
                         } else {
                             $salesrb = new SalesRb;
+                            $salesrb->dept = $dept;
                             $salesrb->acc_code = $acc_code;
                             $salesrb->acc_name = $acc_name;
                             $salesrb->group = $group;
@@ -654,8 +661,8 @@ class RequestController extends Controller
 
     public function getDataDM(Request $request)
     {
-        $dm = DmaterialRb::select('acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
-
+        $dm = DmaterialRb::select('dept', 'acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
+        
         return DataTables::of($dm)->toJson();
     }
 
@@ -686,8 +693,8 @@ class RequestController extends Controller
 
                 if ($sheet->getCell("A$rw")->getCalculatedValue()) {
 
-                    $arrayPush[$i]['acc_code'] = $sheet->getCell("A$rw")->getCalculatedValue();
-                    $arrayPush[$i]['fy_total'] = $sheet->getCell("S$rw")->getCalculatedValue();
+                    $arrayPush[$i]['acc_code'] = $sheet->getCell("B$rw")->getCalculatedValue();
+                    $arrayPush[$i]['fy_total'] = $sheet->getCell("T$rw")->getCalculatedValue();
                 }
                 if ($sheet->getCell("A$rw")->getValue() == "") {
                     break;
@@ -795,6 +802,8 @@ class RequestController extends Controller
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     } else if ('S' == $cell->getColumn()) {
                         $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
+                    } else if ('T' == $cell->getColumn()) {
+                        $array_data[$rowIndex][$cell->getColumn()] = $cell->getFormattedValue();
                     }
                 }
             }
@@ -817,25 +826,26 @@ class RequestController extends Controller
             try {
                 foreach ($array_data as $val) {
 
-                    $acc_code = isset($val['A']) ? $val['A'] : null;
-                    $acc_name = isset($val['B']) ? $val['B'] : null;
-                    $group = isset($val['C']) ? $val['C'] : null;
-                    $code = isset($val['D']) ? $val['D'] : null;
-                    $apr = isset($val['E']) ? $val['E'] : null;
-                    $may = isset($val['F']) ? $val['F'] : null;
-                    $jun = isset($val['G']) ? $val['G'] : null;
-                    $jul = isset($val['H']) ? $val['H'] : null;
-                    $aug = isset($val['I']) ? $val['I'] : null;
-                    $sept = isset($val['J']) ? $val['J'] : null;
-                    $oct = isset($val['K']) ? $val['K'] : null;
-                    $nov = isset($val['L']) ? $val['L'] : null;
-                    $dec = isset($val['M']) ? $val['M'] : null;
-                    $jan = isset($val['N']) ? $val['N'] : null;
-                    $feb = isset($val['O']) ? $val['O'] : null;
-                    $mar = isset($val['P']) ? $val['P'] : null;
-                    $fy_2022_1st = isset($val['Q']) ? $val['Q'] : null;
-                    $fy_2022_2nd = isset($val['R']) ? $val['R'] : null;
-                    $fy_2022_total = isset($val['S']) ? $val['S'] : null;
+                    $dept = isset($val['A']) ? $val['A'] : null;
+                    $acc_code = isset($val['B']) ? $val['B'] : null;
+                    $acc_name = isset($val['C']) ? $val['C'] : null;
+                    $group = isset($val['D']) ? $val['D'] : null;
+                    $code = isset($val['E']) ? $val['E'] : null;
+                    $apr = isset($val['F']) ? $val['F'] : null;
+                    $may = isset($val['G']) ? $val['G'] : null;
+                    $jun = isset($val['H']) ? $val['H'] : null;
+                    $jul = isset($val['I']) ? $val['I'] : null;
+                    $aug = isset($val['J']) ? $val['J'] : null;
+                    $sept = isset($val['K']) ? $val['K'] : null;
+                    $oct = isset($val['L']) ? $val['L'] : null;
+                    $nov = isset($val['M']) ? $val['M'] : null;
+                    $dec = isset($val['N']) ? $val['N'] : null;
+                    $jan = isset($val['O']) ? $val['O'] : null;
+                    $feb = isset($val['P']) ? $val['P'] : null;
+                    $mar = isset($val['Q']) ? $val['Q'] : null;
+                    $fy_2022_1st = isset($val['R']) ? $val['R'] : null;
+                    $fy_2022_2nd = isset($val['S']) ? $val['S'] : null;
+                    $fy_2022_total = isset($val['T']) ? $val['T'] : null;
 
                     if ($acc_code) {
                         $cek = DmaterialRb::where([
@@ -868,6 +878,7 @@ class RequestController extends Controller
                                     ]);
                         } else {
                             $salesrb = new DmaterialRb;
+                            $salesrb->dept = $dept;
                             $salesrb->acc_code = $acc_code;
                             $salesrb->acc_name = $acc_name;
                             $salesrb->group = $group;
@@ -4012,7 +4023,7 @@ class RequestController extends Controller
         
         // Load the spreadsheet
         $reader = IOFactory::createReader('Xlsx');
-        $reader->setReadDataOnly(true);
+        // $reader->setReadDataOnly(true);
         // $spreadsheet = $reader->load(public_path('files/Summary_New_2024.xlsx'));
         $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
         
@@ -4159,6 +4170,7 @@ class RequestController extends Controller
         $electrik = array();
         $e = 0;
         foreach ($saleselectrik as $key => $val) {
+            $electrik[$e]['dept'] = $val->dept;
             $electrik[$e]['acc_code'] = $val->acc_code;
             $electrik[$e]['acc_name'] = $val->acc_name;
             $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4176,6 +4188,7 @@ class RequestController extends Controller
             $e++;
         }
         foreach ($materialelectrik as $key => $val) {
+            $electrik[$e]['dept'] = $val->dept;
             $electrik[$e]['acc_code'] = $val->acc_code;
             $electrik[$e]['acc_name'] = $val->acc_name;
             $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4199,6 +4212,7 @@ class RequestController extends Controller
             $acc_name = $acc[1];
             $electrik[$e]['acc_code'] = $acc_code;
             $electrik[$e]['acc_name'] = $acc_name;
+            $electrik[$e]['dept'] = $val->dept;
             $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
             $electrik[$e]['smei'] = str_replace(" ", "", $val->smei);
             $electrik[$e]['sjuni'] = str_replace(" ", "", $val->sjuni);
@@ -4215,6 +4229,7 @@ class RequestController extends Controller
         }
 
         foreach ($laborelectrik as $key => $val) {
+            $electrik[$e]['dept'] = $val->dept;
             $electrik[$e]['acc_code'] = $val->acc_code;
             $electrik[$e]['acc_name'] = $val->acc_name;
             $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4320,6 +4335,7 @@ class RequestController extends Controller
         $unit = array();
         $u = 0;
         foreach ($salesunit as $key => $val) {
+            $unit[$u]['dept'] = $val->dept;
             $unit[$u]['acc_code'] = $val->acc_code;
             $unit[$u]['acc_name'] = $val->acc_name;
             $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4337,6 +4353,7 @@ class RequestController extends Controller
             $u++;
         }
         foreach ($materialunit as $key => $val) {
+            $unit[$u]['dept'] = $val->dept;
             $unit[$u]['acc_code'] = $val->acc_code;
             $unit[$u]['acc_name'] = $val->acc_name;
             $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4360,6 +4377,7 @@ class RequestController extends Controller
             $acc_name = $acc[1];
             $unit[$u]['acc_code'] = $acc_code;
             $unit[$u]['acc_name'] = $acc_name;
+            $unit[$u]['dept'] = $val->dept;
             $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
             $unit[$u]['smei'] = str_replace(" ", "", $val->smei);
             $unit[$u]['sjuni'] = str_replace(" ", "", $val->sjuni);
@@ -4376,6 +4394,7 @@ class RequestController extends Controller
         }
 
         foreach ($laborunit as $key => $val) {
+            $unit[$u]['dept'] = $val->dept;
             $unit[$u]['acc_code'] = $val->acc_code;
             $unit[$u]['acc_name'] = $val->acc_name;
             $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4480,6 +4499,7 @@ class RequestController extends Controller
         $body = array();
         $b = 0;
         foreach ($salesbody as $key => $val) {
+            $body[$b]['dept'] = $val->dept;
             $body[$b]['acc_code'] = $val->acc_code;
             $body[$b]['acc_name'] = $val->acc_name;
             $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4499,6 +4519,7 @@ class RequestController extends Controller
 
 
         foreach ($materialbody as $key => $val) {
+            $body[$b]['dept'] = $val->dept;
             $body[$b]['acc_code'] = $val->acc_code;
             $body[$b]['acc_name'] = $val->acc_name;
             $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4522,6 +4543,7 @@ class RequestController extends Controller
             $acc_name = $acc[1];
             $body[$b]['acc_code'] = $acc_code;
             $body[$b]['acc_name'] = $acc_name;
+            $body[$b]['dept'] = $val->dept;
             $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
             $body[$b]['smei'] = str_replace(" ", "", $val->smei);
             $body[$b]['sjuni'] = str_replace(" ", "", $val->sjuni);
@@ -4538,6 +4560,7 @@ class RequestController extends Controller
         }
 
         foreach ($laborbody as $key => $val) {
+            $body[$b]['dept'] = $val->dept;
             $body[$b]['acc_code'] = $val->acc_code;
             $body[$b]['acc_name'] = $val->acc_name;
             $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4658,7 +4681,10 @@ class RequestController extends Controller
                 // dd($row);
                 $dcodedept[$i]['dept_code'] = $row['dept_code'];
                 $dcodedept[$i]['acc_code'] = (string) $row['acc_code'];
-                $dcodedept[$i]['dept_acc'] = $row['dept_code'] .'-'. (string) $row['acc_code'];
+
+                $cekCode = substr($row['acc_code'], 0, 5);
+                $codePrefix = ($cekCode == '51191') ? $cekCode : substr($row['acc_code'], 0, 4);
+                $dcodedept[$i]['dept_acc'] = $row['dept_code'] .'-'. (string)$codePrefix;
                 $sheetbydept->setCellValue('C' . $x, $row['dept_code'])
                     ->setCellValue('F' . $x, $row['acc_code']);
 
@@ -4669,12 +4695,11 @@ class RequestController extends Controller
             
           
             $sumDataBody = [];
-
             foreach ($body as $itembody) {
                 $cekCode = substr($itembody['acc_code'], 0, 5);
                 $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itembody['acc_code'], 0, 4);
                 $deptPrefix = $itembody['dept'];
-                $deptAccPrefix = $codePrefix .'-'.$codePrefix;
+                $deptAccPrefix = $deptPrefix .'-'.$codePrefix;
                 if (!isset($sumDataBody[$deptAccPrefix])) {
                     $sumDataBody[$deptAccPrefix] = [
                         'dept_acc' => $deptAccPrefix,
@@ -4690,11 +4715,12 @@ class RequestController extends Controller
                     }
                 }
             }
-            dd($sumDataBody);
+            // dd(json_encode($dcodedept));
+            // dd(json_encode($sumDataBody));
             $bb = 0;
             foreach ($sumDataBody as $key => $value) {
 
-                $keyb = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
+                $keyb = array_search((string) $value['dept_acc'], array_column($dcodedept, 'dept_acc'));
                 $keyyb = $keyb + 6;
                 
                 if ($keyyb > 0 && $keyb != false) {
@@ -4722,25 +4748,27 @@ class RequestController extends Controller
             foreach ($unit as $itemunit) {
                 $cekCode = substr($itemunit['acc_code'], 0, 5);
                 $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itemunit['acc_code'], 0, 4);
-                if (!isset($sumDataUnit[$codePrefix])) {
-                    $sumDataUnit[$codePrefix] = [
-                        'acc_code' => $codePrefix,
+                $deptPrefix = $itemunit['dept'];
+                $deptAccPrefix = $deptPrefix .'-'.$codePrefix;
+                if (!isset($sumDataUnit[$deptAccPrefix])) {
+                    $sumDataUnit[$deptAccPrefix] = [
+                        'dept_acc' => $deptAccPrefix,
                     ];
                 }
 
                 foreach ($itemunit as $key => $value) {
-                    if ($key !== 'acc_code') {
-                        if (!isset($sumDataUnit[$codePrefix][$key])) {
-                            $sumDataUnit[$codePrefix][$key] = 0;
+                    if ($key !== 'dept_acc') {
+                        if (!isset($sumDataUnit[$deptAccPrefix][$key])) {
+                            $sumDataUnit[$deptAccPrefix][$key] = 0;
                         }
-                        $sumDataUnit[$codePrefix][$key] += (float)$value;
+                        $sumDataUnit[$deptAccPrefix][$key] += (float)$value;
                     }
                 }
             }
             $uu = 0;
             foreach ($sumDataUnit as $key => $value) {
 
-                $keyu = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
+                $keyu = array_search((string) $value['dept_acc'], array_column($dcodedept, 'dept_acc'));
                 $keyyu = $keyu + 6;
 
                 if ($keyyu > 0 && $keyu != false) {
@@ -4767,25 +4795,27 @@ class RequestController extends Controller
             foreach ($electrik as $itemelectrik) {
                 $cekCode = substr($itemelectrik['acc_code'], 0, 5);
                 $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itemelectrik['acc_code'], 0, 4);
-                if (!isset($sumDataElectrik[$codePrefix])) {
-                    $sumDataElectrik[$codePrefix] = [
-                        'acc_code' => $codePrefix,
+                $deptPrefix = $itemelectrik['dept'];
+                $deptAccPrefix = $deptPrefix .'-'.$codePrefix;
+                if (!isset($sumDataElectrik[$deptAccPrefix])) {
+                    $sumDataElectrik[$deptAccPrefix] = [
+                        'dept_acc' => $deptAccPrefix,
                     ];
                 }
 
                 foreach ($itemelectrik as $key => $value) {
-                    if ($key !== 'acc_code') {
-                        if (!isset($sumDataElectrik[$codePrefix][$key])) {
-                            $sumDataElectrik[$codePrefix][$key] = 0;
+                    if ($key !== 'dept_acc') {
+                        if (!isset($sumDataElectrik[$deptAccPrefix][$key])) {
+                            $sumDataElectrik[$deptAccPrefix][$key] = 0;
                         }
-                        $sumDataElectrik[$codePrefix][$key] += (float)$value;
+                        $sumDataElectrik[$deptAccPrefix][$key] += (float)$value;
                     }
                 }
             }
             $ee = 0;
             foreach ($sumDataElectrik as $key => $value) {
 
-                $keye = array_search((string) $value['acc_code'], array_column($dcodedept, 'acc_code'));
+                $keye = array_search((string) $value['dept_acc'], array_column($dcodedept, 'dept_acc'));
                 $keyye = $keye + 6;
                 if ($keye > 0 && $keye != false) {
                     $sheetbydept->setCellValue('AR' . $keyye, $value['sapril'])
