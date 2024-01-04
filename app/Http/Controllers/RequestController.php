@@ -1840,7 +1840,7 @@ class RequestController extends Controller
             DB::raw('sum(maret) as maret')
         )
             ->where('group', 'body')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
         $codesU = ExpenseRb::select(
@@ -1859,7 +1859,7 @@ class RequestController extends Controller
             DB::raw('sum(maret) as maret')
         )
             ->where('group', 'unit')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
         // return $codesU;
         $salesB = SalesRb::select(
@@ -2489,14 +2489,14 @@ class RequestController extends Controller
         $master_code = MasterCode::all();
 
         $sales_code = SalesRb::select('acc_code', 'acc_name')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
         $material_code = DmaterialRb::select('acc_code', 'acc_name')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
         $expense_code = ExpenseRb::select('acc_code')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
 
@@ -2738,7 +2738,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'body')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
         $expense_unit = ExpenseRb::select(
             'acc_code',
@@ -2756,7 +2756,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'unit')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
         $expense_electrik = ExpenseRb::select(
             'acc_code',
@@ -2774,7 +2774,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'electric')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
         $expense_company_basis = ExpenseRb::select(
             'acc_code',
@@ -2791,7 +2791,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(februari),0) as sfebruari'),
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
 
@@ -4076,6 +4076,7 @@ class RequestController extends Controller
             $acc_code = $sheetbydept->getCell("F$sc")->getValue();
             $codedept[$a]['dept_code'] = $dept_code;
             $codedept[$a]['acc_code'] = $acc_code;
+            $codedept[$a]['dept_acc'] = $dept_code .'-'.$acc_code;
            
             $sc++;
             $a++;
@@ -4102,7 +4103,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'Electric')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
         $materialelectrik = DmaterialRb::select(
@@ -4123,7 +4124,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'Electric')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
         $expenseelectrik = ExpenseRb::select(
@@ -4143,7 +4144,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'electric')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
         $laborelectrik = LaborRb::select(
@@ -4164,7 +4165,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'Electric')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
         $electrik = array();
@@ -4266,7 +4267,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'unit')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
         $materialunit = DmaterialRb::select(
@@ -4287,7 +4288,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'unit')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
         $expenseunit = ExpenseRb::select(
@@ -4306,10 +4307,11 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(februari),0) as sfebruari'),
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
-            ->where('group', 'unit')
-            ->groupBy('acc_code')
+            ->where('group', 'Unit')
+            ->groupBy('dept','acc_code')
             ->get();
-
+        
+        // dd(json_encode($expenseunit));
 
         $laborunit = LaborRb::select(
             'dept',
@@ -4329,7 +4331,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'unit')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
         $unit = array();
@@ -4431,7 +4433,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'body')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
         // dd($salesbody);
         $materialbody = DmaterialRb::select(
@@ -4452,7 +4454,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'body')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
         // dd(json_encode($materialbody));
         $expensebody = ExpenseRb::select(
@@ -4472,7 +4474,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'body')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
 
 
@@ -4494,7 +4496,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'body')
-            ->groupBy('acc_code')
+            ->groupBy('dept','acc_code')
             ->get();
         $body = array();
         $b = 0;
@@ -4682,16 +4684,14 @@ class RequestController extends Controller
                 $dcodedept[$i]['dept_code'] = $row['dept_code'];
                 $dcodedept[$i]['acc_code'] = (string) $row['acc_code'];
 
-                $cekCode = substr($row['acc_code'], 0, 5);
-                $codePrefix = ($cekCode == '51191') ? $cekCode : substr($row['acc_code'], 0, 4);
-                $dcodedept[$i]['dept_acc'] = $row['dept_code'] .'-'. (string)$codePrefix;
+                $dcodedept[$i]['dept_acc'] = $row['dept_acc'];
                 $sheetbydept->setCellValue('C' . $x, $row['dept_code'])
                     ->setCellValue('F' . $x, $row['acc_code']);
 
                 $i++;
                 $x++;
             }
-
+            // dd(json_encode($dcodedept));
             
           
             $sumDataBody = [];
@@ -4719,11 +4719,10 @@ class RequestController extends Controller
             // dd(json_encode($sumDataBody));
             $bb = 0;
             foreach ($sumDataBody as $key => $value) {
-
                 $keyb = array_search((string) $value['dept_acc'], array_column($dcodedept, 'dept_acc'));
-                $keyyb = $keyb + 6;
                 
-                if ($keyyb > 0 && $keyb != false) {
+                if ($keyb != false) {
+                    $keyyb = $keyb + 6;
                     # code...
                     $sheetbydept->setCellValue('R' . $keyyb, $value['sapril'])
                         ->setCellValue('S' . $keyyb, $value['smei'])
@@ -4769,9 +4768,9 @@ class RequestController extends Controller
             foreach ($sumDataUnit as $key => $value) {
 
                 $keyu = array_search((string) $value['dept_acc'], array_column($dcodedept, 'dept_acc'));
-                $keyyu = $keyu + 6;
-
-                if ($keyyu > 0 && $keyu != false) {
+                
+                if ($keyu != false) {
+                    $keyyu = $keyu + 6;
                 
                 $sheetbydept->setCellValue('AE' . $keyyu, $value['sapril'])
                     ->setCellValue('AF' . $keyyu, $value['smei'])
@@ -4816,8 +4815,8 @@ class RequestController extends Controller
             foreach ($sumDataElectrik as $key => $value) {
 
                 $keye = array_search((string) $value['dept_acc'], array_column($dcodedept, 'dept_acc'));
-                $keyye = $keye + 6;
-                if ($keye > 0 && $keye != false) {
+                if ($keye != false) {
+                    $keyye = $keye + 6;
                     $sheetbydept->setCellValue('AR' . $keyye, $value['sapril'])
                         ->setCellValue('AS' . $keyye, $value['smei'])
                         ->setCellValue('AT' . $keyye, $value['sjuni'])
