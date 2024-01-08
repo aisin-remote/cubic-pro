@@ -4071,13 +4071,11 @@ class RequestController extends Controller
         $codedept = array();
         $a = 0;
         foreach ($sheetbydept->getRowIterator() as $row) {
-
             $dept_code = $sheetbydept->getCell("C$sc")->getValue();
             $acc_code = $sheetbydept->getCell("F$sc")->getValue();
             $codedept[$a]['dept_code'] = $dept_code;
             $codedept[$a]['acc_code'] = $acc_code;
             $codedept[$a]['dept_acc'] = $dept_code .'-'.$acc_code;
-           
             $sc++;
             $a++;
             if ($a === 238) {
@@ -4085,93 +4083,22 @@ class RequestController extends Controller
             }
         }
 
-        $saleselectrik = SalesRb::select(
-            'dept',
-            'acc_name',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'Electric')
-            ->groupBy('dept','acc_code')
-            ->get();
+        $salesElektrikDetail =  SalesRb::getSalesElektrikDetail();
+        $materialElektrikDetail = DmaterialRb::getMaterialElektrikDetail();
+        $expenseElektrikDetail = ExpenseRb::getExpenseElektrikDetail();
+        $laborElektrikDetail = LaborRb::getLaborElektrikDetail();
+ 
+        // dept
+        $salesElektrikDept =  SalesRb::getSalesElektrikDept();
+        $materialElektrikDept = DmaterialRb::getMaterialElektrikDept();
+        $expenseElektrikDept = ExpenseRb::getExpenseElektrikDept();
+        $laborElektrikDept = LaborRb::getLaborElektrikDept();
+ 
 
-        $materialelectrik = DmaterialRb::select(
-            'dept',
-            'acc_name',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'Electric')
-            ->groupBy('dept','acc_code')
-            ->get();
-
-        $expenseelectrik = ExpenseRb::select(
-            'dept',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'electric')
-            ->groupBy('dept','acc_code')
-            ->get();
-
-        $laborelectrik = LaborRb::select(
-            'dept',
-            'acc_name',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'Electric')
-            ->groupBy('dept','acc_code')
-            ->get();
 
         $electrik = array();
         $e = 0;
-        foreach ($saleselectrik as $key => $val) {
-            $electrik[$e]['dept'] = $val->dept;
+        foreach ($salesElektrikDetail as $key => $val) {
             $electrik[$e]['acc_code'] = $val->acc_code;
             $electrik[$e]['acc_name'] = $val->acc_name;
             $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4188,8 +4115,7 @@ class RequestController extends Controller
             $electrik[$e]['smaret'] = str_replace(" ", "", $val->smaret);
             $e++;
         }
-        foreach ($materialelectrik as $key => $val) {
-            $electrik[$e]['dept'] = $val->dept;
+        foreach ($materialElektrikDetail as $key => $val) {
             $electrik[$e]['acc_code'] = $val->acc_code;
             $electrik[$e]['acc_name'] = $val->acc_name;
             $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4206,14 +4132,13 @@ class RequestController extends Controller
             $electrik[$e]['smaret'] = str_replace(" ", "", $val->smaret);
             $e++;
         }
-        foreach ($expenseelectrik as $key => $val) {
+        foreach ($expenseElektrikDetail as $key => $val) {
             // dd($value);
             $acc = explode("_", $val->acc_code);
             $acc_code = $acc[0];
             $acc_name = $acc[1];
             $electrik[$e]['acc_code'] = $acc_code;
             $electrik[$e]['acc_name'] = $acc_name;
-            $electrik[$e]['dept'] = $val->dept;
             $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
             $electrik[$e]['smei'] = str_replace(" ", "", $val->smei);
             $electrik[$e]['sjuni'] = str_replace(" ", "", $val->sjuni);
@@ -4229,8 +4154,7 @@ class RequestController extends Controller
             $e++;
         }
 
-        foreach ($laborelectrik as $key => $val) {
-            $electrik[$e]['dept'] = $val->dept;
+        foreach ($laborElektrikDetail as $key => $val) {
             $electrik[$e]['acc_code'] = $val->acc_code;
             $electrik[$e]['acc_name'] = $val->acc_name;
             $electrik[$e]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4249,95 +4173,104 @@ class RequestController extends Controller
         }
 
 
-        $salesunit = SalesRb::select(
-            'dept',
-            'acc_name',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'unit')
-            ->groupBy('dept','acc_code')
-            ->get();
-
-        $materialunit = DmaterialRb::select(
-            'dept',
-            'acc_name',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'unit')
-            ->groupBy('dept','acc_code')
-            ->get();
-
-        $expenseunit = ExpenseRb::select(
-            'dept',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'Unit')
-            ->groupBy('dept','acc_code')
-            ->get();
         
-        // dd(json_encode($expenseunit));
+        $electrikdept = array();
+        $e = 0;
+        foreach ($salesElektrikDept as $key => $val) {
+            $electrikdept[$e]['dept'] = $val->dept;
+            $electrikdept[$e]['acc_code'] = $val->acc_code;
+            $electrikdept[$e]['acc_name'] = $val->acc_name;
+            $electrikdept[$e]['sapril'] = str_replace(" ", "", $val->sapril);
+            $electrikdept[$e]['smei'] = str_replace(" ", "", $val->smei);
+            $electrikdept[$e]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $electrikdept[$e]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $electrikdept[$e]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $electrikdept[$e]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $electrikdept[$e]['soktober'] = str_replace(" ", "", $val->soktober);
+            $electrikdept[$e]['snovember'] = str_replace(" ", "", $val->snovember);
+            $electrikdept[$e]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $electrikdept[$e]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $electrikdept[$e]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $electrikdept[$e]['smaret'] = str_replace(" ", "", $val->smaret);
+            $e++;
+        }
+        foreach ($materialElektrikDept as $key => $val) {
+            $electrikdept[$e]['dept'] = $val->dept;
+            $electrikdept[$e]['acc_code'] = $val->acc_code;
+            $electrikdept[$e]['acc_name'] = $val->acc_name;
+            $electrikdept[$e]['sapril'] = str_replace(" ", "", $val->sapril);
+            $electrikdept[$e]['smei'] = str_replace(" ", "", $val->smei);
+            $electrikdept[$e]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $electrikdept[$e]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $electrikdept[$e]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $electrikdept[$e]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $electrikdept[$e]['soktober'] = str_replace(" ", "", $val->soktober);
+            $electrikdept[$e]['snovember'] = str_replace(" ", "", $val->snovember);
+            $electrikdept[$e]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $electrikdept[$e]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $electrikdept[$e]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $electrikdept[$e]['smaret'] = str_replace(" ", "", $val->smaret);
+            $e++;
+        }
+        foreach ($expenseElektrikDept as $key => $val) {
+            // dd($value);
+            $acc = explode("_", $val->acc_code);
+            $acc_code = $acc[0];
+            $acc_name = $acc[1];
+            $electrikdept[$e]['acc_code'] = $acc_code;
+            $electrikdept[$e]['acc_name'] = $acc_name;
+            $electrikdept[$e]['dept'] = $val->dept;
+            $electrikdept[$e]['sapril'] = str_replace(" ", "", $val->sapril);
+            $electrikdept[$e]['smei'] = str_replace(" ", "", $val->smei);
+            $electrikdept[$e]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $electrikdept[$e]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $electrikdept[$e]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $electrikdept[$e]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $electrikdept[$e]['soktober'] = str_replace(" ", "", $val->soktober);
+            $electrikdept[$e]['snovember'] = str_replace(" ", "", $val->snovember);
+            $electrikdept[$e]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $electrikdept[$e]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $electrikdept[$e]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $electrikdept[$e]['smaret'] = str_replace(" ", "", $val->smaret);
+            $e++;
+        }
 
-        $laborunit = LaborRb::select(
-            'dept',
-            'acc_name',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'unit')
-            ->groupBy('dept','acc_code')
-            ->get();
+        foreach ($laborElektrikDept as $key => $val) {
+            $electrikdept[$e]['dept'] = $val->dept;
+            $electrikdept[$e]['acc_code'] = $val->acc_code;
+            $electrikdept[$e]['acc_name'] = $val->acc_name;
+            $electrikdept[$e]['sapril'] = str_replace(" ", "", $val->sapril);
+            $electrikdept[$e]['smei'] = str_replace(" ", "", $val->smei);
+            $electrikdept[$e]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $electrikdept[$e]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $electrikdept[$e]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $electrikdept[$e]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $electrikdept[$e]['soktober'] = str_replace(" ", "", $val->soktober);
+            $electrikdept[$e]['snovember'] = str_replace(" ", "", $val->snovember);
+            $electrikdept[$e]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $electrikdept[$e]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $electrikdept[$e]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $electrikdept[$e]['smaret'] = str_replace(" ", "", $val->smaret);
+            $e++;
+        }
+
+
+
+        $salesUnitDetail =  SalesRb::getSalesUnitDetail();
+        $materialUnitDetail = DmaterialRb::getMaterialUnitDetail();
+        $expenseUnitDetail = ExpenseRb::getExpenseUnitDetail();
+        $laborUnitDetail = LaborRb::getLaborUnitDetail();
+ 
+        // dept
+        $salesUnitDept =  SalesRb::getSalesUnitDept();
+        $materialUnitDept = DmaterialRb::getMaterialUnitDept();
+        $expenseUnitDept = ExpenseRb::getExpenseUnitDept();
+        $laborUnitDept = LaborRb::getLaborUnitDept();
+        
 
         $unit = array();
         $u = 0;
-        foreach ($salesunit as $key => $val) {
-            $unit[$u]['dept'] = $val->dept;
+        foreach ($salesUnitDetail as $key => $val) {
             $unit[$u]['acc_code'] = $val->acc_code;
             $unit[$u]['acc_name'] = $val->acc_name;
             $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4354,8 +4287,7 @@ class RequestController extends Controller
             $unit[$u]['smaret'] = str_replace(" ", "", $val->smaret);
             $u++;
         }
-        foreach ($materialunit as $key => $val) {
-            $unit[$u]['dept'] = $val->dept;
+        foreach ($materialUnitDetail as $key => $val) {
             $unit[$u]['acc_code'] = $val->acc_code;
             $unit[$u]['acc_name'] = $val->acc_name;
             $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4372,14 +4304,13 @@ class RequestController extends Controller
             $unit[$u]['smaret'] = str_replace(" ", "", $val->smaret);
             $u++;
         }
-        foreach ($expenseunit as $key => $val) {
+        foreach ($expenseUnitDetail as $key => $val) {
             // dd($value);
             $acc = explode("_", $val->acc_code);
             $acc_code = $acc[0];
             $acc_name = $acc[1];
             $unit[$u]['acc_code'] = $acc_code;
             $unit[$u]['acc_name'] = $acc_name;
-            $unit[$u]['dept'] = $val->dept;
             $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
             $unit[$u]['smei'] = str_replace(" ", "", $val->smei);
             $unit[$u]['sjuni'] = str_replace(" ", "", $val->sjuni);
@@ -4395,8 +4326,7 @@ class RequestController extends Controller
             $u++;
         }
 
-        foreach ($laborunit as $key => $val) {
-            $unit[$u]['dept'] = $val->dept;
+        foreach ($laborUnitDetail as $key => $val) {
             $unit[$u]['acc_code'] = $val->acc_code;
             $unit[$u]['acc_name'] = $val->acc_name;
             $unit[$u]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4415,93 +4345,102 @@ class RequestController extends Controller
         }
 
 
-        $salesbody = SalesRb::select(
-            'dept',
-            'acc_name',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'body')
-            ->groupBy('dept','acc_code')
-            ->get();
-        // dd($salesbody);
-        $materialbody = DmaterialRb::select(
-            'dept',
-            'acc_name',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'body')
-            ->groupBy('dept','acc_code')
-            ->get();
-        // dd(json_encode($materialbody));
-        $expensebody = ExpenseRb::select(
-            'dept',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'body')
-            ->groupBy('dept','acc_code')
-            ->get();
+        $unitdept = array();
+        $u = 0;
+        foreach ($salesUnitDept as $key => $val) {
+            $unitdept[$u]['dept'] = $val->dept;
+            $unitdept[$u]['acc_code'] = $val->acc_code;
+            $unitdept[$u]['acc_name'] = $val->acc_name;
+            $unitdept[$u]['sapril'] = str_replace(" ", "", $val->sapril);
+            $unitdept[$u]['smei'] = str_replace(" ", "", $val->smei);
+            $unitdept[$u]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $unitdept[$u]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $unitdept[$u]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $unitdept[$u]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $unitdept[$u]['soktober'] = str_replace(" ", "", $val->soktober);
+            $unitdept[$u]['snovember'] = str_replace(" ", "", $val->snovember);
+            $unitdept[$u]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $unitdept[$u]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $unitdept[$u]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $unitdept[$u]['smaret'] = str_replace(" ", "", $val->smaret);
+            $u++;
+        }
+        foreach ($materialUnitDept as $key => $val) {
+            $unitdept[$u]['dept'] = $val->dept;
+            $unitdept[$u]['acc_code'] = $val->acc_code;
+            $unitdept[$u]['acc_name'] = $val->acc_name;
+            $unitdept[$u]['sapril'] = str_replace(" ", "", $val->sapril);
+            $unitdept[$u]['smei'] = str_replace(" ", "", $val->smei);
+            $unitdept[$u]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $unitdept[$u]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $unitdept[$u]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $unitdept[$u]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $unitdept[$u]['soktober'] = str_replace(" ", "", $val->soktober);
+            $unitdept[$u]['snovember'] = str_replace(" ", "", $val->snovember);
+            $unitdept[$u]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $unitdept[$u]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $unitdept[$u]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $unitdept[$u]['smaret'] = str_replace(" ", "", $val->smaret);
+            $u++;
+        }
+        foreach ($expenseUnitDept as $key => $val) {
+            // dd($value);
+            $acc = explode("_", $val->acc_code);
+            $acc_code = $acc[0];
+            $acc_name = $acc[1];
+            $unitdept[$u]['acc_code'] = $acc_code;
+            $unitdept[$u]['acc_name'] = $acc_name;
+            $unitdept[$u]['dept'] = $val->dept;
+            $unitdept[$u]['sapril'] = str_replace(" ", "", $val->sapril);
+            $unitdept[$u]['smei'] = str_replace(" ", "", $val->smei);
+            $unitdept[$u]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $unitdept[$u]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $unitdept[$u]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $unitdept[$u]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $unitdept[$u]['soktober'] = str_replace(" ", "", $val->soktober);
+            $unitdept[$u]['snovember'] = str_replace(" ", "", $val->snovember);
+            $unitdept[$u]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $unitdept[$u]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $unitdept[$u]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $unitdept[$u]['smaret'] = str_replace(" ", "", $val->smaret);
+            $u++;
+        }
+
+        foreach ($laborUnitDept as $key => $val) {
+            $unitdept[$u]['dept'] = $val->dept;
+            $unitdept[$u]['acc_code'] = $val->acc_code;
+            $unitdept[$u]['acc_name'] = $val->acc_name;
+            $unitdept[$u]['sapril'] = str_replace(" ", "", $val->sapril);
+            $unitdept[$u]['smei'] = str_replace(" ", "", $val->smei);
+            $unitdept[$u]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $unitdept[$u]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $unitdept[$u]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $unitdept[$u]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $unitdept[$u]['soktober'] = str_replace(" ", "", $val->soktober);
+            $unitdept[$u]['snovember'] = str_replace(" ", "", $val->snovember);
+            $unitdept[$u]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $unitdept[$u]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $unitdept[$u]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $unitdept[$u]['smaret'] = str_replace(" ", "", $val->smaret);
+            $u++;
+        }
 
 
-        $laborbody = LaborRb::select(
-            'dept',
-            'acc_name',
-            'acc_code',
-            DB::raw('ifnull(sum(april),0) as sapril'),
-            DB::raw('ifnull(sum(mei),0) as smei'),
-            DB::raw('ifnull(sum(juni),0) as sjuni'),
-            DB::raw('ifnull(sum(juli),0) as sjuli'),
-            DB::raw('ifnull(sum(agustus),0) as sagustus'),
-            DB::raw('ifnull(sum(september),0) as sseptember'),
-            DB::raw('ifnull(sum(oktober),0) as soktober'),
-            DB::raw('ifnull(sum(november),0) as snovember'),
-            DB::raw('ifnull(sum(december),0) as sdecember'),
-            DB::raw('ifnull(sum(januari),0) as sjanuari'),
-            DB::raw('ifnull(sum(februari),0) as sfebruari'),
-            DB::raw('ifnull(sum(maret),0) as smaret')
-        )
-            ->where('group', 'body')
-            ->groupBy('dept','acc_code')
-            ->get();
+        $salesBodyDetail =  SalesRb::getSalesBodyDetail();
+        $materialBodyDetail = DmaterialRb::getMaterialBodyDetail();
+        $expenseBodyDetail = ExpenseRb::getExpenseBodyDetail();
+        $laborBodyDetail = LaborRb::getLaborBodyDetail();
+ 
+        // dept
+        $salesBodyDept =  SalesRb::getSalesBodyDept();
+        $materialBodyDept = DmaterialRb::getMaterialBodyDept();
+        $expenseBodyDept = ExpenseRb::getExpenseBodyDept();
+        $laborBodyDept = LaborRb::getLaborBodyDept();
+        
+       
         $body = array();
         $b = 0;
-        foreach ($salesbody as $key => $val) {
-            $body[$b]['dept'] = $val->dept;
+        foreach ($salesBodyDetail as $key => $val) {
             $body[$b]['acc_code'] = $val->acc_code;
             $body[$b]['acc_name'] = $val->acc_name;
             $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4520,8 +4459,7 @@ class RequestController extends Controller
         }
 
 
-        foreach ($materialbody as $key => $val) {
-            $body[$b]['dept'] = $val->dept;
+        foreach ($materialBodyDetail as $key => $val) {
             $body[$b]['acc_code'] = $val->acc_code;
             $body[$b]['acc_name'] = $val->acc_name;
             $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4538,14 +4476,13 @@ class RequestController extends Controller
             $body[$b]['smaret'] = str_replace(" ", "", $val->smaret);
             $b++;
         }
-        foreach ($expensebody as $key => $val) {
+        foreach ($expenseBodyDetail as $key => $val) {
             // dd($value);
             $acc = explode("_", $val->acc_code);
             $acc_code = $acc[0];
             $acc_name = $acc[1];
             $body[$b]['acc_code'] = $acc_code;
             $body[$b]['acc_name'] = $acc_name;
-            $body[$b]['dept'] = $val->dept;
             $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
             $body[$b]['smei'] = str_replace(" ", "", $val->smei);
             $body[$b]['sjuni'] = str_replace(" ", "", $val->sjuni);
@@ -4561,8 +4498,7 @@ class RequestController extends Controller
             $b++;
         }
 
-        foreach ($laborbody as $key => $val) {
-            $body[$b]['dept'] = $val->dept;
+        foreach ($laborBodyDetail as $key => $val) {
             $body[$b]['acc_code'] = $val->acc_code;
             $body[$b]['acc_name'] = $val->acc_name;
             $body[$b]['sapril'] = str_replace(" ", "", $val->sapril);
@@ -4577,6 +4513,89 @@ class RequestController extends Controller
             $body[$b]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
             $body[$b]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
             $body[$b]['smaret'] = str_replace(" ", "", $val->smaret);
+            $b++;
+        }
+
+        // dept
+        $bodydept = array();
+        $b = 0;
+        foreach ($salesBodyDept as $key => $val) {
+            $bodydept[$b]['dept'] = $val->dept;
+            $bodydept[$b]['acc_code'] = $val->acc_code;
+            $bodydept[$b]['acc_name'] = $val->acc_name;
+            $bodydept[$b]['sapril'] = str_replace(" ", "", $val->sapril);
+            $bodydept[$b]['smei'] = str_replace(" ", "", $val->smei);
+            $bodydept[$b]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $bodydept[$b]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $bodydept[$b]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $bodydept[$b]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $bodydept[$b]['soktober'] = str_replace(" ", "", $val->soktober);
+            $bodydept[$b]['snovember'] = str_replace(" ", "", $val->snovember);
+            $bodydept[$b]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $bodydept[$b]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $bodydept[$b]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $bodydept[$b]['smaret'] = str_replace(" ", "", $val->smaret);
+            $b++;
+        }
+
+
+        foreach ($materialBodyDept as $key => $val) {
+            $bodydept[$b]['dept'] = $val->dept;
+            $bodydept[$b]['acc_code'] = $val->acc_code;
+            $bodydept[$b]['acc_name'] = $val->acc_name;
+            $bodydept[$b]['sapril'] = str_replace(" ", "", $val->sapril);
+            $bodydept[$b]['smei'] = str_replace(" ", "", $val->smei);
+            $bodydept[$b]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $bodydept[$b]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $bodydept[$b]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $bodydept[$b]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $bodydept[$b]['soktober'] = str_replace(" ", "", $val->soktober);
+            $bodydept[$b]['snovember'] = str_replace(" ", "", $val->snovember);
+            $bodydept[$b]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $bodydept[$b]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $bodydept[$b]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $bodydept[$b]['smaret'] = str_replace(" ", "", $val->smaret);
+            $b++;
+        }
+        foreach ($expenseBodyDept as $key => $val) {
+            // dd($value);
+            $acc = explode("_", $val->acc_code);
+            $acc_code = $acc[0];
+            $acc_name = $acc[1];
+            $bodydept[$b]['acc_code'] = $acc_code;
+            $bodydept[$b]['acc_name'] = $acc_name;
+            $bodydept[$b]['dept'] = $val->dept;
+            $bodydept[$b]['sapril'] = str_replace(" ", "", $val->sapril);
+            $bodydept[$b]['smei'] = str_replace(" ", "", $val->smei);
+            $bodydept[$b]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $bodydept[$b]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $bodydept[$b]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $bodydept[$b]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $bodydept[$b]['soktober'] = str_replace(" ", "", $val->soktober);
+            $bodydept[$b]['snovember'] = str_replace(" ", "", $val->snovember);
+            $bodydept[$b]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $bodydept[$b]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $bodydept[$b]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $bodydept[$b]['smaret'] = str_replace(" ", "", $val->smaret);
+            $b++;
+        }
+
+        foreach ($laborBodyDept as $key => $val) {
+            $bodydept[$b]['dept'] = $val->dept;
+            $bodydept[$b]['acc_code'] = $val->acc_code;
+            $bodydept[$b]['acc_name'] = $val->acc_name;
+            $bodydept[$b]['sapril'] = str_replace(" ", "", $val->sapril);
+            $bodydept[$b]['smei'] = str_replace(" ", "", $val->smei);
+            $bodydept[$b]['sjuni'] = str_replace(" ", "", $val->sjuni);
+            $bodydept[$b]['sjuli'] = str_replace(" ", "", $val->sjuli);
+            $bodydept[$b]['sagustus'] = str_replace(" ", "", $val->sagustus);
+            $bodydept[$b]['sseptember'] = str_replace(" ", "", $val->sseptember);
+            $bodydept[$b]['soktober'] = str_replace(" ", "", $val->soktober);
+            $bodydept[$b]['snovember'] = str_replace(" ", "", $val->snovember);
+            $bodydept[$b]['sdecember'] = str_replace(" ", "", $val->sdecember);
+            $bodydept[$b]['sjanuari'] = str_replace(" ", "", $val->sjanuari);
+            $bodydept[$b]['sfebruari'] = str_replace(" ", "", $val->sfebruari);
+            $bodydept[$b]['smaret'] = str_replace(" ", "", $val->smaret);
             $b++;
         }
         // dd($code);
@@ -4695,7 +4714,7 @@ class RequestController extends Controller
             
           
             $sumDataBody = [];
-            foreach ($body as $itembody) {
+            foreach ($bodydept as $itembody) {
                 $cekCode = substr($itembody['acc_code'], 0, 5);
                 $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itembody['acc_code'], 0, 4);
                 $deptPrefix = $itembody['dept'];
@@ -4744,7 +4763,7 @@ class RequestController extends Controller
             
             $sumDataUnit = [];
 
-            foreach ($unit as $itemunit) {
+            foreach ($unitdept as $itemunit) {
                 $cekCode = substr($itemunit['acc_code'], 0, 5);
                 $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itemunit['acc_code'], 0, 4);
                 $deptPrefix = $itemunit['dept'];
@@ -4791,7 +4810,7 @@ class RequestController extends Controller
 
             $sumDataElectrik = [];
 
-            foreach ($electrik as $itemelectrik) {
+            foreach ($electrikdept as $itemelectrik) {
                 $cekCode = substr($itemelectrik['acc_code'], 0, 5);
                 $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itemelectrik['acc_code'], 0, 4);
                 $deptPrefix = $itemelectrik['dept'];
