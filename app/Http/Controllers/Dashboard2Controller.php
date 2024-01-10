@@ -1285,8 +1285,6 @@ class Dashboard2Controller extends Controller
             ->union($capex)
             ->get()->toArray();
 
-        dd($budgets);
-
         $spreadsheet->setActiveSheetIndex(0)
             ->setCellValue('A1', 'Budget Number')
             ->setCellValue('B1', 'Budget Name')
