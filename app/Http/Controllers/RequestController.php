@@ -4988,7 +4988,7 @@ class RequestController extends Controller
                     $sheetdept->setCellValue('Q' . $x, $AIIA[0]['sseptember'] ?? 0);
                     $sheetdept->setCellValue('R' . $x, $AIIA[0]['soktober'] ?? 0);
                     $sheetdept->setCellValue('S' . $x, $AIIA[0]['snovember'] ?? 0);
-                    $sheetdept->setCellValue('T' . $x, $AIIA[0]['sdesember'] ?? 0);
+                    $sheetdept->setCellValue('T' . $x, $AIIA[0]['sdecember'] ?? 0);
                     $sheetdept->setCellValue('U' . $x, $AIIA[0]['sjanuari'] ?? 0);
                     $sheetdept->setCellValue('V' . $x, $AIIA[0]['sfebruari'] ?? 0);
                     $sheetdept->setCellValue('W' . $x, $AIIA[0]['smaret'] ?? 0);
@@ -5015,6 +5015,8 @@ class RequestController extends Controller
                         ->where('dept', $deptcode)
                         ->groupBy('type', 'dept')
                         ->get();
+
+                      
                     $sheetdept->setCellValue('Y' . $x, $SUPPLIER[0]['sapril'] ?? 0);
                     $sheetdept->setCellValue('Z' . $x, $SUPPLIER[0]['smei'] ?? 0);
                     $sheetdept->setCellValue('AA' . $x, $SUPPLIER[0]['sjuni'] ?? 0);
@@ -5023,7 +5025,7 @@ class RequestController extends Controller
                     $sheetdept->setCellValue('AD' . $x, $SUPPLIER[0]['sseptember'] ?? 0);
                     $sheetdept->setCellValue('AE' . $x, $SUPPLIER[0]['soktober'] ?? 0);
                     $sheetdept->setCellValue('AF' . $x, $SUPPLIER[0]['snovember'] ?? 0);
-                    $sheetdept->setCellValue('AG' . $x, $SUPPLIER[0]['sdesember'] ?? 0);
+                    $sheetdept->setCellValue('AG' . $x, $SUPPLIER[0]['sdecember'] ?? 0);
                     $sheetdept->setCellValue('AH' . $x, $SUPPLIER[0]['sjanuari'] ?? 0);
                     $sheetdept->setCellValue('AI' . $x, $SUPPLIER[0]['sfebruari'] ?? 0);
                     $sheetdept->setCellValue('AJ' . $x, $SUPPLIER[0]['smaret'] ?? 0);
@@ -5050,18 +5052,22 @@ class RequestController extends Controller
                         ->where('dept', $deptcode)
                         ->groupBy('type', 'dept')
                         ->get();
-                    $sheetdept->setCellValue('AK' . $x, $SUPPLIER[0]['sapril'] ?? 0);
-                    $sheetdept->setCellValue('AM' . $x, $SUPPLIER[0]['smei'] ?? 0);
-                    $sheetdept->setCellValue('AN' . $x, $SUPPLIER[0]['sjuni'] ?? 0);
-                    $sheetdept->setCellValue('AO' . $x, $SUPPLIER[0]['sjuli'] ?? 0);
-                    $sheetdept->setCellValue('AP' . $x, $SUPPLIER[0]['saagustus'] ?? 0);
-                    $sheetdept->setCellValue('AQ' . $x, $SUPPLIER[0]['sseptember'] ?? 0);
-                    $sheetdept->setCellValue('AR' . $x, $SUPPLIER[0]['soktober'] ?? 0);
-                    $sheetdept->setCellValue('AS' . $x, $SUPPLIER[0]['snovember'] ?? 0);
-                    $sheetdept->setCellValue('AT' . $x, $SUPPLIER[0]['sdesember'] ?? 0);
-                    $sheetdept->setCellValue('AU' . $x, $SUPPLIER[0]['sjanuari'] ?? 0);
-                    $sheetdept->setCellValue('AV' . $x, $SUPPLIER[0]['sfebruari'] ?? 0);
-                    $sheetdept->setCellValue('AW' . $x, $SUPPLIER[0]['smaret'] ?? 0);
+
+                        // if(count($LAINNYA) >0){
+                        //     dd($LAINNYA);
+                        // }
+                    $sheetdept->setCellValue('AL' . $x, $LAINNYA[0]['sapril'] ?? 0);
+                    $sheetdept->setCellValue('AM' . $x, $LAINNYA[0]['smei'] ?? 0);
+                    $sheetdept->setCellValue('AN' . $x, $LAINNYA[0]['sjuni'] ?? 0);
+                    $sheetdept->setCellValue('AO' . $x, $LAINNYA[0]['sjuli'] ?? 0);
+                    $sheetdept->setCellValue('AP' . $x, $LAINNYA[0]['saagustus'] ?? 0);
+                    $sheetdept->setCellValue('AQ' . $x, $LAINNYA[0]['sseptember'] ?? 0);
+                    $sheetdept->setCellValue('AR' . $x, $LAINNYA[0]['soktober'] ?? 0);
+                    $sheetdept->setCellValue('AS' . $x, $LAINNYA[0]['snovember'] ?? 0);
+                    $sheetdept->setCellValue('AT' . $x, $LAINNYA[0]['sdecember'] ?? 0);
+                    $sheetdept->setCellValue('AU' . $x, $LAINNYA[0]['sjanuari'] ?? 0);
+                    $sheetdept->setCellValue('AV' . $x, $LAINNYA[0]['sfebruari'] ?? 0);
+                    $sheetdept->setCellValue('AW' . $x, $LAINNYA[0]['smaret'] ?? 0);
                 }
 
                 $i++;
@@ -5108,7 +5114,7 @@ class RequestController extends Controller
                 $sheettype->setCellValue('N' . $x, $AIIA[0]['sseptember'] ?? 0);
                 $sheettype->setCellValue('O' . $x, $AIIA[0]['soktober'] ?? 0);
                 $sheettype->setCellValue('P' . $x, $AIIA[0]['snovember'] ?? 0);
-                $sheettype->setCellValue('Q' . $x, $AIIA[0]['sdesember'] ?? 0);
+                $sheettype->setCellValue('Q' . $x, $AIIA[0]['sdecember'] ?? 0);
                 $sheettype->setCellValue('R' . $x, $AIIA[0]['sjanuari'] ?? 0);
                 $sheettype->setCellValue('S' . $x, $AIIA[0]['sfebruari'] ?? 0);
                 $sheettype->setCellValue('T' . $x, $AIIA[0]['smaret'] ?? 0);
@@ -5143,7 +5149,7 @@ class RequestController extends Controller
                 $sheettype->setCellValue('AA' . $x, $SUPPLIER[0]['sseptember'] ?? 0);
                 $sheettype->setCellValue('AB' . $x, $SUPPLIER[0]['soktober'] ?? 0);
                 $sheettype->setCellValue('AC' . $x, $SUPPLIER[0]['snovember'] ?? 0);
-                $sheettype->setCellValue('AD' . $x, $SUPPLIER[0]['sdesember'] ?? 0);
+                $sheettype->setCellValue('AD' . $x, $SUPPLIER[0]['sdecember'] ?? 0);
                 $sheettype->setCellValue('AE' . $x, $SUPPLIER[0]['sjanuari'] ?? 0);
                 $sheettype->setCellValue('AF' . $x, $SUPPLIER[0]['sfebruari'] ?? 0);
                 $sheettype->setCellValue('AG' . $x, $SUPPLIER[0]['smaret'] ?? 0);
@@ -5179,7 +5185,7 @@ class RequestController extends Controller
                 $sheettype->setCellValue('AN' . $x, $LAINNYA[0]['sseptember'] ?? 0);
                 $sheettype->setCellValue('AO' . $x, $LAINNYA[0]['soktober'] ?? 0);
                 $sheettype->setCellValue('AP' . $x, $LAINNYA[0]['snovember'] ?? 0);
-                $sheettype->setCellValue('AQ' . $x, $LAINNYA[0]['sdesember'] ?? 0);
+                $sheettype->setCellValue('AQ' . $x, $LAINNYA[0]['sdecember'] ?? 0);
                 $sheettype->setCellValue('AR' . $x, $LAINNYA[0]['sjanuari'] ?? 0);
                 $sheettype->setCellValue('AS' . $x, $LAINNYA[0]['sfebruari'] ?? 0);
                 $sheettype->setCellValue('AT' . $x, $LAINNYA[0]['smaret'] ?? 0);
@@ -5197,7 +5203,7 @@ class RequestController extends Controller
 
 
 
-        $filename = 'Export Request Budget' . date('d/m/Y');
+        $filename = 'Export Request Budget ' . date('d/m/Y');
 
         // Redirect output to a client’s web browser (Xlsx)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
