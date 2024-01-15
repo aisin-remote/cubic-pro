@@ -1003,7 +1003,7 @@ class RequestController extends Controller
                     ->setCellValue('AE' . $x, $row->september)
                     ->setCellValue('AF' . $x, $row->oktober)
                     ->setCellValue('AG' . $x, $row->november)
-                    ->setCellValue('AH' . $x, $row->desember)
+                    ->setCellValue('AH' . $x, $row->december)
                     ->setCellValue('AI' . $x, $row->januari)
                     ->setCellValue('AJ' . $x, $row->februari)
                     ->setCellValue('AK' . $x, $row->maret);
@@ -4935,7 +4935,9 @@ class RequestController extends Controller
 
             $deptt = $sheetdept->getCell("B$sc")->getValue() ?? $sheetdept->getCell("B$sc")->getCalculatedValue();
             $typee = $sheetdept->getCell("D$sc")->getValue() ?? $sheetdept->getCell("D$sc")->getCalculatedValue();
-            if ($deptt == "") {
+            $break = $sheetdept->getCell("A$sc")->getValue() ?? $sheetdept->getCell("A$sc")->getCalculatedValue();
+          
+            if ($break == "") {
                 break;
             }
             $bydept[$a]['dept_code'] = $deptt;
@@ -4957,6 +4959,7 @@ class RequestController extends Controller
                 $sheetdept->setCellValue('B' . $x, $deptcode);
 
                 if ($deptcode != "" && $typename != "") {
+                 
 
                     $AIIA = CapexRb::select(
                         'dept',
@@ -4980,6 +4983,8 @@ class RequestController extends Controller
                         ->where('dept', $deptcode)
                         ->groupBy('type', 'dept')
                         ->get();
+
+                   
                     $sheetdept->setCellValue('L' . $x, $AIIA[0]['sapril'] ?? 0);
                     $sheetdept->setCellValue('M' . $x, $AIIA[0]['smei'] ?? 0);
                     $sheetdept->setCellValue('N' . $x, $AIIA[0]['sjuni'] ?? 0);
