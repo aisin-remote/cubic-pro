@@ -1179,10 +1179,13 @@ class ApprovalController extends Controller
                 $prints->sap_cc_fname,
                 $approval_number,
                 $appVersion,
-                $overbudget_info
+                $prints->actual_price_user > $prints->budget_reserved ? 'Over Budget' : 'Under Budget',
+                $prints->budget_remaining_log,
+                $prints->budget_reserved,
+                $prints->actual_price_user
             );
         }
-        $excel = \PHPExcel_IOFactory::load(storage_path('template/pr_output.xlsm'));
+        $excel = \PHPExcel_IOFactory::load(storage_path('template/pr_output_baru.xlsm'));
         $excel->setActiveSheetIndex(2);
         $objWorksheet2 	= $excel->getActiveSheet();
         $objWorksheet2->fromArray($data,null,'A1',false,false);
