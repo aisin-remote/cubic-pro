@@ -1161,6 +1161,13 @@ class ApprovalController extends Controller
         $appVersion= 'App version = 4.3.0/ Printed by = '.\Auth::user()->name.' '.Carbon::now();
 
         $data  = [];
+        $over = 0;
+        foreach ($print as $prints) {
+            $tes = $prints->actual_price_user > $prints->budget_reserved ? $prints->actual_price_user - $prints->budget_reserved  : 0;
+            $over += $tes;
+            $tes = 0;
+        }
+
         foreach($print as $prints) {
             $newDate = date("M-y", strtotime($prints->budget_type == "cx" ? $prints->settlement_date : $prints->actual_gr));
             $data[] = array(
@@ -1179,10 +1186,12 @@ class ApprovalController extends Controller
                 $prints->sap_cc_fname,
                 $approval_number,
                 $appVersion,
-                $prints->actual_price_user > $prints->budget_reserved ? 'Over Budget' : 'Under Budget',
+                $prints->actual_price_user > $prints->budget_reserved ? 'OVER' : 'UNDER',
                 $prints->budget_remaining_log,
                 $prints->budget_reserved,
-                $prints->actual_price_user
+                $prints->actual_price_user,
+                $over == 0 ? 'All Under Budget' : 'Over Budget Rp ' . number_format($over, 0, ',', '.'),
+                $prints->actual_price_user - $prints->budget_reserved == 0 ? '0' : $prints->actual_price_user - $prints->budget_reserved
             );
         }
         $excel = \PHPExcel_IOFactory::load(storage_path('template/pr_output_baru.xlsm'));
