@@ -25,6 +25,8 @@ use App\ApprovalDtl;
 use App\ApprovalMaster;
 use App\ApprovalDetail;
 
+use function PHPSTORM_META\override;
+
 require '../PHPExcel/PHPExcel.php';
 
 class ApprovalController extends Controller
@@ -1168,7 +1170,18 @@ class ApprovalController extends Controller
             $tes = 0;
         }
 
+        $no_budget = '';
+        $budget_available = 0;
+        $budget_over = 0;
+
         foreach($print as $prints) {
+            if ($no_budget != $prints->budget_no) {
+                $budget_available = $prints->budget_remaining_log;
+                $budget_over = $budget_available - $prints->actual_price_user;
+            } else {
+                $budget_over = $budget_over - $prints->actual_price_user;
+            }
+
             $newDate = date("M-y", strtotime($prints->budget_type == "cx" ? $prints->settlement_date : $prints->actual_gr));
             $data[] = array(
                 ($prints->budget_type == "uc" ? '-' : ($prints->budget_type == "ue" ? '-' : $prints->equipment_name)),
@@ -1188,11 +1201,24 @@ class ApprovalController extends Controller
                 $appVersion,
                 $prints->actual_price_user > $prints->budget_reserved ? 'OVER' : 'UNDER',
                 $prints->budget_remaining_log,
-                $prints->budget_reserved,
+                //$prints->budget_reserved,
+                $budget_available,
                 $prints->actual_price_user,
                 $over == 0 ? 'All Under Budget' : 'Over Budget Rp ' . number_format($over, 0, ',', '.'),
-                $prints->actual_price_user - $prints->budget_reserved == 0 ? '0' : $prints->actual_price_user - $prints->budget_reserved
+                // $prints->actual_price_user - $prints->budget_reserved == 0 ? '0' : $prints->actual_price_user - $prints->budget_reserved
+                $budget_over > 0 ? '0' : $budget_over
             );
+
+            if ($no_budget != $prints->budget_no) {
+                $no_budget = $prints->budget_no;
+                $budget_available -= $prints->actual_price_user;
+                // $budget_over -= $prints->actual_price_user;
+            } else {
+                $budget_available -= $prints->actual_price_user;
+                // $budget_over = $budget_over - $prints->actual_price_user;
+                // dd($prints->actual_price_user);
+            }
+
         }
         $excel = \PHPExcel_IOFactory::load(storage_path('template/pr_output_baru.xlsm'));
         $excel->setActiveSheetIndex(2);
