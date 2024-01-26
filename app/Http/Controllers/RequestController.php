@@ -4430,14 +4430,13 @@ class RequestController extends Controller
         $materialBodyDetail = DmaterialRb::getMaterialBodyDetail();
         $expenseBodyDetail = ExpenseRb::getExpenseBodyDetail();
         $laborBodyDetail = LaborRb::getLaborBodyDetail();
- 
+     
         // dept
         $salesBodyDept =  SalesRb::getSalesBodyDept();
         $materialBodyDept = DmaterialRb::getMaterialBodyDept();
         $expenseBodyDept = ExpenseRb::getExpenseBodyDept();
         $laborBodyDept = LaborRb::getLaborBodyDept();
         
-       
         $body = array();
         $b = 0;
         foreach ($salesBodyDetail as $key => $val) {
@@ -4515,7 +4514,6 @@ class RequestController extends Controller
             $body[$b]['smaret'] = str_replace(" ", "", $val->smaret);
             $b++;
         }
-
         // dept
         $bodydept = array();
         $b = 0;
@@ -4618,11 +4616,29 @@ class RequestController extends Controller
             }
 
 
-            
+            $sumDataBodyDetail = [];
+            foreach ($body as $key => $itembody) {
+                $acc_code =  $itembody['acc_code'];
 
+                if (!isset($sumDataBodyDetail[$acc_code])) {
+                    $sumDataBodyDetail[$acc_code] = [
+                        'acc_code' => $acc_code,
+                    ];
+                }
+
+                foreach ($itembody as $key => $value) {
+                    if ($key !== 'acc_code') {
+                        if (!isset($sumDataBodyDetail[$acc_code][$key])) {
+                            $sumDataBodyDetail[$acc_code][$key] = 0;
+                        }
+                        $sumDataBodyDetail[$acc_code][$key] += (float)$value;
+                    }
+                }
+            }
+            // dd($sumDataBodyDetail);
             $bb = 0;
             // dd($body);
-            foreach ($body as $key => $value) {
+            foreach ($sumDataBodyDetail as $key => $value) {
 
                 $keyb = array_search((string) $value['acc_code'], array_column($dcode, 'acc_code'));
 
@@ -4646,9 +4662,27 @@ class RequestController extends Controller
             }
 
 
+            $sumDataUnitDetail = [];
+            foreach ($unit as $key => $itemunit) {
+                $acc_code =  $itemunit['acc_code'];
 
+                if (!isset($sumDataUnitDetail[$acc_code])) {
+                    $sumDataUnitDetail[$acc_code] = [
+                        'acc_code' => $acc_code,
+                    ];
+                }
+
+                foreach ($itemunit as $key => $value) {
+                    if ($key !== 'acc_code') {
+                        if (!isset($sumDataUnitDetail[$acc_code][$key])) {
+                            $sumDataUnitDetail[$acc_code][$key] = 0;
+                        }
+                        $sumDataUnitDetail[$acc_code][$key] += (float)$value;
+                    }
+                }
+            }
             $uu = 0;
-            foreach ($unit as $key => $value) {
+            foreach ($sumDataUnitDetail as $key => $value) {
                 $keyu = array_search((string) $value['acc_code'], array_column($dcode, 'acc_code'));
 
                 $keyyu = $keyu + 6;
@@ -4668,9 +4702,27 @@ class RequestController extends Controller
             }
 
 
+            $sumDataElektrikDetail = [];
+            foreach ($electrik as $key => $itemelektrik) {
+                $acc_code =  $itemelektrik['acc_code'];
 
+                if (!isset($sumDataElektrikDetail[$acc_code])) {
+                    $sumDataElektrikDetail[$acc_code] = [
+                        'acc_code' => $acc_code,
+                    ];
+                }
+
+                foreach ($itemelektrik as $key => $value) {
+                    if ($key !== 'acc_code') {
+                        if (!isset($sumDataElektrikDetail[$acc_code][$key])) {
+                            $sumDataElektrikDetail[$acc_code][$key] = 0;
+                        }
+                        $sumDataElektrikDetail[$acc_code][$key] += (float)$value;
+                    }
+                }
+            }
             $ee = 0;
-            foreach ($electrik as $key => $value) {
+            foreach ($sumDataElektrikDetail as $key => $value) {
                 $keye = array_search((string) $value['acc_code'], array_column($dcode, 'acc_code'));
 
                 $keyye = $keye + 6;
