@@ -989,7 +989,7 @@ class RequestController extends Controller
                     ->setCellValue('Q' . $x, $row->exchange_rate)
                     ->setCellValue('R' . $x, $row->price)
                     ->setCellValue('S' . $x, $row->sop)
-                    ->setCellValue('T' . $x, $row->sop)
+                    ->setCellValue('T' . $x, $row->gr)
                     ->setCellValue('U' . $x, $row->first_dopayment_term)
                     ->setCellValue('V' . $x, $row->first_dopayment_amount)
                     ->setCellValue('W' . $x, $row->final_payment_term)
