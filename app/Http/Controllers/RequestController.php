@@ -4981,7 +4981,7 @@ class RequestController extends Controller
                         ->where('owner_asset', 'AIIA')
                         ->where('type', $typename)
                         ->where('dept', $deptcode)
-                        ->groupBy('type', 'dept')
+                        ->groupBy('type', 'dept','owner_asset')
                         ->get();
 
                    
@@ -4989,7 +4989,7 @@ class RequestController extends Controller
                     $sheetdept->setCellValue('M' . $x, $AIIA[0]['smei'] ?? 0);
                     $sheetdept->setCellValue('N' . $x, $AIIA[0]['sjuni'] ?? 0);
                     $sheetdept->setCellValue('O' . $x, $AIIA[0]['sjuli'] ?? 0);
-                    $sheetdept->setCellValue('P' . $x, $AIIA[0]['saagustus'] ?? 0);
+                    $sheetdept->setCellValue('P' . $x, $AIIA[0]['sagustus'] ?? 0);
                     $sheetdept->setCellValue('Q' . $x, $AIIA[0]['sseptember'] ?? 0);
                     $sheetdept->setCellValue('R' . $x, $AIIA[0]['soktober'] ?? 0);
                     $sheetdept->setCellValue('S' . $x, $AIIA[0]['snovember'] ?? 0);
@@ -5026,7 +5026,7 @@ class RequestController extends Controller
                     $sheetdept->setCellValue('Z' . $x, $SUPPLIER[0]['smei'] ?? 0);
                     $sheetdept->setCellValue('AA' . $x, $SUPPLIER[0]['sjuni'] ?? 0);
                     $sheetdept->setCellValue('AB' . $x, $SUPPLIER[0]['sjuli'] ?? 0);
-                    $sheetdept->setCellValue('AC' . $x, $SUPPLIER[0]['saagustus'] ?? 0);
+                    $sheetdept->setCellValue('AC' . $x, $SUPPLIER[0]['sagustus'] ?? 0);
                     $sheetdept->setCellValue('AD' . $x, $SUPPLIER[0]['sseptember'] ?? 0);
                     $sheetdept->setCellValue('AE' . $x, $SUPPLIER[0]['soktober'] ?? 0);
                     $sheetdept->setCellValue('AF' . $x, $SUPPLIER[0]['snovember'] ?? 0);
@@ -5065,7 +5065,7 @@ class RequestController extends Controller
                     $sheetdept->setCellValue('AM' . $x, $LAINNYA[0]['smei'] ?? 0);
                     $sheetdept->setCellValue('AN' . $x, $LAINNYA[0]['sjuni'] ?? 0);
                     $sheetdept->setCellValue('AO' . $x, $LAINNYA[0]['sjuli'] ?? 0);
-                    $sheetdept->setCellValue('AP' . $x, $LAINNYA[0]['saagustus'] ?? 0);
+                    $sheetdept->setCellValue('AP' . $x, $LAINNYA[0]['sagustus'] ?? 0);
                     $sheetdept->setCellValue('AQ' . $x, $LAINNYA[0]['sseptember'] ?? 0);
                     $sheetdept->setCellValue('AR' . $x, $LAINNYA[0]['soktober'] ?? 0);
                     $sheetdept->setCellValue('AS' . $x, $LAINNYA[0]['snovember'] ?? 0);
@@ -5107,7 +5107,7 @@ class RequestController extends Controller
                 )
                     ->where('owner_asset', 'AIIA')
                     ->where('type', $row['type'])
-                    ->groupBy('type')
+                    ->groupBy('type','owner_asset')
                     ->get();
                 // dd($AIIA[0]['smei']);
 
