@@ -26,7 +26,7 @@
             <div class="col-sm-4">
                 <!-- @if (\Entrust::hasRole('budget'))
     <a href="{{ url('capex/create') }}" class="btn btn-inverse btn-bordered waves-effect waves-light m-b-20"><i class="mdi mdi-plus"></i> Create Capex</a>
-                         <input type="hidden" id="csrf-token" value="{{ csrf_token() }}">
+                                 <input type="hidden" id="csrf-token" value="{{ csrf_token() }}">
     @endif -->
             </div><!-- end col -->
         </div>
@@ -91,18 +91,18 @@
                                     <th>Final Payment Term</th>
                                     <th>Final Payment Amount</th>
                                     <th>Owner Asset</th>
-                                    <th>April-24</th>
-                                    <th>Mei-24</th>
-                                    <th>Juni-24</th>
-                                    <th>Juli-24</th>
-                                    <th>Agustus-24</th>
-                                    <th>September-24</th>
-                                    <th>Oktober-24</th>
-                                    <th>November-24</th>
-                                    <th>December-24</th>
-                                    <th>Januari-25</th>
-                                    <th>Februari-25</th>
-                                    <th>Maret-25</th>
+                                    <th>April-25</th>
+                                    <th>Mei-25</th>
+                                    <th>Juni-25</th>
+                                    <th>Juli-25</th>
+                                    <th>Agustus-25</th>
+                                    <th>September-25</th>
+                                    <th>Oktober-25</th>
+                                    <th>November-25</th>
+                                    <th>December-25</th>
+                                    <th>Januari-26</th>
+                                    <th>Februari-26</th>
+                                    <th>Maret-26</th>
                                     @if (\Entrust::hasRole('budget'))
                                         <th style="width: 100px">Opsi</th>
                                     @endif
@@ -148,7 +148,7 @@
     <?php
     use App\Department;
     $dept_id = auth()->user()->department_id;
-    $email =  auth()->user()->email;
+    $email = auth()->user()->email;
     $deptuser = Department::where('id', '=', $dept_id)->first()->department_code;
     ?>
     <script>
