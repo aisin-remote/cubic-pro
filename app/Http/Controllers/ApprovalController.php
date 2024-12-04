@@ -1132,6 +1132,7 @@ class ApprovalController extends Controller
                     ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id')
                     ->join('capexes','approval_details.budget_no','=','capexes.budget_no')
                     ->where('approval_masters.approval_number',$approval_number)
+                    ->orderBy('approval_details.budget_no')
                     ->get();
 
                 break;
@@ -1144,6 +1145,7 @@ class ApprovalController extends Controller
                     ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id')
                     ->join('expenses','approval_details.budget_no','=','expenses.budget_no')
                     ->where('approval_masters.approval_number',$approval_number)
+                    ->orderBy('approval_details.budget_no')
                     ->get();
 
                 break;
@@ -1155,6 +1157,7 @@ class ApprovalController extends Controller
                     ->join('approval_masters', 'approval_details.approval_master_id', '=', 'approval_masters.id')
                     ->Select('approval_masters.*','approval_details.*')
                     ->where('approval_masters.approval_number',$approval_number)
+                    ->orderBy('approval_details.budget_no')
                     ->get();
 
                 break;
@@ -1164,11 +1167,11 @@ class ApprovalController extends Controller
 
         $data  = [];
         $over = 0;
-        foreach ($print as $prints) {
-            $tes = $prints->actual_price_user > $prints->budget_reserved ? $prints->actual_price_user - $prints->budget_reserved  : 0;
-            $over += $tes;
-            $tes = 0;
-        }
+        // foreach ($print as $prints) {
+        //     $tes = $prints->actual_price_user > $prints->budget_reserved ? $prints->actual_price_user - $prints->budget_reserved  : 0;
+        //     $over += $tes;
+        //     $tes = 0;
+        // }
 
         $no_budget = '';
         $budget_available = 0;
@@ -1182,6 +1185,9 @@ class ApprovalController extends Controller
                 $budget_over = $budget_over - $prints->actual_price_user;
             }
 
+            // $over -= $budget_over > 0 ? 0 : $budget_over;
+
+            
             $newDate = date("M-y", strtotime($prints->budget_type == "cx" ? $prints->settlement_date : $prints->actual_gr));
             $data[] = array(
                 ($prints->budget_type == "uc" ? '-' : ($prints->budget_type == "ue" ? '-' : $prints->equipment_name)),
@@ -1199,7 +1205,9 @@ class ApprovalController extends Controller
                 $prints->sap_cc_fname,
                 $approval_number,
                 $appVersion,
-                $prints->actual_price_user > $prints->budget_reserved ? 'OVER' : 'UNDER',
+                //$prints->actual_price_user > $prints->budget_reserved ? 'OVER' : 'UNDER',
+                $budget_over > 0 ? 'UNDER' : 'OVER',
+                
                 $prints->budget_remaining_log,
                 //$prints->budget_reserved,
                 $budget_available,

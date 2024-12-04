@@ -51,7 +51,7 @@
 
                                     <select class="form-control" id="dept" name="dept"
                                         aria-label="Default select example">
-                                        <option value="">--Pilih--</option>
+                                        <option value="">-- Semua --</option>
                                         @foreach ($dep_data as $val)
                                             <option value="{{ $val->dept }}">{{ $val->dept }}</option>
                                         @endforeach
@@ -372,10 +372,8 @@
                 var email = "<?php echo $email; ?>";
 
                 var dept = $('#dept').val()
-
-                if (dept == "") {
-                    return false
-                } else if (dept != depuser && email != "budget@aiia.co.id") {
+                
+                if (dept != depuser && email != "budget@aiia.co.id") {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
