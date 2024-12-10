@@ -3,39 +3,39 @@
 namespace App\Http\Controllers;
 
 use DB;
-use Exception;
 use file;
 use Config;
 use Response;
+use Exception;
 use App\Period;
 use DataTables;
 use App\CapexRb;
 use App\LaborRb;
 use App\SalesRb;
 use App\ExpenseRb;
-use App\MasterAccountCode;
 use Carbon\Carbon;
+use App\Department;
 use App\MasterCode;
 use App\DmaterialRb;
-use App\Department;
+use App\Helpers\Helper;
 use App\Exports\RbExport;
+use App\MasterAccountCode;
 use App\Imports\CapexImport;
-use App\Imports\SalesImport;
 use App\Imports\LaborImport;
 // use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\SalesImport;
 use Illuminate\Http\Request;
 use App\Helpers\ImportBinder;
 use App\Imports\ExpenseImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\DirectMaterialImport;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-
-use PhpOffice\PhpSpreadsheet\Helper\Sample;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use App\Helpers\Helper;
+use PhpOffice\PhpSpreadsheet\Helper\Sample;
 
 class RequestController extends Controller
 {
@@ -4629,7 +4629,7 @@ class RequestController extends Controller
 
             $bb = 0;
             // dd($body);
-            foreach ($sumDataBodyDetail as $key => $value) {
+            foreach ($body as $key => $value) {
 
                 $keyb = array_search((string) $value['acc_code'], array_column($dcode, 'acc_code'));
 
