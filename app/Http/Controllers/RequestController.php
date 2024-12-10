@@ -297,22 +297,22 @@ class RequestController extends Controller
                                 'group' => $group,
                                 'code' => $code
                             ])->update([
-                                        'april' => $apr,
-                                        'mei' => $may,
-                                        'juni' => $jun,
-                                        'juli' => $jul,
-                                        'agustus' => $aug,
-                                        'september' => $sept,
-                                        'oktober' => $oct,
-                                        'november' => $nov,
-                                        'december' => $dec,
-                                        'januari' => $jan,
-                                        'februari' => $feb,
-                                        'maret' => $mar,
-                                        'fy_first' => $fy_2022_1st,
-                                        'fy_second' => $fy_2022_2nd,
-                                        'fy_total' => $fy_2022_total
-                                    ]);
+                                'april' => $apr,
+                                'mei' => $may,
+                                'juni' => $jun,
+                                'juli' => $jul,
+                                'agustus' => $aug,
+                                'september' => $sept,
+                                'oktober' => $oct,
+                                'november' => $nov,
+                                'december' => $dec,
+                                'januari' => $jan,
+                                'februari' => $feb,
+                                'maret' => $mar,
+                                'fy_first' => $fy_2022_1st,
+                                'fy_second' => $fy_2022_2nd,
+                                'fy_total' => $fy_2022_total
+                            ]);
                         } else {
                             $salesrb = new LaborRb;
                             $salesrb->dept = $dept;
@@ -377,7 +377,7 @@ class RequestController extends Controller
 
     public function getDataSales(Request $request)
     {
-        $Sls = SalesRb::select('dept','acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
+        $Sls = SalesRb::select('dept', 'acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
         // $sls = $slsx->get();
         return DataTables::of($Sls)->toJson();
     }
@@ -574,22 +574,22 @@ class RequestController extends Controller
                                 'group' => $group,
                                 'code' => $code
                             ])->update([
-                                        'april' => $apr,
-                                        'mei' => $may,
-                                        'juni' => $jun,
-                                        'juli' => $jul,
-                                        'agustus' => $aug,
-                                        'september' => $sept,
-                                        'oktober' => $oct,
-                                        'november' => $nov,
-                                        'december' => $dec,
-                                        'januari' => $jan,
-                                        'februari' => $feb,
-                                        'maret' => $mar,
-                                        'fy_first' => $fy_2022_1st,
-                                        'fy_second' => $fy_2022_2nd,
-                                        'fy_total' => $fy_2022_total
-                                    ]);
+                                'april' => $apr,
+                                'mei' => $may,
+                                'juni' => $jun,
+                                'juli' => $jul,
+                                'agustus' => $aug,
+                                'september' => $sept,
+                                'oktober' => $oct,
+                                'november' => $nov,
+                                'december' => $dec,
+                                'januari' => $jan,
+                                'februari' => $feb,
+                                'maret' => $mar,
+                                'fy_first' => $fy_2022_1st,
+                                'fy_second' => $fy_2022_2nd,
+                                'fy_total' => $fy_2022_total
+                            ]);
                         } else {
                             $salesrb = new SalesRb;
                             $salesrb->dept = $dept;
@@ -662,7 +662,7 @@ class RequestController extends Controller
     public function getDataDM(Request $request)
     {
         $dm = DmaterialRb::select('dept', 'acc_code', 'acc_name', 'group', 'code', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'december', 'januari', 'februari', 'maret', 'fy_first', 'fy_second', 'fy_total')->get();
-        
+
         return DataTables::of($dm)->toJson();
     }
 
@@ -860,22 +860,22 @@ class RequestController extends Controller
                                 'group' => $group,
                                 'code' => $code
                             ])->update([
-                                        'april' => $apr,
-                                        'mei' => $may,
-                                        'juni' => $jun,
-                                        'juli' => $jul,
-                                        'agustus' => $aug,
-                                        'september' => $sept,
-                                        'oktober' => $oct,
-                                        'november' => $nov,
-                                        'december' => $dec,
-                                        'januari' => $jan,
-                                        'februari' => $feb,
-                                        'maret' => $mar,
-                                        'fy_first' => $fy_2022_1st,
-                                        'fy_second' => $fy_2022_2nd,
-                                        'fy_total' => $fy_2022_total
-                                    ]);
+                                'april' => $apr,
+                                'mei' => $may,
+                                'juni' => $jun,
+                                'juli' => $jul,
+                                'agustus' => $aug,
+                                'september' => $sept,
+                                'oktober' => $oct,
+                                'november' => $nov,
+                                'december' => $dec,
+                                'januari' => $jan,
+                                'februari' => $feb,
+                                'maret' => $mar,
+                                'fy_first' => $fy_2022_1st,
+                                'fy_second' => $fy_2022_2nd,
+                                'fy_total' => $fy_2022_total
+                            ]);
                         } else {
                             $salesrb = new DmaterialRb;
                             $salesrb->dept = $dept;
@@ -962,10 +962,14 @@ class RequestController extends Controller
         $spreadsheet = $reader->load(public_path('files/Template_Capex_export.xlsx'));
 
         $dept = $request->post('dept');
-        $data = CapexRb::where([
-            'dept' => $dept
-        ])->get();
-        // dd($dept);
+        if (is_null($dept)) {
+            $data = CapexRb::get();
+        } else {
+            $data = CapexRb::where([
+                'dept' => $dept
+            ])->get();
+        }
+
         if (count($data) > 0) {
             $i = 0;
             $x = 2;
@@ -1296,9 +1300,14 @@ class RequestController extends Controller
         $spreadsheet = $reader->load(public_path('files/Template_Expense_export.xlsx'));
         // dd($spreadsheet);
         $dept = $request->post('dept');
-        $data = ExpenseRb::where([
-            'dept' => $dept
-        ])->get();
+        if (is_null($dept)) {
+            $data = ExpenseRb::get();
+        } else {
+            $data = ExpenseRb::where([
+                'dept' => $dept
+            ])->get();
+        }
+
         // dd($data);
         if (count($data) > 0) {
             $i = 0;
@@ -1840,7 +1849,7 @@ class RequestController extends Controller
             DB::raw('sum(maret) as maret')
         )
             ->where('group', 'body')
-            ->groupBy('dept','acc_code')
+            ->groupBy('dept', 'acc_code')
             ->get();
 
         $codesU = ExpenseRb::select(
@@ -1859,7 +1868,7 @@ class RequestController extends Controller
             DB::raw('sum(maret) as maret')
         )
             ->where('group', 'unit')
-            ->groupBy('dept','acc_code')
+            ->groupBy('dept', 'acc_code')
             ->get();
         // return $codesU;
         $salesB = SalesRb::select(
@@ -2385,8 +2394,7 @@ class RequestController extends Controller
         // $ValueBinder = new ImportBinder();
 
         Config::set('excel.csv.delimiter', ';');
-        $datas = Excel::load($file, function ($reader) {
-        })->get();
+        $datas = Excel::load($file, function ($reader) {})->get();
 
         dd($datas);
         // Excel::setValueBinder($ValueBinder)->
@@ -2489,14 +2497,14 @@ class RequestController extends Controller
         $master_code = MasterCode::all();
 
         $sales_code = SalesRb::select('acc_code', 'acc_name')
-            ->groupBy('dept','acc_code')
+            ->groupBy('dept', 'acc_code')
             ->get();
 
         $material_code = DmaterialRb::select('acc_code', 'acc_name')
-            ->groupBy('dept','acc_code')
+            ->groupBy('dept', 'acc_code')
             ->get();
         $expense_code = ExpenseRb::select('acc_code')
-            ->groupBy('dept','acc_code')
+            ->groupBy('dept', 'acc_code')
             ->get();
 
 
@@ -2738,7 +2746,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'body')
-            ->groupBy('dept','acc_code')
+            ->groupBy('dept', 'acc_code')
             ->get();
         $expense_unit = ExpenseRb::select(
             'acc_code',
@@ -2756,7 +2764,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'unit')
-            ->groupBy('dept','acc_code')
+            ->groupBy('dept', 'acc_code')
             ->get();
         $expense_electrik = ExpenseRb::select(
             'acc_code',
@@ -2774,7 +2782,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
             ->where('group', 'electric')
-            ->groupBy('dept','acc_code')
+            ->groupBy('dept', 'acc_code')
             ->get();
         $expense_company_basis = ExpenseRb::select(
             'acc_code',
@@ -2791,7 +2799,7 @@ class RequestController extends Controller
             DB::raw('ifnull(sum(februari),0) as sfebruari'),
             DB::raw('ifnull(sum(maret),0) as smaret')
         )
-            ->groupBy('dept','acc_code')
+            ->groupBy('dept', 'acc_code')
             ->get();
 
 
@@ -4020,13 +4028,13 @@ class RequestController extends Controller
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '256M');
         ob_start();
-        
+
         // Load the spreadsheet
         $reader = IOFactory::createReader('Xlsx');
         // $reader->setReadDataOnly(true);
         // $spreadsheet = $reader->load(public_path('files/Summary_New_2024.xlsx'));
         $spreadsheet = $reader->load(public_path('files/TemplateExport.xlsx'));
-        
+
         // dd($spreadsheet);
 
         // dd($data_master_expense);
@@ -4075,7 +4083,7 @@ class RequestController extends Controller
             $acc_code = $sheetbydept->getCell("F$sc")->getValue();
             $codedept[$a]['dept_code'] = $dept_code;
             $codedept[$a]['acc_code'] = $acc_code;
-            $codedept[$a]['dept_acc'] = $dept_code .'-'.$acc_code;
+            $codedept[$a]['dept_acc'] = $dept_code . '-' . $acc_code;
             $sc++;
             $a++;
             if ($a === 238) {
@@ -4087,13 +4095,13 @@ class RequestController extends Controller
         $materialElektrikDetail = DmaterialRb::getMaterialElektrikDetail();
         $expenseElektrikDetail = ExpenseRb::getExpenseElektrikDetail();
         $laborElektrikDetail = LaborRb::getLaborElektrikDetail();
- 
+
         // dept
         $salesElektrikDept =  SalesRb::getSalesElektrikDept();
         $materialElektrikDept = DmaterialRb::getMaterialElektrikDept();
         $expenseElektrikDept = ExpenseRb::getExpenseElektrikDept();
         $laborElektrikDept = LaborRb::getLaborElektrikDept();
- 
+
 
 
         $electrik = array();
@@ -4173,7 +4181,7 @@ class RequestController extends Controller
         }
 
 
-        
+
         $electrikdept = array();
         $e = 0;
         foreach ($salesElektrikDept as $key => $val) {
@@ -4260,13 +4268,13 @@ class RequestController extends Controller
         $materialUnitDetail = DmaterialRb::getMaterialUnitDetail();
         $expenseUnitDetail = ExpenseRb::getExpenseUnitDetail();
         $laborUnitDetail = LaborRb::getLaborUnitDetail();
- 
+
         // dept
         $salesUnitDept =  SalesRb::getSalesUnitDept();
         $materialUnitDept = DmaterialRb::getMaterialUnitDept();
         $expenseUnitDept = ExpenseRb::getExpenseUnitDept();
         $laborUnitDept = LaborRb::getLaborUnitDept();
-        
+
 
         $unit = array();
         $u = 0;
@@ -4430,13 +4438,14 @@ class RequestController extends Controller
         $materialBodyDetail = DmaterialRb::getMaterialBodyDetail();
         $expenseBodyDetail = ExpenseRb::getExpenseBodyDetail();
         $laborBodyDetail = LaborRb::getLaborBodyDetail();
-     
+
         // dept
         $salesBodyDept =  SalesRb::getSalesBodyDept();
         $materialBodyDept = DmaterialRb::getMaterialBodyDept();
         $expenseBodyDept = ExpenseRb::getExpenseBodyDept();
         $laborBodyDept = LaborRb::getLaborBodyDept();
-        
+
+
         $body = array();
         $b = 0;
         foreach ($salesBodyDetail as $key => $val) {
@@ -4616,26 +4625,8 @@ class RequestController extends Controller
             }
 
 
-            $sumDataBodyDetail = [];
-            foreach ($body as $key => $itembody) {
-                $acc_code =  $itembody['acc_code'];
 
-                if (!isset($sumDataBodyDetail[$acc_code])) {
-                    $sumDataBodyDetail[$acc_code] = [
-                        'acc_code' => $acc_code,
-                    ];
-                }
 
-                foreach ($itembody as $key => $value) {
-                    if ($key !== 'acc_code') {
-                        if (!isset($sumDataBodyDetail[$acc_code][$key])) {
-                            $sumDataBodyDetail[$acc_code][$key] = 0;
-                        }
-                        $sumDataBodyDetail[$acc_code][$key] += (float)$value;
-                    }
-                }
-            }
-            // dd($sumDataBodyDetail);
             $bb = 0;
             // dd($body);
             foreach ($sumDataBodyDetail as $key => $value) {
@@ -4763,14 +4754,14 @@ class RequestController extends Controller
                 $x++;
             }
             // dd(json_encode($dcodedept));
-            
-          
+
+
             $sumDataBody = [];
             foreach ($bodydept as $itembody) {
                 $cekCode = substr($itembody['acc_code'], 0, 5);
                 $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itembody['acc_code'], 0, 4);
                 $deptPrefix = $itembody['dept'];
-                $deptAccPrefix = $deptPrefix .'-'.$codePrefix;
+                $deptAccPrefix = $deptPrefix . '-' . $codePrefix;
                 if (!isset($sumDataBody[$deptAccPrefix])) {
                     $sumDataBody[$deptAccPrefix] = [
                         'dept_acc' => $deptAccPrefix,
@@ -4791,7 +4782,7 @@ class RequestController extends Controller
             $bb = 0;
             foreach ($sumDataBody as $key => $value) {
                 $keyb = array_search((string) $value['dept_acc'], array_column($dcodedept, 'dept_acc'));
-                
+
                 if ($keyb != false) {
                     $keyyb = $keyb + 6;
                     # code...
@@ -4812,14 +4803,14 @@ class RequestController extends Controller
             }
 
 
-            
+
             $sumDataUnit = [];
 
             foreach ($unitdept as $itemunit) {
                 $cekCode = substr($itemunit['acc_code'], 0, 5);
                 $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itemunit['acc_code'], 0, 4);
                 $deptPrefix = $itemunit['dept'];
-                $deptAccPrefix = $deptPrefix .'-'.$codePrefix;
+                $deptAccPrefix = $deptPrefix . '-' . $codePrefix;
                 if (!isset($sumDataUnit[$deptAccPrefix])) {
                     $sumDataUnit[$deptAccPrefix] = [
                         'dept_acc' => $deptAccPrefix,
@@ -4839,22 +4830,22 @@ class RequestController extends Controller
             foreach ($sumDataUnit as $key => $value) {
 
                 $keyu = array_search((string) $value['dept_acc'], array_column($dcodedept, 'dept_acc'));
-                
+
                 if ($keyu != false) {
                     $keyyu = $keyu + 6;
-                
-                $sheetbydept->setCellValue('AE' . $keyyu, $value['sapril'])
-                    ->setCellValue('AF' . $keyyu, $value['smei'])
-                    ->setCellValue('AG' . $keyyu, $value['sjuni'])
-                    ->setCellValue('AH' . $keyyu, $value['sjuli'])
-                    ->setCellValue('AI' . $keyyu, $value['sagustus'])
-                    ->setCellValue('AJ' . $keyyu, $value['sseptember'])
-                    ->setCellValue('AK' . $keyyu, $value['soktober'])
-                    ->setCellValue('AL' . $keyyu, $value['snovember'])
-                    ->setCellValue('AM' . $keyyu, $value['sdecember'])
-                    ->setCellValue('AN' . $keyyu, $value['sjanuari'])
-                    ->setCellValue('AO' . $keyyu, $value['sfebruari'])
-                    ->setCellValue('AP' . $keyyu, $value['smaret']);
+
+                    $sheetbydept->setCellValue('AE' . $keyyu, $value['sapril'])
+                        ->setCellValue('AF' . $keyyu, $value['smei'])
+                        ->setCellValue('AG' . $keyyu, $value['sjuni'])
+                        ->setCellValue('AH' . $keyyu, $value['sjuli'])
+                        ->setCellValue('AI' . $keyyu, $value['sagustus'])
+                        ->setCellValue('AJ' . $keyyu, $value['sseptember'])
+                        ->setCellValue('AK' . $keyyu, $value['soktober'])
+                        ->setCellValue('AL' . $keyyu, $value['snovember'])
+                        ->setCellValue('AM' . $keyyu, $value['sdecember'])
+                        ->setCellValue('AN' . $keyyu, $value['sjanuari'])
+                        ->setCellValue('AO' . $keyyu, $value['sfebruari'])
+                        ->setCellValue('AP' . $keyyu, $value['smaret']);
                     # code...
                 }
                 $uu++;
@@ -4866,7 +4857,7 @@ class RequestController extends Controller
                 $cekCode = substr($itemelectrik['acc_code'], 0, 5);
                 $codePrefix = ($cekCode == '51191') ? $cekCode : substr($itemelectrik['acc_code'], 0, 4);
                 $deptPrefix = $itemelectrik['dept'];
-                $deptAccPrefix = $deptPrefix .'-'.$codePrefix;
+                $deptAccPrefix = $deptPrefix . '-' . $codePrefix;
                 if (!isset($sumDataElectrik[$deptAccPrefix])) {
                     $sumDataElectrik[$deptAccPrefix] = [
                         'dept_acc' => $deptAccPrefix,
@@ -4904,9 +4895,10 @@ class RequestController extends Controller
                 $ee++;
             }
             $semua = [
-                ['body'=> $sumDataBody,
-                    'unit'=>$sumDataUnit,
-                    'elektrik'=>$sumDataElectrik,
+                [
+                    'body' => $sumDataBody,
+                    'unit' => $sumDataUnit,
+                    'elektrik' => $sumDataElectrik,
                 ]
             ];
             // dd(json_encode($semua));
@@ -4988,7 +4980,7 @@ class RequestController extends Controller
             $deptt = $sheetdept->getCell("B$sc")->getValue() ?? $sheetdept->getCell("B$sc")->getCalculatedValue();
             $typee = $sheetdept->getCell("D$sc")->getValue() ?? $sheetdept->getCell("D$sc")->getCalculatedValue();
             $break = $sheetdept->getCell("A$sc")->getValue() ?? $sheetdept->getCell("A$sc")->getCalculatedValue();
-          
+
             if ($break == "") {
                 break;
             }
@@ -4996,7 +4988,6 @@ class RequestController extends Controller
             $bydept[$a]['by_type'] = $typee;
             $sc++;
             $a++;
-
         }
 
         if (count((array) $bydept) > 0) {
@@ -5011,7 +5002,7 @@ class RequestController extends Controller
                 $sheetdept->setCellValue('B' . $x, $deptcode);
 
                 if ($deptcode != "" && $typename != "") {
-                 
+
 
                     $AIIA = CapexRb::select(
                         'dept',
@@ -5033,10 +5024,10 @@ class RequestController extends Controller
                         ->where('owner_asset', 'AIIA')
                         ->where('type', $typename)
                         ->where('dept', $deptcode)
-                        ->groupBy('type', 'dept','owner_asset')
+                        ->groupBy('type', 'dept', 'owner_asset')
                         ->get();
 
-                   
+
                     $sheetdept->setCellValue('L' . $x, $AIIA[0]['sapril'] ?? 0);
                     $sheetdept->setCellValue('M' . $x, $AIIA[0]['smei'] ?? 0);
                     $sheetdept->setCellValue('N' . $x, $AIIA[0]['sjuni'] ?? 0);
@@ -5073,7 +5064,7 @@ class RequestController extends Controller
                         ->groupBy('type', 'dept')
                         ->get();
 
-                      
+
                     $sheetdept->setCellValue('Y' . $x, $SUPPLIER[0]['sapril'] ?? 0);
                     $sheetdept->setCellValue('Z' . $x, $SUPPLIER[0]['smei'] ?? 0);
                     $sheetdept->setCellValue('AA' . $x, $SUPPLIER[0]['sjuni'] ?? 0);
@@ -5110,9 +5101,9 @@ class RequestController extends Controller
                         ->groupBy('type', 'dept')
                         ->get();
 
-                        // if(count($LAINNYA) >0){
-                        //     dd($LAINNYA);
-                        // }
+                    // if(count($LAINNYA) >0){
+                    //     dd($LAINNYA);
+                    // }
                     $sheetdept->setCellValue('AL' . $x, $LAINNYA[0]['sapril'] ?? 0);
                     $sheetdept->setCellValue('AM' . $x, $LAINNYA[0]['smei'] ?? 0);
                     $sheetdept->setCellValue('AN' . $x, $LAINNYA[0]['sjuni'] ?? 0);
@@ -5159,7 +5150,7 @@ class RequestController extends Controller
                 )
                     ->where('owner_asset', 'AIIA')
                     ->where('type', $row['type'])
-                    ->groupBy('type','owner_asset')
+                    ->groupBy('type', 'owner_asset')
                     ->get();
                 // dd($AIIA[0]['smei']);
 
