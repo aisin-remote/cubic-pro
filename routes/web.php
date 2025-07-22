@@ -405,7 +405,6 @@
 
 		//PENDING APPROVAL CAPEX
 		Route::group(['middleware' => ['permission:pending-approval-capex', 'auth']], function () {
-
 			Route::get('approval/cx/unvalidated', 'ApprovalCapexController@ListApprovalUnvalidated');
 		});
 
@@ -451,6 +450,7 @@
 
 		//APPROVE APPROVAL
 		Route::get('approval/approve', 'ApprovalController@approveAjax');
+		Route::post('approval/approve-multiple', 'ApprovalController@approveMultiple');
 
 		//CANCEL APPROVAL
 		Route::get('approval/cancel_approval', 'ApprovalController@cancelApproval');

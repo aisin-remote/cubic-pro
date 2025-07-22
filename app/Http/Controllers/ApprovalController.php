@@ -927,6 +927,110 @@ class ApprovalController extends Controller
 
         return $data;
     }
+
+    public function approveMultiple(Request $request)
+    {
+        $approvalNumbers = $request->approval_numbers;
+        $results = [];
+        $errors = [];
+
+        foreach ($approvalNumbers as $number) {
+            try {
+                DB::transaction(function () use ($number, &$results) {
+                    $user = auth()->user();
+                    $can_approve = $this->can_approve($number);
+
+                    if ($can_approve <= 0) {
+                        throw new \Exception("No permission or sequential requirement not met for [$number].");
+                    }
+
+                    $approvalMaster = ApprovalMaster::where('approval_number', $number)->firstOrFail();
+                    $approval = Approval::where('department', $approvalMaster->department)->firstOrFail();
+                    $approverLevel = $approval->details()->where('user_id', $user->id)->first();
+
+                    if (!$approverLevel) {
+                        throw new \Exception("Approver level not defined for [$number].");
+                    }
+
+                    $status = $approverLevel->level;
+                    $needOtherApprove = false;
+
+                    if ($approval->is_must_all == '1') {
+                        $otherApprovers = $approval->details()
+                            ->where('user_id', '!=', $user->id)
+                            ->where('level', $approverLevel->level)
+                            ->get();
+
+                        foreach ($otherApprovers as $other) {
+                            $statusOther = $other->approverUsers()
+                                ->where('approval_master_id', $approvalMaster->id)
+                                ->first();
+
+                            if ($statusOther && $statusOther->is_approve == 0) {
+                                $status = $approvalMaster->status;
+                                $needOtherApprove = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    $approvalMaster->status = $status;
+                    $approvalMaster->save();
+
+                    $approvalMaster->approverUsers()
+                        ->where('user_id', $user->id)
+                        ->update([
+                            'is_approve' => 1,
+                            'created_at' => now()
+                        ]);
+
+                    if (!$needOtherApprove) {
+                        $user_approve = 4;
+                        $type = $approvalMaster->budget_type;
+
+                        if (!in_array($type, ['ub', 'uc', 'ue']) && $approvalMaster->status == $user_approve) {
+                            foreach ($approvalMaster->details as $detail) {
+                                $budget = $type == 'cx' ? $detail->capex : $detail->expense;
+
+                                if (!$budget) {
+                                    throw new \Exception("Master Budget No: {$detail->budget_no} is deleted.");
+                                }
+
+                                $price = $detail->actual_price_purchasing == 0 ? $detail->actual_price_user : $detail->actual_price_purchasing;
+                                $budget->budget_remaining -= $price;
+                                $budget->budget_used += $price;
+
+                                if ($type == 'ex') {
+                                    $budget->qty_used += $detail->actual_qty;
+                                    $budget->qty_remaining = $budget->qty_plan - $budget->qty_used;
+                                }
+
+                                $budget->status = $budget->budget_remaining >= 0 ? 0 : 1;
+                                $budget->is_closed = $budget->budget_remaining > 0 ? 0 : 1;
+                                $budget->save();
+                            }
+                        }
+                    }
+
+                    $results[] = $number;
+                });
+            } catch (\Exception $e) {
+                $errors[] = "[$number] " . $e->getMessage();
+            }
+        }
+
+        if (count($errors)) {
+            return response()->json([
+                'error' => implode("<br>", $errors),
+                'success' => count($results) . ' approvals succeeded.'
+            ]);
+        }
+
+        return response()->json([
+            'success' => count($results) . ' approvals succeeded.'
+        ]);
+    }
+    
     public function cancelApproval(Request $request)
     {
         try {

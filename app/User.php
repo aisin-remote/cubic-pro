@@ -64,4 +64,9 @@ class User extends Authenticatable
     {
         $this->notify(new MailResetPasswordNotification($token));
     }
+
+    public function role()
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+    }
 }
